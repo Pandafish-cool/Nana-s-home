@@ -12191,6 +12191,9 @@ function DisneyStoryActivity(_refDsy) {
     var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
     return function () { clearInterval(id); };
   }, []);
+  useEffect(function () {
+    ["disney_fireworks.jpg", "stella_theater.jpg", "stella_gift.jpg"].forEach(function (s) { var im = new Image(); im.src = s; });
+  }, []);
   var scenes = [
     { id: "gate", emoji: "🏰", title: "走进梦里 🏰", sub: "和 Nana 一起，离开今天，走进昨日、明日与梦想", bg: "linear-gradient(160deg,#0e1120,#1c2440,#3a2a5c)" },
     { id: "castle", emoji: "🏰", title: "城堡 & 迪士尼名饭 🍽️", sub: "辛苦 Nana 排队～天气好热我给你扇扇风 🪭 名物热狗没吃到，下次一定 🌭 你是最棒的向导！", bg: "linear-gradient(160deg,#241a40,#5a2a6a,#e08a30)" },
@@ -12471,7 +12474,7 @@ function DisneyStoryActivity(_refDsy) {
       h("div", { style: { position: "absolute", right: 8, top: 6, color: "#ffe06a", fontSize: "0.66rem", fontWeight: 800, background: "rgba(0,0,0,0.3)", borderRadius: 8, padding: "2px 8px", zIndex: 3 } }, "SCORE " + (1000 + (T * 7) % 9000))
     );
   } else if (cur.id === "stella") {
-    hero = h("img", { src: "stella_theater.jpg", alt: "StellaLou theater show", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
+    hero = h("img", { src: "stella_theater.jpg", alt: "StellaLou theater show", decoding: "async", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
     var hearts = [];
     for (var hi = 0; hi < 6; hi++) { var hy = ((hi * 18 + T * 1.3) % 120) - 10; hearts.push(h("div", { key: "ht" + hi, style: { position: "absolute", left: (10 + hi * 15) + "%", top: (105 - hy).toFixed(1) + "%", fontSize: "1rem", opacity: (0.3 + 0.4 * Math.sin(T * 0.1 + hi)).toFixed(2), zIndex: 1 } }, "💜")); }
     var spots = [0, 1].map(function (si) { var ang = Math.sin(T * 0.05 + si * 3.14) * 22; return h("div", { key: "sp" + si, style: { position: "absolute", left: si === 0 ? "22%" : "78%", top: 0, width: 0, height: 0, borderLeft: "30px solid transparent", borderRight: "30px solid transparent", borderTop: "150px solid rgba(255,255,200,0.12)", transformOrigin: "top center", transform: "rotate(" + ang.toFixed(1) + "deg)", zIndex: 1, pointerEvents: "none" } }); });
@@ -12484,10 +12487,10 @@ function DisneyStoryActivity(_refDsy) {
         h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.1 + 1) * 3).toFixed(1) + "px)" } }, "🐰"),
         h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.1 + 2) * 3).toFixed(1) + "px) rotate(6deg)" } }, "🐱")
       ),
-      h("img", { src: "stella_gift.jpg", alt: "最爱的礼物", onError: function (e) { e.target.style.display = "none"; }, style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", background: "#2a1830", zIndex: 2 } })
+      h("img", { src: "stella_gift.jpg", alt: "最爱的礼物", decoding: "async", onError: function (e) { e.target.style.display = "none"; }, style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", background: "#2a1830", zIndex: 2 } })
     );
   } else if (cur.id === "fw") {
-    hero = h("img", { src: "disney_fireworks.jpg", alt: "Disney fireworks", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
+    hero = h("img", { src: "disney_fireworks.jpg", alt: "Disney fireworks", decoding: "async", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
     fx = burst(24, 26, 0, "#ffd24a").concat(burst(72, 20, 10, "#ff7ab0"), burst(50, 38, 20, "#7ad0ff"), twinkle([[14, 60], [84, 64], [40, 14]]));
   } else if (cur.id === "selfie") {
     hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150, display: "flex", alignItems: "center", justifyContent: "center" } },
@@ -16521,11 +16524,50 @@ function SplashScreen(_ref137) {
     });
   })), /*#__PURE__*/React.createElement("style", null, "\n        @keyframes doorCrack {\n          from { opacity:0; transform:translateX(-50%) scaleX(0.3); }\n          to { opacity:1; transform:translateX(-50%) scaleX(1); }\n        }\n      "));
 }
+function ChildrensDayEgg(_refCDE) {
+  var onClose = _refCDE.onClose;
+  var h = React.createElement;
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 70);
+    var t1 = setTimeout(function () { setGone(true); }, 6200);
+    var t2 = setTimeout(function () { onClose(); }, 7000);
+    return function () { clearInterval(id); clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  var T = tick;
+  var bursts = [[22, 28, 0, "#ffd24a"], [72, 24, 7, "#ff7ab0"], [48, 16, 14, "#7ad0ff"], [32, 42, 21, "#9be36b"], [82, 46, 11, "#c79bff"], [60, 54, 18, "#ff9d5c"]];
+  var sparks = [];
+  bursts.forEach(function (bb, bi) {
+    var cx = bb[0], cy = bb[1], ph = bb[2], col = bb[3], p = (T + ph) % 34, r = p * 0.7, op = p < 28 ? (1 - p / 28) : 0;
+    for (var k = 0; k < 12; k++) {
+      var a = k * 0.5236;
+      sparks.push(h("div", { key: "sp" + bi + "_" + k, style: { position: "absolute", left: cx + "%", top: cy + "%", width: 5, height: 5, borderRadius: "50%", background: col, opacity: op.toFixed(2), transform: "translate(" + (Math.cos(a) * r).toFixed(1) + "vmin," + (Math.sin(a) * r).toFixed(1) + "vmin)", boxShadow: "0 0 8px " + col } }));
+    }
+  });
+  var conf = [], ccols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
+  for (var i = 0; i < 28; i++) {
+    var cx2 = (i * 3.6 + Math.sin(i) * 5) % 100, cy2 = ((i * 9 + T * 1.8) % 120) - 12;
+    conf.push(h("div", { key: "cf" + i, style: { position: "absolute", left: cx2.toFixed(1) + "%", top: cy2.toFixed(1) + "%", width: 7, height: 11, background: ccols[i % 5], opacity: 0.9, transform: "rotate(" + ((T * 7 + i * 40) % 360) + "deg)", borderRadius: 1 } }));
+  }
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(10,8,24,0.78)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.8s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui" } },
+    sparks, conf,
+    h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 20px", animation: "bounceIn 0.7s ease" } },
+      h("div", { style: { fontSize: "3rem", marginBottom: 8 } }, "🎉🎆🎈"),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.6rem,6vw,2.6rem)", textShadow: "0 2px 18px rgba(255,150,200,0.7), 0 0 40px rgba(255,200,120,0.5)", lineHeight: 1.35 } }, "祝 Nana 小朋友"),
+      h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "clamp(1.8rem,7vw,3rem)", textShadow: "0 2px 18px rgba(255,150,80,0.7)", marginTop: 4 } }, "儿童节快乐 🌈"),
+      h("div", { style: { color: "rgba(255,255,255,0.82)", fontSize: "0.9rem", marginTop: 18 } }, "永远天真，永远被爱 💛（点一下继续）")
+    )
+  );
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
     showSplash = _useState322[0],
     setShowSplash = _useState322[1];
+  var _useStateEgg = useState(false),
+    showEgg = _useStateEgg[0],
+    setShowEgg = _useStateEgg[1];
   var _useState323 = useState(null),
     _useState324 = _slicedToArray(_useState323, 2),
     room = _useState324[0],
@@ -16605,9 +16647,15 @@ function NanasHome() {
     }
   }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
-      return setShowSplash(false);
+      setShowSplash(false);
+      var _ed = new Date();
+      if (_ed.getMonth() === 5 && _ed.getDate() === 1) setShowEgg(true);
     },
     visible: showSplash
+  }), showEgg && /*#__PURE__*/React.createElement(ChildrensDayEgg, {
+    onClose: function onClose() {
+      return setShowEgg(false);
+    }
   }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
