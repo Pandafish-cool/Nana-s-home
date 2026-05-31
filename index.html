@@ -6871,6 +6871,12 @@ var ROOMS = [{
   name: "Hong Kong",
   color: "#0C6780",
   desc: "昨天的香港回忆"
+}, {
+  id: "disney",
+  emoji: "🏰",
+  name: "Disney",
+  color: "#5a3a8a",
+  desc: "昨天的迪士尼"
 }];
 var ACTIVITIES = {
   living: [{
@@ -6948,6 +6954,11 @@ var ACTIVITIES = {
     id: "travel",
     icon: "🚢",
     name: "香港回忆 🌃"
+  }],
+  disney: [{
+    id: "disney",
+    icon: "🏰",
+    name: "迪士尼回忆 🎆"
   }]
 };
 
@@ -7731,6 +7742,7 @@ function ReadActivity(_ref52) {
     }
   }, "Close book \uD83D\uDCDA"))));
 }
+var NANA_PINNED_ENTRIES = [{id: "disney-hk-2026-05-30", pinned: true, date: "Saturday, May 30, 2026", time: "Evening 🎆", text: "周六和 Nana 一起去了香港迪士尼！🏰\n\n🍽️ 先吃了迪士尼的名饭，仪式感直接拉满～\n🌍 去玩了「小小世界」。\n🤠 逛了玩具总动员世界——虽然巴斯光年今天没上班，但下次一定要见到他！\n🍯 坐了蜜罐 cup，我全程都在偷偷加速，转得哈哈哈停不下来。\n❄️ 和 Nana 一起玩了冰雪奇缘，最后那个俯冲是真的吓一跳！\n🦾 Nana 超勇敢地玩了 Iron Man，虽然我感觉我的手要被她捏紫了，但这么勇敢必须给奖励！\n🐝 在黄蜂女那里彻底激起了 Nana 的好胜心——当然 Nana 也懂的，我们这种「警察」就是专业 😎\n🎭 很放松地看了米奇的剧，星黛露的剧场真的超好看，她的老铁们也相当给力捧场！\n📚 全程 Nana 都在给我做随堂小测，一直问「达菲的朋友们到底有哪几个」——其实我一路上都在偷偷背答案哈哈。\n🎆 最后看了一场超完美的烟花，和 Nana 的这一天真的好开心。（烟花图见下👇）", words: 38, mood: "🎢", image: "disney_fireworks.jpg"}];
 function JournalActivity(_ref53) {
   var onCozy = _ref53.onCozy;
   var _useState155 = useState(""),
@@ -7928,6 +7940,7 @@ function JournalActivity(_ref53) {
     return "🌙";
   };
   var wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  var allEntries = NANA_PINNED_ENTRIES.concat((entries || []).filter(function (e) { return !NANA_PINNED_ENTRIES.some(function (p) { return p.id === e.id; }); }));
   if (loading) return /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
@@ -7976,7 +7989,7 @@ function JournalActivity(_ref53) {
       fontSize: "0.72rem",
       color: "#81515A"
     }
-  }, selectedEntry.time, " \xB7 ", selectedEntry.words, " words ", selectedEntry.mood)), /*#__PURE__*/React.createElement("button", {
+  }, selectedEntry.time, " \xB7 ", selectedEntry.words, " words ", selectedEntry.mood)), !selectedEntry.pinned && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return deleteEntry(selectedEntry.id);
     },
@@ -7997,7 +8010,7 @@ function JournalActivity(_ref53) {
       color: COLORS.dark,
       whiteSpace: "pre-wrap"
     }
-  }, selectedEntry.text)));
+  }, selectedEntry.text), selectedEntry.image && /*#__PURE__*/React.createElement("img", {src: selectedEntry.image, alt: "Disney fireworks", style: {width: "100%", borderRadius: 14, marginTop: 14, display: "block", border: "1.5px solid #E8D5C4"}})));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -8037,7 +8050,7 @@ function JournalActivity(_ref53) {
       cursor: "pointer",
       position: "relative"
     }
-  }, "\uD83D\uDCDA History ", entries.length > 0 && /*#__PURE__*/React.createElement("span", {
+  }, "\uD83D\uDCDA History ", allEntries.length > 0 && /*#__PURE__*/React.createElement("span", {
     style: {
       background: COLORS.blush,
       color: "#fff",
@@ -8046,7 +8059,7 @@ function JournalActivity(_ref53) {
       fontSize: "0.7rem",
       marginLeft: 4
     }
-  }, entries.length))), view === "write" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, allEntries.length))), view === "write" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: "0.82rem",
       color: "#81515A",
@@ -8111,7 +8124,7 @@ function JournalActivity(_ref53) {
       fontSize: "0.75rem",
       color: "#b0a090"
     }
-  }, wordCount, " words"))), view === "history" && /*#__PURE__*/React.createElement("div", null, entries.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, wordCount, " words"))), view === "history" && /*#__PURE__*/React.createElement("div", null, allEntries.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       padding: "30px 20px",
@@ -8132,7 +8145,7 @@ function JournalActivity(_ref53) {
       flexDirection: "column",
       gap: 10
     }
-  }, entries.map(function (e) {
+  }, allEntries.map(function (e) {
     return /*#__PURE__*/React.createElement("div", {
       key: e.id,
       onClick: function onClick() {
@@ -12168,6 +12181,395 @@ function SleepLogActivity(_ref103) {
     }, t.tip)));
   })));
 }
+// ── DISNEY TRAVEL STORY ──────────────────────────────────
+function DisneyStoryActivity(_refDsy) {
+  var onCozy = _refDsy.onCozy;
+  var h = React.createElement;
+  var _ds1 = useState(0); var scene = _ds1[0]; var setScene = _ds1[1];
+  var _ds2 = useState(0); var tick = _ds2[0]; var setTick = _ds2[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    return function () { clearInterval(id); };
+  }, []);
+  var scenes = [
+    { id: "gate", emoji: "🏰", title: "走进梦里 🏰", sub: "和 Nana 一起，离开今天，走进昨日、明日与梦想", bg: "linear-gradient(160deg,#0e1120,#1c2440,#3a2a5c)" },
+    { id: "castle", emoji: "🏰", title: "城堡 & 迪士尼名饭 🍽️", sub: "辛苦 Nana 排队～天气好热我给你扇扇风 🪭 名物热狗没吃到，下次一定 🌭 你是最棒的向导！", bg: "linear-gradient(160deg,#241a40,#5a2a6a,#e08a30)" },
+    { id: "small", emoji: "🎠", title: "小小世界 🌍", sub: "一船一船的娃娃，转着转着就笑了", bg: "linear-gradient(160deg,#0a2a4a,#1a6a9a,#48b0d0)" },
+    { id: "toy", emoji: "🚀", title: "玩具总动员 🤠", sub: "巴斯光年今天没上班…下次一定要见到他！", bg: "linear-gradient(160deg,#123a6a,#2a6ad0,#f0a820)" },
+    { id: "honey", emoji: "🍯", title: "蜜罐 cup 🍯", sub: "我全程偷偷加速，转得哈哈哈停不下来", bg: "linear-gradient(160deg,#3a2a08,#a87010,#f5cf48)" },
+    { id: "frozen", emoji: "❄️", title: "冰雪奇缘 ❄️", sub: "最后那个俯冲——真的吓一跳！", bg: "linear-gradient(160deg,#0a2240,#1f5f92,#bfe8ff)" },
+    { id: "iron", emoji: "🦾", title: "钢铁侠 🦾", sub: "Nana 超勇敢！我的手都快被捏紫了，但值得奖励", bg: "linear-gradient(160deg,#3a0808,#b01c1c,#f04828)" },
+    { id: "wasp", emoji: "🐝", title: "黄蜂女 🐝", sub: "好胜心彻底被激起——我们这种「警察」就是专业 😎", bg: "linear-gradient(160deg,#0f1a0f,#2f5f2f,#ecd820)" },
+    { id: "stella", emoji: "💜", title: "达菲的朋友们有几个？", sub: "Nana 一路随堂测，其实我偷偷背了答案哈哈", bg: "linear-gradient(160deg,#2a1030,#7a2a72,#f2a6c8)" },
+    { id: "gift", emoji: "🧸", title: "把回忆带回家 🧸", sub: "我们最爱的礼物——玲娜贝儿、星黛露、杰拉多尼，一起回家啦", bg: "linear-gradient(160deg,#2a1828,#5a3a5a,#e0a0c0)" },
+    { id: "fw", emoji: "🎆", title: "完美的烟花 🎆", sub: "和 Nana 的这一天，真的好开心 💛 也是花好月圆的一天 🌕🌸", bg: "linear-gradient(160deg,#0a0818,#1a1030,#3a1a4a)" },
+    { id: "selfie", emoji: "📸", title: "我们的合照 📸", sub: "比个耶～咔嚓！这一天，存进心里 💕", bg: "linear-gradient(160deg,#2a1838,#6a3a6a,#f2a6c8)" }
+  ];
+  var cur = scenes[scene];
+  var isLast = scene === scenes.length - 1;
+  var go = function go(n) { setScene(n); onCozy(6); };
+  var next = function next() { if (!isLast) { go(scene + 1); } else { setScene(0); } };
+  var bob = Math.sin(tick * 0.09) * 6;
+  var rot = Math.sin(tick * 0.06) * 5;
+  var stars = [[8, 12], [18, 6], [30, 16], [44, 9], [58, 5], [70, 14], [82, 8], [92, 18], [14, 28], [64, 26], [88, 30], [38, 4]].map(function (p, i) {
+    return h("div", { key: "st" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: tick % (7 + i % 4) < 3 ? 2.4 : 1.2, height: tick % (7 + i % 4) < 3 ? 2.4 : 1.2, background: "#fff", borderRadius: "50%", opacity: 0.25 + Math.sin(tick * 0.08 + i) * 0.35, boxShadow: "0 0 4px rgba(255,255,255,0.6)" } });
+  });
+  var friends = [["达菲", "🧸"], ["雪莉玫", "🎀"], ["杰拉多尼", "🎨"], ["星黛露", "💜"], ["曲奇安", "🐻"], ["玲娜贝儿", "🦊"], ["奥乐米", "🐢"]];
+  var T = tick;
+  var ring = function ring(items, rx, ry, speed) {
+    return items.map(function (em, i) {
+      var ang = T * speed + i * (6.2832 / items.length);
+      var x = Math.cos(ang) * rx, y = Math.sin(ang) * ry;
+      return h("div", { key: "rg" + i, style: { position: "absolute", left: "50%", top: "50%", fontSize: "1.6rem", transform: "translate(-50%,-50%) translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) scale(" + (0.78 + 0.28 * (0.5 + 0.5 * Math.sin(ang))).toFixed(2) + ")", zIndex: y < 0 ? 1 : 3, filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.35))" } }, em);
+    });
+  };
+  var snow = function snow() {
+    var f = [];
+    for (var i = 0; i < 14; i++) {
+      var sx = (i * 7.3 + T * (0.3 + (i % 3) * 0.15)) % 100;
+      var sy = ((i * 13 + T * (1.0 + (i % 4) * 0.35)) % 125) - 12;
+      f.push(h("div", { key: "sn" + i, style: { position: "absolute", left: sx.toFixed(1) + "%", top: sy.toFixed(1) + "%", color: "rgba(255,255,255," + (0.45 + (i % 3) * 0.18).toFixed(2) + ")", fontSize: (8 + (i % 3) * 5) + "px", zIndex: 1, pointerEvents: "none", transform: "rotate(" + ((T * 4 + i * 30) % 360) + "deg)" } }, "❄"));
+    }
+    return f;
+  };
+  var burst = function burst(cx, cy, phase, color) {
+    var p = (T + phase) % 30, r = p * 2.3, op = p < 24 ? (1 - p / 24) : 0, f = [];
+    for (var k = 0; k < 10; k++) {
+      var a = k * 0.6283;
+      f.push(h("div", { key: "bs" + cx + "_" + cy + "_" + k, style: { position: "absolute", left: cx + "%", top: cy + "%", width: 3, height: 3, borderRadius: "50%", background: color, opacity: op.toFixed(2), zIndex: 4, transform: "translate(" + (Math.cos(a) * r).toFixed(1) + "px," + (Math.sin(a) * r).toFixed(1) + "px)", boxShadow: "0 0 5px " + color } }));
+    }
+    return f;
+  };
+  var twinkle = function twinkle(pts) {
+    return pts.map(function (p, i) {
+      return h("div", { key: "tw" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", fontSize: (10 + (i % 3) * 4) + "px", opacity: (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(T * 0.18 + i))).toFixed(2), zIndex: 4, pointerEvents: "none" } }, "✨");
+    });
+  };
+  var bokeh = function bokeh() {
+    var f = [];
+    for (var i = 0; i < 7; i++) {
+      var bx = (i * 14.3 + T * (0.12 + (i % 3) * 0.05)) % 105, by = 12 + ((i * 37 + T * 0.18 * (1 + i % 2)) % 80), sz = 8 + (i % 4) * 7;
+      f.push(h("div", { key: "bk" + i, style: { position: "absolute", left: bx.toFixed(1) + "%", top: by.toFixed(1) + "%", width: sz, height: sz, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,255,255,0.5),transparent 70%)", opacity: (0.12 + 0.12 * Math.sin(T * 0.05 + i)).toFixed(2), zIndex: 1, pointerEvents: "none" } }));
+    }
+    return f;
+  };
+  var glow = function glow() {
+    return h("div", { key: "glow", style: { position: "absolute", left: "50%", top: "46%", transform: "translate(-50%,-50%) scale(" + (1 + 0.08 * Math.sin(T * 0.06)).toFixed(3) + ")", width: 190, height: 190, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,255,255,0.12),transparent 68%)", zIndex: 1, pointerEvents: "none" } });
+  };
+  var confetti = function confetti() {
+    var cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff", "#ff9d5c"], f = [];
+    for (var i = 0; i < 16; i++) {
+      var cx = (i * 6.4 + Math.sin(i) * 4) % 100, cy = ((i * 11 + T * (1.4 + (i % 4) * 0.5)) % 130) - 12;
+      f.push(h("div", { key: "cf" + i, style: { position: "absolute", left: cx.toFixed(1) + "%", top: cy.toFixed(1) + "%", width: 5, height: 8, background: cols[i % 6], opacity: 0.85, zIndex: 4, transform: "rotate(" + ((T * 6 + i * 40) % 360) + "deg)", borderRadius: 1, pointerEvents: "none" } }));
+    }
+    return f;
+  };
+  var notes = function notes() {
+    var ns = ["🎶", "🎵", "♪", "✨"], f = [];
+    for (var i = 0; i < 6; i++) {
+      var ny = ((i * 20 + T * 1.1) % 120) - 10;
+      f.push(h("div", { key: "nt" + i, style: { position: "absolute", left: (8 + i * 16) + "%", top: (105 - ny).toFixed(1) + "%", fontSize: "1rem", opacity: (0.3 + 0.4 * Math.sin(T * 0.12 + i)).toFixed(2), zIndex: 4, transform: "rotate(" + (Math.sin(T * 0.1 + i) * 12).toFixed(1) + "deg)", pointerEvents: "none" } }, ns[i % 4]));
+    }
+    return f;
+  };
+  var GA = ["#f48ab0", "#6b4630", false], GB = ["#b48ad6", "#2e2430", false];
+  var girl = function girl(face, dress, hair, bow, tilt, dy) {
+    return h("div", { style: { position: "relative", width: 30, height: 48, transform: "rotate(" + tilt.toFixed(1) + "deg) translateY(" + dy.toFixed(1) + "px)", transition: "transform 0.25s" } },
+      h("div", { style: { position: "absolute", left: "50%", bottom: -3, transform: "translateX(-50%)", width: 22, height: 6, background: "rgba(0,0,0,0.22)", borderRadius: "50%", filter: "blur(1px)" } }),
+      h("div", { style: { position: "absolute", left: 11, top: 38, width: 3, height: 9, background: "#ffe2c4" } }),
+      h("div", { style: { position: "absolute", left: 17, top: 38, width: 3, height: 9, background: "#ffe2c4" } }),
+      h("div", { style: { position: "absolute", left: 3, top: 20, width: 24, height: 22, background: dress, clipPath: "polygon(28% 0,72% 0,100% 100%,0 100%)" } }),
+      h("div", { style: { position: "absolute", left: 3, top: -2, width: 24, height: 26, background: hair, borderRadius: "50% 50% 45% 45%" } }),
+      h("div", { style: { position: "absolute", left: 5, top: 0, width: 20, height: 20, background: "#ffe2c4", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" } }, face),
+      h("div", { style: { position: "absolute", left: 5, top: -1, width: 20, height: 8, background: hair, borderRadius: "10px 10px 50% 50%" } }),
+      bow ? h("div", { style: { position: "absolute", left: 15, top: -5, fontSize: "10px" } }, "🎀") : null
+    );
+  };
+  var girlBust = function girlBust(face, dress, hair, bow, glasses) {
+    return h("div", { style: { position: "relative", width: 30, height: 34 } },
+      h("div", { style: { position: "absolute", left: 3, top: 18, width: 24, height: 16, background: dress, borderRadius: "12px 12px 5px 5px" } }),
+      h("div", { style: { position: "absolute", left: 3, top: 0, width: 24, height: 24, background: hair, borderRadius: "50% 50% 45% 45%" } }),
+      h("div", { style: { position: "absolute", left: 5, top: 1, width: 20, height: 20, background: "#ffe2c4", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px" } }, face),
+      h("div", { style: { position: "absolute", left: 5, top: 0, width: 20, height: 8, background: hair, borderRadius: "10px 10px 50% 50%" } }),
+      glasses ? h("div", { style: { position: "absolute", left: 6, top: 8, width: 18, height: 6, background: "rgba(20,30,60,0.85)", borderRadius: 3, border: "1px solid #6cf" } }) : null,
+      bow ? h("div", { style: { position: "absolute", left: 15, top: -3, fontSize: "10px" } }, "🎀") : null
+    );
+  };
+  var bubbleEl = function bubbleEl(b, top) {
+    return b ? h("div", { style: { position: "absolute", left: "50%", top: top, transform: "translateX(-50%) translateY(" + (Math.sin(T * 0.12) * 2).toFixed(1) + "px)", fontSize: "1.2rem", zIndex: 5, filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.3))" } }, b) : null;
+  };
+  var couple = function couple(fA, fB, bubble, pose, anchor) {
+    var sway = pose === "dance" ? Math.sin(T * 0.18) * 6 : 0;
+    var jump = pose === "cheer" ? -Math.abs(Math.sin(T * 0.22)) * 9 : 0;
+    var tremble = (pose === "huddle" || pose === "grip") ? Math.sin(T * 0.9) * 1.5 : 0;
+    var lean = (pose === "lean" || pose === "rest") ? 7 : 0;
+    var gap = (pose === "huddle" || pose === "grip" || pose === "rest") ? -2 : 6;
+    var wrap = anchor === "right"
+      ? { position: "absolute", right: "5%", bottom: 22, zIndex: 3, display: "flex", alignItems: "flex-end", gap: gap, transform: "scale(0.8)", transformOrigin: "bottom right" }
+      : { position: "absolute", left: "50%", bottom: 48, transform: "translateX(-50%)", zIndex: 3, display: "flex", alignItems: "flex-end", gap: gap };
+    return h("div", { style: wrap },
+      bubbleEl(bubble, -24),
+      girl(fA, GA[0], GA[1], GA[2], lean + sway + tremble, jump),
+      girl(fB, GB[0], GB[1], GB[2], -lean - sway - tremble, jump)
+    );
+  };
+  var boat = function boat(fA, fB, bubble) {
+    var rock = Math.sin(T * 0.08) * 3, dy = Math.sin(T * 0.12) * 3;
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 34, transform: "translateX(-50%) rotate(" + rock.toFixed(2) + "deg) translateY(" + dy.toFixed(1) + "px)", zIndex: 3 } },
+      bubbleEl(bubble, -26),
+      h("div", { style: { display: "flex", gap: 1, justifyContent: "center", position: "relative", zIndex: 2, marginBottom: -7 } }, girlBust(fA, GA[0], GA[1], GA[2]), girlBust(fB, GB[0], GB[1], GB[2])),
+      h("div", { style: { width: 98, height: 26, background: "linear-gradient(#e8c98a,#a07a44)", borderRadius: "6px 6px 30px 30px", border: "2px solid #6a4a26", boxShadow: "0 5px 9px rgba(0,0,0,0.35)" } }),
+      h("div", { style: { width: 124, height: 5, background: "rgba(180,225,255,0.4)", borderRadius: "50%", margin: "4px auto 0", filter: "blur(1px)" } })
+    );
+  };
+  var teacup = function teacup(fA, fB, bubble) {
+    var spin = (T * 6) % 360, wob = Math.sin(T * 0.18) * 5;
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 34, transform: "translateX(-50%) translateX(" + wob.toFixed(1) + "px)", zIndex: 3 } },
+      bubbleEl(bubble, -26),
+      h("div", { style: { position: "relative", width: 116, height: 92, transform: "rotate(" + spin.toFixed(0) + "deg)", transformOrigin: "50% 64%" } },
+        h("div", { style: { position: "absolute", left: "50%", top: 4, transform: "translateX(-50%) rotate(" + (-spin).toFixed(0) + "deg)", display: "flex", gap: 1, zIndex: 3 } }, girlBust(fA, GA[0], GA[1], GA[2]), girlBust(fB, GB[0], GB[1], GB[2])),
+        h("div", { style: { position: "absolute", left: 8, top: 34, width: 100, height: 42, background: "linear-gradient(#ffd1e8,#f48ab0)", borderRadius: "12px 12px 42px 42px", border: "3px solid #fff", zIndex: 2 } }),
+        h("div", { style: { position: "absolute", right: -4, top: 46, width: 18, height: 22, border: "4px solid #f48ab0", borderLeft: "none", borderRadius: "0 50% 50% 0" } }),
+        h("div", { style: { position: "absolute", left: -2, top: 74, width: 120, height: 11, background: "#fff", borderRadius: "50%", zIndex: 1 } })
+      )
+    );
+  };
+  var seats = function seats(fA, fB, bubble) {
+    var shake = Math.sin(T * 0.8) * 2;
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 34, transform: "translateX(-50%) translateX(" + shake.toFixed(1) + "px)", zIndex: 3 } },
+      bubbleEl(bubble, -26),
+      h("div", { style: { display: "flex", gap: 6, justifyContent: "center", position: "relative", zIndex: 2, marginBottom: -6 } }, girlBust(fA, GA[0], GA[1], GA[2], false, true), girlBust(fB, GB[0], GB[1], GB[2], false, true)),
+      h("div", { style: { display: "flex", gap: 6, justifyContent: "center" } }, h("div", { style: { width: 30, height: 16, background: "#2a2440", borderRadius: "8px 8px 4px 4px", border: "1px solid #4a4470" } }), h("div", { style: { width: 30, height: 16, background: "#2a2440", borderRadius: "8px 8px 4px 4px", border: "1px solid #4a4470" } }))
+    );
+  };
+  var shooters = function shooters(fA, fB, bubble) {
+    var rec = Math.sin(T * 0.6) * 2;
+    var one = function one(face, g) {
+      return h("div", { style: { position: "relative", width: 44, height: 40, transform: "translateX(" + rec.toFixed(1) + "px)" } },
+        girlBust(face, g[0], g[1], g[2]),
+        h("div", { style: { position: "absolute", left: 22, top: 18, width: 16, height: 5, background: "#5a6a8a", borderRadius: 2, transform: "rotate(-18deg)" } }),
+        h("div", { style: { position: "absolute", left: 32, top: 9, width: 16, height: 2, background: "rgba(120,230,255,0.95)", boxShadow: "0 0 6px #7ad0ff", opacity: T % 6 < 3 ? 0.95 : 0.2 } })
+      );
+    };
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 38, transform: "translateX(-50%)", zIndex: 3, display: "flex", gap: 12 } }, bubbleEl(bubble, -26), one(fA, GA), one(fB, GB));
+  };
+  var fanning = function fanning(fA, fB, bubble) {
+    var wave = Math.sin(T * 0.5) * 24, breeze = Math.sin(T * 0.5) * 6;
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 48, transform: "translateX(-50%)", zIndex: 3, display: "flex", alignItems: "flex-end", gap: 2 } },
+      bubbleEl(bubble, -26),
+      h("div", { style: { position: "relative" } },
+        girl(fB, GB[0], GB[1], GB[2], breeze * 0.3, 0),
+        h("div", { style: { position: "absolute", left: 23, top: 2, fontSize: "0.7rem", opacity: (0.35 + 0.45 * Math.abs(Math.sin(T * 0.18))).toFixed(2) } }, "💦"),
+        h("div", { style: { position: "absolute", left: -7, top: -7, fontSize: "0.7rem", opacity: (0.4 + 0.3 * Math.sin(T * 0.12)).toFixed(2) } }, "♨️"),
+        h("div", { style: { position: "absolute", left: 22, top: -13, fontSize: "0.9rem", opacity: (0.4 + 0.25 * Math.sin(T * 0.15)).toFixed(2) } }, "💭🌭")
+      ),
+      h("div", { style: { position: "relative" } },
+        girl(fA, GA[0], GA[1], GA[2], 0, 0),
+        h("div", { style: { position: "absolute", left: -11, top: 13, fontSize: "1.25rem", transformOrigin: "bottom right", transform: "rotate(" + wave.toFixed(1) + "deg)" } }, "🪭")
+      )
+    );
+  };
+  var selfie = function selfie(fA, fB, bubble) {
+    var fl = T % 18 < 3;
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 44, transform: "translateX(-50%)", zIndex: 3, display: "flex", alignItems: "flex-end", gap: -4 } },
+      bubbleEl(bubble, -30),
+      h("div", { style: { position: "absolute", left: "50%", top: -20, transform: "translateX(-50%)", fontSize: "1.3rem", zIndex: 5, opacity: fl ? 1 : 0.3, transition: "opacity 0.1s" } }, "✨"),
+      h("div", { style: { position: "absolute", left: "50%", top: -4, transform: "translateX(-50%) rotate(-10deg)", fontSize: "1.5rem", zIndex: 5 } }, "📱"),
+      girl(fA, GA[0], GA[1], GA[2], 9, 0),
+      girl(fB, GB[0], GB[1], GB[2], -9, 0),
+      h("div", { style: { position: "absolute", left: -12, top: 8, fontSize: "0.95rem", zIndex: 4 } }, "✌️")
+    );
+  };
+  var parkFraming = h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, zIndex: 4, pointerEvents: "none", overflow: "hidden" } },
+    h("svg", { viewBox: "0 0 300 22", width: "100%", style: { position: "absolute", top: 0, left: 0 } },
+      h("path", { d: "M0,3 Q150,16 300,3", stroke: "rgba(255,255,255,0.45)", strokeWidth: 1, fill: "none" }),
+      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (i) {
+        var fxp = 8 + i * 31, fyp = 3 + Math.sin((i / 9) * 3.14159) * 12, cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
+        return h("path", { key: "bf" + i, d: "M" + fxp + "," + fyp.toFixed(1) + " l8,0 l-4,9 z", fill: cols[i % 5], opacity: 0.9 });
+      })
+    ),
+    [0, 1].map(function (i) {
+      var by = 100 - ((T * 0.4 + i * 65) % 135), bxp = i === 0 ? 5 : 89;
+      return h("div", { key: "bl" + i, style: { position: "absolute", left: bxp + "%", top: by.toFixed(1) + "%", fontSize: "1.4rem", opacity: 0.85, transform: "rotate(" + (Math.sin(T * 0.1 + i) * 6).toFixed(1) + "deg)" } }, "🎈");
+    })
+  );
+  var hero = null, fx = null;
+  if (cur.id === "gate") {
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 300, background: "linear-gradient(180deg,#2b2014,#3c2c18)", border: "3px solid #c79a4a", borderRadius: 14, padding: "18px 16px", boxShadow: "0 6px 22px rgba(0,0,0,0.45), inset 0 0 24px rgba(0,0,0,0.5)", textAlign: "center" } },
+      h("div", { style: { color: "#f0d68a", fontWeight: 800, fontSize: "0.74rem", letterSpacing: 1.1, lineHeight: 1.7, textShadow: "0 1px 0 rgba(0,0,0,0.6)" } }, "HERE YOU LEAVE TODAY AND ENTER THE WORLD OF YESTERDAY, TOMORROW AND FANTASY"),
+      h("div", { style: { height: 1, background: "linear-gradient(90deg,transparent,#c79a4a,transparent)", margin: "10px 6px" } }),
+      h("div", { style: { color: "#f4e4b4", fontWeight: 700, fontSize: "0.82rem", lineHeight: 1.9 } }, "在這裡您將會離開現實的今日，", h("br", null), "而進入一個昨日、明日與夢想的世界。")
+    );
+    fx = twinkle([[10, 20], [26, 12], [74, 16], [88, 26], [50, 8], [18, 72], [82, 74]]);
+  } else if (cur.id === "castle") {
+    hero = h("svg", { viewBox: "0 0 300 175", width: "100%", style: { position: "relative", zIndex: 2, maxWidth: 330, filter: "drop-shadow(0 8px 14px rgba(0,0,0,0.4))" } },
+      h("rect", { x: 58, y: 132, width: 184, height: 34, fill: "#e6ecff" }),
+      h("rect", { x: 66, y: 104, width: 16, height: 42, fill: "#d4dcf5" }), h("path", { d: "M64,104 L74,80 L84,104 Z", fill: "#7aa8e6" }),
+      h("rect", { x: 218, y: 104, width: 16, height: 42, fill: "#d4dcf5" }), h("path", { d: "M216,104 L226,80 L236,104 Z", fill: "#7aa8e6" }),
+      h("rect", { x: 92, y: 84, width: 22, height: 62, fill: "#dfe7ff" }), h("path", { d: "M89,84 L103,52 L117,84 Z", fill: "#e58ab0" }),
+      h("rect", { x: 186, y: 84, width: 22, height: 62, fill: "#dfe7ff" }), h("path", { d: "M183,84 L197,52 L211,84 Z", fill: "#e58ab0" }),
+      h("rect", { x: 133, y: 58, width: 34, height: 90, fill: "#eef2ff" }), h("path", { d: "M129,58 L150,20 L171,58 Z", fill: "#6aa0e0" }),
+      h("path", { d: "M150,20 L150,8 L" + (150 + 6 * Math.sin(T * 0.2)).toFixed(1) + ",12 L150,16 Z", fill: "#ffd24a" }),
+      h("path", { d: "M142,166 L142,150 Q150,140 158,150 L158,166 Z", fill: "#3a2a4a" }),
+      [[100, 98], [195, 98], [143, 80], [157, 80], [143, 108], [157, 108], [72, 116], [224, 116]].map(function (w, i) {
+        return h("rect", { key: "win" + i, x: w[0], y: w[1], width: 6, height: 9, rx: 2, fill: "#ffd86a", opacity: (T + i * 3) % 9 < 5 ? 0.95 : 0.35 });
+      })
+    );
+    fx = twinkle([[14, 18], [30, 10], [70, 12], [86, 20], [50, 6]]);
+  } else if (cur.id === "small") {
+    var dolls = ["👘", "🪆", "💃", "🕺", "👳", "🧕", "👲", "🩰", "🎎", "👯"];
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150, overflow: "hidden" } },
+      h("div", { style: { position: "absolute", left: "50%", top: 6, transform: "translateX(-50%)", fontSize: "1.5rem", zIndex: 1, opacity: 0.85, letterSpacing: 4 } }, "🕌🏯🗼"),
+      dolls.map(function (d, i) {
+        var dx = ((i * 11 - T * 0.7) % 116 + 116) % 116, dyp = 26 + (i % 3) * 20;
+        return h("div", { key: "dl" + i, style: { position: "absolute", left: dx.toFixed(1) + "%", top: dyp + "%", fontSize: "1.7rem", transform: "translateY(" + (Math.sin(T * 0.12 + i) * 3).toFixed(1) + "px)", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))", zIndex: 2 } }, d);
+      }),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 18, height: 26, background: "linear-gradient(rgba(120,200,240,0),rgba(120,200,240,0.55))", zIndex: 2 } })
+    );
+  } else if (cur.id === "toy") {
+    var bzx = (T * 1.6) % 130 - 15, bzy = 14 + Math.sin(T * 0.13) * 8;
+    var crew = [["🤠", 12, 0.10], ["👽", 34, 0.18], ["🦖", 66, 0.09], ["👮‍♀️", 86, 0.13]];
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 160 } },
+      [[14, 26, 1.4], [62, 16, 1.8], [82, 40, 1.2]].map(function (c, i) { var cx = (c[0] + T * 0.25 * (i + 1)) % 112; return h("div", { key: "cl" + i, style: { position: "absolute", left: cx.toFixed(1) + "%", top: c[1] + "%", fontSize: c[2] + "rem", opacity: 0.85, zIndex: 1 } }, "☁️"); }),
+      h("div", { style: { position: "absolute", left: bzx.toFixed(1) + "%", top: bzy.toFixed(1) + "%", fontSize: "1.9rem", transform: "rotate(8deg)", zIndex: 3, filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.3))" } }, "🚀"),
+      h("div", { style: { position: "absolute", left: (bzx + 1).toFixed(1) + "%", top: (bzy + 7).toFixed(1) + "%", fontSize: "1.7rem", zIndex: 3, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" } }, "🧑‍🚀"),
+      crew.map(function (c, i) { return h("div", { key: "cw" + i, style: { position: "absolute", left: c[1] + "%", bottom: 6, fontSize: "2.3rem", transform: "translateY(" + (Math.sin(T * c[2] + i) * 5).toFixed(1) + "px)", zIndex: 2, filter: "drop-shadow(0 4px 7px rgba(0,0,0,0.35))" } }, c[0]); })
+    );
+  } else if (cur.id === "honey") {
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150 } },
+      [[16, 36, 0], [80, 44, 1.5], [50, 14, 3]].map(function (c, i) {
+        return h("div", { key: "tc" + i, style: { position: "absolute", left: c[0] + "%", top: c[1] + "%", fontSize: "2rem", transform: "rotate(" + ((T * (5 + i * 2) + c[2] * 40) % 360) + "deg)", opacity: 0.5, zIndex: 1 } }, "🫖");
+      }),
+      [[30, 60], [68, 64], [48, 30]].map(function (p, i) { return h("div", { key: "sw" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", fontSize: "1rem", opacity: (0.3 + 0.4 * Math.sin(T * 0.2 + i)).toFixed(2), zIndex: 1 } }, "💫"); })
+    );
+  } else if (cur.id === "frozen") {
+    var scn = ["🏔️", "🏰", "⛄", "🦌", "🧊", "❄️"];
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150, overflow: "hidden" } },
+      scn.map(function (s, i) {
+        var sx2 = ((i * 18 - T * 0.6) % 120 + 120) % 120;
+        return h("div", { key: "fs" + i, style: { position: "absolute", left: sx2.toFixed(1) + "%", top: (26 + (i % 3) * 18) + "%", fontSize: "2rem", transform: "translateY(" + (Math.sin(T * 0.1 + i) * 2).toFixed(1) + "px)", filter: "drop-shadow(0 0 8px rgba(180,230,255,0.6))", zIndex: 2 } }, s);
+      }),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 18, height: 26, background: "linear-gradient(rgba(190,235,255,0),rgba(190,235,255,0.6))", zIndex: 2 } })
+    );
+    fx = snow();
+  } else if (cur.id === "iron") {
+    var flash = T % 8 < 4, ironx = (T * 2.4) % 120 - 10;
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 300, height: 132, borderRadius: 10, overflow: "hidden", background: "radial-gradient(circle at 50% 45%,#3a1414,#140808)", border: "3px solid #2a2440", boxShadow: "0 6px 16px rgba(0,0,0,0.5)" } },
+      h("div", { style: { position: "absolute", left: "50%", top: "42%", transform: "translate(-50%,-50%) scale(" + (1 + 0.2 * Math.sin(T * 0.3)).toFixed(2) + ")", width: 50, height: 50, borderRadius: "50%", background: "radial-gradient(circle,rgba(120,220,255,0.95),transparent 70%)" } }),
+      h("div", { style: { position: "absolute", left: ironx.toFixed(1) + "%", top: "30%", fontSize: "2rem", transform: "rotate(10deg)" } }, "🦾"),
+      h("div", { style: { position: "absolute", left: "28%", top: "54%", fontSize: "1.6rem", opacity: flash ? 1 : 0.3 } }, "💥"),
+      h("div", { style: { position: "absolute", left: "64%", top: "38%", fontSize: "1.3rem", opacity: flash ? 0.3 : 1 } }, "✨"),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", color: "rgba(255,255,255,0.75)", fontSize: "0.6rem", fontWeight: 700, letterSpacing: 1 } }, "5D · 一起拯救世界")
+    );
+  } else if (cur.id === "wasp") {
+    var targets = [["🐜", 20, 16, 0.10], ["🪲", 58, 28, 0.14], ["🐜", 78, 12, 0.09], ["🎯", 40, 38, 0.12]];
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150 } },
+      targets.map(function (tg, i) {
+        var tx = tg[1] + Math.sin(T * tg[3] + i) * 10, ty = tg[2] + Math.cos(T * tg[3] * 1.3 + i) * 8, hit = (T + i * 7) % 40 < 6;
+        return h("div", { key: "tg" + i, style: { position: "absolute", left: tx.toFixed(1) + "%", top: ty + "%", fontSize: "1.6rem", transform: "scale(" + (hit ? 1.4 : 1) + ")", opacity: hit ? 0.45 : 1, transition: "all 0.15s", filter: hit ? "drop-shadow(0 0 6px #ffd24a)" : "none", zIndex: 2 } }, hit ? "💥" : tg[0]);
+      }),
+      h("div", { style: { position: "absolute", right: 8, top: 6, color: "#ffe06a", fontSize: "0.66rem", fontWeight: 800, background: "rgba(0,0,0,0.3)", borderRadius: 8, padding: "2px 8px", zIndex: 3 } }, "SCORE " + (1000 + (T * 7) % 9000))
+    );
+  } else if (cur.id === "stella") {
+    hero = h("img", { src: "stella_theater.jpg", alt: "StellaLou theater show", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
+    var hearts = [];
+    for (var hi = 0; hi < 6; hi++) { var hy = ((hi * 18 + T * 1.3) % 120) - 10; hearts.push(h("div", { key: "ht" + hi, style: { position: "absolute", left: (10 + hi * 15) + "%", top: (105 - hy).toFixed(1) + "%", fontSize: "1rem", opacity: (0.3 + 0.4 * Math.sin(T * 0.1 + hi)).toFixed(2), zIndex: 1 } }, "💜")); }
+    var spots = [0, 1].map(function (si) { var ang = Math.sin(T * 0.05 + si * 3.14) * 22; return h("div", { key: "sp" + si, style: { position: "absolute", left: si === 0 ? "22%" : "78%", top: 0, width: 0, height: 0, borderLeft: "30px solid transparent", borderRight: "30px solid transparent", borderTop: "150px solid rgba(255,255,200,0.12)", transformOrigin: "top center", transform: "rotate(" + ang.toFixed(1) + "deg)", zIndex: 1, pointerEvents: "none" } }); });
+    fx = spots.concat(hearts);
+  } else if (cur.id === "gift") {
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 250, height: 250, borderRadius: 14, overflow: "hidden", background: "linear-gradient(160deg,#3a2238,#5a3a56)", border: "1.5px solid rgba(255,255,255,0.25)", boxShadow: "0 8px 28px rgba(0,0,0,0.5)" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 12, textAlign: "center", color: "rgba(255,255,255,0.85)", fontSize: "0.7rem", fontWeight: 700, zIndex: 1 } }, "🎀 玲娜贝儿 · 星黛露 · 杰拉多尼 🎨"),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 8, paddingBottom: 18, zIndex: 1 } },
+        h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.1) * 3).toFixed(1) + "px) rotate(-6deg)" } }, "🦊"),
+        h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.1 + 1) * 3).toFixed(1) + "px)" } }, "🐰"),
+        h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.1 + 2) * 3).toFixed(1) + "px) rotate(6deg)" } }, "🐱")
+      ),
+      h("img", { src: "stella_gift.jpg", alt: "最爱的礼物", onError: function (e) { e.target.style.display = "none"; }, style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", background: "#2a1830", zIndex: 2 } })
+    );
+  } else if (cur.id === "fw") {
+    hero = h("img", { src: "disney_fireworks.jpg", alt: "Disney fireworks", style: { position: "relative", zIndex: 2, width: "100%", maxWidth: 320, borderRadius: 14, boxShadow: "0 8px 28px rgba(0,0,0,0.5)", border: "1.5px solid rgba(255,255,255,0.25)" } });
+    fx = burst(24, 26, 0, "#ffd24a").concat(burst(72, 20, 10, "#ff7ab0"), burst(50, 38, 20, "#7ad0ff"), twinkle([[14, 60], [84, 64], [40, 14]]));
+  } else if (cur.id === "selfie") {
+    hero = h("div", { style: { position: "relative", zIndex: 2, width: "100%", height: 150, display: "flex", alignItems: "center", justifyContent: "center" } },
+      h("div", { style: { position: "absolute", left: "50%", top: "44%", transform: "translate(-50%,-50%) scale(" + (1 + 0.15 * Math.sin(T * 0.2)).toFixed(2) + ")", width: 130, height: 130, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,255,255,0.5),transparent 70%)" } }),
+      h("div", { style: { position: "relative", zIndex: 2, color: "#fff", fontWeight: 800, fontSize: "1.1rem", textShadow: "0 2px 6px rgba(0,0,0,0.5)", letterSpacing: 1 } }, "✨ 咔嚓 ✨")
+    );
+  } else {
+    hero = h("div", { style: { position: "relative", zIndex: 2, fontSize: "5rem", transform: "translateY(" + bob.toFixed(2) + "px) rotate(" + rot.toFixed(2) + "deg)", filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.4))" } }, cur.emoji);
+  }
+  var poses = { gate: ["😍", "🥰", "✨", "lean"], castle: ["😊", "😅", "🪭", "fan"], small: ["😄", "😊", "🎶", "dance"], toy: ["🙂", "😯", "🚀", "lean"], honey: ["😵", "😆", "💫", "spin"], frozen: ["😱", "😨", "❄️", "huddle"], iron: ["😬", "😤", "💪", "grip"], wasp: ["😤", "😼", "🏆", "lean"], stella: ["😌", "🥰", "💜", "rest"], gift: ["🥰", "😍", "💕", "rest"], fw: ["🥹", "😊", "💛", "lean"], selfie: ["😆", "🥰", "📸", "selfie"] };
+  var pc = poses[cur.id] || ["🙂", "🙂", "", ""];
+  var folk;
+  if (cur.id === "small" || cur.id === "frozen") folk = boat(pc[0], pc[1], pc[2]);
+  else if (cur.id === "honey") folk = teacup(pc[0], pc[1], pc[2]);
+  else if (cur.id === "iron") folk = seats(pc[0], pc[1], pc[2]);
+  else if (cur.id === "wasp") folk = shooters(pc[0], pc[1], pc[2]);
+  else if (cur.id === "castle") folk = fanning(pc[0], pc[1], pc[2]);
+  else if (cur.id === "fw") folk = couple(pc[0], pc[1], pc[2], pc[3], "right");
+  else if (cur.id === "selfie") folk = selfie(pc[0], pc[1], pc[2]);
+  else folk = couple(pc[0], pc[1], pc[2], pc[3]);
+  var ambient = [glow()].concat(bokeh());
+  if (cur.id === "gate" || cur.id === "castle" || cur.id === "gift" || cur.id === "fw" || cur.id === "selfie") ambient = ambient.concat(confetti());
+  else if (cur.id === "small") ambient = ambient.concat(notes());
+  var vignette = h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse at 50% 42%,transparent 56%,rgba(0,0,0,0.45) 100%)", zIndex: 3, pointerEvents: "none" } });
+  var heroWrap = h("div", { key: "hw" + scene, style: { position: "relative", zIndex: 2, width: "100%", display: "flex", justifyContent: "center", alignItems: "center", animation: "fadeSlideUp 0.55s ease" } }, hero);
+  var stage = h("div", { style: { borderRadius: 20, overflow: "hidden", marginBottom: 14, background: cur.bg, minHeight: 300, position: "relative", boxShadow: "0 8px 32px rgba(0,0,0,0.4)", transition: "background 1s ease", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "28px 18px" } },
+    stars,
+    ambient,
+    fx,
+    parkFraming,
+    vignette,
+    heroWrap,
+    folk,
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, padding: "14px 16px", background: "linear-gradient(0deg,rgba(0,0,0,0.55),transparent)", zIndex: 3, textAlign: "center" } },
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.05rem", textShadow: "0 2px 6px rgba(0,0,0,0.6)" } }, cur.title),
+      h("div", { style: { color: "rgba(255,255,255,0.82)", fontSize: "0.78rem", marginTop: 3, fontStyle: "italic" } }, cur.sub)
+    )
+  );
+  var dots = h("div", { style: { display: "flex", gap: 6, justifyContent: "center", margin: "2px 0 12px" } },
+    scenes.map(function (s, i) {
+      return h("div", { key: "d" + i, onClick: function () { go(i); }, style: { width: i === scene ? 18 : 7, height: 7, borderRadius: 999, background: i === scene ? COLORS.gold : "rgba(129,81,90,0.3)", cursor: "pointer", transition: "all 0.3s" } });
+    })
+  );
+  return h("div", null,
+    h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+      h("span", { style: { fontSize: "0.62rem", fontWeight: 800, color: COLORS.brown, background: "rgba(200,150,90,0.15)", borderRadius: 999, padding: "3px 10px", letterSpacing: 0.5 } }, "🏰 香港迪士尼 · 昨天"),
+      h("span", { style: { fontSize: "0.7rem", color: "#b0a090" } }, (scene + 1) + " / " + scenes.length)
+    ),
+    stage,
+    dots,
+    h("button", { onClick: next, style: { width: "100%", background: isLast ? COLORS.dark : COLORS.brown, color: "#fff", border: "none", borderRadius: 12, padding: "12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.92rem", cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.15)" } }, isLast ? "再看一次 ↺" : "下一幕 →")
+  );
+}
+function DisneyMemoryCard(_refDmc) {
+  var onOpen = _refDmc.onOpen;
+  var h = React.createElement;
+  var _dm1 = useState(0); var idx = _dm1[0]; var setIdx = _dm1[1];
+  var _dm2 = useState(0); var tick = _dm2[0]; var setTick = _dm2[1];
+  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 120); return function () { clearInterval(id); }; }, []);
+  var moments = [
+    { emoji: "🏰", place: "走进梦里", color: "#3a2a5c", text: "离开今天，进入昨日、明日与梦想" },
+    { emoji: "🍯", place: "蜜罐 cup", color: "#a87010", text: "我一直偷偷加速，转得哈哈哈" },
+    { emoji: "🦾", place: "钢铁侠", color: "#b01c1c", text: "Nana 超勇敢，手都快被捏紫啦" },
+    { emoji: "🎆", place: "完美的烟花", color: "#2a1030", text: "和 Nana 的一天，超开心 💛" }
+  ];
+  var m = moments[idx];
+  useEffect(function () { var id = setInterval(function () { setIdx(function (i) { return (i + 1) % moments.length; }); }, 3500); return function () { clearInterval(id); }; }, []);
+  return h("div", { onClick: onOpen, style: { background: "linear-gradient(135deg," + m.color + ",#0a0818)", borderRadius: 16, padding: "14px 16px", position: "relative", overflow: "hidden", border: "1.5px solid rgba(255,255,255,0.1)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", transition: "background 1s ease", cursor: "pointer", height: "100%", boxSizing: "border-box" } },
+    [[10, 8], [28, 5], [55, 10], [78, 6], [92, 12]].map(function (p, i) { return h("div", { key: "dms" + i, style: { position: "absolute", left: p[0] + "%", top: p[1], width: tick % (6 + i) < 3 ? 2 : 1.2, height: tick % (6 + i) < 3 ? 2 : 1.2, background: "#fff", borderRadius: "50%", opacity: 0.3 + Math.sin(tick * 0.08 + i) * 0.3 } }); }),
+    h("div", { style: { display: "flex", alignItems: "center", gap: 12 } },
+      h("div", { style: { fontSize: "2rem", flexShrink: 0, transform: "rotate(" + (Math.sin(tick * 0.06) * 4).toFixed(2) + "deg)", transition: "transform 0.5s", filter: "drop-shadow(0 0 8px rgba(255,200,100,0.4))" } }, m.emoji),
+      h("div", { style: { flex: 1, minWidth: 0 } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 6, marginBottom: 3 } },
+          h("span", { style: { fontSize: "0.62rem", fontWeight: 800, color: "rgba(255,220,150,0.85)", background: "rgba(255,200,100,0.15)", borderRadius: 999, padding: "2px 8px", letterSpacing: 0.5 } }, "🏰 迪士尼 · 昨天")
+        ),
+        h("div", { style: { fontWeight: 800, fontSize: "0.88rem", color: "#fff", marginBottom: 2 } }, m.place),
+        h("div", { style: { fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", fontStyle: "italic" } }, m.text)
+      ),
+      h("div", { style: { fontSize: "1.4rem", opacity: 0.7, color: "#fff" } }, "→")
+    )
+  );
+}
 function ActivityPanel(_ref106) {
   var activityId = _ref106.activityId,
     onCozy = _ref106.onCozy;
@@ -12187,6 +12589,7 @@ function ActivityPanel(_ref106) {
     cigar: CigarActivity,
     garage: GarageActivity,
     travel: TravelActivity,
+    disney: DisneyStoryActivity,
     music: MusicActivity
   };
   var Comp = map[activityId];
@@ -14843,7 +15246,9 @@ function HKMemoryCard(_ref131) {
       border: "1.5px solid rgba(255,255,255,0.1)",
       boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
       transition: "background 1s ease",
-      cursor: "pointer"
+      cursor: "pointer",
+      height: "100%",
+      boxSizing: "border-box"
     }
   }, [[8, 8], [25, 4], [60, 10], [82, 5], [95, 12]].map(function (_ref132, i) {
     var _ref133 = _slicedToArray(_ref132, 2),
@@ -14898,7 +15303,7 @@ function HKMemoryCard(_ref131) {
       padding: "2px 8px",
       letterSpacing: 0.5
     }
-  }, "\uD83C\uDDED\uD83C\uDDF0 \u9999\u6E2F \xB7 \u6628\u5929")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDDED\uD83C\uDDF0 \u9999\u6E2F \xB7 5\u670822\u65E5")), /*#__PURE__*/React.createElement("div", {
     style: {
       fontWeight: 800,
       fontSize: "0.88rem",
@@ -16181,11 +16586,109 @@ function NanasHome() {
     cozy: cozy
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "12px 16px 0"
+      padding: "12px 16px 2px"
     }
-  }, /*#__PURE__*/React.createElement(LalalandPlayer, null)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "10px 16px 0"
+      fontSize: "0.84rem",
+      fontWeight: 800,
+      color: COLORS.brown,
+      marginBottom: 9,
+      display: "flex",
+      alignItems: "baseline",
+      gap: 6
+    }
+  }, "🔋 Nana 的充电站", /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: "0.68rem",
+      fontWeight: 600,
+      color: "#b0a090"
+    }
+  }, "· 随时回来回血 💛")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      height: 28,
+      margin: "0 6px 6px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      left: "25%",
+      right: "25%",
+      top: 7,
+      height: 2,
+      background: "linear-gradient(90deg,#0C6780,#5a3a8a)",
+      borderRadius: 2
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      left: "25%",
+      top: 0,
+      transform: "translateX(-50%)",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 11,
+      height: 11,
+      borderRadius: "50%",
+      background: "#0C6780",
+      border: "2px solid #FFF8F7",
+      margin: "0 auto",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "0.6rem",
+      fontWeight: 800,
+      color: "#81515A",
+      marginTop: 2
+    }
+  }, "5/22")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      left: "75%",
+      top: 0,
+      transform: "translateX(-50%)",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 11,
+      height: 11,
+      borderRadius: "50%",
+      background: "#5a3a8a",
+      border: "2px solid #FFF8F7",
+      margin: "0 auto",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "0.6rem",
+      fontWeight: 800,
+      color: "#81515A",
+      marginTop: 2
+    }
+  }, "5/30")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "0.6rem",
+      fontWeight: 700,
+      color: "#b0a090",
+      position: "absolute",
+      left: "50%",
+      top: 4,
+      transform: "translateX(-50%)"
+    }
+  }, "🧳 旅行日记")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
     }
   }, /*#__PURE__*/React.createElement(HKMemoryCard, {
     onOpen: function onOpen() {
@@ -16199,6 +16702,25 @@ function NanasHome() {
     }
   })), /*#__PURE__*/React.createElement("div", {
     style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, /*#__PURE__*/React.createElement(DisneyMemoryCard, {
+    onOpen: function onOpen() {
+      return enterRoom({
+        id: "disney",
+        emoji: "🏰",
+        name: "Disney",
+        color: "#5a3a8a",
+        desc: "昨天的迪士尼"
+      });
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px 0"
+    }
+  }, /*#__PURE__*/React.createElement(LalalandPlayer, null)), /*#__PURE__*/React.createElement("div", {
+    style: {
       padding: "10px 16px 0"
     }
   }, /*#__PURE__*/React.createElement(MealCheckIn, null)), /*#__PURE__*/React.createElement("main", {
@@ -16207,7 +16729,7 @@ function NanasHome() {
     }
   }, !room && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
-  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "travel" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setRoom(null);
     },
