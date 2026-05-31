@@ -12905,13 +12905,16 @@ function HouseMap(_ref107) {
     height: "4",
     fill: isNight ? "#303030" : "#606060"
   }), [0, 1, 2].map(function (i) {
-    return /*#__PURE__*/React.createElement("circle", {
+    var rise = (tick * 0.6 + i * 8) % 24;
+    return /*#__PURE__*/React.createElement("text", {
       key: i,
-      cx: 135 + Math.round(Math.sin(tick * 0.18 + i * 1.3) * 1.5),
-      cy: 13 - i * 6,
-      r: 2.5 + i,
-      fill: isNight ? "rgba(180,180,200,0.38)" : "rgba(210,205,200,0.48)"
-    });
+      x: 135 + Math.sin(tick * 0.1 + i) * 4,
+      y: 16 - rise,
+      fontSize: 7 - i,
+      textAnchor: "middle",
+      fill: i % 2 ? "#ff9ec0" : "#ff6b9d",
+      opacity: Math.max(0, 1 - rise / 22)
+    }, "♥");
   }), /*#__PURE__*/React.createElement("polygon", {
     points: "26,54 100,12 174,54",
     fill: isNight ? "#3a0808" : "#8a1810"
@@ -13254,7 +13257,17 @@ function HouseMap(_ref107) {
     width: "4",
     height: "12",
     fill: isNight ? "#4a2a10" : "#c07828"
-  }), /*#__PURE__*/React.createElement("rect", {
+  }), [[86, 45, 28], [34, 79, 32], [120, 79, 32], [34, 100, 28], [134, 100, 28]].map(function (_fb, fi) {
+    var bx = _fb[0], by = _fb[1], bw = _fb[2], cols = ["#ff6090", "#ffd840", "#f870c0", "#ff5060", "#c060e0"];
+    var flowers = [0, 1, 2].map(function (j) {
+      var fxp = bx + 5 + j * ((bw - 10) / 2), sway = Math.sin(tick * 0.1 + fi + j) * 0.7;
+      return /*#__PURE__*/React.createElement("g", { key: "fl" + fi + "_" + j }, /*#__PURE__*/React.createElement("line", { x1: fxp, y1: by, x2: fxp + sway, y2: by - 5, stroke: isNight ? "#2a5818" : "#3a7820", strokeWidth: 1.4 }), /*#__PURE__*/React.createElement("circle", { cx: fxp + sway, cy: by - 6, r: 2.4, fill: cols[(fi + j) % 5], opacity: isNight ? 0.82 : 1 }), /*#__PURE__*/React.createElement("circle", { cx: fxp + sway, cy: by - 6, r: 1, fill: "#fff7d0" }));
+    });
+    return /*#__PURE__*/React.createElement("g", { key: "fb" + fi }, /*#__PURE__*/React.createElement("rect", { x: bx, y: by, width: bw, height: 4, rx: 1, fill: isNight ? "#3a1e08" : "#6a3a18" }), /*#__PURE__*/React.createElement("rect", { x: bx, y: by, width: bw, height: 1.4, fill: isNight ? "#4a2810" : "#7a4a22" }), flowers);
+  }), /*#__PURE__*/React.createElement("g", { key: "cute" }, [[85, 25, 30, 20], [34, 61, 32, 18], [120, 61, 32, 18], [34, 87, 28, 14], [134, 87, 28, 14]].map(function (w, ci) {
+    var cx = w[0], cy = w[1], cw = w[2], ch = w[3];
+    return /*#__PURE__*/React.createElement("g", { key: "cur" + ci }, /*#__PURE__*/React.createElement("rect", { x: cx, y: cy, width: cw, height: 2.6, rx: 1.2, fill: "#f3ddc2" }), /*#__PURE__*/React.createElement("rect", { x: cx + 0.5, y: cy, width: cw * 0.17, height: ch * 0.78, rx: 1.5, fill: "rgba(243,221,194,0.9)" }), /*#__PURE__*/React.createElement("rect", { x: cx + cw - cw * 0.17 - 0.5, y: cy, width: cw * 0.17, height: ch * 0.78, rx: 1.5, fill: "rgba(243,221,194,0.9)" }));
+  }), /*#__PURE__*/React.createElement("path", { d: "M57,30 q-8,-2 -6,-8 q-1,-3 4,-2", fill: "none", stroke: "#8a8298", strokeWidth: 2.4, strokeLinecap: "round" }), /*#__PURE__*/React.createElement("ellipse", { cx: 66, cy: 30 + Math.sin(tick * 0.1) * 0.4, rx: 9, ry: 5, fill: "#9a92a8" }), /*#__PURE__*/React.createElement("circle", { cx: 74, cy: 28, r: 4, fill: "#9a92a8" }), /*#__PURE__*/React.createElement("path", { d: "M71,24 l-1,-3 l3,1 z", fill: "#9a92a8" }), /*#__PURE__*/React.createElement("path", { d: "M76,23 l1,-3 l2,2 z", fill: "#9a92a8" }), /*#__PURE__*/React.createElement("path", { d: "M72,27.5 q1.5,1 3,0", fill: "none", stroke: "#3a3548", strokeWidth: 0.7 }), /*#__PURE__*/React.createElement("text", { x: 78, y: 21, fontSize: 5, fill: "rgba(255,255,255,0.55)" }, "z"), /*#__PURE__*/React.createElement("text", { x: 100, y: 80, fontSize: 8, textAnchor: "middle", fill: "#ff6b9d" }, "♥"), /*#__PURE__*/React.createElement("rect", { x: 84, y: 103, width: 32, height: 4, rx: 1.5, fill: isNight ? "#7a3a2a" : "#c47a4a" }), /*#__PURE__*/React.createElement("text", { x: 100, y: 106.4, fontSize: 3.5, textAnchor: "middle", fill: "#ffd8c0" }, "♥")), /*#__PURE__*/React.createElement("rect", {
     x: "84",
     y: "108",
     width: "32",
@@ -16270,10 +16283,10 @@ function SplashScreen(_ref137) {
   }, "\u70B9\u51FB\u95E8\u628A\u624B\uFF0C\u8FDB\u5165\u4F60\u7684\u5C0F\u5BB6 \u2728")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
-      bottom: "16%",
+      bottom: "14%",
       left: "50%",
       transform: "translateX(-50%)",
-      width: 160,
+      width: "clamp(200px, 30vw, 380px)",
       zIndex: 10
     }
   }, /*#__PURE__*/React.createElement("svg", {
@@ -16354,14 +16367,14 @@ function SplashScreen(_ref137) {
     y: "94",
     width: "7",
     height: "8",
-    fill: isNight ? "#3a3060" : "#87CEEB",
+    fill: isNight ? "#ffd36a" : "#87CEEB",
     rx: "1"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "82",
     y: "94",
     width: "7",
     height: "8",
-    fill: isNight ? "#3a3060" : "#87CEEB",
+    fill: isNight ? "#ffd36a" : "#87CEEB",
     rx: "1"
   }), /*#__PURE__*/React.createElement("circle", {
     cx: phase !== "idle" ? 68 : 90,
@@ -16373,7 +16386,7 @@ function SplashScreen(_ref137) {
     y: "74",
     width: "22",
     height: "18",
-    fill: isNight ? "#3a3060" : "#87CEEB",
+    fill: isNight ? "#ffd36a" : "#87CEEB",
     rx: "2",
     opacity: "0.9"
   }), /*#__PURE__*/React.createElement("line", {
@@ -16381,7 +16394,7 @@ function SplashScreen(_ref137) {
     y1: "74",
     x2: "39",
     y2: "92",
-    stroke: isNight ? "#5a50a0" : "#fff",
+    stroke: isNight ? "#b87a26" : "#fff",
     strokeWidth: "1",
     opacity: "0.6"
   }), /*#__PURE__*/React.createElement("line", {
@@ -16389,22 +16402,29 @@ function SplashScreen(_ref137) {
     y1: "83",
     x2: "50",
     y2: "83",
-    stroke: isNight ? "#5a50a0" : "#fff",
+    stroke: isNight ? "#b87a26" : "#fff",
     strokeWidth: "1",
     opacity: "0.6"
+  }), isNight && /*#__PURE__*/React.createElement("rect", {
+    x: "23",
+    y: "69",
+    width: "32",
+    height: "28",
+    fill: "rgba(255,200,90,0.3)",
+    rx: "7"
   }), isNight && /*#__PURE__*/React.createElement("rect", {
     x: "28",
     y: "74",
     width: "22",
     height: "18",
-    fill: "rgba(255,220,100,0.15)",
+    fill: "rgba(255,206,96," + (0.55 + Math.sin(tick * 0.08) * 0.18).toFixed(2) + ")",
     rx: "2"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "110",
     y: "74",
     width: "22",
     height: "18",
-    fill: isNight ? "#3a3060" : "#87CEEB",
+    fill: isNight ? "#ffd36a" : "#87CEEB",
     rx: "2",
     opacity: "0.9"
   }), /*#__PURE__*/React.createElement("line", {
@@ -16412,7 +16432,7 @@ function SplashScreen(_ref137) {
     y1: "74",
     x2: "121",
     y2: "92",
-    stroke: isNight ? "#5a50a0" : "#fff",
+    stroke: isNight ? "#b87a26" : "#fff",
     strokeWidth: "1",
     opacity: "0.6"
   }), /*#__PURE__*/React.createElement("line", {
@@ -16420,15 +16440,22 @@ function SplashScreen(_ref137) {
     y1: "83",
     x2: "132",
     y2: "83",
-    stroke: isNight ? "#5a50a0" : "#fff",
+    stroke: isNight ? "#b87a26" : "#fff",
     strokeWidth: "1",
     opacity: "0.6"
+  }), isNight && /*#__PURE__*/React.createElement("rect", {
+    x: "105",
+    y: "69",
+    width: "32",
+    height: "28",
+    fill: "rgba(255,200,90,0.3)",
+    rx: "7"
   }), isNight && /*#__PURE__*/React.createElement("rect", {
     x: "110",
     y: "74",
     width: "22",
     height: "18",
-    fill: "rgba(255,220,100,0.15)",
+    fill: "rgba(255,206,96," + (0.55 + Math.sin(tick * 0.09 + 1) * 0.18).toFixed(2) + ")",
     rx: "2"
   }), /*#__PURE__*/React.createElement("rect", {
     x: "58",
@@ -16605,82 +16632,6 @@ function NanasHome() {
       color: "#b0a090"
     }
   }, "· 随时回来回血 💛")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "relative",
-      height: 28,
-      margin: "0 6px 6px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      left: "25%",
-      right: "25%",
-      top: 7,
-      height: 2,
-      background: "linear-gradient(90deg,#0C6780,#5a3a8a)",
-      borderRadius: 2
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      left: "25%",
-      top: 0,
-      transform: "translateX(-50%)",
-      textAlign: "center"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 11,
-      height: 11,
-      borderRadius: "50%",
-      background: "#0C6780",
-      border: "2px solid #FFF8F7",
-      margin: "0 auto",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: "0.6rem",
-      fontWeight: 800,
-      color: "#81515A",
-      marginTop: 2
-    }
-  }, "5/22")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      left: "75%",
-      top: 0,
-      transform: "translateX(-50%)",
-      textAlign: "center"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 11,
-      height: 11,
-      borderRadius: "50%",
-      background: "#5a3a8a",
-      border: "2px solid #FFF8F7",
-      margin: "0 auto",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.25)"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: "0.6rem",
-      fontWeight: 800,
-      color: "#81515A",
-      marginTop: 2
-    }
-  }, "5/30")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: "0.6rem",
-      fontWeight: 700,
-      color: "#b0a090",
-      position: "absolute",
-      left: "50%",
-      top: 4,
-      transform: "translateX(-50%)"
-    }
-  }, "🧳 旅行日记")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
