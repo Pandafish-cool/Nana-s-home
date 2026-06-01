@@ -946,6 +946,7 @@ function BathActivity(_ref3) {
     warm: "#ff9020",
     blue: "#4080ff",
     purple: "#a060ff",
+    disco: "#ff2d95",
     off: "#334"
   };
   var saltObj = salts.find(function (s) {
@@ -1058,12 +1059,15 @@ function BathActivity(_ref3) {
       position: "absolute",
       inset: 0,
       borderRadius: 16,
-      background: bathLight === "off" ? "rgba(0,0,0,0.7)" : bathLight === "blue" ? "rgba(40,80,200,0.18)" : bathLight === "purple" ? "rgba(120,40,200,0.18)" : "rgba(255,140,20,0.08)",
+      background: bathLight === "disco" ? "rgba(0,0,0,0.5)" : bathLight === "off" ? "rgba(0,0,0,0.7)" : bathLight === "blue" ? "rgba(40,80,200,0.18)" : bathLight === "purple" ? "rgba(120,40,200,0.18)" : "rgba(255,140,20,0.08)",
       zIndex: 1,
       pointerEvents: "none",
       transition: "background 0.8s"
     }
-  }), /*#__PURE__*/React.createElement("svg", {
+  }), bathLight === "disco" && /*#__PURE__*/React.createElement("div", { style: { position: "absolute", inset: 0, borderRadius: 16, zIndex: 3, pointerEvents: "none", overflow: "hidden" } }, [["#ff2d95", 0], ["#2dd4ff", 1], ["#ffe23d", 2], ["#8b2dff", 3], ["#2dff88", 4], ["#ff6a2d", 5]].map(function (_dcb, dbi) {
+    var col = _dcb[0], ph = _dcb[1], bx = 50 + Math.sin(tick * 0.06 + ph * 1.1) * 42, by = 45 + Math.cos(tick * 0.05 + ph * 1.7) * 36;
+    return /*#__PURE__*/React.createElement("div", { key: "disco" + dbi, style: { position: "absolute", left: bx.toFixed(1) + "%", top: by.toFixed(1) + "%", width: 90, height: 90, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "radial-gradient(circle," + col + "cc,transparent 70%)", mixBlendMode: "screen", opacity: (0.5 + Math.sin(tick * 0.1 + dbi) * 0.2).toFixed(2), filter: "blur(2px)" } });
+  }), /*#__PURE__*/React.createElement("div", { style: { position: "absolute", left: "50%", top: 8, transform: "translateX(-50%)", textAlign: "center" } }, /*#__PURE__*/React.createElement("div", { style: { width: 2, height: 14, background: "rgba(200,200,210,0.7)", margin: "0 auto" } }), /*#__PURE__*/React.createElement("div", { style: { width: 34, height: 34, borderRadius: "50%", background: "conic-gradient(from " + (tick * 6 % 360) + "deg,#ff2d95,#2dd4ff,#ffe23d,#8b2dff,#2dff88,#ff6a2d,#ff2d95)", boxShadow: "0 0 16px rgba(255,255,255,0.55)", border: "2px solid rgba(255,255,255,0.6)" } }))), /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 360 200",
     style: {
       width: "100%",
@@ -1337,7 +1341,7 @@ function BathActivity(_ref3) {
       gridTemplateColumns: "1fr 1fr",
       gap: 4
     }
-  }, [["warm", "暖光", "🌙"], ["blue", "冷蓝", "💙"], ["purple", "梦幻", "💜"], ["off", "关灯", "🌑"]].map(function (_ref4) {
+  }, [["warm", "暖光", "🌙"], ["blue", "冷蓝", "💙"], ["purple", "梦幻", "💜"], ["disco", "蹦迪", "🪩"], ["off", "关灯", "🌑"]].map(function (_ref4) {
     var _ref5 = _slicedToArray(_ref4, 3),
       id = _ref5[0],
       name = _ref5[1],
