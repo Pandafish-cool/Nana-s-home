@@ -1,0 +1,15 @@
+{
+  "name": "Nana's Home",
+  "short_name": "Nana's Home",
+  "description": "Nana 的温暖小家 🏡",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F7",
+  "theme_color": "#81515A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
