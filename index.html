@@ -17073,6 +17073,41 @@ function StudyDayEgg(_refSDE) {
     )
   );
 }
+function ComfortEgg(_refCF) {
+  var onClose = _refCF.onClose;
+  var h = React.createElement;
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    var t1 = setTimeout(function () { setGone(true); }, 9200);
+    var t2 = setTimeout(function () { onClose(); }, 10400);
+    return function () { clearInterval(id); clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  var T = tick;
+  var soft = [];
+  var ems = ["✨", "💛", "🌙", "⭐", "💛", "✨"];
+  for (var i = 0; i < 12; i++) {
+    var sx = (i * 8.6 + Math.sin(i * 1.7) * 5 + 100) % 100;
+    var sy = ((i * 15 + T * 0.5) % 115) - 8;
+    soft.push(h("div", { key: "sf" + i, style: { position: "absolute", left: sx.toFixed(1) + "%", top: (102 - sy).toFixed(1) + "%", fontSize: (10 + (i % 3) * 5) + "px", opacity: (0.25 + 0.3 * Math.sin(T * 0.07 + i)).toFixed(2) } }, ems[i % 6]));
+  }
+  var flick = 1 + 0.12 * Math.sin(T * 0.4) + 0.05 * Math.sin(T * 1.3);
+  var guards = ["🧸", "💜", "🦊", "🐱", "🐶"];
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "linear-gradient(180deg, rgba(26,16,30,0.94), rgba(48,30,26,0.94))", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 1.2s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui" } },
+    soft,
+    h("div", { style: { position: "absolute", left: "50%", top: "44%", transform: "translate(-50%,-50%) scale(" + (1 + 0.06 * Math.sin(T * 0.07)).toFixed(3) + ")", width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,190,110,0.32), transparent 65%)" } }),
+    h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 24px", animation: "fadeSlideUp 0.9s ease" } },
+      h("div", { style: { fontSize: "2.6rem", transform: "scale(" + flick.toFixed(2) + ")", display: "inline-block", filter: "drop-shadow(0 0 18px rgba(255,190,110,0.9))" } }, "🕯️"),
+      h("div", { style: { color: "#ffe8c8", fontWeight: 800, fontSize: "clamp(1.4rem,5.5vw,2.1rem)", marginTop: 14, textShadow: "0 2px 16px rgba(255,170,90,0.45)", lineHeight: 1.4 } }, "别怕别怕，Nana"),
+      h("div", { style: { color: "rgba(255,232,200,0.92)", fontSize: "0.95rem", marginTop: 14, lineHeight: 2 } }, "恐怖片都是假的，温暖的家是真的 🏡", h("br", null), "灯给你一直亮着，玩偶们也都守在门口", h("br", null), "有我在呢，今晚安心睡 🌙💛"),
+      h("div", { style: { fontSize: "1.5rem", marginTop: 16, letterSpacing: 6 } }, guards.map(function (g2, gi) {
+        return h("span", { key: "gd" + gi, style: { display: "inline-block", transform: "translateY(" + (Math.sin(T * 0.1 + gi) * 3).toFixed(1) + "px)" } }, g2);
+      })),
+      h("div", { style: { color: "rgba(255,232,200,0.5)", fontSize: "0.72rem", marginTop: 16 } }, "（点一下继续）")
+    )
+  );
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
@@ -17084,6 +17119,9 @@ function NanasHome() {
   var _useStateEgg2 = useState(false),
     showEgg2 = _useStateEgg2[0],
     setShowEgg2 = _useStateEgg2[1];
+  var _useStateEgg3 = useState(false),
+    showEgg3 = _useStateEgg3[0],
+    setShowEgg3 = _useStateEgg3[1];
   var _useState323 = useState(null),
     _useState324 = _slicedToArray(_useState323, 2),
     room = _useState324[0],
@@ -17167,7 +17205,9 @@ function NanasHome() {
       setShowSplash(false);
       var _ed = new Date();
       if (_ed.getMonth() === 5 && _ed.getDate() === 1) setShowEgg(true);
-      if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 5) setShowEgg2(true);
+      var _cf = _ed.getFullYear() === 2026 && _ed.getMonth() === 5 && (_ed.getDate() === 5 && _ed.getHours() >= 15 || _ed.getDate() === 6 && _ed.getHours() < 9);
+      if (_cf) setShowEgg3(true);
+      else if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 5) setShowEgg2(true);
     },
     visible: showSplash
   }), showEgg && /*#__PURE__*/React.createElement(ChildrensDayEgg, {
@@ -17177,6 +17217,10 @@ function NanasHome() {
   }), showEgg2 && /*#__PURE__*/React.createElement(StudyDayEgg, {
     onClose: function onClose() {
       return setShowEgg2(false);
+    }
+  }), showEgg3 && /*#__PURE__*/React.createElement(ComfortEgg, {
+    onClose: function onClose() {
+      return setShowEgg3(false);
     }
   }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
