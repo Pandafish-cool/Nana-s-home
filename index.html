@@ -7356,6 +7356,12 @@ var ROOMS = [{
   name: "Disney",
   color: "#5a3a8a",
   desc: "昨天的迪士尼"
+}, {
+  id: "kitchen",
+  emoji: "🍳",
+  name: "Kitchen",
+  color: "#E8954A",
+  desc: "做菜 · 菜谱"
 }];
 var ACTIVITIES = {
   living: [{
@@ -7438,6 +7444,11 @@ var ACTIVITIES = {
     id: "disney",
     icon: "🏰",
     name: "迪士尼回忆 🎆"
+  }],
+  kitchen: [{
+    id: "kitchen",
+    icon: "🍳",
+    name: "Nana 厨房"
   }]
 };
 
@@ -13053,6 +13064,159 @@ function DisneyMemoryCard(_refDmc) {
     )
   );
 }
+function KitchenActivity(_refKC) {
+  var onCozy = _refKC.onCozy;
+  var h = React.createElement;
+  var _v = useState("cook"); var view = _v[0]; var setView = _v[1];
+  var _d = useState(null); var dish = _d[0]; var setDish = _d[1];
+  var _si = useState(0); var stepIdx = _si[0]; var setStepIdx = _si[1];
+  var _pg = useState(0); var progress = _pg[0]; var setProgress = _pg[1];
+  var _tk = useState(0); var tick = _tk[0]; var setTick = _tk[1];
+  var _sc = useState(0); var score = _sc[0]; var setScore = _sc[1];
+  var _fb = useState(null); var feedback = _fb[0]; var setFeedback = _fb[1];
+  var _dn = useState(false); var done = _dn[0]; var setDone = _dn[1];
+  var _rc = useState(null); var recipe = _rc[0]; var setRecipe = _rc[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 50);
+    return function () { clearInterval(id); };
+  }, []);
+  var DISHES = [
+    { id: "tomato", name: "番茄炒蛋", emoji: "🍅🍳", plate: "🍳", color: "#e8543a", steps: [
+      { type: "tap", n: 6, label: "把番茄切成小块", icon: "🍅", verb: "切一刀 🔪" },
+      { type: "tap", n: 4, label: "打鸡蛋搅打均匀", icon: "🥚", verb: "搅一搅 🥢" },
+      { type: "timing", label: "热油滑炒鸡蛋（火候到了就起锅）", icon: "🍳", verb: "起锅！" },
+      { type: "timing", label: "下番茄翻炒出汁", icon: "🍅", verb: "起锅！" },
+      { type: "timing", label: "鸡蛋回锅，合炒调味", icon: "🧂", verb: "出锅！" }
+    ] },
+    { id: "cola", name: "可乐鸡翅", emoji: "🥤🍗", plate: "🍗", color: "#a8622a", steps: [
+      { type: "tap", n: 6, label: "鸡翅两面划刀", icon: "🍗", verb: "划一刀 🔪" },
+      { type: "timing", label: "把鸡翅煎到两面金黄", icon: "🍳", verb: "翻面！" },
+      { type: "tap", n: 3, label: "倒入可乐没过鸡翅", icon: "🥤", verb: "咕嘟咕嘟" },
+      { type: "timing", label: "小火慢焖入味", icon: "♨️", verb: "开盖！" },
+      { type: "timing", label: "大火收汁到浓稠", icon: "🔥", verb: "出锅！" }
+    ] },
+    { id: "rice", name: "黄金蛋炒饭", emoji: "🍚🍳", plate: "🍛", color: "#d8a22a", steps: [
+      { type: "tap", n: 4, label: "打蛋搅匀", icon: "🥚", verb: "搅一搅 🥢" },
+      { type: "timing", label: "热锅滑蛋", icon: "🍳", verb: "盛出！" },
+      { type: "tap", n: 8, label: "下隔夜饭，颠锅翻炒", icon: "🍚", verb: "颠一下 🍳" },
+      { type: "timing", label: "撒葱花盐巴，最后一抖", icon: "🧂", verb: "出锅！" }
+    ] }
+  ];
+  var RECIPES = [
+    { id: "r0a", name: "街头烤冷面", emoji: "🫓", time: "10 分钟", level: "Nana 推荐 💖", ings: ["烤冷面专用面皮 2 张", "鸡蛋 1 个", "香肠 1 根", "洋葱丝、香菜 适量", "烤冷面酱/甜辣酱 2 勺", "白醋 1 勺 + 糖 1 勺"], steps: ["平底锅小火少油，放上面皮", "打一个鸡蛋在面皮上抹匀，撒葱花", "定型后翻面，让鸡蛋面贴锅", "刷酱，淋糖醋汁（醋+糖），放香肠和洋葱丝", "从一头卷起来，切成小段", "出锅撒香菜，趁热吃！"], tip: "糖 + 醋是烤冷面的灵魂；面皮网购「烤冷面专用皮」就行，在家做比夜市还香～" },
+    { id: "r0b", name: "家常蛋炒饭", emoji: "🍛", time: "10 分钟", level: "Nana 推荐 💖", ings: ["隔夜米饭 1 碗", "鸡蛋 2 个", "火腿丁/虾仁 适量", "葱花 适量", "盐、生抽 少许"], steps: ["鸡蛋打散，热油炒到八分熟盛出", "锅里下火腿丁煸香", "倒入隔夜饭，大火压散翻炒", "鸡蛋回锅，加盐和少许生抽", "撒葱花颠匀，出锅！"], tip: "隔夜饭 + 全程大火 = 粒粒分明；想吃「金包银」就把蛋液直接拌进米饭再下锅～" },
+    { id: "r1", name: "番茄炒蛋", emoji: "🍅", time: "10 分钟", level: "超简单", ings: ["番茄 2 个", "鸡蛋 3 个", "葱花少许", "糖 半勺", "盐 适量"], steps: ["鸡蛋加少许盐打散；番茄切块", "热油，倒蛋液，半熟即盛出（嫩的关键）", "锅里留底油，下番茄中火炒出汁", "加半勺糖、适量盐调味", "鸡蛋回锅翻匀，撒葱花出锅"], tip: "先炒蛋后炒番茄、蛋液七成熟就盛出，鸡蛋才会嫩嫩的～" },
+    { id: "r2", name: "可乐鸡翅", emoji: "🍗", time: "30 分钟", level: "简单", ings: ["鸡翅中 8 个", "可乐 1 罐", "姜 3 片", "生抽 2 勺", "料酒 1 勺"], steps: ["鸡翅两面各划一刀，冷水下锅焯水捞出", "少油把鸡翅煎到两面金黄", "下姜片、生抽、料酒翻匀", "倒入可乐没过鸡翅，大火烧开转小火焖 15 分钟", "开大火收汁，汁浓稠裹住鸡翅即可"], tip: "收汁时勤翻面，糖分高容易糊底；用零度可乐会不够甜哦" },
+    { id: "r3", name: "蒜蓉西兰花", emoji: "🥦", time: "8 分钟", level: "超简单", ings: ["西兰花 1 颗", "蒜 4 瓣切末", "盐 适量", "蚝油 1 勺"], steps: ["西兰花掰小朵，盐水泡 5 分钟洗净", "水开后焯水 1 分钟捞出（水里滴几滴油更翠绿）", "热油爆香蒜末", "下西兰花大火快炒 1 分钟", "加盐和蚝油翻匀出锅"], tip: "焯水别超过 1 分半，口感才脆嫩" },
+    { id: "r4", name: "青椒土豆丝", emoji: "🥔", time: "12 分钟", level: "简单", ings: ["土豆 2 个", "青椒 1 个", "白醋 1 勺", "花椒 几粒", "盐 适量"], steps: ["土豆切细丝，清水泡洗两遍去淀粉", "热油下花椒炸香后捞出", "大火下土豆丝快炒 2 分钟", "沿锅边淋醋，下青椒丝", "加盐再炒 1 分钟出锅"], tip: "泡水去淀粉 + 全程大火 = 爽脆不粘锅" },
+    { id: "r5", name: "水嫩蒸蛋", emoji: "🍮", time: "15 分钟", level: "超简单", ings: ["鸡蛋 2 个", "温水 蛋液的 1.5 倍", "生抽 少许", "香油 几滴"], steps: ["鸡蛋打散，加温水搅匀", "过筛一遍倒入碗中（嫩滑关键）", "盖保鲜膜，牙签扎几个小孔", "水开后放入，中火蒸 10 分钟", "出锅淋生抽和香油"], tip: "温水 + 过筛 + 盖膜，三步做出镜面布丁蛋" },
+    { id: "r6", name: "西红柿鸡蛋面", emoji: "🍜", time: "15 分钟", level: "简单", ings: ["挂面 1 把", "番茄 2 个", "鸡蛋 2 个", "葱花、盐、生抽"], steps: ["先按番茄炒蛋的做法炒好底料", "加两碗热水煮开成汤底", "下面条煮到喜欢的软硬", "加盐和少许生抽调味", "出锅撒葱花，可以加一点香油"], tip: "汤底多炒一会儿番茄，汤更浓更香～加班晚归的快乐救星" },
+    { id: "r7", name: "紫菜蛋花汤", emoji: "🥣", time: "5 分钟", level: "超简单", ings: ["紫菜 1 小把", "鸡蛋 1 个", "虾皮 少许", "香油、盐、葱花"], steps: ["水烧开，放紫菜和虾皮煮 1 分钟", "鸡蛋打散，转小火画圈淋入", "蛋花浮起后加盐调味", "出锅滴香油、撒葱花"], tip: "淋蛋液时小火 + 画圈，蛋花才又薄又漂亮" },
+    { id: "r8", name: "焦糖牛奶炖蛋", emoji: "🍮", time: "20 分钟", level: "甜品", ings: ["牛奶 200ml", "鸡蛋 2 个", "糖 2 勺"], steps: ["牛奶微微加热，加 1 勺糖化开", "鸡蛋打散，和牛奶混合过筛", "盖保鲜膜，水开后小火蒸 12 分钟", "另起小锅把 1 勺糖熬成焦糖色", "焦糖淋在炖蛋上，冷藏更好吃"], tip: "全程小火蒸才不会有蜂窝；给学习辛苦的自己来一份 💛" }
+  ];
+  var pos = 50 + 48 * Math.sin(tick * 0.09);
+  var maxScore = dish ? dish.steps.reduce(function (a, s) { return a + (s.type === "tap" ? 20 : 30); }, 0) : 0;
+  var startDish = function startDish(dd) { setDish(dd); setStepIdx(0); setProgress(0); setScore(0); setFeedback(null); setDone(false); };
+  var nextStep = function nextStep(gain, fb) {
+    setScore(function (sc) { return sc + gain; });
+    setFeedback(fb);
+    if (stepIdx >= dish.steps.length - 1) { setDone(true); onCozy(10); }
+    else { setStepIdx(stepIdx + 1); setProgress(0); }
+  };
+  var tapOnce = function tapOnce(st) {
+    var np = progress + 1;
+    if (np >= st.n) { nextStep(20, "完成！👍"); } else { setProgress(np); }
+  };
+  var timingTap = function timingTap() {
+    var d = Math.abs(pos - 50);
+    if (d < 10) nextStep(30, "Perfect 火候 ✨");
+    else if (d < 24) nextStep(15, "不错不错 👌");
+    else nextStep(5, "差点糊了 😅");
+  };
+  var rating = maxScore > 0 ? score / maxScore : 0;
+  var stars = rating >= 0.85 ? "⭐⭐⭐ 米其林 Nana 主厨！" : rating >= 0.6 ? "⭐⭐ 很香！大厨 Nana" : "⭐ 黑暗料理…但也很可爱";
+  var tabBtn = function tabBtn(id, label) {
+    return h("button", { onClick: function () { setView(id); }, style: { flex: 1, background: view === id ? COLORS.brown : COLORS.cream, color: view === id ? "#fff" : COLORS.dark, border: "2px solid " + (view === id ? COLORS.brown : COLORS.tan), borderRadius: 10, padding: "8px", fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, label);
+  };
+  var card = { background: "#FFF8F7", borderRadius: 18, padding: 16, border: "1.5px solid " + COLORS.tan };
+  return h("div", null,
+    h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } }, tabBtn("cook", "🍳 玩做菜"), tabBtn("recipes", "📖 菜谱本")),
+    view === "cook" && !dish && h("div", null,
+      h("div", { style: { fontSize: "0.85rem", color: "#81515A", marginBottom: 10, textAlign: "center" } }, "今天想做哪道菜呀？"),
+      DISHES.map(function (dd) {
+        return h("div", { key: dd.id, onClick: function () { startDish(dd); }, style: { background: "#FFF8F7", border: "1.5px solid " + COLORS.tan, borderRadius: 16, padding: "14px 16px", marginBottom: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 12 } },
+          h("div", { style: { fontSize: "1.8rem" } }, dd.emoji),
+          h("div", null, h("div", { style: { fontWeight: 800, color: COLORS.brown } }, dd.name), h("div", { style: { fontSize: "0.72rem", color: "#b0a090" } }, dd.steps.length + " 个步骤 · 考验火候")),
+          h("div", { style: { marginLeft: "auto", color: "#b0a090" } }, "→")
+        );
+      })
+    ),
+    view === "cook" && dish && !done && (function () {
+      var st = dish.steps[stepIdx];
+      return h("div", { style: card },
+        h("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: "0.75rem", color: "#81515A", fontWeight: 700 } },
+          h("span", null, dish.name + " · 第 " + (stepIdx + 1) + "/" + dish.steps.length + " 步"),
+          h("span", null, "得分 " + score)),
+        h("div", { style: { textAlign: "center", fontSize: "0.9rem", color: COLORS.brown, fontWeight: 700, marginBottom: 14 } }, st.label),
+        h("div", { style: { textAlign: "center", fontSize: "3rem", marginBottom: 12, transform: st.type === "tap" ? "rotate(" + (progress % 2 ? 6 : -6) + "deg)" : "translateY(" + (Math.sin(tick * 0.2) * 3).toFixed(1) + "px)", display: "inline-block", width: "100%" } }, st.icon),
+        st.type === "tap" && h("div", null,
+          h("div", { style: { display: "flex", gap: 5, justifyContent: "center", marginBottom: 12 } }, Array.from({ length: st.n }).map(function (_, i) {
+            return h("div", { key: "dot" + i, style: { width: 12, height: 12, borderRadius: "50%", background: i < progress ? "#7a9a3a" : "#e8dcd0" } });
+          })),
+          h("button", { onClick: function () { tapOnce(st); }, style: { width: "100%", background: "#e8954a", color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontFamily: "inherit", fontWeight: 800, fontSize: "1.05rem", cursor: "pointer" } }, st.verb)
+        ),
+        st.type === "timing" && h("div", null,
+          h("div", { style: { position: "relative", height: 26, borderRadius: 13, background: "#f3e3d3", overflow: "hidden", marginBottom: 12 } },
+            h("div", { style: { position: "absolute", left: "26%", width: "48%", top: 0, bottom: 0, background: "rgba(154,200,90,0.45)" } }),
+            h("div", { style: { position: "absolute", left: "40%", width: "20%", top: 0, bottom: 0, background: "rgba(110,170,60,0.7)" } }),
+            h("div", { style: { position: "absolute", left: "calc(" + pos.toFixed(1) + "% - 4px)", top: 2, bottom: 2, width: 8, borderRadius: 4, background: "#c0392b" } })
+          ),
+          h("button", { onClick: timingTap, style: { width: "100%", background: "#c0563a", color: "#fff", border: "none", borderRadius: 14, padding: "16px", fontFamily: "inherit", fontWeight: 800, fontSize: "1.05rem", cursor: "pointer" } }, "指针在绿区时 → " + st.verb)
+        ),
+        feedback && h("div", { style: { textAlign: "center", marginTop: 10, fontSize: "0.85rem", fontWeight: 800, color: feedback.indexOf("糊") >= 0 ? "#c05050" : "#5a8a3a" } }, feedback)
+      );
+    })(),
+    view === "cook" && dish && done && h("div", { style: Object.assign({}, card, { textAlign: "center" }) },
+      h("div", { style: { fontSize: "3.4rem", marginBottom: 6 } }, "🍽️" + dish.plate),
+      h("div", { style: { fontWeight: 800, fontSize: "1.05rem", color: COLORS.brown } }, dish.name + " 完成！"),
+      h("div", { style: { fontSize: "0.95rem", color: "#a8742a", fontWeight: 800, margin: "8px 0" } }, stars),
+      h("div", { style: { fontSize: "0.78rem", color: "#81515A", marginBottom: 14 } }, "得分 " + score + " / " + maxScore + " · 开饭啦～"),
+      h("div", { style: { display: "flex", gap: 10, justifyContent: "center" } },
+        h("button", { onClick: function () { setDish(null); setDone(false); }, style: { background: COLORS.brown, color: "#fff", border: "none", borderRadius: 12, padding: "10px 18px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "再做一道 🍳"),
+        h("button", { onClick: function () { setView("recipes"); setDish(null); setDone(false); }, style: { background: "#e8954a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 18px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "学真菜谱 📖")
+      )
+    ),
+    view === "recipes" && !recipe && h("div", null,
+      h("div", { style: { fontSize: "0.85rem", color: "#81515A", marginBottom: 10, textAlign: "center" } }, "Nana 的家常菜谱本 · 一周不重样"),
+      RECIPES.map(function (r) {
+        return h("div", { key: r.id, onClick: function () { setRecipe(r); }, style: { background: "#FFF8F7", border: "1.5px solid " + COLORS.tan, borderRadius: 16, padding: "12px 16px", marginBottom: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 12 } },
+          h("div", { style: { fontSize: "1.6rem" } }, r.emoji),
+          h("div", null, h("div", { style: { fontWeight: 800, color: COLORS.brown, fontSize: "0.92rem" } }, r.name), h("div", { style: { fontSize: "0.7rem", color: "#b0a090" } }, "⏱ " + r.time + " · " + r.level)),
+          h("div", { style: { marginLeft: "auto", color: "#b0a090" } }, "→")
+        );
+      })
+    ),
+    view === "recipes" && recipe && h("div", null,
+      h("button", { onClick: function () { setRecipe(null); }, style: { background: "none", border: "none", color: "#81515A", fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer", marginBottom: 10 } }, "← 返回菜谱本"),
+      h("div", { style: card },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 10 } },
+          h("div", { style: { fontSize: "2rem" } }, recipe.emoji),
+          h("div", null, h("div", { style: { fontWeight: 800, fontSize: "1.05rem", color: COLORS.brown } }, recipe.name), h("div", { style: { fontSize: "0.72rem", color: "#b0a090" } }, "⏱ " + recipe.time + " · " + recipe.level))),
+        h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#81515A", margin: "10px 0 6px" } }, "🧺 食材"),
+        h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } }, recipe.ings.map(function (g2, i) {
+          return h("span", { key: "ing" + i, style: { background: "#f6ecdf", borderRadius: 999, padding: "4px 10px", fontSize: "0.74rem", color: "#7a5a28" } }, g2);
+        })),
+        h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#81515A", margin: "14px 0 6px" } }, "🍳 步骤"),
+        recipe.steps.map(function (s2, i) {
+          return h("div", { key: "st" + i, style: { display: "flex", gap: 8, marginBottom: 7, fontSize: "0.84rem", color: COLORS.dark, lineHeight: 1.6 } },
+            h("span", { style: { flexShrink: 0, width: 20, height: 20, borderRadius: "50%", background: "#e8954a", color: "#fff", fontSize: "0.7rem", fontWeight: 800, textAlign: "center", lineHeight: "20px" } }, i + 1),
+            h("span", null, s2));
+        }),
+        h("div", { style: { marginTop: 12, background: "#fdf3e3", borderRadius: 12, padding: "10px 12px", fontSize: "0.78rem", color: "#a8742a", lineHeight: 1.7 } }, "💡 小贴士：" + recipe.tip)
+      )
+    )
+  );
+}
 function ActivityPanel(_ref106) {
   var activityId = _ref106.activityId,
     onCozy = _ref106.onCozy;
@@ -13073,6 +13237,7 @@ function ActivityPanel(_ref106) {
     garage: GarageActivity,
     travel: TravelActivity,
     disney: DisneyStoryActivity,
+    kitchen: KitchenActivity,
     music: MusicActivity
   };
   var Comp = map[activityId];
@@ -13233,6 +13398,13 @@ function HouseMap(_ref107) {
     x: "88%",
     y: 52,
     desc: "drive out"
+  }, {
+    id: "kitchen",
+    emoji: "🍳",
+    name: "Kitchen",
+    x: "88%",
+    y: 12,
+    desc: "cook · learn"
   }];
 
   // Tulip data — scattered across garden
