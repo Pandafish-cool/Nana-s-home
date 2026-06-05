@@ -6581,6 +6581,460 @@ function RacingGame(_ref38) {
 }
 
 // ── GAME HUB ─────────────────────────────────────────────
+function StellaJumpGame(_refSJ) {
+  var onCozy = _refSJ.onCozy;
+  var h = React.createElement;
+  var W = 280, H = 320;
+  var _s1 = useState("idle"); var status = _s1[0]; var setStatus = _s1[1];
+  var _s2 = useState(0); var setTick = _s2[1];
+  var _s3 = useState(0); var score = _s3[0]; var setScore = _s3[1];
+  var _s4 = useState(function () { try { return parseInt(localStorage.getItem("nana-stella-high") || "0", 10); } catch (e) { return 0; } });
+  var best = _s4[0]; var setBest = _s4[1];
+  var g = useRef(null); var dirRef = useRef(0); var statusRef = useRef("idle");
+  var newPlat = function newPlat(y) {
+    var r = Math.random();
+    return { x: 14 + Math.random() * (W - 70), y: y, w: 56, type: r > 0.9 ? "spring" : r > 0.72 ? "move" : "norm", dx: Math.random() > 0.5 ? 1 : -1 };
+  };
+  var start = function start() {
+    var plats = [];
+    for (var i = 0; i < 7; i++) plats.push(newPlat(H - 24 - i * 46));
+    plats[0].x = W / 2 - 28; plats[0].type = "norm";
+    g.current = { px: W / 2, py: H - 60, vy: -10, plats: plats, score: 0, t: 0 };
+    dirRef.current = 0;
+    statusRef.current = "playing"; setStatus("playing"); setScore(0);
+  };
+  useEffect(function () {
+    if (status !== "playing") return;
+    var id = setInterval(function () {
+      var s = g.current; if (!s) return;
+      s.t++;
+      s.px += dirRef.current * 4.6;
+      if (s.px < -10) s.px = W + 10;
+      if (s.px > W + 10) s.px = -10;
+      s.vy += 0.42; s.py += s.vy;
+      if (s.vy > 0) {
+        for (var i = 0; i < s.plats.length; i++) {
+          var p = s.plats[i];
+          if (Math.abs(s.py + 16 - p.y) < 9 && s.px > p.x - 10 && s.px < p.x + p.w + 10) {
+            s.vy = p.type === "spring" ? -15 : -10.2;
+          }
+        }
+      }
+      s.plats.forEach(function (p) { if (p.type === "move") { p.x += p.dx * 1.3; if (p.x < 4 || p.x > W - p.w - 4) p.dx *= -1; } });
+      if (s.py < H * 0.42) {
+        var dy = H * 0.42 - s.py;
+        s.py += dy; s.score += dy;
+        s.plats.forEach(function (p) { p.y += dy; });
+        s.plats = s.plats.filter(function (p) { return p.y < H + 30; });
+        while (s.plats.length < 7) {
+          var topY = Math.min.apply(null, s.plats.map(function (p) { return p.y; }));
+          s.plats.push(newPlat(topY - (40 + Math.random() * 22)));
+        }
+      }
+      if (s.py > H + 30) {
+        statusRef.current = "over"; setStatus("over");
+        var sc = Math.floor(s.score / 10);
+        setScore(sc);
+        onCozy(Math.min(15, 3 + Math.floor(sc / 50)));
+        setBest(function (b) { var nb = Math.max(b, sc); try { localStorage.setItem("nana-stella-high", String(nb)); } catch (e) {} return nb; });
+        return;
+      }
+      setScore(Math.floor(s.score / 10));
+      setTick(function (t) { return t + 1; });
+    }, 30);
+    var kd = function kd(e) { if (e.key === "ArrowLeft") dirRef.current = -1; if (e.key === "ArrowRight") dirRef.current = 1; };
+    var ku = function ku(e) { if (e.key === "ArrowLeft" || e.key === "ArrowRight") dirRef.current = 0; };
+    window.addEventListener("keydown", kd); window.addEventListener("keyup", ku);
+    return function () { clearInterval(id); window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
+  }, [status]);
+  var s = g.current;
+  var mkBtn = function mkBtn(label, dir) {
+    return h("button", { onPointerDown: function (e) { e.preventDefault(); dirRef.current = dir; }, onPointerUp: function () { dirRef.current = 0; }, onPointerLeave: function () { dirRef.current = 0; }, style: { flex: 1, padding: "13px 0", borderRadius: 12, border: "2px solid #c9b8e8", background: "#f3edfb", fontSize: "1.25rem", cursor: "pointer", userSelect: "none", touchAction: "none" } }, label);
+  };
+  return h("div", { style: { textAlign: "center" } },
+    h("div", { style: { display: "flex", gap: 10, justifyContent: "center", marginBottom: 10 } },
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "高度"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: COLORS.brown } }, score)),
+      h("div", { style: { background: "#f3edfb", borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#7a5aa8", fontWeight: 700 } }, "BEST"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: "#7a5aa8" } }, best))
+    ),
+    h("div", { style: { position: "relative", width: W, height: H, margin: "0 auto", borderRadius: 14, overflow: "hidden", background: "linear-gradient(180deg,#2a1f4a 0%,#4a3a7a 60%,#7a6ab8 100%)", border: "3px solid #5a4a8a", userSelect: "none", touchAction: "none" },
+      onPointerDown: function (e) { if (statusRef.current !== "playing") return; var r = e.currentTarget.getBoundingClientRect(); dirRef.current = e.clientX - r.left < W / 2 ? -1 : 1; },
+      onPointerUp: function () { dirRef.current = 0; } },
+      [[20, 30], [70, 12], [150, 40], [220, 18], [250, 60], [40, 80], [180, 90]].map(function (st, i) { return h("div", { key: "st" + i, style: { position: "absolute", left: st[0], top: st[1], width: 3, height: 3, borderRadius: "50%", background: "#fff", opacity: 0.5 } }); }),
+      status === "playing" && s && s.plats.map(function (p, i) {
+        return h("div", { key: "p" + i, style: { position: "absolute", left: p.x, top: p.y, width: p.w, height: 14, borderRadius: 8, background: p.type === "spring" ? "#ffd86a" : "rgba(255,255,255,0.92)", boxShadow: "0 3px 6px rgba(0,0,0,0.25)", fontSize: 9, lineHeight: "14px", textAlign: "center" } }, p.type === "spring" ? "⭐" : p.type === "move" ? "💨" : "");
+      }),
+      status === "playing" && s && h("div", { style: { position: "absolute", left: s.px - 14, top: s.py - 14, fontSize: "26px", transform: "scaleX(" + (dirRef.current < 0 ? -1 : 1) + ") rotate(" + Math.max(-14, Math.min(14, s.vy * 1.6)) + "deg)" } }, "🐰"),
+      status === "playing" && s && h("div", { style: { position: "absolute", left: s.px - 3, top: s.py - 26, fontSize: "11px" } }, "💜"),
+      status !== "playing" && h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "rgba(20,12,40,0.72)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "#fff", padding: "0 16px" } },
+        h("div", { style: { fontSize: "2.4rem" } }, "🐰💜"),
+        h("div", { style: { fontWeight: 800, fontSize: "1.05rem" } }, status === "over" ? "落到云下面啦～" : "星黛露跳跳乐"),
+        status === "over" && h("div", { style: { fontSize: "0.85rem", color: "#d8c8f8" } }, "本次高度 " + score + (score >= best && score > 0 ? " · 新纪录 🎉" : "")),
+        h("div", { style: { fontSize: "0.72rem", color: "#c8b8e8", lineHeight: 1.7 } }, "按住屏幕左/右半边移动（或方向键）", h("br", null), "踩白云往上跳 · ⭐ 弹簧云跳更高"),
+        h("button", { onClick: start, style: { background: "#8a6ad8", color: "#fff", border: "none", borderRadius: 12, padding: "10px 26px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, status === "over" ? "再跳一次 💜" : "开始 💜")
+      )
+    ),
+    h("div", { style: { display: "flex", gap: 10, width: W, margin: "10px auto 0" } }, mkBtn("◀", -1), mkBtn("▶", 1))
+  );
+}
+function CatCatchGame(_refCC) {
+  var onCozy = _refCC.onCozy;
+  var h = React.createElement;
+  var W = 280, H = 300;
+  var _s1 = useState("idle"); var status = _s1[0]; var setStatus = _s1[1];
+  var _s2 = useState(0); var setTick = _s2[1];
+  var _s3 = useState(0); var score = _s3[0]; var setScore = _s3[1];
+  var _s4 = useState(3); var lives = _s4[0]; var setLives = _s4[1];
+  var _s5 = useState(function () { try { return parseInt(localStorage.getItem("nana-fishcat-high") || "0", 10); } catch (e) { return 0; } });
+  var best = _s5[0]; var setBest = _s5[1];
+  var g = useRef(null); var dirRef = useRef(0); var statusRef = useRef("idle");
+  var start = function start() {
+    g.current = { cx: W / 2, items: [], t: 0, sc: 0, lv: 3, pops: [] };
+    dirRef.current = 0;
+    statusRef.current = "playing"; setStatus("playing"); setScore(0); setLives(3);
+  };
+  useEffect(function () {
+    if (status !== "playing") return;
+    var id = setInterval(function () {
+      var s = g.current; if (!s) return;
+      s.t++;
+      s.cx += dirRef.current * 5;
+      s.cx = Math.max(20, Math.min(W - 20, s.cx));
+      if (s.t % Math.max(18, 34 - Math.floor(s.t / 180)) === 0) {
+        var r = Math.random();
+        s.items.push({ x: 16 + Math.random() * (W - 32), y: -10, vy: 1.7 + Math.random() * 1.1 + Math.min(2, s.t / 1200), type: r > 0.88 ? "shrimp" : r > 0.72 ? "cactus" : "fish", id: s.t + Math.random() });
+      }
+      var caught = [];
+      s.items.forEach(function (it) {
+        it.y += it.vy;
+        if (it.y > H - 46 && it.y < H - 14 && Math.abs(it.x - s.cx) < 27) caught.push(it);
+      });
+      caught.forEach(function (it) {
+        var idx = s.items.indexOf(it);
+        if (idx >= 0) s.items.splice(idx, 1);
+        if (it.type === "cactus") {
+          s.lv--; setLives(s.lv);
+          s.pops.push({ x: it.x, txt: "💢", born: s.t });
+          if (s.lv <= 0) {
+            statusRef.current = "over"; setStatus("over");
+            onCozy(Math.min(15, 3 + Math.floor(s.sc / 100)));
+            setBest(function (b) { var nb = Math.max(b, s.sc); try { localStorage.setItem("nana-fishcat-high", String(nb)); } catch (e) {} return nb; });
+          }
+        } else {
+          var pts = it.type === "shrimp" ? 25 : 10;
+          s.sc += pts; setScore(s.sc);
+          s.pops.push({ x: it.x, txt: "+" + pts, born: s.t });
+        }
+      });
+      s.items = s.items.filter(function (it) { return it.y < H + 16; });
+      s.pops = s.pops.filter(function (p) { return s.t - p.born < 22; });
+      setTick(function (t) { return t + 1; });
+    }, 30);
+    var kd = function kd(e) { if (e.key === "ArrowLeft") dirRef.current = -1; if (e.key === "ArrowRight") dirRef.current = 1; };
+    var ku = function ku(e) { if (e.key === "ArrowLeft" || e.key === "ArrowRight") dirRef.current = 0; };
+    window.addEventListener("keydown", kd); window.addEventListener("keyup", ku);
+    return function () { clearInterval(id); window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
+  }, [status]);
+  var s = g.current;
+  var emj = { fish: "🐟", shrimp: "🍤", cactus: "🌵" };
+  var mkBtn2 = function mkBtn2(label, dir) {
+    return h("button", { onPointerDown: function (e) { e.preventDefault(); dirRef.current = dir; }, onPointerUp: function () { dirRef.current = 0; }, onPointerLeave: function () { dirRef.current = 0; }, style: { flex: 1, padding: "13px 0", borderRadius: 12, border: "2px solid #e8cfa8", background: "#fdf3e3", fontSize: "1.25rem", cursor: "pointer", userSelect: "none", touchAction: "none" } }, label);
+  };
+  return h("div", { style: { textAlign: "center" } },
+    h("div", { style: { display: "flex", gap: 10, justifyContent: "center", marginBottom: 10 } },
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "SCORE"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: COLORS.brown } }, score)),
+      h("div", { style: { background: "#fdf0f0", borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#c05050", fontWeight: 700 } }, "命"), h("div", { style: { fontWeight: 900, fontSize: "1.05rem" } }, "❤️".repeat(Math.max(0, lives)) || "—")),
+      h("div", { style: { background: "#fdf3e3", borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#a87830", fontWeight: 700 } }, "BEST"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: "#a87830" } }, best))
+    ),
+    h("div", { style: { position: "relative", width: W, height: H, margin: "0 auto", borderRadius: 14, overflow: "hidden", background: "linear-gradient(180deg,#fdeed8 0%,#f8ddb8 70%,#eccB96 100%)", border: "3px solid #d8b888", userSelect: "none", touchAction: "none" },
+      onPointerDown: function (e) { if (statusRef.current !== "playing") return; var r = e.currentTarget.getBoundingClientRect(); dirRef.current = e.clientX - r.left < W / 2 ? -1 : 1; },
+      onPointerUp: function () { dirRef.current = 0; } },
+      status === "playing" && s && s.items.map(function (it) {
+        return h("div", { key: it.id, style: { position: "absolute", left: it.x - 12, top: it.y - 12, fontSize: "22px", transform: "rotate(" + (it.id % 2 ? 12 : -12) + "deg)" } }, emj[it.type]);
+      }),
+      status === "playing" && s && s.pops.map(function (p, i) {
+        return h("div", { key: "pop" + i, style: { position: "absolute", left: p.x - 12, top: H - 70 - (s.t - p.born) * 1.4, fontSize: "0.8rem", fontWeight: 800, color: p.txt === "💢" ? "#e04040" : "#3a8a3a", opacity: 1 - (s.t - p.born) / 22 } }, p.txt);
+      }),
+      status === "playing" && s && h("div", { style: { position: "absolute", left: s.cx - 22, top: H - 52, fontSize: "30px", transform: "scaleX(" + (dirRef.current < 0 ? -1 : 1) + ")" } }, "🐱"),
+      status === "playing" && s && h("div", { style: { position: "absolute", left: s.cx - 8, top: H - 26, fontSize: "16px" } }, "🧺"),
+      status !== "playing" && h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "rgba(60,40,16,0.66)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "#fff", padding: "0 16px" } },
+        h("div", { style: { fontSize: "2.4rem" } }, "🐱🐟"),
+        h("div", { style: { fontWeight: 800, fontSize: "1.05rem" } }, status === "over" ? "小猫吃饱啦～" : "小猫接鱼干"),
+        status === "over" && h("div", { style: { fontSize: "0.85rem", color: "#ffe8c8" } }, "本次 " + score + " 分" + (score >= best && score > 0 ? " · 新纪录 🎉" : "")),
+        h("div", { style: { fontSize: "0.72rem", color: "#f8ddb8", lineHeight: 1.7 } }, "左右移动接住 🐟(+10) 🍤(+25)", h("br", null), "小心 🌵 会扎手！扎三次游戏结束"),
+        h("button", { onClick: start, style: { background: "#d8924a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 26px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, status === "over" ? "再来一局 🐟" : "开始 🐟")
+      )
+    ),
+    h("div", { style: { display: "flex", gap: 10, width: W, margin: "10px auto 0" } }, mkBtn2("◀", -1), mkBtn2("▶", 1))
+  );
+}
+function RhythmStarsGame(_refRS) {
+  var onCozy = _refRS.onCozy;
+  var h = React.createElement;
+  var W = 280, H = 300, HIT = H - 48, DUR = 45;
+  var _s1 = useState("idle"); var status = _s1[0]; var setStatus = _s1[1];
+  var _s2 = useState(0); var setTick = _s2[1];
+  var _s3 = useState(0); var score = _s3[0]; var setScore = _s3[1];
+  var _s4 = useState(0); var combo = _s4[0]; var setCombo = _s4[1];
+  var _s5 = useState(DUR); var timeLeft = _s5[0]; var setTimeLeft = _s5[1];
+  var _s6 = useState(null); var judge = _s6[0]; var setJudge = _s6[1];
+  var _s7 = useState(function () { try { return parseInt(localStorage.getItem("nana-rhythm-high") || "0", 10); } catch (e) { return 0; } });
+  var best = _s7[0]; var setBest = _s7[1];
+  var g = useRef(null); var statusRef = useRef("idle"); var audioRef = useRef(null);
+  var stopAudio = function stopAudio() { try { if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; } } catch (e) {} };
+  useEffect(function () { return stopAudio; }, []);
+  var start = function start() {
+    g.current = { notes: [], t: 0, sc: 0, cb: 0 };
+    statusRef.current = "playing"; setStatus("playing"); setScore(0); setCombo(0); setTimeLeft(DUR); setJudge(null);
+    try { var a = new Audio("la_la_land_13 - Justin Hurwitz - Epilogue.mp3"); a.volume = 0.85; a.play().catch(function () {}); audioRef.current = a; } catch (e) {}
+  };
+  var finish = function finish() {
+    statusRef.current = "over"; setStatus("over"); stopAudio();
+    var s = g.current;
+    onCozy(Math.min(18, 4 + Math.floor(s.sc / 300)));
+    setBest(function (b) { var nb = Math.max(b, s.sc); try { localStorage.setItem("nana-rhythm-high", String(nb)); } catch (e) {} return nb; });
+  };
+  useEffect(function () {
+    if (status !== "playing") return;
+    var id = setInterval(function () {
+      var s = g.current; if (!s) return;
+      s.t++;
+      if (s.t % 26 === 0) s.notes.push({ col: Math.floor(Math.random() * 3), y: -12, id: s.t });
+      if (s.t % 130 === 0) s.notes.push({ col: Math.floor(Math.random() * 3), y: -34, id: s.t + 0.5 });
+      var missed = false;
+      s.notes.forEach(function (n) { n.y += 3.1; });
+      s.notes = s.notes.filter(function (n) { if (n.y > HIT + 34) { missed = true; return false; } return true; });
+      if (missed) { s.cb = 0; setCombo(0); setJudge("Miss 💔"); }
+      setTick(function (t) { return t + 1; });
+    }, 30);
+    var tid = setInterval(function () {
+      setTimeLeft(function (tl) { if (tl <= 1) { finish(); return 0; } return tl - 1; });
+    }, 1000);
+    return function () { clearInterval(id); clearInterval(tid); };
+  }, [status]);
+  var tap = function tap(col) {
+    if (statusRef.current !== "playing") return;
+    var s = g.current; var bn = null; var bd = 999;
+    s.notes.forEach(function (n) { if (n.col === col) { var d = Math.abs(n.y - HIT); if (d < bd) { bd = d; bn = n; } } });
+    if (bn && bd < 34) {
+      s.notes.splice(s.notes.indexOf(bn), 1);
+      s.cb++;
+      var pts = (bd < 13 ? 30 : 15) * Math.min(4, 1 + Math.floor(s.cb / 8));
+      s.sc += pts;
+      setScore(s.sc); setCombo(s.cb);
+      setJudge(bd < 13 ? "Perfect ✨" : "Good 💛");
+      if (s.cb > 0 && s.cb % 10 === 0) onCozy(6);
+    } else { s.cb = 0; setCombo(0); setJudge("Miss 💔"); }
+  };
+  var laneX = function laneX(c) { return 47 + c * 93; };
+  var s = g.current;
+  var grade = score >= 1800 ? "S 🌟" : score >= 1200 ? "A ✨" : score >= 700 ? "B 💛" : "继续加油 🌱";
+  return h("div", { style: { textAlign: "center" } },
+    h("div", { style: { display: "flex", gap: 10, justifyContent: "center", marginBottom: 10 } },
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "SCORE"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: COLORS.brown } }, score)),
+      combo >= 2 && h("div", { style: { background: "#FCF1F1", borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#c08020", fontWeight: 700 } }, "COMBO"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: "#c8a030" } }, "x", combo)),
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 14px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "TIME"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", color: COLORS.brown } }, timeLeft, "s"))
+    ),
+    h("div", { style: { position: "relative", width: W, height: H, margin: "0 auto", borderRadius: 14, overflow: "hidden", background: "linear-gradient(180deg,#141228 0%,#231c42 70%,#3a2a5a 100%)", border: "3px solid #4a3a7a", userSelect: "none" } },
+      [1, 2].map(function (i) { return h("div", { key: "ln" + i, style: { position: "absolute", left: i * 93.3, top: 0, bottom: 0, width: 1, background: "rgba(255,255,255,0.1)" } }); }),
+      h("div", { style: { position: "absolute", left: 8, right: 8, top: HIT - 3, height: 6, borderRadius: 3, background: "rgba(255,216,106,0.5)", boxShadow: "0 0 12px rgba(255,216,106,0.6)" } }),
+      status === "playing" && s && s.notes.map(function (n) {
+        return h("div", { key: n.id, style: { position: "absolute", left: laneX(n.col) - 13, top: n.y - 13, fontSize: "24px", filter: "drop-shadow(0 0 6px rgba(255,220,120,0.8))" } }, "⭐");
+      }),
+      status === "playing" && judge && h("div", { key: judge + combo, style: { position: "absolute", left: 0, right: 0, top: "34%", textAlign: "center", fontWeight: 800, fontSize: "1.05rem", color: judge.indexOf("Miss") >= 0 ? "#ff8a9a" : "#ffe08a", textShadow: "0 2px 8px rgba(0,0,0,0.5)", animation: "fadeUp 0.5s ease" } }, judge),
+      status !== "playing" && h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "rgba(10,8,24,0.72)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "#fff", padding: "0 16px" } },
+        h("div", { style: { fontSize: "2.4rem" } }, "🎵⭐"),
+        h("div", { style: { fontWeight: 800, fontSize: "1.05rem" } }, status === "over" ? "演奏结束！评级：" + grade : "La La Land 节奏星"),
+        status === "over" && h("div", { style: { fontSize: "0.85rem", color: "#d8c8f8" } }, "得分 " + score + (score >= best && score > 0 ? " · 新纪录 🎉" : "")),
+        h("div", { style: { fontSize: "0.72rem", color: "#c8b8e8", lineHeight: 1.7 } }, "星星落到金线时按对应的键", h("br", null), "Perfect 越多连击越高 · 配乐 Epilogue 🎬"),
+        h("button", { onClick: start, style: { background: "#8a6ad8", color: "#fff", border: "none", borderRadius: 12, padding: "10px 26px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, status === "over" ? "再来一曲 🎵" : "开始 🎵")
+      )
+    ),
+    h("div", { style: { display: "flex", gap: 10, width: W, margin: "10px auto 0" } }, [0, 1, 2].map(function (c) {
+      return h("button", { key: "tp" + c, onPointerDown: function (e) { e.preventDefault(); tap(c); }, style: { flex: 1, padding: "14px 0", borderRadius: 12, border: "2px solid #c9b8e8", background: "#f3edfb", fontSize: "1.2rem", cursor: "pointer", userSelect: "none", touchAction: "none" } }, "🌟");
+    }))
+  );
+}
+function TankGame(_refTK) {
+  var onCozy = _refTK.onCozy;
+  var h = React.createElement;
+  var CELL = 20, COLS = 13, ROWS = 13, W = CELL * COLS, H = CELL * ROWS, SZ = 18;
+  var _s1 = useState("idle"); var status = _s1[0]; var setStatus = _s1[1];
+  var _s2 = useState(0); var setTick = _s2[1];
+  var _s3 = useState(0); var score = _s3[0]; var setScore = _s3[1];
+  var _s4 = useState(3); var lives = _s4[0]; var setLives = _s4[1];
+  var _s5 = useState(1); var wave = _s5[0]; var setWave = _s5[1];
+  var _s6 = useState(function () { try { return parseInt(localStorage.getItem("nana-tank-high") || "0", 10); } catch (e) { return 0; } });
+  var best = _s6[0]; var setBest = _s6[1];
+  var g = useRef(null); var dirRef = useRef(null); var fireRef = useRef(false); var statusRef = useRef("idle");
+  var DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  var mkMap = function mkMap() {
+    var m = [];
+    for (var r = 0; r < ROWS; r++) { var row = []; for (var c = 0; c < COLS; c++) row.push(0); m.push(row); }
+    [1, 3, 5, 7, 9, 11].forEach(function (c) { for (var r = 2; r <= 8; r++) { if (r !== 5) m[r][c] = 1; } });
+    m[4][0] = 1; m[4][12] = 1; m[8][0] = 1; m[8][12] = 1;
+    m[11][5] = 1; m[11][6] = 1; m[11][7] = 1; m[12][5] = 1; m[12][7] = 1;
+    m[12][6] = 3;
+    return m;
+  };
+  var start = function start() {
+    var s = { map: mkMap(), px: 4 * CELL + 1, py: 12 * CELL + 1, pdir: "up", pb: null, enemies: [], eb: [], lv: 3, sc: 0, wv: 1, t: 0, queue: 8, spawnCool: 20, alive: 0, invul: 40, banner: 36, eid: 0 };
+    g.current = s; dirRef.current = null; fireRef.current = false;
+    statusRef.current = "playing"; setStatus("playing"); setScore(0); setLives(3); setWave(1);
+  };
+  var canMove = function canMove(s, x, y, selfId) {
+    if (x < 0 || y < 0 || x + SZ > W || y + SZ > H) return false;
+    var c1 = Math.floor(x / CELL), r1 = Math.floor(y / CELL), c2 = Math.floor((x + SZ - 1) / CELL), r2 = Math.floor((y + SZ - 1) / CELL);
+    for (var r = r1; r <= r2; r++) { for (var c = c1; c <= c2; c++) { if (s.map[r] && s.map[r][c]) return false; } }
+    var blocked = false;
+    s.enemies.forEach(function (t) { if (t.id !== selfId && Math.abs(t.x - x) < SZ && Math.abs(t.y - y) < SZ) blocked = true; });
+    if (selfId !== "P" && Math.abs(s.px - x) < SZ && Math.abs(s.py - y) < SZ) blocked = true;
+    return !blocked;
+  };
+  var hitBase = function hitBase(s) {
+    statusRef.current = "over"; setStatus("over");
+    onCozy(Math.min(18, 3 + Math.floor(s.sc / 300)));
+    setBest(function (b) { var nb = Math.max(b, s.sc); try { localStorage.setItem("nana-tank-high", String(nb)); } catch (e) {} return nb; });
+  };
+  var moveBullet = function moveBullet(s, b) {
+    var d = DIRS[b.dir];
+    b.x += d[0] * 5.5; b.y += d[1] * 5.5;
+    if (b.x < 0 || b.y < 0 || b.x > W - 4 || b.y > H - 4) return "gone";
+    var c = Math.floor((b.x + 2) / CELL), r = Math.floor((b.y + 2) / CELL);
+    if (s.map[r] && s.map[r][c] === 1) { s.map[r][c] = 0; return "gone"; }
+    if (s.map[r] && s.map[r][c] === 3) { s.map[r][c] = 4; hitBase(s); return "gone"; }
+    return "fly";
+  };
+  useEffect(function () {
+    if (status !== "playing") return;
+    var id = setInterval(function () {
+      var s = g.current; if (!s || statusRef.current !== "playing") return;
+      s.t++;
+      if (s.banner > 0) s.banner--;
+      if (s.invul > 0) s.invul--;
+      if (dirRef.current) {
+        s.pdir = dirRef.current;
+        var d = DIRS[s.pdir];
+        var nx = s.px + d[0] * 2.3, ny = s.py + d[1] * 2.3;
+        if (canMove(s, nx, ny, "P")) { s.px = nx; s.py = ny; }
+      }
+      if (fireRef.current && !s.pb) s.pb = { x: s.px + SZ / 2 - 2, y: s.py + SZ / 2 - 2, dir: s.pdir };
+      if (s.pb) {
+        var res = moveBullet(s, s.pb);
+        if (res === "fly") {
+          var hitE = null;
+          s.enemies.forEach(function (e) { if (!hitE && s.pb.x + 4 > e.x && s.pb.x < e.x + SZ && s.pb.y + 4 > e.y && s.pb.y < e.y + SZ) hitE = e; });
+          if (hitE) {
+            s.enemies.splice(s.enemies.indexOf(hitE), 1);
+            s.eb = s.eb.filter(function (b) { return b.owner !== hitE.id; });
+            s.alive--; s.sc += 100; setScore(s.sc); s.pb = null;
+            if (s.sc % 500 === 0) onCozy(6);
+            if (s.queue === 0 && s.alive === 0) {
+              s.wv++; setWave(s.wv); s.queue = 8 + s.wv * 2; s.banner = 36;
+            }
+          }
+        } else { s.pb = null; }
+        if (statusRef.current !== "playing") return;
+      }
+      if (s.queue > 0 && s.alive < 3) {
+        s.spawnCool--;
+        if (s.spawnCool <= 0) {
+          var sx = [0, 6 * CELL, 12 * CELL][Math.floor(Math.random() * 3)] + 1;
+          if (canMove(s, sx, 1, -1)) { s.eid++; s.enemies.push({ x: sx, y: 1, dir: "down", id: s.eid, re: 0, cool: 30 + Math.random() * 50 }); s.queue--; s.alive++; s.spawnCool = 55; }
+        }
+      }
+      s.enemies.forEach(function (e) {
+        var spd = 1.3 + Math.min(0.8, s.wv * 0.1);
+        var d = DIRS[e.dir];
+        var nx = e.x + d[0] * spd, ny = e.y + d[1] * spd;
+        e.re--;
+        if (canMove(s, nx, ny, e.id) && e.re > -90) { e.x = nx; e.y = ny; }
+        else {
+          var opts = ["down", "down", "left", "right", "up"];
+          e.dir = opts[Math.floor(Math.random() * opts.length)];
+          e.re = 30 + Math.random() * 60;
+        }
+        e.cool--;
+        var hasB = s.eb.some(function (b) { return b.owner === e.id; });
+        if (e.cool <= 0 && !hasB) { s.eb.push({ x: e.x + SZ / 2 - 2, y: e.y + SZ / 2 - 2, dir: e.dir, owner: e.id }); e.cool = 50 + Math.random() * 60; }
+      });
+      s.eb = s.eb.filter(function (b) {
+        var res = moveBullet(s, b);
+        if (statusRef.current !== "playing") return false;
+        if (res !== "fly") return false;
+        if (s.invul <= 0 && b.x + 4 > s.px && b.x < s.px + SZ && b.y + 4 > s.py && b.y < s.py + SZ) {
+          s.lv--; setLives(s.lv);
+          if (s.lv <= 0) { hitBase(s); return false; }
+          s.px = 4 * CELL + 1; s.py = 12 * CELL + 1; s.pdir = "up"; s.invul = 50;
+          return false;
+        }
+        return true;
+      });
+      setTick(function (t) { return t + 1; });
+    }, 30);
+    var kd = function kd(e) {
+      if (e.key === "ArrowLeft") dirRef.current = "left";
+      if (e.key === "ArrowRight") dirRef.current = "right";
+      if (e.key === "ArrowUp") dirRef.current = "up";
+      if (e.key === "ArrowDown") dirRef.current = "down";
+      if (e.key === " ") { fireRef.current = true; e.preventDefault(); }
+    };
+    var ku = function ku(e) {
+      if (e.key === " ") fireRef.current = false;
+      if (e.key.indexOf("Arrow") === 0) dirRef.current = null;
+    };
+    window.addEventListener("keydown", kd); window.addEventListener("keyup", ku);
+    return function () { clearInterval(id); window.removeEventListener("keydown", kd); window.removeEventListener("keyup", ku); };
+  }, [status]);
+  var s = g.current;
+  var tank = function tank(x, y, dir, color, dark, blink, key) {
+    var bar = dir === "up" ? { left: 7, top: -6, width: 4, height: 10 } : dir === "down" ? { left: 7, top: 14, width: 4, height: 10 } : dir === "left" ? { left: -6, top: 7, width: 10, height: 4 } : { left: 14, top: 7, width: 10, height: 4 };
+    return h("div", { key: key, style: { position: "absolute", left: x, top: y, width: SZ, height: SZ, background: color, borderRadius: 4, border: "2px solid " + dark, boxSizing: "border-box", opacity: blink ? 0.45 : 1 } },
+      h("div", { style: { position: "absolute", left: bar.left, top: bar.top, width: bar.width, height: bar.height, background: dark, borderRadius: 2 } }),
+      h("div", { style: { position: "absolute", left: 4, top: 4, width: 6, height: 6, borderRadius: "50%", background: "rgba(255,255,255,0.35)" } })
+    );
+  };
+  var dpadBtn = function dpadBtn(label, dir) {
+    return h("button", { key: "dp" + dir, onPointerDown: function (e) { e.preventDefault(); dirRef.current = dir; }, onPointerUp: function () { if (dirRef.current === dir) dirRef.current = null; }, onPointerLeave: function () { if (dirRef.current === dir) dirRef.current = null; }, style: { width: 44, height: 44, borderRadius: 10, border: "2px solid #9aa86a", background: "#eef3da", fontSize: "1rem", cursor: "pointer", userSelect: "none", touchAction: "none" } }, label);
+  };
+  return h("div", { style: { textAlign: "center" } },
+    h("div", { style: { display: "flex", gap: 8, justifyContent: "center", marginBottom: 10, flexWrap: "wrap" } },
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 12px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "SCORE"), h("div", { style: { fontWeight: 900, fontSize: "1.05rem", color: COLORS.brown } }, score)),
+      h("div", { style: { background: "#fdf0f0", borderRadius: 10, padding: "5px 12px" } }, h("div", { style: { fontSize: "0.65rem", color: "#c05050", fontWeight: 700 } }, "命"), h("div", { style: { fontWeight: 900, fontSize: "1rem" } }, "❤️".repeat(Math.max(0, lives)) || "—")),
+      h("div", { style: { background: "#eef3da", borderRadius: 10, padding: "5px 12px" } }, h("div", { style: { fontSize: "0.65rem", color: "#6a7a30", fontWeight: 700 } }, "WAVE"), h("div", { style: { fontWeight: 900, fontSize: "1.05rem", color: "#6a7a30" } }, wave)),
+      h("div", { style: { background: COLORS.cream, borderRadius: 10, padding: "5px 12px" } }, h("div", { style: { fontSize: "0.65rem", color: "#81515A", fontWeight: 700 } }, "BEST"), h("div", { style: { fontWeight: 900, fontSize: "1.05rem", color: COLORS.brown } }, best))
+    ),
+    h("div", { style: { position: "relative", width: W, height: H, margin: "0 auto", borderRadius: 10, overflow: "hidden", background: "#181818", border: "3px solid #4a4a3a", userSelect: "none", touchAction: "none" } },
+      status !== "idle" && s && s.map.map(function (row, r) {
+        return row.map(function (v, c) {
+          if (v === 1) return h("div", { key: "m" + r + "_" + c, style: { position: "absolute", left: c * CELL, top: r * CELL, width: CELL, height: CELL, background: "#b85c2a", boxShadow: "inset 0 0 0 2px #8a4018, inset 0 -10px 0 -8px #d4783a" } });
+          if (v === 3) return h("div", { key: "m" + r + "_" + c, style: { position: "absolute", left: c * CELL, top: r * CELL, width: CELL, height: CELL, fontSize: 15, lineHeight: CELL + "px", textAlign: "center" } }, "🦅");
+          if (v === 4) return h("div", { key: "m" + r + "_" + c, style: { position: "absolute", left: c * CELL, top: r * CELL, width: CELL, height: CELL, fontSize: 15, lineHeight: CELL + "px", textAlign: "center" } }, "💥");
+          return null;
+        });
+      }),
+      status !== "idle" && s && tank(s.px, s.py, s.pdir, "#6ac06a", "#2a6a2a", s.invul > 0 && s.t % 4 < 2, "ptank"),
+      status !== "idle" && s && s.enemies.map(function (e) { return tank(e.x, e.y, e.dir, "#d06a5a", "#7a2a20", false, "e" + e.id); }),
+      status !== "idle" && s && s.pb && h("div", { style: { position: "absolute", left: s.pb.x, top: s.pb.y, width: 4, height: 4, background: "#ffe", borderRadius: 1 } }),
+      status !== "idle" && s && s.eb.map(function (b, i) { return h("div", { key: "eb" + i, style: { position: "absolute", left: b.x, top: b.y, width: 4, height: 4, background: "#fc8", borderRadius: 1 } }); }),
+      status === "playing" && s && s.banner > 0 && h("div", { style: { position: "absolute", left: 0, right: 0, top: "44%", textAlign: "center", color: "#ffd86a", fontWeight: 900, fontSize: "1.2rem", textShadow: "0 2px 6px #000" } }, "WAVE " + s.wv),
+      status !== "playing" && h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "rgba(10,10,10,0.78)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, color: "#fff", padding: "0 16px" } },
+        h("div", { style: { fontSize: "2.2rem" } }, "🛡️🦅"),
+        h("div", { style: { fontWeight: 800, fontSize: "1.05rem" } }, status === "over" ? (s && s.map[12][6] === 4 ? "基地被摧毁了！" : "坦克全军覆没！") : "坦克大战"),
+        status === "over" && h("div", { style: { fontSize: "0.85rem", color: "#ffd8a8" } }, "得分 " + score + " · 第 " + wave + " 波" + (score >= best && score > 0 ? " · 新纪录 🎉" : "")),
+        h("div", { style: { fontSize: "0.72rem", color: "#c8c8a8", lineHeight: 1.7 } }, "方向盘移动 · 🔥 开炮（或方向键+空格）", h("br", null), "打掉红色坦克 · 砖墙可炸开 · 守住老鹰 🦅"),
+        h("button", { onClick: start, style: { background: "#7a9a3a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 26px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, status === "over" ? "再战一局 🛡️" : "开始 🛡️")
+      )
+    ),
+    h("div", { style: { display: "flex", width: W, margin: "10px auto 0", alignItems: "center", justifyContent: "space-between" } },
+      h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 4 } },
+        dpadBtn("▲", "up"),
+        h("div", { style: { display: "flex", gap: 4 } }, dpadBtn("◀", "left"), h("div", { style: { width: 44, height: 44 } }), dpadBtn("▶", "right")),
+        dpadBtn("▼", "down")
+      ),
+      h("button", { onPointerDown: function (e) { e.preventDefault(); fireRef.current = true; }, onPointerUp: function () { fireRef.current = false; }, onPointerLeave: function () { fireRef.current = false; }, style: { width: 76, height: 76, borderRadius: "50%", border: "3px solid #c06a4a", background: "#fde3d3", fontSize: "1.5rem", cursor: "pointer", userSelect: "none", touchAction: "none" } }, "🔥")
+    )
+  );
+}
 function GameActivity(_ref49) {
   var onCozy = _ref49.onCozy;
   var _useState131 = useState(null),
@@ -6627,6 +7081,18 @@ function GameActivity(_ref49) {
     id: "target",
     icon: "🎯",
     name: "Target"
+  }, {
+    id: "stella",
+    icon: "🐰",
+    name: "星黛露跳跳"
+  }, {
+    id: "tank",
+    icon: "🛡️",
+    name: "坦克大战"
+  }, {
+    id: "rhythm",
+    icon: "🎵",
+    name: "节奏星"
   }];
   var selectGame = function selectGame(id) {
     setCurrentGame(id);
@@ -6658,6 +7124,15 @@ function GameActivity(_ref49) {
       onCozy: onCozy
     });
     if (currentGame === "target") return /*#__PURE__*/React.createElement(TargetGame, {
+      onCozy: onCozy
+    });
+    if (currentGame === "stella") return /*#__PURE__*/React.createElement(StellaJumpGame, {
+      onCozy: onCozy
+    });
+    if (currentGame === "tank") return /*#__PURE__*/React.createElement(TankGame, {
+      onCozy: onCozy
+    });
+    if (currentGame === "rhythm") return /*#__PURE__*/React.createElement(RhythmStarsGame, {
       onCozy: onCozy
     });
     return null;
