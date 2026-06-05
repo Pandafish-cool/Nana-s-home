@@ -16565,6 +16565,39 @@ function ChildrensDayEgg(_refCDE) {
     )
   );
 }
+function StudyDayEgg(_refSDE) {
+  var onClose = _refSDE.onClose;
+  var h = React.createElement;
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 70);
+    var t1 = setTimeout(function () { setGone(true); }, 6800);
+    var t2 = setTimeout(function () { onClose(); }, 7600);
+    return function () { clearInterval(id); clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  var T = tick;
+  var flames = [];
+  for (var i = 0; i < 14; i++) {
+    var fx = (i * 7.3 + Math.sin(i * 2.1) * 6 + 100) % 100;
+    var fy = ((i * 13 + T * 1.6) % 125) - 12;
+    flames.push(h("div", { key: "fl" + i, style: { position: "absolute", left: fx.toFixed(1) + "%", top: (105 - fy).toFixed(1) + "%", fontSize: (14 + (i % 3) * 6) + "px", opacity: (0.4 + 0.4 * Math.sin(T * 0.1 + i)).toFixed(2), transform: "rotate(" + (Math.sin(T * 0.08 + i) * 14).toFixed(1) + "deg)" } }, i % 3 === 0 ? "❤️‍🔥" : i % 3 === 1 ? "🔥" : "✨"));
+  }
+  var props2 = [], icons = ["📚", "✏️", "☕", "📖", "💪"];
+  for (var j = 0; j < 10; j++) {
+    var px = (j * 10.7 + 4) % 100, py = ((j * 17 + T * 0.9) % 120) - 10;
+    props2.push(h("div", { key: "pp" + j, style: { position: "absolute", left: px.toFixed(1) + "%", top: py.toFixed(1) + "%", fontSize: "1.2rem", opacity: 0.8, transform: "rotate(" + (Math.sin(T * 0.06 + j) * 16).toFixed(1) + "deg)" } }, icons[j % 5]));
+  }
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(26,8,10,0.82)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.8s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui" } },
+    flames, props2,
+    h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 20px", animation: "bounceIn 0.7s ease" } },
+      h("div", { style: { fontSize: "3rem", marginBottom: 8 } }, "📚❤️‍🔥📚"),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.5rem,5.5vw,2.4rem)", textShadow: "0 2px 18px rgba(255,120,80,0.75)", lineHeight: 1.35 } }, "今天是 Study Day"),
+      h("div", { style: { color: "#ffb36a", fontWeight: 800, fontSize: "clamp(1.7rem,6.5vw,2.8rem)", textShadow: "0 2px 18px rgba(255,90,60,0.75)", marginTop: 4 } }, "激情 ❤️‍🔥 满满的一天"),
+      h("div", { style: { color: "rgba(255,255,255,0.85)", fontSize: "0.95rem", marginTop: 18, lineHeight: 1.8 } }, "认真学习的 Nana 最闪闪发光 ✨", h("br", null), "记得喝水、伸个懒腰，劳逸结合 💛（点一下继续）")
+    )
+  );
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
@@ -16573,6 +16606,9 @@ function NanasHome() {
   var _useStateEgg = useState(false),
     showEgg = _useStateEgg[0],
     setShowEgg = _useStateEgg[1];
+  var _useStateEgg2 = useState(false),
+    showEgg2 = _useStateEgg2[0],
+    setShowEgg2 = _useStateEgg2[1];
   var _useState323 = useState(null),
     _useState324 = _slicedToArray(_useState323, 2),
     room = _useState324[0],
@@ -16656,11 +16692,16 @@ function NanasHome() {
       setShowSplash(false);
       var _ed = new Date();
       if (_ed.getMonth() === 5 && _ed.getDate() === 1) setShowEgg(true);
+      if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 5) setShowEgg2(true);
     },
     visible: showSplash
   }), showEgg && /*#__PURE__*/React.createElement(ChildrensDayEgg, {
     onClose: function onClose() {
       return setShowEgg(false);
+    }
+  }), showEgg2 && /*#__PURE__*/React.createElement(StudyDayEgg, {
+    onClose: function onClose() {
+      return setShowEgg2(false);
     }
   }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
