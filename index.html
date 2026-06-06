@@ -13068,29 +13068,49 @@ function RushKitchenGame(_refRK) {
   var onCozy = _refRK.onCozy;
   var h = React.createElement;
   var DUR = 1200;
-  var INGS = { tomato: { emoji: "🍅", name: "番茄", prep: true }, egg: { emoji: "🥚", name: "鸡蛋", prep: true }, rice: { emoji: "🍚", name: "米饭", prep: false }, noodle: { emoji: "🫓", name: "面皮", prep: false } };
-  var RDISHES = [
+  var INGS = {
+    tomato: { emoji: "🍅", name: "番茄", prep: true }, egg: { emoji: "🥚", name: "鸡蛋", prep: true },
+    rice: { emoji: "🍚", name: "米饭", prep: false }, noodle: { emoji: "🫓", name: "面皮", prep: false },
+    sausage: { emoji: "🌭", name: "香肠", prep: true }, potato: { emoji: "🥔", name: "土豆", prep: true },
+    pepper: { emoji: "🫑", name: "青椒", prep: true }, shrimp: { emoji: "🦐", name: "虾仁", prep: false }
+  };
+  var ALLD = [
     { id: "tce", name: "番茄炒蛋", emoji: "🍳", needs: ["egg", "tomato"] },
     { id: "rice", name: "蛋炒饭", emoji: "🍛", needs: ["egg", "rice"] },
-    { id: "klm", name: "烤冷面", emoji: "🫓", needs: ["egg", "noodle"] }
+    { id: "klm", name: "烤冷面", emoji: "🫓", needs: ["egg", "noodle"] },
+    { id: "srice", name: "香肠炒饭", emoji: "🍱", needs: ["egg", "rice", "sausage"] },
+    { id: "ptp", name: "青椒土豆", emoji: "🥗", needs: ["potato", "pepper"] },
+    { id: "deluxe", name: "三鲜炒饭", emoji: "🍲", needs: ["egg", "rice", "shrimp"] },
+    { id: "fullklm", name: "全家福烤冷面", emoji: "🌮", needs: ["noodle", "egg", "sausage"] },
+    { id: "sanxian", name: "三鲜烩", emoji: "🥘", needs: ["egg", "shrimp", "pepper"] },
+    { id: "tse", name: "番茄虾仁蛋", emoji: "🍤", needs: ["egg", "tomato", "shrimp"] }
   ];
+  var byId = function byId(id) { return ALLD.find(function (d) { return d.id === id; }); };
+  var LEVELS = {
+    easy: { name: "初级", emoji: "🥚", ttl: 520, spawnMin: 90, spawnMax: 130, maxOrders: 2, burn: 95, panMax: 2, pool: ["tce", "rice", "ptp"], desc: "番茄炒蛋·蛋炒饭·青椒土豆 · 各 2 样食材", btn: "#7a9a3a", tag: "🟢" },
+    mid: { name: "中级", emoji: "🌭", ttl: 460, spawnMin: 70, spawnMax: 100, maxOrders: 3, burn: 75, panMax: 3, pool: ["klm", "srice", "deluxe"], desc: "烤冷面·香肠炒饭·三鲜炒饭 · 上 3 样了", btn: "#e8954a", tag: "🟡" },
+    hard: { name: "高级", emoji: "🦐", ttl: 400, spawnMin: 52, spawnMax: 80, maxOrders: 4, burn: 55, panMax: 3, pool: ["fullklm", "sanxian", "tse"], desc: "全家福烤冷面·三鲜烩·番茄虾仁蛋 · 复杂大菜", btn: "#c0563a", tag: "🔴" }
+  };
+  var crateList = function crateList(s) { var arr = []; s.L.pool.forEach(function (id) { byId(id).needs.forEach(function (n) { if (arr.indexOf(n) < 0) arr.push(n); }); }); return arr; };
   var _s1 = useState("idle"); var status = _s1[0]; var setStatus = _s1[1];
   var _s2 = useState(0); var setTick = _s2[1];
   var _s3 = useState(0); var tips = _s3[0]; var setTips = _s3[1];
   var _s4 = useState(0); var served = _s4[0]; var setServed = _s4[1];
   var _s5 = useState(DUR); var timeLeft = _s5[0]; var setTimeLeft = _s5[1];
   var _s6 = useState(null); var msg = _s6[0]; var setMsg = _s6[1];
+  var _s7 = useState("easy"); var level = _s7[0]; var setLevel = _s7[1];
   var g = useRef(null); var statusRef = useRef("idle"); var msgTimer = useRef(null);
   var toast = function toast(t) { setMsg(t); clearTimeout(msgTimer.current); msgTimer.current = setTimeout(function () { setMsg(null); }, 1600); };
   var newOrder = function newOrder(s) {
-    var dd = RDISHES[Math.floor(Math.random() * RDISHES.length)];
+    var dd = byId(s.L.pool[Math.floor(Math.random() * s.L.pool.length)]);
     s.oid++;
-    s.orders.push({ key: s.oid, dish: dd, t: 480, total: 480 });
+    s.orders.push({ key: s.oid, dish: dd, t: s.L.ttl, total: s.L.ttl });
   };
-  var start = function start() {
-    g.current = { orders: [], hand: null, board: null, pan: { contents: [], state: "idle", t: 0 }, t: 0, tips: 0, served: 0, missed: 0, oid: 0, nextOrder: 80 };
+  var start = function start(lvKey) {
+    var L = LEVELS[lvKey];
+    g.current = { orders: [], hand: null, board: null, pan: { contents: [], state: "idle", t: 0 }, t: 0, tips: 0, served: 0, missed: 0, oid: 0, nextOrder: 55, L: L };
     newOrder(g.current);
-    statusRef.current = "playing"; setStatus("playing"); setTips(0); setServed(0); setTimeLeft(DUR); setMsg(null);
+    statusRef.current = "playing"; setStatus("playing"); setTips(0); setServed(0); setTimeLeft(DUR); setMsg(null); setLevel(lvKey);
   };
   useEffect(function () {
     if (status !== "playing") return;
@@ -13102,10 +13122,10 @@ function RushKitchenGame(_refRK) {
       s.orders = s.orders.filter(function (o) { return o.t > 0; });
       if (s.orders.length < before) { s.missed++; toast("客人等不及走啦 😢"); }
       s.nextOrder--;
-      if (s.nextOrder <= 0 && s.orders.length < 3) { newOrder(s); s.nextOrder = 90 + Math.floor(Math.random() * 70); }
+      if (s.nextOrder <= 0 && s.orders.length < s.L.maxOrders) { newOrder(s); s.nextOrder = s.L.spawnMin + Math.floor(Math.random() * (s.L.spawnMax - s.L.spawnMin)); }
       var p = s.pan;
       if (p.state === "cooking") { p.t++; if (p.t >= 45) { p.state = "done"; p.t = 0; toast("锅里好了！快装盘 🍽️"); } }
-      else if (p.state === "done") { p.t++; if (p.t >= 70) { p.state = "fire"; p.t = 0; toast("烧着啦！！快灭火 🧯"); } }
+      else if (p.state === "done") { p.t++; if (p.t >= s.L.burn) { p.state = "fire"; p.t = 0; toast("烧着啦！！快灭火 🧯"); } }
       setTimeLeft(function (tl) {
         if (tl <= 1) {
           statusRef.current = "over"; setStatus("over");
@@ -13141,7 +13161,7 @@ function RushKitchenGame(_refRK) {
     if (p.state === "done") {
       if (s.hand) { toast("腾出手来装盘"); return; }
       var key = p.contents.slice().sort().join("+");
-      var dd = RDISHES.find(function (x) { return x.needs.slice().sort().join("+") === key; });
+      var dd = ALLD.find(function (x) { return x.needs.slice().sort().join("+") === key; });
       s.hand = { dish: dd || null, mystery: !dd };
       p.contents = []; p.state = "idle"; p.t = 0;
       toast(dd ? dd.name + " 装盘！🍽️" : "做出了谜之料理…");
@@ -13150,9 +13170,11 @@ function RushKitchenGame(_refRK) {
     if (p.state === "cooking") { toast("在炒呢，别催～"); return; }
     if (!s.hand || s.hand.dish !== undefined) { toast("拿食材来下锅"); return; }
     if (!s.hand.ready) { toast("先切一下再下锅 🔪"); return; }
-    if (p.contents.length >= 2) return;
+    if (p.contents.length >= s.L.panMax) { toast("锅满了"); return; }
     p.contents.push(s.hand.ing); s.hand = null;
-    if (p.contents.length === 2) { p.state = "cooking"; p.t = 0; toast("开炒！盯紧火候 🔥"); }
+    var sorted = p.contents.slice().sort().join("+");
+    var matched = ALLD.some(function (x) { return x.needs.slice().sort().join("+") === sorted; });
+    if (matched || p.contents.length >= s.L.panMax) { p.state = "cooking"; p.t = 0; toast("开炒！盯紧火候 🔥"); }
   };
   var tapServe = function tapServe() {
     var s = g.current; if (statusRef.current !== "playing") return;
@@ -13189,16 +13211,24 @@ function RushKitchenGame(_refRK) {
   return h("div", null,
     status === "idle" && h("div", { style: { background: "#FFF8F7", border: "1.5px solid " + COLORS.tan, borderRadius: 18, padding: 20, textAlign: "center" } },
       h("div", { style: { fontSize: "2.4rem", marginBottom: 8 } }, "🍳🔥🍽️"),
-      h("div", { style: { fontWeight: 800, fontSize: "1.05rem", color: COLORS.brown, marginBottom: 8 } }, "Nana 的胡闹厨房"),
-      h("div", { style: { fontSize: "0.76rem", color: "#81515A", lineHeight: 1.9, marginBottom: 12 } }, "客人订单不断涌来，每单都有耐心条！", h("br", null), "拿食材 → 切菜板处理 → 下锅炒 → 装盘 → 出餐", h("br", null), "锅放着不管会着火 🔥 要狂点灭火器！", h("br", null), "2 分钟，看你能赚多少小费 💰"),
-      h("button", { onClick: start, style: { background: "#c0563a", color: "#fff", border: "none", borderRadius: 12, padding: "11px 28px", fontFamily: "inherit", fontWeight: 800, fontSize: "1rem", cursor: "pointer" } }, "开工！🔥")
+      h("div", { style: { fontWeight: 800, fontSize: "1.15rem", color: COLORS.brown, marginBottom: 4 } }, "紫腚能行 🔥"),
+      h("div", { style: { fontSize: "0.7rem", color: "#b0a090", marginBottom: 8 } }, "胡闹厨房模式 · Nana 紫腚能行！"),
+      h("div", { style: { fontSize: "0.73rem", color: "#81515A", lineHeight: 1.8, marginBottom: 14 } }, "拿食材 → 切菜板 → 下锅 → 装盘 → 出餐", h("br", null), "锅着火要狂点灭火器 🔥 · 2 分钟赚小费 💰", h("br", null), "选个难度开工 👇"),
+      h("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, ["easy", "mid", "hard"].map(function (lk) {
+        var L = LEVELS[lk];
+        return h("button", { key: "lv" + lk, onClick: function () { start(lk); }, style: { background: L.btn, color: "#fff", border: "none", borderRadius: 12, padding: "10px 14px", fontFamily: "inherit", cursor: "pointer", textAlign: "left" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.95rem" } }, L.tag + " " + L.name + " " + L.emoji),
+          h("div", { style: { fontSize: "0.68rem", opacity: 0.92, marginTop: 1 } }, L.desc));
+      }))
     ),
     status === "over" && h("div", { style: { background: "#FFF8F7", border: "1.5px solid " + COLORS.tan, borderRadius: 18, padding: 20, textAlign: "center" } },
       h("div", { style: { fontSize: "2.4rem", marginBottom: 8 } }, "🔔"),
       h("div", { style: { fontWeight: 800, fontSize: "1.05rem", color: COLORS.brown } }, "打烊啦！"),
       h("div", { style: { fontSize: "0.95rem", color: "#a8742a", fontWeight: 800, margin: "8px 0" } }, rating),
-      h("div", { style: { fontSize: "0.8rem", color: "#81515A", marginBottom: 14 } }, "出餐 " + served + " 道 · 小费 " + tips + " 💰"),
-      h("button", { onClick: start, style: { background: "#c0563a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 24px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "再来一轮 🔥")
+      h("div", { style: { fontSize: "0.8rem", color: "#81515A", marginBottom: 14 } }, LEVELS[level].name + " · 出餐 " + served + " 道 · 小费 " + tips + " 💰"),
+      h("div", { style: { display: "flex", gap: 8, justifyContent: "center" } },
+        h("button", { onClick: function () { start(level); }, style: { background: "#c0563a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "再来一轮 🔥"),
+        h("button", { onClick: function () { setStatus("idle"); }, style: { background: COLORS.cream, color: COLORS.dark, border: "2px solid " + COLORS.tan, borderRadius: 12, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "换难度"))
     ),
     status === "playing" && s && h("div", null,
       h("div", { style: { display: "flex", gap: 8, marginBottom: 10, alignItems: "center" } },
@@ -13218,7 +13248,7 @@ function RushKitchenGame(_refRK) {
           );
         })
       ),
-      h("div", { style: { display: "flex", gap: 6, marginBottom: 8 } }, ["tomato", "egg", "rice", "noodle"].map(function (k) {
+      h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 } }, crateList(s).map(function (k) {
         return h("div", { key: "cr" + k, onClick: function () { tapCrate(k); }, style: { flex: 1, background: "#fdf3e3", border: "1.5px solid #e8cfa8", borderRadius: 12, padding: "8px 2px", textAlign: "center", cursor: "pointer", userSelect: "none" } },
           h("div", { style: { fontSize: "1.3rem" } }, INGS[k].emoji),
           h("div", { style: { fontSize: "0.58rem", color: "#a8742a", fontWeight: 700 } }, INGS[k].name + (INGS[k].prep ? "" : "✓")));
@@ -13315,11 +13345,11 @@ function KitchenActivity(_refKC) {
   var rating = maxScore > 0 ? score / maxScore : 0;
   var stars = rating >= 0.85 ? "⭐⭐⭐ 米其林 Nana 主厨！" : rating >= 0.6 ? "⭐⭐ 很香！大厨 Nana" : "⭐ 黑暗料理…但也很可爱";
   var tabBtn = function tabBtn(id, label) {
-    return h("button", { onClick: function () { setView(id); }, style: { flex: 1, background: view === id ? COLORS.brown : COLORS.cream, color: view === id ? "#fff" : COLORS.dark, border: "2px solid " + (view === id ? COLORS.brown : COLORS.tan), borderRadius: 10, padding: "8px", fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, label);
+    return h("button", { onClick: function () { setView(id); }, style: { flex: 1, background: view === id ? COLORS.brown : COLORS.cream, color: view === id ? "#fff" : COLORS.dark, border: "2px solid " + (view === id ? COLORS.brown : COLORS.tan), borderRadius: 10, padding: "8px 2px", fontFamily: "inherit", fontWeight: 700, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap" } }, label);
   };
   var card = { background: "#FFF8F7", borderRadius: 18, padding: 16, border: "1.5px solid " + COLORS.tan };
   return h("div", null,
-    h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } }, tabBtn("cook", "🍳 做菜"), tabBtn("rush", "🔥 胡闹"), tabBtn("recipes", "📖 菜谱")),
+    h("div", { style: { display: "flex", gap: 6, marginBottom: 14 } }, tabBtn("cook", "🍳 做菜"), tabBtn("rush", "🔥 紫腚能行"), tabBtn("recipes", "📖 菜谱")),
     view === "rush" && h(RushKitchenGame, { onCozy: onCozy }),
     view === "cook" && !dish && h("div", null,
       h("div", { style: { fontSize: "0.85rem", color: "#81515A", marginBottom: 10, textAlign: "center" } }, "今天想做哪道菜呀？"),
