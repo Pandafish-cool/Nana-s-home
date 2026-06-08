@@ -17589,6 +17589,48 @@ function ComfortEgg(_refCF) {
     )
   );
 }
+function RainSleepEgg(_refRS) {
+  var onClose = _refRS.onClose;
+  var h = React.createElement;
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _p = useState("rain"); var phase = _p[0]; var setPhase = _p[1];
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    return function () { clearInterval(id); };
+  }, []);
+  useEffect(function () {
+    if (phase !== "off") return;
+    var t1 = setTimeout(function () { setGone(true); }, 4200);
+    var t2 = setTimeout(function () { onClose(); }, 5400);
+    return function () { clearTimeout(t1); clearTimeout(t2); };
+  }, [phase]);
+  var T = tick;
+  var off = phase === "off";
+  var drops = [];
+  for (var i = 0; i < 30; i++) {
+    var rx = (i * 6.9 + Math.sin(i * 2.1) * 4 + 100) % 100;
+    var spd = 2.0 + (i % 5) * 0.5;
+    var ry = ((i * 13 + T * spd) % 120) - 10;
+    drops.push(h("div", { key: "rd" + i, style: { position: "absolute", left: rx.toFixed(1) + "%", top: ry.toFixed(1) + "%", width: 2, height: 10 + (i % 4) * 5, borderRadius: 2, background: "linear-gradient(180deg, rgba(180,210,255,0.02), rgba(175,205,255,0.5))", opacity: off ? 0.1 : 0.6, transition: "opacity 1.2s ease" } }));
+  }
+  return h("div", { onClick: off ? onClose : null, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: off ? "#05060b" : "linear-gradient(180deg,#0e1730,#1a2440 55%,#232c44)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: off ? "pointer" : "default", overflow: "hidden", opacity: gone ? 0 : 1, transition: "background 1.3s ease, opacity 1.2s ease", fontFamily: "'Nunito', system-ui" } },
+    drops,
+    h("div", { style: { position: "absolute", left: "50%", top: "40%", transform: "translate(-50%,-50%)", width: 300, height: 300, borderRadius: "50%", background: off ? "radial-gradient(circle, rgba(150,170,255,0.16), transparent 65%)" : "radial-gradient(circle, rgba(150,180,255,0.14), transparent 62%)", transition: "all 1.2s ease" } }),
+    !off && h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 26px", animation: "fadeSlideUp 0.9s ease" } },
+      h("div", { style: { fontSize: "3rem", transform: "translateY(" + (Math.sin(T * 0.08) * 3).toFixed(1) + "px)", display: "inline-block", filter: "drop-shadow(0 0 16px rgba(150,180,255,0.55))" } }, "🌧️"),
+      h("div", { style: { color: "#dfe7ff", fontWeight: 800, fontSize: "clamp(1.4rem,5.5vw,2rem)", marginTop: 14, textShadow: "0 2px 14px rgba(80,110,180,0.5)", lineHeight: 1.4 } }, "外面下雨了"),
+      h("div", { style: { color: "rgba(223,231,255,0.9)", fontSize: "0.95rem", marginTop: 12, lineHeight: 2 } }, "但屋里很暖，被窝软软的 🛏️", h("br", null), "雨声会陪着你，把烦恼都冲走", h("br", null), "Nana，今晚安心睡 🌙"),
+      h("button", { onClick: function (e) { e.stopPropagation(); setPhase("off"); }, style: { marginTop: 24, background: "rgba(255,236,200,0.14)", color: "#ffe8c8", border: "1.5px solid rgba(255,236,200,0.5)", borderRadius: 999, padding: "13px 28px", fontFamily: "inherit", fontWeight: 800, fontSize: "1rem", cursor: "pointer" } }, "💡 关灯睡觉")
+    ),
+    off && h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 26px", animation: "fadeSlideUp 1s ease" } },
+      h("div", { style: { fontSize: "2.8rem", filter: "drop-shadow(0 0 22px rgba(150,170,255,0.6))", transform: "translateY(" + (Math.sin(T * 0.06) * 2).toFixed(1) + "px)", display: "inline-block" } }, "🌙"),
+      h("div", { style: { color: "#cfd8f5", fontWeight: 800, fontSize: "clamp(1.7rem,6.5vw,2.4rem)", marginTop: 18, letterSpacing: 3, textShadow: "0 2px 18px rgba(120,140,220,0.5)" } }, "晚安"),
+      h("div", { style: { color: "rgba(207,216,245,0.82)", fontSize: "0.95rem", marginTop: 14, lineHeight: 1.9 } }, "晚安，Nana 💤", h("br", null), "灯关了，做个甜甜的梦～"),
+      h("div", { style: { color: "rgba(207,216,245,0.4)", fontSize: "0.72rem", marginTop: 20 } }, "（点一下关闭）")
+    )
+  );
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
@@ -17603,6 +17645,9 @@ function NanasHome() {
   var _useStateEgg3 = useState(false),
     showEgg3 = _useStateEgg3[0],
     setShowEgg3 = _useStateEgg3[1];
+  var _useStateEgg4 = useState(false),
+    showEgg4 = _useStateEgg4[0],
+    setShowEgg4 = _useStateEgg4[1];
   var _useState323 = useState(null),
     _useState324 = _slicedToArray(_useState323, 2),
     room = _useState324[0],
@@ -17689,6 +17734,7 @@ function NanasHome() {
       var _cf = _ed.getFullYear() === 2026 && _ed.getMonth() === 5 && (_ed.getDate() === 5 && _ed.getHours() >= 15 || _ed.getDate() === 6 && _ed.getHours() < 9);
       if (_cf) setShowEgg3(true);
       else if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 5) setShowEgg2(true);
+      if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 && _ed.getHours() < 9) setShowEgg4(true);
     },
     visible: showSplash
   }), showEgg && /*#__PURE__*/React.createElement(ChildrensDayEgg, {
@@ -17703,10 +17749,14 @@ function NanasHome() {
     onClose: function onClose() {
       return setShowEgg3(false);
     }
-  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(HeroBanner, {
+  }), showEgg4 && /*#__PURE__*/React.createElement(RainSleepEgg, {
+    onClose: function onClose() {
+      return setShowEgg4(false);
+    }
+  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
-  }), /*#__PURE__*/React.createElement("div", {
+  }), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 2px"
     }
@@ -17761,11 +17811,11 @@ function NanasHome() {
         desc: "昨天的迪士尼"
       });
     }
-  })))), /*#__PURE__*/React.createElement("div", {
+  })))), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 0"
     }
-  }, /*#__PURE__*/React.createElement(LalalandPlayer, null)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(LalalandPlayer, null)), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 16px 0"
     }
