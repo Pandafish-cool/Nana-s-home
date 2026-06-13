@@ -17832,32 +17832,44 @@ function HomeDeck(_refHD) {
   var h = React.createElement;
   var hintColor = _refHD && _refHD.hintColor ? _refHD.hintColor : COLORS.brown;
   var POOL = [
-    { e: "💛", tag: "悄悄话", t: "给 Nana", b: "你已经做得很好了，真的，不是客套话" },
-    { e: "🌙", tag: "悄悄话", t: "不用硬撑", b: "累了就停一停，那是对自己的温柔" },
-    { e: "✨", tag: "相信自己", t: "致 Nana", b: "你比自己以为的更有力量，稳稳的就好" },
-    { e: "🌿", tag: "小提醒", t: "慢慢来", b: "不用急，你已经在一点点往前走了" },
-    { e: "🫶", tag: "悄悄话", t: "温柔一点", b: "对自己温柔一点，你值得被这样对待" },
-    { e: "🌻", tag: "相信自己", t: "你就够了", b: "不必向谁证明什么，你存在本身就很有力量" },
-    { e: "🍃", tag: "悄悄话", t: "允许休息", b: "勇敢不是硬扛，是累的时候允许自己歇下来" },
-    { e: "🌊", tag: "了解自己", t: "你的感受", b: "你的情绪都是真实的，值得被认真对待" },
-    { e: "🌈", tag: "了解自己", t: "你的节奏", b: "不用和别人比，你有自己的步调，刚刚好" },
-    { e: "🕊️", tag: "了解自己", t: "没有对错", b: "今天的情绪没有对错，允许它来，也允许它走" },
-    { e: "🔋", tag: "小提醒", t: "放松一下", b: "放松不是浪费时间，是给自己悄悄充电" },
-    { e: "🌬️", tag: "小提醒", t: "深呼吸", b: "肩膀放松一点，世界不会因为你喘口气就塌" },
-    { e: "🌷", tag: "悄悄话", t: "可以软弱", b: "你不需要随时坚强，偶尔软弱也完全没关系" },
-    { e: "⭐", tag: "相信自己", t: "相信选择", b: "相信自己的选择，你比想象中更清醒坚定" },
-    { e: "⏳", tag: "悄悄话", t: "交给时间", b: "你已经很努力了，剩下的，就交给时间吧" },
-    { e: "💧", tag: "小提醒", t: "照顾身体", b: "记得喝口水、起来走两步，照顾好自己" },
-    { e: "☕", tag: "今日小任务", t: "对自己好点", b: "给自己冲一杯最喜欢的饮料，慢慢享受" },
-    { e: "🌤️", tag: "今日小任务", t: "透透气", b: "出门晒 5 分钟太阳，或看看窗外的天" },
-    { e: "🛁", tag: "今日小任务", t: "宠爱自己", b: "给自己一段不被打扰的 10 分钟，做点喜欢的" }
+    { e: "💛", t: "今天也辛苦啦", b: "Nana，不管今天过得怎么样，你都已经很棒了" },
+    { e: "🌙", t: "累了就停下来", b: "不用硬撑，歇一会儿也没关系，我一直在的" },
+    { e: "🫖", t: "先喝口水吧", b: "别忘了照顾自己，喝点温的，暖暖身子～" },
+    { e: "🌿", t: "慢慢来就好", b: "不用赶，你已经在往前走了，一点点就够" },
+    { e: "🫶", t: "对自己温柔点", b: "像对待最好的朋友那样，温柔地对待自己" },
+    { e: "🌻", t: "你已经很好了", b: "不必向谁证明什么，你这样就很值得被爱" },
+    { e: "🍃", t: "允许自己休息", b: "休息不是偷懒，是给心留一个喘气的地方" },
+    { e: "🌊", t: "你的感受很重要", b: "难过就难过吧，你的情绪都值得被好好对待" },
+    { e: "🌈", t: "你有自己的节奏", b: "不用和别人比，你的步调，刚刚好" },
+    { e: "🕊️", t: "没有对错", b: "今天的情绪，允许它来，也允许它慢慢走" },
+    { e: "🔋", t: "悄悄充个电", b: "发会儿呆、放空一下，都是被允许的" },
+    { e: "🌬️", t: "深呼吸一下", b: "肩膀松一松，世界不会因为你喘口气就塌" },
+    { e: "🌷", t: "可以软弱的", b: "你不用时刻坚强，偶尔脆弱一下完全没关系" },
+    { e: "⭐", t: "我很相信你", b: "你比自己以为的更勇敢，也更被很多人爱着" },
+    { e: "⏳", t: "交给时间吧", b: "你已经尽力了，剩下的慢慢来，不急的" },
+    { e: "☕", t: "宠一下自己", b: "去冲一杯最爱的饮料，给今天一点小甜" },
+    { e: "🌤️", t: "去透透气", b: "出门晒会儿太阳，或看看窗外的天，就很好" },
+    { e: "🛁", t: "留点时间给自己", b: "哪怕只有十分钟，做点让自己开心的小事" },
+    { e: "🌸", t: "你值得被好好爱", b: "也包括被你自己，温柔地、认真地爱着" },
+    { e: "🌟", t: "有你真好", b: "Nana，有你在的每一天，本身就很温暖" },
+    { e: "🧊", t: "讲个冷笑话", b: "北极熊为啥不吃企鹅？它俩不在一个半球 🐧 冷吧～" },
+    { e: "🥚", t: "冷笑话时间", b: "鸡蛋为啥不开玩笑？怕一不小心笑‘碎’了 😆" },
+    { e: "🌽", t: "玉米想说", b: "玉米悄悄跟你说：‘苞’你今天顺顺利利 🌽" },
+    { e: "🐝", t: "冷到了没", b: "蜜蜂从不会迷路，因为它有‘蜂’向感 🐝 笑一个~" },
+    { e: "🦆", t: "鸭鸭冷笑话", b: "鸭子怎么打招呼？嘎嘎好呀 🦆 今天也要嘎嘎棒" },
+    { e: "🐘", t: "送你个冷的", b: "大象为啥不用电脑？怕被‘鼠’标吓到 🐭" },
+    { e: "🚀", t: "巴斯光年说", b: "飞向宇宙，浩瀚无垠！再难的一天你也能冲过去 ✨" },
+    { e: "🛸", t: "来自巴斯光年", b: "勇敢不是不害怕，是怕了还愿意继续飞 🚀" },
+    { e: "🤠", t: "胡迪想对你说", b: "你有一个朋友，不管多累，我都站在你这边 🎵" },
+    { e: "🪐", t: "巴斯的悄悄话", b: "就算降落在陌生星球，你也一定能稳稳着陆 🌟" },
+    { e: "♾️", t: "To infinity…", b: "…and beyond！没有到不了的明天，巴斯相信你 🚀" }
   ];
   var BGS = ["linear-gradient(135deg,#7a5a8a,#3a2a4a)", "linear-gradient(135deg,#a8784a,#5a3a22)", "linear-gradient(135deg,#6a8a5a,#3a4a2a)", "linear-gradient(135deg,#3a4a7a,#1a2038)", "linear-gradient(135deg,#a85a6a,#5a2a3a)", "linear-gradient(135deg,#b08a3a,#5a4018)"];
   var seedNum = function () { var s = new Date().toDateString(); var n = 0; for (var i = 0; i < s.length; i++) { n = (n * 31 + s.charCodeAt(i)) >>> 0; } return n || 1; }();
   var rng = function () { var x = seedNum; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }();
   var pidx = POOL.map(function (_, i) { return i; });
   for (var _i = pidx.length - 1; _i > 0; _i--) { var _j = Math.floor(rng() * (_i + 1)); var _t = pidx[_i]; pidx[_i] = pidx[_j]; pidx[_j] = _t; }
-  var CARDS = pidx.slice(0, 6).map(function (pi, k) { var c = POOL[pi]; return { e: c.e, tag: c.tag, t: c.t, b: c.b, bg: BGS[k % BGS.length] }; });
+  var CARDS = pidx.slice(0, 6).map(function (pi, k) { var c = POOL[pi]; return { e: c.e, t: c.t, b: c.b, bg: BGS[k % BGS.length] }; });
   var rot = [-2, 3, -4, 5], tx = [0, 7, -7, 10], ty = [0, 8, 15, 21], sc = [1, 0.97, 0.94, 0.91], op = [1, 0.9, 0.78, 0.64], z = [50, 40, 30, 20];
   var _o = useState(function () { return CARDS.map(function (_, i) { return i; }); }); var order = _o[0]; var setOrder = _o[1];
   var _lv = useState(null); var leaving = _lv[0]; var setLeaving = _lv[1];
@@ -17880,15 +17892,13 @@ function HomeDeck(_refHD) {
     return s;
   };
   return h("div", null,
-    h("div", { style: { textAlign: "center", fontSize: "0.74rem", fontWeight: 700, color: hintColor, opacity: 0.72, marginBottom: 10, letterSpacing: "0.3px" } }, "🃏 今日卡组 · 点一下翻一张暖心卡"),
     h("div", { style: { position: "relative", width: "100%", height: 140 } }, CARDS.map(function (c, id) {
       return h("div", { key: "hd" + id, onClick: function () { if (order[0] === id) advance(); }, style: styleFor(id) },
-        h("div", { style: { display: "flex", gap: 12, alignItems: "center" } },
-          h("div", { style: { fontSize: "1.9rem", flexShrink: 0 } }, c.e),
+        h("div", { style: { display: "flex", gap: 14, alignItems: "center", height: "100%" } },
+          h("div", { style: { fontSize: "2.1rem", flexShrink: 0 } }, c.e),
           h("div", { style: { minWidth: 0 } },
-            h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#3a1a05", background: "linear-gradient(135deg,#ffe18a,#f4b740)", borderRadius: 999, padding: "2px 8px" } }, c.tag),
-            h("div", { style: { fontWeight: 800, fontSize: "0.96rem", marginTop: 5 } }, c.t),
-            h("div", { style: { fontSize: "0.76rem", color: "rgba(255,255,255,0.82)", marginTop: 2 } }, c.b))));
+            h("div", { style: { fontWeight: 800, fontSize: "1rem", letterSpacing: "0.3px" } }, c.t),
+            h("div", { style: { fontSize: "0.81rem", color: "rgba(255,255,255,0.9)", marginTop: 5, lineHeight: 1.55 } }, c.b))));
     })));
 }
 function ScratchBar(_refSC) {
