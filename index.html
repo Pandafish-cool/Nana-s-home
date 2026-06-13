@@ -7045,6 +7045,26 @@ function GameActivity(_ref49) {
     _useState134 = _slicedToArray(_useState133, 2),
     fullscreen = _useState134[0],
     setFullscreen = _useState134[1];
+  var _gl = useState(false), showGameLottery = _gl[0], setShowGameLottery = _gl[1];
+  var gameStreak = function () { try { var s = JSON.parse(localStorage.getItem("nana-game-streak") || "null"); return s && s.streak ? s.streak : 0; } catch (_) { return 0; } }();
+  var recordGameDay = function recordGameDay() {
+    try {
+      var today = new Date().toDateString();
+      var y = new Date(Date.now() - 86400000).toDateString();
+      var s = JSON.parse(localStorage.getItem("nana-game-streak") || "null") || { last: null, streak: 0, claimed: 0 };
+      if (s.last !== today) {
+        s.streak = s.last === y ? (s.streak || 0) + 1 : 1;
+        s.last = today;
+        if (s.streak < (s.claimed || 0)) s.claimed = 0;
+        localStorage.setItem("nana-game-streak", JSON.stringify(s));
+      }
+      if ((s.streak || 0) >= (s.claimed || 0) + 7) setShowGameLottery(true);
+    } catch (_) {}
+  };
+  var closeGameLottery = function closeGameLottery() {
+    try { var s = JSON.parse(localStorage.getItem("nana-game-streak") || "null") || { streak: 0 }; s.claimed = Math.floor((s.streak || 0) / 7) * 7; localStorage.setItem("nana-game-streak", JSON.stringify(s)); } catch (_) {}
+    setShowGameLottery(false);
+  };
   var games = [{
     id: "tetris",
     icon: "🟦",
@@ -7097,6 +7117,7 @@ function GameActivity(_ref49) {
   var selectGame = function selectGame(id) {
     setCurrentGame(id);
     setFullscreen(false);
+    recordGameDay();
   };
   var renderGame = function renderGame() {
     if (currentGame === "tetris") return /*#__PURE__*/React.createElement(TetrisGame, {
@@ -7195,7 +7216,10 @@ function GameActivity(_ref49) {
       }
     }, renderGame()));
   }
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", null, showGameLottery && /*#__PURE__*/React.createElement(GameStreakEgg, {
+    days: gameStreak,
+    onClose: closeGameLottery
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -15874,6 +15898,110 @@ function BedroomScene(_ref125) {
 }
 
 // ── MEAL CHECK-IN with AI ────────────────────────────────
+function nanaAddReward(r) {
+  try {
+    var a = JSON.parse(localStorage.getItem("nana-rewards") || "[]");
+    a.push({ id: Date.now() + "-" + Math.floor(Math.random() * 1000), type: r.type, icon: r.icon, title: r.title, sub: r.sub, serial: r.serial, date: new Date().toLocaleDateString("zh-CN") });
+    localStorage.setItem("nana-rewards", JSON.stringify(a));
+  } catch (_) {}
+}
+function nanaGetRewards() {
+  try { return JSON.parse(localStorage.getItem("nana-rewards") || "[]"); } catch (_) { return []; }
+}
+function nanaRedeemReward(id) {
+  try {
+    var a = JSON.parse(localStorage.getItem("nana-rewards") || "[]");
+    a.forEach(function (x) { if (x.id === id) { x.redeemed = true; x.redeemedDate = new Date().toLocaleDateString("zh-CN"); } });
+    localStorage.setItem("nana-rewards", JSON.stringify(a));
+  } catch (_) {}
+}
+function RewardsWallet() {
+  var h = React.createElement;
+  var _o = useState(false); var open = _o[0]; var setOpen = _o[1];
+  var _v = useState(0); var setVer = _v[1];
+  var _c = useState(null); var confirmId = _c[0]; var setConfirmId = _c[1];
+  var all = nanaGetRewards();
+  var redeem = function redeem(id) { nanaRedeemReward(id); setConfirmId(null); setVer(function (n) { return n + 1; }); };
+  var voucher = function voucher(r, i) {
+    var blue = r.type === "keyboard";
+    var bg = blue ? "linear-gradient(135deg,#e8f0ff,#ede0ff)" : "linear-gradient(135deg,#fff3e0,#ffe0ec)";
+    var bd = blue ? "#6a7adb" : "#d8924a";
+    var tc = blue ? "#4a4ab7" : "#c0563a";
+    var ft = blue ? "#6a6ab0" : "#a8742a";
+    var done = !!r.redeemed;
+    return h("div", { key: r.id || i, style: { position: "relative", background: bg, borderRadius: 14, border: "2px dashed " + bd, padding: "12px 14px", marginBottom: 10, color: blue ? "#3a3a7a" : "#7a4a20", filter: done ? "grayscale(0.65)" : "none", opacity: done ? 0.72 : 1 } },
+      done && h("div", { style: { position: "absolute", top: 10, right: 8, transform: "rotate(11deg)", border: "2px solid #c0392b", color: "#c0392b", borderRadius: 7, padding: "1px 7px", fontSize: "0.66rem", fontWeight: 900, letterSpacing: 1, opacity: 0.85 } }, "已兑换 ✓"),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+        h("div", { style: { fontSize: "1.5rem" } }, r.icon),
+        h("div", { style: { fontWeight: 900, fontSize: "0.98rem", color: tc } }, r.title)),
+      h("div", { style: { fontSize: "0.78rem", margin: "6px 0", lineHeight: 1.6 } }, r.sub),
+      h("div", { style: { fontSize: "0.62rem", color: ft, borderTop: "1px dashed " + bd, paddingTop: 6, marginTop: 6 } }, "编号 " + r.serial + " · " + r.date + (done ? " · 已于 " + (r.redeemedDate || "") + " 兑换" : " · 仅限 Nana 使用 ✨")),
+      !done && (confirmId === r.id ?
+        h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+          h("button", { onClick: function () { redeem(r.id); }, style: { flex: 1, background: tc, color: "#fff", border: "none", borderRadius: 10, padding: "8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "确认兑换 ✓"),
+          h("button", { onClick: function () { setConfirmId(null); }, style: { flex: 1, background: "transparent", color: ft, border: "1.5px solid " + bd, borderRadius: 10, padding: "8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "再想想")) :
+        h("button", { onClick: function () { setConfirmId(r.id); }, style: { width: "100%", marginTop: 10, background: "transparent", color: tc, border: "1.5px solid " + bd, borderRadius: 10, padding: "8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer" } }, "🎁 兑换这张")));
+  };
+  return h("div", { style: { marginLeft: "auto", display: "flex", alignItems: "center" } },
+    h("div", { onClick: function () { setOpen(true); }, title: "奖励卡包", style: { position: "relative", width: 32, height: 32, borderRadius: 10, background: "radial-gradient(circle at 35% 28%, #ffe9a8, #f4b740 68%, #d9962a)", border: "2px solid #fff3d0", boxShadow: "0 2px 7px rgba(180,130,30,0.45)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 } },
+      h("div", { style: { fontSize: "0.95rem", lineHeight: 1 } }, "🎁"),
+      all.length > 0 && h("div", { style: { position: "absolute", top: -5, right: -5, minWidth: 15, height: 15, padding: "0 3px", borderRadius: 8, background: "#e8546b", color: "#fff", fontSize: "0.56rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff" } }, all.length)),
+    open && h("div", { onClick: function () { setOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(26,16,30,0.82)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 18px", fontFamily: "'Nunito', system-ui" } },
+      h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "#FFF8F7", borderRadius: 20, padding: 18, width: "100%", maxWidth: 360, maxHeight: "82vh", overflowY: "auto", boxShadow: "0 12px 40px rgba(0,0,0,0.4)" } },
+        h("div", { style: { fontWeight: 900, fontSize: "1.15rem", color: "#81515A", textAlign: "center" } }, "🎁 我的奖励卡包"),
+        h("div", { style: { fontSize: "0.72rem", color: "#b0a090", textAlign: "center", marginBottom: 14 } }, "已收集 " + all.length + " 张 · 想兑换随时找我 💛"),
+        all.length === 0 ? h("div", { style: { fontSize: "0.85rem", color: "#b0a090", textAlign: "center", padding: "24px 0", lineHeight: 1.8 } }, "还没有奖励券哦～", h("br", null), "连续好好吃饭 5 天、连续玩游戏 7 天", h("br", null), "都能抽到惊喜奖励 ✨") :
+        all.slice().reverse().map(voucher),
+        h("button", { onClick: function () { setOpen(false); }, style: { width: "100%", marginTop: 6, background: "#81515A", color: "#fff", border: "none", borderRadius: 12, padding: "11px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "收好啦 💛")))
+  );
+}
+function GameStreakEgg(_refGS) {
+  var onClose = _refGS.onClose, days = _refGS.days;
+  var h = React.createElement;
+  var _p = useState("pick"); var phase = _p[0]; var setPhase = _p[1];
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _sr = useState(function () { return "NANA-KB-" + String(100 + Math.floor(Math.random() * 900)); }); var serial = _sr[0];
+  var _sv = useState(false); var saved = _sv[0]; var setSaved = _sv[1];
+  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80); return function () { clearInterval(id); }; }, []);
+  useEffect(function () { if (phase !== "thanks") return; var id = setTimeout(function () { onClose(); }, 3000); return function () { clearTimeout(id); }; }, [phase]);
+  var T = tick;
+  var pick = function pick(i) {
+    if (phase !== "pick") return;
+    if (!saved) { nanaAddReward({ type: "keyboard", icon: "⌨️", title: "Nana 专属键盘券", sub: "奖励 Nana 一个专属键盘，让你无缝衔接 ⌨️", serial: serial }); setSaved(true); }
+    setPhase("win");
+  };
+  var conf = [];
+  if (phase === "win") {
+    var cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
+    for (var k = 0; k < 22; k++) { var cx = (k * 4.6 + Math.sin(k) * 5) % 100, cy = ((k * 7 + T * 1.6) % 120) - 12; conf.push(h("div", { key: "cf" + k, style: { position: "absolute", left: cx.toFixed(1) + "%", top: cy.toFixed(1) + "%", width: 6, height: 10, background: cols[k % 5], opacity: 0.9, transform: "rotate(" + ((T * 7 + k * 40) % 360) + "deg)", borderRadius: 1 } })); }
+  }
+  return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(16,22,40,0.88)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 20px" } },
+    conf,
+    h("div", { style: { color: "#8fd0ff", fontWeight: 800, fontSize: "0.8rem", letterSpacing: 1, marginBottom: 8, textAlign: "center", zIndex: 2 } }, "🎮 连续玩游戏 " + days + " 天 · 抽奖时间！"),
+    phase === "pick" && h("div", { style: { textAlign: "center", zIndex: 2 } },
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.3rem,5vw,1.8rem)", marginBottom: 6 } }, "选一个金币翻开 👇"),
+      h("div", { style: { color: "rgba(255,255,255,0.6)", fontSize: "0.72rem", marginBottom: 18 } }, "只能翻一次哦，想好再下手～"),
+      h("div", { style: { display: "flex", gap: 16, justifyContent: "center" } }, [0, 1, 2].map(function (i) {
+        return h("div", { key: "box" + i, onClick: function () { pick(i); }, style: { fontSize: "3.2rem", cursor: "pointer", transform: "translateY(" + (Math.sin(T * 0.15 + i) * 4).toFixed(1) + "px)", userSelect: "none", filter: "drop-shadow(0 4px 10px rgba(240,190,60,0.6))" } }, "🪙");
+      }))
+    ),
+    phase === "win" && h("div", { style: { textAlign: "center", animation: "bounceIn 0.6s ease", maxWidth: 300, zIndex: 2 } },
+      h("div", { style: { fontSize: "2.6rem", marginBottom: 8 } }, "⌨️✨"),
+      h("div", { style: { background: "linear-gradient(135deg,#e8f0ff,#ede0ff)", borderRadius: 16, border: "2px dashed #6a7adb", padding: "18px 16px", color: "#3a3a7a", boxShadow: "0 8px 28px rgba(0,0,0,0.4)" } },
+        h("div", { style: { fontWeight: 900, fontSize: "1.2rem", color: "#4a4ab7" } }, "⌨️ Nana 专属键盘券"),
+        h("div", { style: { fontSize: "0.84rem", margin: "8px 0", lineHeight: 1.8 } }, "奖励 Nana 一个专属键盘 ⌨️", h("br", null), "让你无缝衔接～"),
+        h("div", { style: { fontSize: "0.64rem", color: "#6a6ab0", borderTop: "1px dashed #6a7adb", paddingTop: 8, marginTop: 8 } }, "编号 " + serial + " · 永久有效 · 仅限 Nana 使用 ✨")
+      ),
+      h("button", { onClick: function () { setPhase("thanks"); }, style: { marginTop: 16, background: "#4a4ab7", color: "#fff", border: "none", borderRadius: 12, padding: "10px 28px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, "收进卡包 💛")
+    ),
+    phase === "thanks" && h("div", { onClick: onClose, style: { textAlign: "center", animation: "bounceIn 0.5s ease", maxWidth: 300, zIndex: 2, cursor: "pointer" } },
+      h("div", { style: { fontSize: "2.6rem", marginBottom: 10 } }, "💙"),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.1rem,4.6vw,1.45rem)", lineHeight: 1.6 } }, "玩得开心最重要，Nana～"),
+      h("div", { style: { color: "#8fd0ff", fontSize: "0.92rem", marginTop: 8 } }, "奖励已放进卡包 · 还有不定期惊喜哦 ✨"),
+      h("div", { style: { color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: 14 } }, "（点一下关闭）")
+    )
+  );
+}
 function MealLotteryEgg(_refML) {
   var onClose = _refML.onClose, days = _refML.days;
   var h = React.createElement;
@@ -15881,10 +16009,15 @@ function MealLotteryEgg(_refML) {
   var _pk = useState(-1); var picked = _pk[0]; var setPicked = _pk[1];
   var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
   var _sr = useState(function () { return "NANA-" + String(100 + Math.floor(Math.random() * 900)); }); var serial = _sr[0];
+  var _sv = useState(false); var saved = _sv[0]; var setSaved = _sv[1];
   useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80); return function () { clearInterval(id); }; }, []);
   useEffect(function () { if (phase !== "thanks") return; var id = setTimeout(function () { onClose(); }, 3000); return function () { clearTimeout(id); }; }, [phase]);
   var T = tick;
-  var pick = function pick(i) { if (phase !== "pick") return; setPicked(i); setPhase("win"); };
+  var pick = function pick(i) {
+    if (phase !== "pick") return;
+    if (!saved) { nanaAddReward({ type: "meal", icon: "🍽️", title: "Nana 专属美餐券", sub: "凭此券兑换一顿想吃的大餐 💛 你想吃什么就带你去吃什么", serial: serial }); setSaved(true); }
+    setPicked(i); setPhase("win");
+  };
   var conf = [];
   if (phase === "win") {
     var cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
@@ -17767,7 +17900,7 @@ function NanasHome() {
       color: COLORS.brown,
       marginBottom: 9,
       display: "flex",
-      alignItems: "baseline",
+      alignItems: "center",
       gap: 6
     }
   }, "🔋 Nana 的充电站", /*#__PURE__*/React.createElement("span", {
@@ -17776,7 +17909,7 @@ function NanasHome() {
       fontWeight: 600,
       color: "#b0a090"
     }
-  }, "· 随时回来回血 💛")), /*#__PURE__*/React.createElement("div", {
+  }, "· 随时回来回血 💛"), /*#__PURE__*/React.createElement(RewardsWallet, null)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10
