@@ -17852,24 +17852,24 @@ function HomeDeck(_refHD) {
     { e: "🛁", t: "留点时间给自己", b: "哪怕只有十分钟，做点让自己开心的小事" },
     { e: "🌸", t: "你值得被好好爱", b: "也包括被你自己，温柔地、认真地爱着" },
     { e: "🌟", t: "有你真好", b: "Nana，有你在的每一天，本身就很温暖" },
-    { e: "🧊", t: "讲个冷笑话", b: "北极熊为啥不吃企鹅？它俩不在一个半球 🐧 冷吧～" },
-    { e: "🥚", t: "冷笑话时间", b: "鸡蛋为啥不开玩笑？怕一不小心笑‘碎’了 😆" },
-    { e: "🌽", t: "玉米想说", b: "玉米悄悄跟你说：‘苞’你今天顺顺利利 🌽" },
-    { e: "🐝", t: "冷到了没", b: "蜜蜂从不会迷路，因为它有‘蜂’向感 🐝 笑一个~" },
-    { e: "🦆", t: "鸭鸭冷笑话", b: "鸭子怎么打招呼？嘎嘎好呀 🦆 今天也要嘎嘎棒" },
-    { e: "🐘", t: "送你个冷的", b: "大象为啥不用电脑？怕被‘鼠’标吓到 🐭" },
-    { e: "🚀", t: "巴斯光年说", b: "飞向宇宙，浩瀚无垠！再难的一天你也能冲过去 ✨" },
-    { e: "🛸", t: "来自巴斯光年", b: "勇敢不是不害怕，是怕了还愿意继续飞 🚀" },
-    { e: "🤠", t: "胡迪想对你说", b: "你有一个朋友，不管多累，我都站在你这边 🎵" },
-    { e: "🪐", t: "巴斯的悄悄话", b: "就算降落在陌生星球，你也一定能稳稳着陆 🌟" },
-    { e: "♾️", t: "To infinity…", b: "…and beyond！没有到不了的明天，巴斯相信你 🚀" }
+    { e: "🚀", k: "hero", t: "巴斯光年说", b: "飞向宇宙，浩瀚无垠！再难的一天你也能冲过去 ✨" },
+    { e: "🛸", k: "hero", t: "来自巴斯光年", b: "勇敢不是不害怕，是怕了还愿意继续飞 🚀" },
+    { e: "🤠", k: "hero", t: "胡迪想对你说", b: "你有一个朋友，不管多累，我都站在你这边 🎵" },
+    { e: "🪐", k: "hero", t: "巴斯的悄悄话", b: "就算降落在陌生星球，你也一定能稳稳着陆 🌟" },
+    { e: "♾️", k: "hero", t: "To infinity…", b: "…and beyond！没有到不了的明天，巴斯相信你 🚀" }
   ];
-  var BGS = ["linear-gradient(135deg,#7a5a8a,#3a2a4a)", "linear-gradient(135deg,#a8784a,#5a3a22)", "linear-gradient(135deg,#6a8a5a,#3a4a2a)", "linear-gradient(135deg,#3a4a7a,#1a2038)", "linear-gradient(135deg,#a85a6a,#5a2a3a)", "linear-gradient(135deg,#b08a3a,#5a4018)"];
+  var warmBGS = ["linear-gradient(135deg,#7a5a8a,#3a2a4a)", "linear-gradient(135deg,#a8784a,#5a3a22)", "linear-gradient(135deg,#6a8a5a,#3a4a2a)", "linear-gradient(135deg,#3a4a7a,#1a2038)", "linear-gradient(135deg,#a85a6a,#5a2a3a)", "linear-gradient(135deg,#b08a3a,#5a4018)"];
+  var heroBGS = ["linear-gradient(135deg,#27376e,#0b1330)", "linear-gradient(135deg,#2b2c60,#0a0e26)"];
+  var warmStickers = ["✨", "💗", "🌟", "🍀", "🌼", "🫧"];
+  var themeFor = function (kind, k) {
+    if (kind === "hero") return { bg: heroBGS[k % heroBGS.length], color: "#eaf0ff", sub: "rgba(206,220,255,0.85)", border: "1.5px solid rgba(150,180,255,0.3)", shadow: "0 8px 22px rgba(20,30,80,0.42)", sticker: "🚀", stars: true };
+    return { bg: warmBGS[k % warmBGS.length], color: "#fff", sub: "rgba(255,255,255,0.9)", border: "1.5px solid rgba(255,255,255,0.14)", shadow: "0 8px 20px rgba(40,20,40,0.25)", sticker: warmStickers[k % warmStickers.length], stars: false };
+  };
   var seedNum = function () { var s = new Date().toDateString(); var n = 0; for (var i = 0; i < s.length; i++) { n = (n * 31 + s.charCodeAt(i)) >>> 0; } return n || 1; }();
   var rng = function () { var x = seedNum; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }();
   var pidx = POOL.map(function (_, i) { return i; });
   for (var _i = pidx.length - 1; _i > 0; _i--) { var _j = Math.floor(rng() * (_i + 1)); var _t = pidx[_i]; pidx[_i] = pidx[_j]; pidx[_j] = _t; }
-  var CARDS = pidx.slice(0, 6).map(function (pi, k) { var c = POOL[pi]; return { e: c.e, t: c.t, b: c.b, bg: BGS[k % BGS.length] }; });
+  var CARDS = pidx.slice(0, 6).map(function (pi, k) { var c = POOL[pi]; var th = themeFor(c.k || "warm", k); return { e: c.e, t: c.t, b: c.b, bg: th.bg, color: th.color, sub: th.sub, border: th.border, shadow: th.shadow, sticker: th.sticker, stars: th.stars }; });
   var rot = [-2, 3, -4, 5], tx = [0, 7, -7, 10], ty = [0, 8, 15, 21], sc = [1, 0.97, 0.94, 0.91], op = [1, 0.9, 0.78, 0.64], z = [50, 40, 30, 20];
   var _o = useState(function () { return CARDS.map(function (_, i) { return i; }); }); var order = _o[0]; var setOrder = _o[1];
   var _lv = useState(null); var leaving = _lv[0]; var setLeaving = _lv[1];
@@ -17884,7 +17884,7 @@ function HomeDeck(_refHD) {
     }, 480);
   };
   var styleFor = function styleFor(id) {
-    var s = { position: "absolute", left: 0, top: 0, width: "100%", height: 104, borderRadius: 16, boxSizing: "border-box", padding: "13px 16px", cursor: "pointer", overflow: "hidden", border: "1.5px solid rgba(255,255,255,0.14)", boxShadow: "0 8px 20px rgba(40,20,40,0.25)", color: "#fff", background: CARDS[id].bg, willChange: "transform,opacity" };
+    var s = { position: "absolute", left: 0, top: 0, width: "100%", height: 104, borderRadius: 16, boxSizing: "border-box", padding: "13px 16px", cursor: "pointer", overflow: "hidden", border: CARDS[id].border, boxShadow: CARDS[id].shadow, color: CARDS[id].color, background: CARDS[id].bg, willChange: "transform,opacity" };
     if (id === leaving) { s.transition = "transform .5s cubic-bezier(.5,.05,.5,1), opacity .5s ease"; s.transform = "translate(62%,18px) rotate(15deg)"; s.opacity = 0; s.zIndex = 60; return s; }
     var d = Math.min(order.indexOf(id), 3);
     s.zIndex = z[d]; s.transform = "translate(" + tx[d] + "px," + ty[d] + "px) rotate(" + rot[d] + "deg) scale(" + sc[d] + ")";
@@ -17894,11 +17894,14 @@ function HomeDeck(_refHD) {
   return h("div", null,
     h("div", { style: { position: "relative", width: "100%", height: 140 } }, CARDS.map(function (c, id) {
       return h("div", { key: "hd" + id, onClick: function () { if (order[0] === id) advance(); }, style: styleFor(id) },
-        h("div", { style: { display: "flex", gap: 14, alignItems: "center", height: "100%" } },
-          h("div", { style: { fontSize: "2.1rem", flexShrink: 0 } }, c.e),
+        h("div", { style: { position: "absolute", right: -10, bottom: -22, fontSize: "5.4rem", opacity: 0.16, transform: "rotate(-12deg)", pointerEvents: "none", lineHeight: 1 } }, c.e),
+        c.stars && [[16, 14], [44, 70], [92, 24], [70, 80], [120, 52]].map(function (p, si) { return h("div", { key: "st" + si, style: { position: "absolute", right: p[0], top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.45 + (si % 3) * 0.2, pointerEvents: "none" } }); }),
+        h("div", { style: { position: "absolute", top: 8, right: 11, fontSize: "0.95rem", transform: "rotate(12deg)", opacity: 0.92, pointerEvents: "none" } }, c.sticker),
+        h("div", { style: { display: "flex", gap: 14, alignItems: "center", height: "100%", position: "relative" } },
+          h("div", { style: { fontSize: "2.2rem", flexShrink: 0, filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.28))" } }, c.e),
           h("div", { style: { minWidth: 0 } },
-            h("div", { style: { fontWeight: 800, fontSize: "1rem", letterSpacing: "0.3px" } }, c.t),
-            h("div", { style: { fontSize: "0.81rem", color: "rgba(255,255,255,0.9)", marginTop: 5, lineHeight: 1.55 } }, c.b))));
+            h("div", { style: { fontWeight: 800, fontSize: "1rem", letterSpacing: "0.3px", color: c.color } }, c.t),
+            h("div", { style: { fontSize: "0.81rem", color: c.sub, marginTop: 5, lineHeight: 1.55 } }, c.b))));
     })));
 }
 function ScratchBar(_refSC) {
