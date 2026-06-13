@@ -17859,6 +17859,21 @@ function HomeDeck(_refHD) {
     { e: "🎮", t: "尽情放纵", b: "打游戏追剧躺到天黑都行，Nana 今天没有该做只有想做" },
     { e: "🍕", t: "放肆一点", b: "宵夜、加辣、被窝里刷手机——Nana 一点愧疚都不许有" },
     { e: "🫧", t: "深呼吸一下", b: "慢慢吸一口再慢慢吐出来，Nana 把紧绷的自己松一松" },
+    { e: "🍵", t: "泡杯热茶", b: "Nana，水开了，给自己泡一杯，慢慢喝，不急" },
+    { e: "🧸", t: "抱个软的", b: "累了就抱抱身边软软的东西，Nana 治愈一下自己" },
+    { e: "🪟", t: "看会儿窗外", b: "Nana 发会儿呆、看看天，脑子放空一下也很好" },
+    { e: "🌟", t: "你做到的很多", b: "回头看看，Nana 其实已经走了很长一段路了" },
+    { e: "🍀", t: "好事会来的", b: "该做的都做了，Nana 剩下的好事，慢慢就来了" },
+    { e: "🌅", t: "明天会更好", b: "今天先好好睡，Nana，新的一天会更温柔一点" },
+    { e: "💌", t: "想对你说", b: "Nana，谢谢你今天也好好活着，真的很不容易" },
+    { e: "🐱", t: "有人在等你", b: "猫猫在等你，Nana，家里一直为你留着灯" },
+    { e: "☁️", t: "靠一会儿", b: "Nana 累了就靠过来，不用说话，待着就好" },
+    { e: "🌼", t: "你很珍贵", b: "Nana 对很多人来说，都是很特别很重要的存在" },
+    { e: "⚓", t: "你稳得住", b: "再大的浪，Nana 也扛过来了，你比想的更稳" },
+    { e: "🛡️", t: "做自己就好", b: "不必讨好谁，Nana 本来的样子，就已经很好" },
+    { e: "🍫", t: "甜一口", b: "Nana 来块巧克力吧，对今天的自己好一点" },
+    { e: "🛀", t: "泡个热水澡", b: "Nana 今晚泡个澡，把一身疲惫都泡化掉" },
+    { e: "😴", t: "尽情赖床", b: "明天能赖床就尽情赖，Nana 不用设闹钟" },
     // —— 角色·勇敢鼓励 ——
     { e: "🚀", k: "hero", t: "巴斯光年说", b: "飞向宇宙，浩瀚无垠！再难的一天，Nana 也能冲过去 ✨" },
     { e: "🛸", k: "hero", t: "来自巴斯光年", b: "勇敢不是不害怕，Nana，是怕了还愿意继续往前飞 🚀" },
@@ -17873,11 +17888,16 @@ function HomeDeck(_refHD) {
     if (kind === "hero") return { bg: heroBGS[k % heroBGS.length], color: "#eaf0ff", sub: "rgba(206,220,255,0.85)", border: "1.5px solid rgba(150,180,255,0.3)", shadow: "0 8px 22px rgba(20,30,80,0.42)", sticker: "🚀", stars: true };
     return { bg: warmBGS[k % warmBGS.length], color: "#fff", sub: "rgba(255,255,255,0.9)", border: "1.5px solid rgba(255,255,255,0.14)", shadow: "0 8px 20px rgba(40,20,40,0.25)", sticker: warmStickers[k % warmStickers.length], stars: false };
   };
-  var seedNum = function () { var s = new Date().toDateString(); var n = 0; for (var i = 0; i < s.length; i++) { n = (n * 31 + s.charCodeAt(i)) >>> 0; } return n || 1; }();
-  var rng = function () { var x = seedNum; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }();
+  // 发牌式：每天发 6 张，发完整副(7天)才重新洗牌 → 连着 7 天不重样
+  var N = POOL.length, per = 6, passes = Math.ceil(N / per);
+  var dayNum = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
+  var passSeed = ((Math.floor(dayNum / passes) + 1) * 2654435761) >>> 0 || 1;
+  var rng = function () { var x = passSeed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }();
   var pidx = POOL.map(function (_, i) { return i; });
   for (var _i = pidx.length - 1; _i > 0; _i--) { var _j = Math.floor(rng() * (_i + 1)); var _t = pidx[_i]; pidx[_i] = pidx[_j]; pidx[_j] = _t; }
-  var CARDS = pidx.slice(0, 6).map(function (pi, k) { var c = POOL[pi]; var th = themeFor(c.k || "warm", k); return { e: c.e, t: c.t, b: c.b, bg: th.bg, color: th.color, sub: th.sub, border: th.border, shadow: th.shadow, sticker: th.sticker, stars: th.stars }; });
+  var _start = (dayNum % passes) * per;
+  var sel = []; for (var _s = 0; _s < per; _s++) { sel.push(pidx[(_start + _s) % N]); }
+  var CARDS = sel.map(function (pi, k) { var c = POOL[pi]; var th = themeFor(c.k || "warm", k); return { e: c.e, t: c.t, b: c.b, bg: th.bg, color: th.color, sub: th.sub, border: th.border, shadow: th.shadow, sticker: th.sticker, stars: th.stars }; });
   var rot = [-2, 3, -4, 5], tx = [0, 7, -7, 10], ty = [0, 8, 15, 21], sc = [1, 0.97, 0.94, 0.91], op = [1, 0.9, 0.78, 0.64], z = [50, 40, 30, 20];
   var _o = useState(function () { return CARDS.map(function (_, i) { return i; }); }); var order = _o[0]; var setOrder = _o[1];
   var _lv = useState(null); var leaving = _lv[0]; var setLeaving = _lv[1];
