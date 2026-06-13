@@ -15950,8 +15950,9 @@ function RewardsWallet() {
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "#FFF8F7", borderRadius: 20, padding: 18, width: "100%", maxWidth: 360, maxHeight: "82vh", overflowY: "auto", boxShadow: "0 12px 40px rgba(0,0,0,0.4)" } },
         h("div", { style: { fontWeight: 900, fontSize: "1.15rem", color: "#81515A", textAlign: "center" } }, "🎁 我的奖励卡包"),
         h("div", { style: { fontSize: "0.72rem", color: "#b0a090", textAlign: "center", marginBottom: 14 } }, "已收集 " + all.length + " 张 · 想兑换随时找我 💛"),
-        all.length === 0 ? h("div", { style: { fontSize: "0.85rem", color: "#b0a090", textAlign: "center", padding: "24px 0", lineHeight: 1.8 } }, "还没有奖励券哦～", h("br", null), "连续好好吃饭 5 天、连续玩游戏 7 天", h("br", null), "都能抽到惊喜奖励 ✨") :
+        all.length === 0 ? h("div", { style: { fontSize: "0.85rem", color: "#b0a090", textAlign: "center", padding: "24px 0", lineHeight: 1.8 } }, "请尽情享受你的小屋时光 🏡", h("br", null), "惊喜会不定期降临，have fun～ ✨") :
         all.slice().reverse().map(voucher),
+        all.length > 0 && h("div", { style: { fontSize: "0.76rem", color: "#b0a090", textAlign: "center", padding: "4px 0 12px", lineHeight: 1.7 } }, "请尽情享受你的小屋时光 🏡", h("br", null), "惊喜会不定期降临，have fun～ ✨"),
         h("button", { onClick: function () { setOpen(false); }, style: { width: "100%", marginTop: 6, background: "#81515A", color: "#fff", border: "none", borderRadius: 12, padding: "11px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "收好啦 💛")))
   );
 }
