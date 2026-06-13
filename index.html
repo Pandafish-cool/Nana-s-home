@@ -17774,29 +17774,43 @@ function NanaMixtapeCard() {
     var c = lyricsRef.current, el = c.children[activeIdx];
     if (el) c.scrollTop = el.offsetTop - c.clientHeight / 2 + el.clientHeight / 2;
   }, [activeIdx, showLy]);
-  return h("div", { style: { background: "linear-gradient(180deg," + mood.tint + ",#fff 62%)", borderRadius: 16, border: "1.5px solid rgba(" + mood.glow + ",0.28)", boxShadow: "0px 8px 18px rgba(" + mood.glow + ",0.12)", overflow: "hidden", transition: "background 0.6s, border-color 0.6s, box-shadow 0.6s" } },
+  var spinReel = function () {
+    return h("div", { style: { width: 44, height: 44, flexShrink: 0, borderRadius: "50%", background: "radial-gradient(circle,#5a4a42 0 34%,#2a201c 35% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.06), 0 1px 3px rgba(0,0,0,0.5)", animation: "nanaSpin 2.4s linear infinite", animationPlayState: playing ? "running" : "paused" } },
+      h("div", { style: { width: 16, height: 16, borderRadius: "50%", background: "#ece3d4", position: "relative", boxShadow: "0 0 0 3px #1a1412" } },
+        [0, 1, 2].map(function (k) { return h("div", { key: "sp" + k, style: { position: "absolute", left: "50%", top: "50%", width: 3, height: 8, background: "#2a201c", transform: "translate(-50%,-50%) rotate(" + (k * 60) + "deg)" } }); })));
+  };
+  var keyStyle = function (dis) {
+    return { width: 40, height: 30, borderRadius: 6, border: "none", background: "linear-gradient(180deg,#fbf6ee,#e6dccd)", color: dis ? "#c3b6a4" : "#6a5a48", fontSize: "0.72rem", fontWeight: 700, cursor: dis ? "default" : "pointer", opacity: dis ? 0.55 : 1, boxShadow: "0 2px 0 rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.7)" };
+  };
+  return h("div", { style: { background: "linear-gradient(165deg," + mood.tint + ",#fff 70%)", borderRadius: 18, border: "1.5px solid rgba(" + mood.glow + ",0.28)", boxShadow: "0px 10px 22px rgba(" + mood.glow + ",0.14)", overflow: "hidden", transition: "background 0.6s, border-color 0.6s, box-shadow 0.6s" } },
+    h("style", null, "@keyframes nanaSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"),
     h("audio", { ref: audioRef, src: cur.src, preload: "metadata" }),
-    h("div", { style: { display: "flex", gap: 12, padding: "14px 14px 10px", alignItems: "center" } },
-      h("div", { onClick: toggle, style: { width: 54, height: 54, borderRadius: 14, flexShrink: 0, background: "radial-gradient(circle at 35% 30%," + mood.accent + "," + mood.accent2 + ")", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff", fontSize: "1.3rem", boxShadow: playing ? "0 0 16px rgba(" + mood.glow + ",0.45)" : "0 3px 8px rgba(0,0,0,0.18)", transition: "background 0.6s, box-shadow 0.3s" } }, playing ? "⏸" : "▶"),
-      h("div", { style: { minWidth: 0, flex: 1 } },
-        h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
-          h("span", { style: { fontSize: "0.56rem", fontWeight: 800, color: "#fff", background: mood.accent, borderRadius: 999, padding: "2px 8px", transition: "background 0.6s", whiteSpace: "nowrap" } }, "🎶 Nana 私藏歌单"),
-          h("span", { style: { fontSize: "0.56rem", fontWeight: 700, color: mood.accent2, background: mood.soft, borderRadius: 999, padding: "2px 7px", transition: "all 0.6s", whiteSpace: "nowrap" } }, mood.label)),
-        h("div", { style: { fontWeight: 800, fontSize: "0.92rem", color: COLORS.brown, marginTop: 5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, cur.title),
-        h("div", { style: { fontSize: "0.68rem", color: error ? "#c46" : "#b0a090", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, error ? "这首暂时放不出来，换一首试试～" : cur.artist))),
-    h("div", { style: { display: "flex", gap: 2, height: 16, alignItems: "flex-end", padding: "0 16px 6px" } },
-      Array.from({ length: 32 }).map(function (_, i) {
-        return h("div", { key: "bar" + i, style: { flex: 1, borderRadius: 2, height: playing ? (24 + Math.sin(tick * 0.38 + i * 0.5) * 60) + "%" : (16 + Math.sin(i * 0.7) * 12) + "%", background: playing ? mood.accent : "rgba(" + mood.glow + ",0.22)", transition: "height 0.14s ease, background 0.6s" } });
-      })),
-    h("div", { style: { padding: "0 16px 4px", display: "flex", alignItems: "center", gap: 8 } },
+    h("div", { style: { display: "flex", alignItems: "center", gap: 6, padding: "12px 14px 8px" } },
+      h("span", { style: { fontSize: "0.56rem", fontWeight: 800, color: "#fff", background: mood.accent, borderRadius: 999, padding: "2px 8px", transition: "background 0.6s", whiteSpace: "nowrap" } }, "🎶 Nana 随身听"),
+      h("span", { style: { fontSize: "0.56rem", fontWeight: 700, color: mood.accent2, background: mood.soft, borderRadius: 999, padding: "2px 7px", transition: "all 0.6s", whiteSpace: "nowrap" } }, mood.label)),
+    h("div", { style: { margin: "0 14px", background: "linear-gradient(160deg,#48413a,#2c2622)", borderRadius: 12, padding: "10px 12px 12px", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 10px rgba(0,0,0,0.22)", border: "1px solid #201915" } },
+      h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
+        h("span", { style: { fontSize: "0.5rem", fontWeight: 800, letterSpacing: "1.5px", color: "#d8cdbf" } }, "NANA SOUND"),
+        h("span", { style: { fontSize: "0.46rem", fontWeight: 700, letterSpacing: "1px", color: mood.accent, transition: "color 0.6s" } }, "● TYPE II  HIGH")),
+      h("div", { style: { background: "linear-gradient(180deg,#211b1b,#171212)", borderRadius: 8, padding: "12px", border: "1px solid #000", boxShadow: "inset 0 0 18px rgba(0,0,0,0.6)" } },
+        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 } },
+          spinReel(),
+          h("div", { style: { flex: 1, minWidth: 0, background: "linear-gradient(180deg,#fbf3e2,#f3e7cf)", borderRadius: 4, padding: "6px 8px", transform: "rotate(-1.2deg)", boxShadow: "0 1px 3px rgba(0,0,0,0.4)", border: "1px solid #e3d2ad" } },
+            h("div", { style: { height: 3, background: mood.accent, borderRadius: 2, marginBottom: 4, transition: "background 0.6s" } }),
+            h("div", { style: { fontWeight: 800, fontSize: "0.78rem", color: "#4a3a2a", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: "'Comic Sans MS','Segoe Print',cursive" } }, cur.title),
+            h("div", { style: { fontSize: "0.6rem", color: error ? "#c33" : "#9a8366", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 1 } }, error ? "放不出来，换一首～" : cur.artist),
+            h("div", { style: { height: 3, background: mood.accent2, borderRadius: 2, marginTop: 4, transition: "background 0.6s" } })),
+          spinReel()),
+        h("div", { style: { height: 5, margin: "9px 6px 0", background: "linear-gradient(180deg,#0a0808,#241c18)", borderRadius: 3, boxShadow: "inset 0 1px 2px rgba(0,0,0,0.8)" } }))),
+    h("div", { style: { padding: "10px 16px 4px", display: "flex", alignItems: "center", gap: 8 } },
       h("span", { style: { fontSize: "0.62rem", color: "#b0a090", width: 30, textAlign: "right" } }, fmt(duration * progress)),
       h("div", { onClick: seek, style: { flex: 1, height: 5, background: "rgba(" + mood.glow + ",0.16)", borderRadius: 3, cursor: "pointer" } },
         h("div", { style: { height: "100%", width: progress * 100 + "%", background: mood.accent, borderRadius: 3, transition: "width 0.4s linear, background 0.6s" } })),
       h("span", { style: { fontSize: "0.62rem", color: "#b0a090", width: 30 } }, fmt(duration))),
-    h("div", { style: { display: "flex", gap: 14, justifyContent: "center", alignItems: "center", padding: "6px 16px 4px" } },
-      h("button", { onClick: function () { go(idx - 1); }, disabled: idx === 0, style: { background: "none", border: "none", fontSize: "1.1rem", cursor: idx === 0 ? "default" : "pointer", opacity: idx === 0 ? 0.3 : 1, color: mood.accent2 } }, "⏮"),
-      h("button", { onClick: toggle, style: { width: 42, height: 42, borderRadius: "50%", border: "none", background: "linear-gradient(135deg," + mood.accent + "," + mood.accent2 + ")", color: "#fff", fontSize: "1rem", cursor: "pointer", transition: "background 0.6s" } }, playing ? "⏸" : "▶"),
-      h("button", { onClick: function () { go(idx + 1); }, disabled: idx === tracks.length - 1, style: { background: "none", border: "none", fontSize: "1.1rem", cursor: idx === tracks.length - 1 ? "default" : "pointer", opacity: idx === tracks.length - 1 ? 0.3 : 1, color: mood.accent2 } }, "⏭")),
+    h("div", { style: { display: "flex", gap: 8, justifyContent: "center", alignItems: "center", padding: "4px 16px 4px" } },
+      h("button", { onClick: function () { go(idx - 1); }, disabled: idx === 0, style: keyStyle(idx === 0) }, "◀◀"),
+      h("button", { onClick: toggle, style: { width: 50, height: 34, borderRadius: 7, border: "none", background: "linear-gradient(180deg," + mood.accent + "," + mood.accent2 + ")", color: "#fff", fontSize: "0.9rem", cursor: "pointer", boxShadow: "0 2px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4)", transition: "background 0.6s" } }, playing ? "❚❚" : "▶"),
+      h("button", { onClick: function () { go(idx + 1); }, disabled: idx === tracks.length - 1, style: keyStyle(idx === tracks.length - 1) }, "▶▶")),
     h("div", { style: { display: "flex", alignItems: "center", gap: 8, padding: "2px 16px 10px" } },
       h("span", { style: { fontSize: "0.72rem", color: "#b0a090" } }, "🔈"),
       h("input", { type: "range", min: 0, max: 1, step: 0.05, value: volume, onChange: function (e) { setVolume(+e.target.value); }, style: { flex: 1, accentColor: mood.accent } }),
