@@ -17935,6 +17935,30 @@ function WeekendBarCard(_refWB) {
       h("div", { style: { fontSize: "0.78rem", color: "rgba(255,235,200,0.92)", marginTop: 4, lineHeight: 1.6 } }, "周末不用保卫世界，Nana 只管 enjoy 自己的时光 🍸"),
       h("div", { style: { fontSize: "0.68rem", color: "rgba(205,175,255,0.75)", marginTop: 8 } }, "进来调一杯 + 配点小吃 →")));
 }
+function NetEasePlaylistCard() {
+  var h = React.createElement;
+  var _ex = useState(false); var ex = _ex[0]; var setEx = _ex[1];
+  var PID = "317404897";
+  var cover = "https://p1.music.126.net/JxHLyeCx50O854xNfMjjKg==/109951170879334228.jpg";
+  var tracks = ["take me as I am", "耳语", "牡丹江 (R&B)", "眼泪成诗", "会呼吸的痛", "Echoes of the Eye"];
+  return h("div", { style: { background: "#fff", borderRadius: 16, border: "1.5px solid " + COLORS.tan, boxShadow: "0px 8px 16px rgba(129,81,90,0.08)", overflow: "hidden" } },
+    h("div", { style: { background: "#fff7e6", borderBottom: "1px solid #f2e3c4", padding: "6px 14px", fontSize: "0.7rem", color: "#a8742a", fontWeight: 800, textAlign: "center", letterSpacing: "0.3px" } }, "🚧 Nana 不要慌，还在测试 ing～"),
+    h("div", { style: { display: "flex", gap: 12, padding: "12px 14px", alignItems: "center" } },
+      h("img", { src: cover, alt: "歌单封面", loading: "lazy", style: { width: 58, height: 58, borderRadius: 12, objectFit: "cover", flexShrink: 0, boxShadow: "0 3px 8px rgba(0,0,0,0.18)" } }),
+      h("div", { style: { minWidth: 0, flex: 1 } },
+        h("span", { style: { fontSize: "0.58rem", fontWeight: 800, color: "#fff", background: "#c20c0c", borderRadius: 999, padding: "2px 8px" } }, "🎵 网易云歌单"),
+        h("div", { style: { fontWeight: 800, fontSize: "0.92rem", color: COLORS.brown, marginTop: 5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "潘达库斯魚喜欢的音乐"),
+        h("div", { style: { fontSize: "0.68rem", color: "#b0a090", marginTop: 1 } }, "Nana 的私藏歌单 🎶"))),
+    h("div", { style: { padding: "0 14px 8px" } }, tracks.slice(0, 4).map(function (t, i) {
+      return h("div", { key: "trk" + i, style: { fontSize: "0.74rem", color: "#7a5a45", padding: "3px 0", borderTop: i === 0 ? "1px solid #f0e6df" : "none", display: "flex", gap: 6 } }, h("span", { style: { color: "#c0a0a8" } }, "♪"), t);
+    }), h("div", { style: { fontSize: "0.68rem", color: "#b0a090", padding: "3px 0" } }, "…等好多首 🎶")),
+    h("div", { style: { display: "flex", gap: 8, padding: "0 14px 12px" } },
+      h("button", { onClick: function () { setEx(!ex); }, style: { flex: 1, background: ex ? COLORS.cream : "#c20c0c", color: ex ? COLORS.dark : "#fff", border: ex ? "1.5px solid " + COLORS.tan : "none", borderRadius: 10, padding: "9px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer" } }, ex ? "收起 ▲" : "▶ 展开播放器，听整张"),
+      h("a", { href: "https://music.163.com/playlist?id=" + PID, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", padding: "0 12px", background: COLORS.cream, color: COLORS.dark, border: "1.5px solid " + COLORS.tan, borderRadius: 10, fontWeight: 700, fontSize: "0.74rem", textDecoration: "none", cursor: "pointer" } }, "网易云打开 →")),
+    ex && h("div", { style: { padding: "0 12px 12px" } },
+      h("iframe", { title: "网易云歌单播放器", src: "https://music.163.com/outchain/player?type=0&id=" + PID + "&auto=0&height=430", frameBorder: "no", style: { width: "100%", height: 430, border: "none", borderRadius: 12, background: "#f5f5f5" } }),
+      h("div", { style: { fontSize: "0.62rem", color: "#b0a090", textAlign: "center", marginTop: 6, lineHeight: 1.6 } }, "部分歌曲受版权限制可能无法直接播放～", h("br", null), "想听完整版可点上方「网易云打开」🎵")));
+}
 function HomeDeck(_refHD) {
   var h = React.createElement;
   var hintColor = _refHD && _refHD.hintColor ? _refHD.hintColor : COLORS.brown;
@@ -18240,6 +18264,10 @@ function NanasHome() {
       padding: "12px 16px 0"
     }
   }, /*#__PURE__*/React.createElement(LalalandPlayer, null)), !room && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px 0"
+    }
+  }, /*#__PURE__*/React.createElement(NetEasePlaylistCard, null)), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 16px 0"
     }
