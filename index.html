@@ -7447,7 +7447,11 @@ var ACTIVITIES = {
   bar: [{
     id: "bar",
     icon: "🍸",
-    name: "Make a Drink"
+    name: "微醺小酌"
+  }, {
+    id: "barmix",
+    icon: "🍹",
+    name: "自助调酒 + 小吃"
   }],
   cigar: [{
     id: "cigar",
@@ -9587,6 +9591,151 @@ function PoolActivity(_ref66) {
 }
 
 // ── BAR ACTIVITY ─────────────────────────────────────────
+function BarMixer(_refBM) {
+  var onCozy = _refBM.onCozy;
+  var h = React.createElement;
+  var _tab = useState("mix"); var tab = _tab[0]; var setTab = _tab[1];
+  var _g = useState([]); var glass = _g[0]; var setGlass = _g[1];
+  var _ice = useState(false); var ice = _ice[0]; var setIce = _ice[1];
+  var _shk = useState(false); var shaken = _shk[0]; var setShaken = _shk[1];
+  var _shg = useState(false); var shaking = _shg[0]; var setShaking = _shg[1];
+  var _gn = useState(null); var garnish = _gn[0]; var setGarnish = _gn[1];
+  var _dn = useState(false); var done = _dn[0]; var setDone = _dn[1];
+  var _pl = useState([]); var plate = _pl[0]; var setPlate = _pl[1];
+  var _sv = useState(false); var served = _sv[0]; var setServed = _sv[1];
+  var _fw = useState(false); var farewell = _fw[0]; var setFarewell = _fw[1];
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _msg = useState(null); var msg = _msg[0]; var setMsg = _msg[1];
+  var msgT = useRef(null); var shakeT = useRef(null); var serveT = useRef(null);
+  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 140); return function () { clearInterval(id); }; }, []);
+  var toast = function toast(t) { setMsg(t); clearTimeout(msgT.current); msgT.current = setTimeout(function () { setMsg(null); }, 1500); };
+  var BOTTLES = [
+    { group: "🥃 烈酒", items: [
+      { id: "vodka", n: "伏特加", c: "#eaf3ff" }, { id: "gin", n: "金酒", c: "#dfeee6" },
+      { id: "rum", n: "朗姆", c: "#caa15a" }, { id: "whiskey", n: "威士忌", c: "#c87a1e" },
+      { id: "tequila", n: "龙舌兰", c: "#f0e6b0" }
+    ] },
+    { group: "🍷 利口酒", items: [
+      { id: "vermouth", n: "味美思", c: "#a8492a" }, { id: "triplesec", n: "橙皮酒", c: "#f2a93b" },
+      { id: "campari", n: "金巴利", c: "#c0392b" }, { id: "coffee", n: "咖啡力娇", c: "#3d2012" }
+    ] },
+    { group: "🥤 软饮", items: [
+      { id: "soda", n: "苏打水", c: "#dbeeff" }, { id: "tonic", n: "汤力水", c: "#e8f6ff" },
+      { id: "cola", n: "可乐", c: "#3a1e12" }, { id: "orange", n: "橙汁", c: "#ff9f1c" },
+      { id: "cranberry", n: "蔓越莓", c: "#b5174e" }, { id: "lime", n: "青柠汁", c: "#b6d957" }
+    ] },
+    { group: "🍯 调味", items: [
+      { id: "syrup", n: "糖浆", c: "#f7d6e0" }, { id: "mint", n: "薄荷", c: "#7fd39b" }, { id: "honey", n: "蜂蜜", c: "#e0a826" }
+    ] }
+  ];
+  var allById = {};
+  BOTTLES.forEach(function (grp) { grp.items.forEach(function (b) { allById[b.id] = b; }); });
+  var GARN = ["🍋", "🫒", "🍒", "🌿", "☂️", "🧂"];
+  var SNACKS = [
+    { id: "pickle", e: "🥒", n: "酸黄瓜" }, { id: "cheese", e: "🧀", n: "奶酪" },
+    { id: "cracker", e: "🍘", n: "饼干" }, { id: "ham", e: "🍖", n: "火腿" },
+    { id: "olive", e: "🫒", n: "橄榄" }, { id: "nuts", e: "🥜", n: "坚果" },
+    { id: "chips", e: "🍟", n: "薯片" }, { id: "choc", e: "🍫", n: "巧克力" }, { id: "grape", e: "🍇", n: "葡萄" }
+  ];
+  var pour = function pour(b) { if (glass.length >= 6) { toast("杯子要满啦～"); return; } setGlass(glass.concat([b.id])); setDone(false); setShaken(false); };
+  var clearGlass = function clearGlass() { setGlass([]); setIce(false); setShaken(false); setShaking(false); setGarnish(null); setDone(false); setServed(false); setFarewell(false); };
+  var resetAll = function resetAll() { clearGlass(); setPlate([]); };
+  var cheers = function cheers() { if (glass.length === 0) { toast("先倒点什么吧 🍶"); return; } setDone(true); onCozy(14); };
+  var serveAway = function serveAway() { setServed(true); clearTimeout(serveT.current); serveT.current = setTimeout(function () { setFarewell(true); onCozy(4); }, 750); };
+  var nameDrink = function nameDrink() {
+    var spirits = glass.filter(function (id) { return ["vodka", "gin", "rum", "whiskey", "tequila", "vermouth", "campari", "coffee", "triplesec"].indexOf(id) >= 0; }).length;
+    var fresh = glass.some(function (id) { return ["lime", "soda", "tonic"].indexOf(id) >= 0; });
+    var sweet = glass.some(function (id) { return ["syrup", "orange", "cranberry", "honey"].indexOf(id) >= 0; });
+    if (spirits >= 3 && glass.length - spirits <= 1) return { n: "烈夜独白 🥃", d: "够劲，今晚慢慢品" };
+    if (fresh && spirits >= 1) return { n: "微醺清风 🍹", d: "清爽又微醺，刚刚好" };
+    if (sweet && spirits >= 1) return { n: "甜甜的夜 🍷", d: "甜一点，对自己好一点" };
+    if (spirits === 0) return { n: "无酒精特调 🧃", d: "好看又好喝，不上头" };
+    return { n: "Nana 特调 🍸", d: "独一无二，就像你" };
+  };
+  var ctrlStyle = function ctrlStyle(active) { return { background: active ? "#6a4a9a" : "rgba(255,255,255,0.08)", color: active ? "#fff" : "#c9b8e0", border: "1.5px solid " + (active ? "#8a6aba" : "rgba(255,255,255,0.15)"), borderRadius: 999, padding: "8px 14px", fontFamily: "inherit", fontWeight: 700, fontSize: "0.76rem", cursor: "pointer" }; };
+  var hexToRgb = function hexToRgb(hx) { hx = hx.replace("#", ""); return [parseInt(hx.substr(0, 2), 16), parseInt(hx.substr(2, 2), 16), parseInt(hx.substr(4, 2), 16)]; };
+  var mixColor = function mixColor() {
+    if (!glass.length) return "rgb(140,140,140)";
+    var r = 0, gg = 0, b = 0;
+    glass.forEach(function (id) { var c = hexToRgb(allById[id].c); r += c[0]; gg += c[1]; b += c[2]; });
+    var n = glass.length; return "rgb(" + Math.round(r / n) + "," + Math.round(gg / n) + "," + Math.round(b / n) + ")";
+  };
+  var doShake = function doShake() {
+    if (!glass.length) { toast("先倒酒再摇～"); return; }
+    setShaking(true); clearTimeout(shakeT.current);
+    shakeT.current = setTimeout(function () { setShaking(false); setShaken(true); toast("摇匀啦，颜色都融在一起了 🍸"); }, 850);
+  };
+  var glassView = function glassView(big) {
+    var H = big ? 150 : 120;
+    var blended = shaken && !shaking;
+    var mix = mixColor();
+    var inner = blended ?
+      h("div", { key: "blend", style: { flex: 1, background: "linear-gradient(160deg," + mix + ", rgba(255,255,255,0.14))", boxShadow: "inset 0 8px 16px rgba(255,255,255,0.18)", transition: "background 0.5s ease" } }) :
+      (glass.length ? glass.map(function (id, i) { return h("div", { key: "bd" + i, style: { flex: 1, background: allById[id].c, minHeight: 7, transition: "background 0.4s ease" } }); }) : h("div", { key: "empty", style: { flex: 1 } }));
+    return h("div", { style: { position: "relative", width: big ? 92 : 80, height: H, margin: "0 auto", animation: shaking ? "nanaShake 0.4s ease-in-out infinite" : "none" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, border: "2px solid rgba(255,255,255,0.4)", borderTop: "none", borderRadius: "6px 6px 30px 30px", overflow: "hidden", display: "flex", flexDirection: "column-reverse", background: "rgba(255,255,255,0.05)" } },
+        inner,
+        ice && glass.length > 0 && !shaking && h("div", { style: { position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", fontSize: "0.95rem", opacity: 0.85 } }, "🧊")),
+      garnish !== null && !shaking && h("div", { style: { position: "absolute", top: -10, right: 2, fontSize: "1.4rem" } }, GARN[garnish]));
+  };
+  var bottleBtn = function bottleBtn(b) {
+    return h("div", { key: b.id, onClick: function () { pour(b); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer", width: 52 } },
+      h("div", { style: { width: 26, height: 38, borderRadius: "5px 5px 7px 7px", background: b.c, border: "1.5px solid rgba(255,255,255,0.5)", boxShadow: "inset 0 -6px 6px rgba(0,0,0,0.15)" } }),
+      h("div", { style: { fontSize: "0.6rem", color: "#e7dcef", textAlign: "center", lineHeight: 1.1 } }, b.n));
+  };
+  var tabBtn = function tabBtn(id, label) {
+    return h("button", { onClick: function () { setTab(id); }, style: { flex: 1, background: tab === id ? "#3a2456" : "rgba(255,255,255,0.06)", color: tab === id ? "#fff" : "#c9b8e0", border: "1.5px solid " + (tab === id ? "#6a4a9a" : "rgba(255,255,255,0.12)"), borderRadius: 10, padding: "8px 2px", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer" } }, label);
+  };
+  return h("div", { style: { background: "linear-gradient(160deg,#1a0a2a,#0d0618)", borderRadius: 18, padding: 16, color: "#e7dcef", boxShadow: "0 8px 28px rgba(20,10,40,0.5)" } },
+    h("style", null, "@keyframes nanaShake{0%,100%{transform:translateX(0) rotate(0deg)}20%{transform:translateX(-5px) rotate(-5deg)}40%{transform:translateX(5px) rotate(5deg)}60%{transform:translateX(-4px) rotate(-3deg)}80%{transform:translateX(4px) rotate(3deg)}}"),
+    h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } }, tabBtn("mix", "🍸 自助调酒"), tabBtn("snack", "🧀 下酒小吃")),
+    msg && h("div", { style: { textAlign: "center", fontSize: "0.72rem", color: "#ffd86a", marginBottom: 8 } }, msg),
+    tab === "mix" && (done ? (farewell ?
+      h("div", { style: { textAlign: "center", padding: "22px 0", animation: "fadeSlideUp 0.6s ease" } },
+        h("div", { style: { fontSize: "2.4rem" } }, "🥂"),
+        h("div", { style: { fontWeight: 800, fontSize: "1.15rem", marginTop: 10 } }, "端走啦，慢慢享用～"),
+        h("div", { style: { fontSize: "0.85rem", color: "#c9b8e0", marginTop: 6 } }, "今晚很惬意，干杯 🍷"),
+        h("button", { onClick: resetAll, style: { marginTop: 16, background: "#6a4a9a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 22px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "再来一杯 🍸")) :
+      h("div", { style: { textAlign: "center" } },
+        h("div", { style: { transform: served ? "translateX(135%)" : "translateX(0)", opacity: served ? 0 : 1, transition: "transform 0.7s ease, opacity 0.7s ease" } },
+          h("div", { style: { background: "linear-gradient(135deg,#6b4a2a,#43301c)", borderRadius: 18, padding: "16px 14px", boxShadow: "0 8px 22px rgba(0,0,0,0.45)", border: "2px solid #7a5836" } },
+            h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 14 } },
+              glassView(true),
+              plate.length > 0 ?
+                h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", maxWidth: 120 } }, plate.map(function (id, i) { var s = SNACKS.find(function (x) { return x.id === id; }); return h("span", { key: "ts" + i, style: { fontSize: "1.6rem" } }, s ? s.e : ""); })) :
+                h("div", { style: { fontSize: "0.66rem", color: "rgba(255,255,255,0.6)", maxWidth: 110, lineHeight: 1.5 } }, "去「下酒小吃」拼个盘，一起端走更惬意 🧀")),
+            h("div", { style: { fontWeight: 800, fontSize: "1.1rem", marginTop: 12, color: "#fff" } }, nameDrink().n),
+            h("div", { style: { fontSize: "0.74rem", color: "rgba(255,255,255,0.82)", marginTop: 2 } }, nameDrink().d + (plate.length ? " · 配 " + plate.length + " 样小吃" : "")),
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(255,255,255,0.5)", marginTop: 6 } }, "用料：" + glass.map(function (id) { return allById[id].n; }).join(" + ") + (ice ? " + 冰" : "") + (shaken ? " · 已摇匀" : "")))),
+        !served && h("div", { style: { display: "flex", gap: 8, justifyContent: "center", marginTop: 14 } },
+          h("button", { onClick: serveAway, style: { background: "linear-gradient(135deg,#d4820a,#c0392b)", color: "#fff", border: "none", borderRadius: 12, padding: "11px 22px", fontFamily: "inherit", fontWeight: 900, cursor: "pointer" } }, "🫳 端走享用"),
+          h("button", { onClick: clearGlass, style: { background: "rgba(255,255,255,0.08)", color: "#c9b8e0", border: "1.5px solid rgba(255,255,255,0.15)", borderRadius: 12, padding: "11px 18px", fontFamily: "inherit", fontWeight: 700, cursor: "pointer" } }, "再调一杯")))) :
+      h("div", null,
+        glassView(false),
+        h("div", { style: { textAlign: "center", fontSize: "0.7rem", color: "#9a8ab0", margin: "6px 0 12px", minHeight: 16 } }, glass.length ? "已加：" + glass.map(function (id) { return allById[id].n; }).join(" + ") : "选下面的瓶子，自由发挥～"),
+        BOTTLES.map(function (grp) {
+          return h("div", { key: grp.group, style: { marginBottom: 10 } },
+            h("div", { style: { fontSize: "0.66rem", color: "#9a8ab0", fontWeight: 700, marginBottom: 6 } }, grp.group),
+            h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, grp.items.map(bottleBtn)));
+        }),
+        h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, justifyContent: "center" } },
+          h("button", { onClick: function () { setIce(!ice); }, style: ctrlStyle(ice) }, "🧊 加冰"),
+          h("button", { onClick: doShake, style: ctrlStyle(shaken || shaking) }, shaking ? "🫨 摇动中…" : "🫨 摇匀"),
+          h("button", { onClick: function () { setGarnish(garnish === null ? 0 : (garnish + 1) % GARN.length); }, style: ctrlStyle(garnish !== null) }, "🍋 装饰" + (garnish !== null ? " " + GARN[garnish] : "")),
+          h("button", { onClick: clearGlass, style: ctrlStyle(false) }, "🧹 倒掉")),
+        h("button", { onClick: cheers, style: { width: "100%", marginTop: 12, background: "linear-gradient(135deg,#d4820a,#c0392b)", color: "#fff", border: "none", borderRadius: 14, padding: "13px", fontFamily: "inherit", fontWeight: 900, fontSize: "1rem", cursor: "pointer" } }, "🥂 干杯！"))),
+    tab === "snack" && h("div", null,
+      h("div", { style: { textAlign: "center", fontSize: "0.78rem", color: "#c9b8e0", marginBottom: 12 } }, "挑点小吃，拼一盘下酒菜 🍽️"),
+      h("div", { style: { minHeight: 90, background: "rgba(255,255,255,0.06)", border: "1.5px dashed rgba(255,255,255,0.2)", borderRadius: 16, display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", justifyContent: "center", padding: 12, marginBottom: 14 } },
+        plate.length === 0 ? h("div", { style: { fontSize: "0.74rem", color: "#9a8ab0" } }, "空盘子，点下面加点小吃～") :
+        plate.map(function (id, i) { var s = SNACKS.find(function (x) { return x.id === id; }); return h("div", { key: "pl" + i, onClick: function () { setPlate(plate.filter(function (_, j) { return j !== i; })); }, style: { fontSize: "1.8rem", cursor: "pointer" }, title: "点一下拿走" }, s ? s.e : ""); })),
+      h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" } }, SNACKS.map(function (s) {
+        return h("div", { key: s.id, onClick: function () { if (plate.length >= 8) { toast("盘子满啦～"); return; } setPlate(plate.concat([s.id])); }, style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 2, cursor: "pointer", width: 56, background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "8px 2px", border: "1px solid rgba(255,255,255,0.12)" } },
+          h("div", { style: { fontSize: "1.5rem" } }, s.e),
+          h("div", { style: { fontSize: "0.6rem", color: "#c9b8e0" } }, s.n));
+      })),
+      plate.length > 0 && h("div", { style: { textAlign: "center", fontSize: "0.72rem", color: "#9a8ab0", marginTop: 12 } }, "配上小酒，今晚很惬意 🍷（点盘里的小吃可以拿走）")));
+}
 function BarActivity(_ref67) {
   var _drinks$find, _drinks$find2, _drinks$find3, _drinks$find4, _drinks$find5, _drinks$find6;
   var onCozy = _ref67.onCozy;
@@ -13509,6 +13658,7 @@ function ActivityPanel(_ref106) {
     sleeplog: SleepLogActivity,
     pool: PoolActivity,
     bar: BarActivity,
+    barmix: BarMixer,
     cigar: CigarActivity,
     garage: GarageActivity,
     travel: TravelActivity,
@@ -17768,6 +17918,60 @@ function RainSleepEgg(_refRS) {
     )
   );
 }
+function WeekendBarCard(_refWB) {
+  var onOpen = _refWB.onOpen;
+  var h = React.createElement;
+  return h("div", { onClick: onOpen, style: { position: "relative", overflow: "hidden", borderRadius: 16, padding: "16px 18px", cursor: "pointer", background: "linear-gradient(135deg,#2a1145,#3a1a2a 55%,#0d0618)", border: "1.5px solid rgba(200,150,255,0.3)", boxShadow: "0 6px 22px rgba(40,10,60,0.45)" } },
+    h("div", { style: { position: "absolute", top: -22, right: -8, fontSize: "4rem", opacity: 0.16, pointerEvents: "none" } }, "🍸"),
+    h("div", { style: { position: "relative" } },
+      h("span", { style: { fontSize: "0.62rem", fontWeight: 800, color: "#3a1a05", background: "linear-gradient(135deg,#ffe18a,#f4b740)", borderRadius: 999, padding: "2px 9px", letterSpacing: 0.5 } }, "🍸 周末限定 · 今晚营业"),
+      h("div", { style: { fontWeight: 800, fontSize: "1.05rem", color: "#fff", marginTop: 8 } }, "周末酒吧"),
+      h("div", { style: { fontSize: "0.78rem", color: "rgba(255,235,200,0.92)", marginTop: 4, lineHeight: 1.6 } }, "周末不用保卫世界，Nana 只管 enjoy 自己的时光 🍸"),
+      h("div", { style: { fontSize: "0.68rem", color: "rgba(205,175,255,0.75)", marginTop: 8 } }, "进来调一杯 + 配点小吃 →")));
+}
+function ScratchBar(_refSC) {
+  var onOpen = _refSC.onOpen;
+  var h = React.createElement;
+  var dayKey = "nana-bar-scratch-" + new Date().toDateString();
+  var _rv = useState(function () { try { return localStorage.getItem(dayKey) === "1"; } catch (_) { return false; } });
+  var revealed = _rv[0]; var setRevealed = _rv[1];
+  var _pg = useState(0); var prog = _pg[0]; var setProg = _pg[1];
+  var canvasRef = useRef(null); var wrapRef = useRef(null); var drawing = useRef(false); var doneRef = useRef(false);
+  useEffect(function () {
+    if (revealed) return;
+    var cv = canvasRef.current; var wrap = wrapRef.current; if (!cv || !wrap) return;
+    var ctx = cv.getContext && cv.getContext("2d"); if (!ctx) { return; }
+    var w = wrap.clientWidth || 300; var ht = wrap.clientHeight || 120;
+    cv.width = w; cv.height = ht;
+    var g = ctx.createLinearGradient(0, 0, w, ht);
+    g.addColorStop(0, "#6a4a9a"); g.addColorStop(0.5, "#3a2456"); g.addColorStop(1, "#8a6aba");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, ht);
+    for (var i = 0; i < 18; i++) { ctx.fillStyle = "rgba(255,255,255," + (0.06 + Math.random() * 0.12).toFixed(2) + ")"; ctx.beginPath(); ctx.arc(Math.random() * w, Math.random() * ht, 1 + Math.random() * 2, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = "rgba(255,236,180,0.95)"; ctx.textAlign = "center"; ctx.font = "bold 15px 'Nunito',sans-serif";
+    ctx.fillText("✨ 周末惊喜 · 刮开看看 ✨", w / 2, ht / 2 - 3);
+    ctx.font = "12px 'Nunito',sans-serif"; ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fillText("用手指刮一刮 🪙", w / 2, ht / 2 + 17);
+    var pos = function (e) { var r = cv.getBoundingClientRect(); var t = e.touches && e.touches[0] ? e.touches[0] : e; return [(t.clientX - r.left) * (cv.width / r.width), (t.clientY - r.top) * (cv.height / r.height)]; };
+    var scratch = function (x, y) { ctx.globalCompositeOperation = "destination-out"; ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI * 2); ctx.fill(); };
+    var measure = function () {
+      try {
+        var d = ctx.getImageData(0, 0, w, ht).data; var clear = 0, total = 0;
+        for (var k = 3; k < d.length; k += 4 * 50) { total++; if (d[k] === 0) clear++; }
+        var frac = total ? clear / total : 0; setProg(frac);
+        if (frac > 0.5 && !doneRef.current) { doneRef.current = true; try { localStorage.setItem(dayKey, "1"); } catch (_) {} setRevealed(true); }
+      } catch (_) {}
+    };
+    var down = function (e) { drawing.current = true; var p = pos(e); scratch(p[0], p[1]); e.preventDefault(); };
+    var move = function (e) { if (!drawing.current) return; var p = pos(e); scratch(p[0], p[1]); e.preventDefault(); };
+    var up = function () { if (!drawing.current) return; drawing.current = false; measure(); };
+    cv.addEventListener("mousedown", down); cv.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
+    cv.addEventListener("touchstart", down, { passive: false }); cv.addEventListener("touchmove", move, { passive: false }); window.addEventListener("touchend", up);
+    return function () { cv.removeEventListener("mousedown", down); cv.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); cv.removeEventListener("touchstart", down); cv.removeEventListener("touchmove", move); window.removeEventListener("touchend", up); };
+  }, [revealed]);
+  return h("div", { ref: wrapRef, style: { position: "relative" } },
+    h(WeekendBarCard, { onOpen: revealed ? onOpen : function () {} }),
+    !revealed && h("canvas", { ref: canvasRef, style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", borderRadius: 16, cursor: "pointer", touchAction: "none" } }));
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
@@ -17948,7 +18152,21 @@ function NanasHome() {
         desc: "昨天的迪士尼"
       });
     }
-  })))), !room && /*#__PURE__*/React.createElement("div", {
+  })))), (function () { var _d = new Date().getDay(); return _d === 0 || _d === 6; })() && !room && /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px 0"
+    }
+  }, /*#__PURE__*/React.createElement(ScratchBar, {
+    onOpen: function onOpen() {
+      return enterRoom({
+        id: "bar",
+        emoji: "🍸",
+        name: "Bar",
+        color: "#1A0A2A",
+        desc: "调酒、点歌、氛围感"
+      });
+    }
+  })), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 0"
     }
