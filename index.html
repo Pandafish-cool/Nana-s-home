@@ -7050,7 +7050,7 @@ function GameActivity(_ref49) {
   var recordGameDay = function recordGameDay() {
     try {
       var today = new Date().toDateString();
-      var y = new Date(Date.now() - 86400000).toDateString();
+      var y = (function () { var _y = new Date(); _y.setDate(_y.getDate() - 1); return _y.toDateString(); })();
       var s = JSON.parse(localStorage.getItem("nana-game-streak") || "null") || { last: null, streak: 0, claimed: 0 };
       if (s.last !== today) {
         s.streak = s.last === y ? (s.streak || 0) + 1 : 1;
@@ -16341,7 +16341,7 @@ function MealCheckIn() {
       }));
       // 只算「午餐」，连续打卡满 7 天触发一次（断了就从 1 重新算）
       if (id === "lunch") {
-        var y = new Date(Date.now() - 86400000).toDateString();
+        var y = (function () { var _y = new Date(); _y.setDate(_y.getDate() - 1); return _y.toDateString(); })();
         var ms = JSON.parse(localStorage.getItem("nana-meal-streak") || '{"last":null,"streak":0,"claimed":0}');
         if (ms.last !== today) {
           ms.streak = (ms.last === y ? (ms.streak || 0) : 0) + 1;
@@ -17939,14 +17939,20 @@ function HomeDeck(_refHD) {
   var _lv = useState(null); var leaving = _lv[0]; var setLeaving = _lv[1];
   var _en = useState(null); var entering = _en[0]; var setEntering = _en[1];
   var busy = useRef(false);
+  var t1Ref = useRef(null);
+  var t2Ref = useRef(null);
   var advance = function advance() {
     if (busy.current) return; busy.current = true;
     var top = order[0]; setLeaving(top);
-    setTimeout(function () {
+    t1Ref.current = setTimeout(function () {
       setOrder(function (o) { return o.slice(1).concat([o[0]]); }); setEntering(top); setLeaving(null);
-      setTimeout(function () { setEntering(null); busy.current = false; }, 60);
+      t2Ref.current = setTimeout(function () { setEntering(null); busy.current = false; }, 60);
     }, 480);
   };
+  // 卸载时清理动画定时器，避免在已卸载组件上 setState
+  useEffect(function () { return function () { clearTimeout(t1Ref.current); clearTimeout(t2Ref.current); }; }, []);
+  // 跨天后（dayNum 变化）重置堆叠顺序，匹配当天新发的卡
+  useEffect(function () { setOrder(CARDS.map(function (_, i) { return i; })); setLeaving(null); setEntering(null); busy.current = false; }, [dayNum]);
   var styleFor = function styleFor(id) {
     var s = { position: "absolute", left: 0, top: 0, width: "100%", height: 104, borderRadius: 16, boxSizing: "border-box", padding: "13px 16px", cursor: "pointer", overflow: "hidden", border: CARDS[id].border, boxShadow: CARDS[id].shadow, color: CARDS[id].color, background: CARDS[id].bg, willChange: "transform,opacity" };
     if (id === leaving) { s.transition = "transform .5s cubic-bezier(.5,.05,.5,1), opacity .5s ease"; s.transform = "translate(62%,18px) rotate(15deg)"; s.opacity = 0; s.zIndex = 60; return s; }
