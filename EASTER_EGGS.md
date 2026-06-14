@@ -11,7 +11,7 @@
 | 彩蛋 | 触发方式 | 现在的条件 | 是否还会触发 |
 |---|---|---|---|
 | 🎮 游戏连胜 | 行为 | **连续**玩游戏满 7 天（每 7 天一次） | ✅ 一直有效 |
-| 🍽️ 好好吃饭 | 行为 | **累计**打卡天数每 +5 天一次（任意一餐） | ✅ 一直有效 |
+| 🍽️ 好好吃饭 | 行为 | **连续吃午饭**满 7 天触发（断了清零）；奖品**待定** | ✅ 一直有效 |
 | 🎈 儿童节 | 日期 | 每年 6/1 进门 | ✅ 每年 6/1 |
 | 📚 Study Day | 日期 | 2026/6/5 白天 | ⛔ 已过期 |
 | 🛋️ 别怕·安慰 | 日期 | 2026/6/5 15:00 ~ 6/6 09:00 | ⛔ 已过期 |
@@ -21,66 +21,44 @@
 
 ---
 
-## 二、🍽️ 好好吃饭彩蛋（你要改的这个）
+## 二、🍽️ 好好吃饭彩蛋
 
 **组件**：`MealCheckIn`（弹窗组件 `MealLotteryEgg`）
 
-### 现在的真实逻辑（重要）
-- 每天勾选「早饭/午饭/晚饭」任意一餐，就把**今天**记进 `nana-meal-days`（去重的日期列表）。
-- `nana-meal-reward`（记作 `rw`）= 上次抽奖时的天数（高水位）。
-- 触发判断在 `check()` 函数里这一行：
-
+### 现在的逻辑（已改为：连续 7 天午餐）
+- **只有勾「午饭」才计数**；用 `nana-meal-streak`（`{last, streak, claimed}`）记连续天数，接不上昨天就从 1 重新算。
+- 触发在 `check()` 里（包在 `if (id === "lunch")` 内）：
 ```js
-if (ds.length >= rw + 5) setShowLottery(true);
+if ((ms.streak || 0) >= (ms.claimed || 0) + 7) setShowLottery(true); // ← 7 = 连续午餐天数阈值
 ```
-
-- 关闭抽奖时（`MealLotteryEgg` 的 `onClose`）把水位更新成当前天数：
-
+- 关闭抽奖时（`MealLotteryEgg` 的 `onClose`）更新水位：
 ```js
-localStorage.setItem("nana-meal-reward", String(ds.length));
+ms.claimed = Math.floor((ms.streak || 0) / 7) * 7;
 ```
+➡️ 即：**连续吃午饭满 7 天触发一次；之后要再连续 7 天才会再来。中间哪天没勾午饭，连续就清零重算。**
 
-➡️ 所以现在是：**累计「有打卡的天数」每多 5 天触发一次，任意一餐都算，不要求连续。**
+### 改触发天数
+把 `check()` 里的 `+ 7` 和 `onClose` 里的 `/ 7) * 7` 一起改成同一个数字（例如 5、10）。
 
-### 改法 A：只改触发的天数（最简单）
-把 `check()` 里的 `+ 5` 改成想要的数字，例如 7：
-```js
-if (ds.length >= rw + 7) setShowLottery(true);
-```
+### 改成「任意一餐」都算
+把 `check()` 里那层 `if (id === "lunch") { ... }` 去掉（让早/午/晚任意一餐都计数）。
 
-### 改法 B：改成「连续打卡」才触发（断了就清零）
-参考游戏连胜的写法。把 `check()` 里记录天数那几行换成：
-```js
-// 连续天数版
-var y = new Date(Date.now() - 86400000).toDateString(); // 昨天
-var ms = JSON.parse(localStorage.getItem("nana-meal-streak") || '{"last":null,"streak":0,"claimed":0}');
-if (ms.last !== today) {            // 今天第一次打卡
-  ms.streak = (ms.last === y ? (ms.streak || 0) : 0) + 1; // 接着昨天就+1，否则从1重新算
-  ms.last = today;
-  if (ms.streak < (ms.claimed || 0)) ms.claimed = 0;
-  localStorage.setItem("nana-meal-streak", JSON.stringify(ms));
-}
-if ((ms.streak || 0) >= (ms.claimed || 0) + 7) setShowLottery(true); // ← 这里的 7 = 连续天数阈值
-```
-并把 `MealLotteryEgg` 的 `onClose` 改成更新连续水位：
-```js
-try { var ms = JSON.parse(localStorage.getItem("nana-meal-streak")||"{}"); ms.claimed = Math.floor((ms.streak||0)/7)*7; localStorage.setItem("nana-meal-streak", JSON.stringify(ms)); } catch(_) {}
-```
-
-### 改法 C：只算「午餐」打卡
-在 `check(id)` 里，把"记录今天"那段用 `if (id === "lunch")` 包起来——只有勾午饭才计数：
+### 改成「累计」而非「连续」（断了不清零）
+把 `check()` 的午餐计数段换成累计版：
 ```js
 if (id === "lunch") {
   var ds = JSON.parse(localStorage.getItem("nana-meal-days") || "[]");
   if (ds.indexOf(today) < 0) { ds.push(today); localStorage.setItem("nana-meal-days", JSON.stringify(ds)); }
   var rw = parseInt(localStorage.getItem("nana-meal-reward") || "0", 10);
-  if (ds.length >= rw + 5) setShowLottery(true);
+  if (ds.length >= rw + 7) setShowLottery(true);
 }
 ```
-> 想要「连续 7 天午餐」= 改法 B（连续）+ 改法 C（只算午餐）组合：把 B 的整段也包在 `if (id === "lunch")` 里，阈值用 7。
+并把 `onClose` 改回 `localStorage.setItem("nana-meal-reward", String(ds.length))`。
 
-### 奖励内容
-抽中的是「🍽️ Nana 专属美餐券」，在 `MealLotteryEgg` 的 `nanaAddReward({...})` 里改 `title` / `sub` 即可。
+### 奖励内容（当前：待定）
+现在抽中的是占位的「🎁 Nana 神秘奖励券（奖品待定）」。确定奖品后，在 `MealLotteryEgg` 里改两处并保持一致：
+1. `nanaAddReward({ ... title, sub ... })`（存进卡包的内容）
+2. `phase === "win"` 展示卡片里的标题/描述文字
 
 ---
 
@@ -130,14 +108,15 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
 | 键 | 含义 |
 |---|---|
 | `nana-meals` | 今天勾了哪几餐 `{date, meals}` |
-| `nana-meal-days` | 累计有打卡的日期列表（去重） |
-| `nana-meal-reward` | 吃饭彩蛋的高水位（上次抽奖时的天数） |
+| `nana-meal-streak` | 午餐**连续**打卡 `{last, streak, claimed}`（吃饭彩蛋用） |
 | `nana-game-streak` | 游戏连胜 `{last, streak, claimed}` |
 | `nana-rewards` | 奖励钱包里的所有券 |
 | `nana-bar-scratch-<日期>` | 当天的周末刮刮乐是否已刮开 |
+| `nana-meal-days` / `nana-meal-reward` | （旧"累计"版用，现已弃用；切回累计版时才需要） |
 
-> 测试某个行为彩蛋：在浏览器控制台改对应键的值再触发，比如
-> `localStorage.setItem("nana-meal-reward","0")` 然后随便勾一餐就能强行触发吃饭抽奖。
+> 测试吃饭彩蛋：控制台执行
+> `localStorage.setItem("nana-meal-streak", JSON.stringify({last:null,streak:6,claimed:0}))`
+> 然后勾一次「午饭」，连续数到 7 就会触发抽奖。
 
 ---
 
