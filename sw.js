@@ -1,4 +1,4 @@
-var CACHE = "nana-home-v1";
+var CACHE = "nana-home-v2";
 var ASSETS = ["./", "index.html", "disney_fireworks.jpg", "stella_theater.jpg", "stella_gift.jpg", "icon-192.png", "icon-512.png", "manifest.json"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
@@ -10,12 +10,22 @@ self.addEventListener("activate", function (e) {
 });
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  var url;
+  try { url = new URL(e.request.url); } catch (_) { return; }
+  // Never intercept media or Range requests — let the browser stream them natively.
+  // SW caching breaks <audio>/<video> playback (it can't serve partial 206 responses),
+  // which makes songs fail to play. Bypass the SW entirely for these.
+  if (e.request.headers.has("range") ||
+      e.request.destination === "audio" || e.request.destination === "video" ||
+      /\.(mp3|m4a|aac|ogg|oga|wav|flac|mp4|webm|mov)$/i.test(url.pathname)) {
+    return;
+  }
   var isNav = e.request.mode === "navigate" || (e.request.destination === "document");
   if (isNav) {
     e.respondWith(
       fetch(e.request).then(function (res) {
         var copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        if (res && res.status === 200) caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
         return res;
       }).catch(function () { return caches.match(e.request).then(function (m) { return m || caches.match("index.html"); }); })
     );
@@ -24,7 +34,7 @@ self.addEventListener("fetch", function (e) {
       caches.match(e.request).then(function (m) {
         return m || fetch(e.request).then(function (res) {
           var copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+          if (res && res.status === 200 && res.type === "basic") caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
           return res;
         });
       })
