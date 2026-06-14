@@ -16368,10 +16368,7 @@ function MealCheckIn() {
       try { var ms = JSON.parse(localStorage.getItem("nana-meal-streak") || "{}"); ms.claimed = Math.floor((ms.streak || 0) / 7) * 7; localStorage.setItem("nana-meal-streak", JSON.stringify(ms)); } catch (_) {}
       setShowLottery(false);
     }
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: function () { setShowLottery(true); },
-    style: { position: "absolute", top: 6, right: 8, zIndex: 3, background: "#ffe6c0", border: "1px solid #e6b878", borderRadius: 999, padding: "3px 9px", fontFamily: "inherit", fontSize: "0.62rem", fontWeight: 800, color: "#9a5a1a", cursor: "pointer" }
-  }, "\uD83C\uDFB2 \u6D4B\u8BD5\u62BD\u5956"), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 14px 8px",
       display: "flex",
