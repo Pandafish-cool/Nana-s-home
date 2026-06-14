@@ -17903,12 +17903,17 @@ function HomeDeck(_refHD) {
     { e: "🪐", k: "hero", t: "巴斯的悄悄话", b: "就算降落陌生星球，Nana 也一定能稳稳着陆 🌟" },
     { e: "♾️", k: "hero", t: "To infinity…", b: "…and beyond！没有到不了的明天，巴斯相信 Nana 🚀" }
   ];
-  var warmBGS = ["linear-gradient(135deg,#7a5a8a,#3a2a4a)", "linear-gradient(135deg,#a8784a,#5a3a22)", "linear-gradient(135deg,#6a8a5a,#3a4a2a)", "linear-gradient(135deg,#3a4a7a,#1a2038)", "linear-gradient(135deg,#a85a6a,#5a2a3a)", "linear-gradient(135deg,#b08a3a,#5a4018)"];
-  var heroBGS = ["linear-gradient(135deg,#27376e,#0b1330)", "linear-gradient(135deg,#2b2c60,#0a0e26)"];
+  // 卡组配色跟随当前时段的天色：同一色家族里取邻近色，和背景自然搭配
+  var deckH = new Date().getHours();
+  var baseHue = deckH < 5 ? 265 : deckH < 7 ? 22 : deckH < 10 ? 32 : deckH < 13 ? 40 : deckH < 17 ? 28 : deckH < 19 ? 10 : deckH < 22 ? 272 : 262;
+  var hsl = function (h, s, l) { return "hsl(" + (((h % 360) + 360) % 360) + "," + s + "%," + l + "%)"; };
+  var grad = function (h) { return "linear-gradient(135deg," + hsl(h, 52, 44) + "," + hsl(h + 10, 56, 24) + ")"; };
+  var warmBGS = [baseHue - 20, baseHue - 7, baseHue + 9, baseHue + 24, baseHue - 13, baseHue + 16].map(grad);
+  var heroBGS = ["linear-gradient(135deg," + hsl(baseHue, 46, 24) + "," + hsl(baseHue + 6, 56, 11) + ")", "linear-gradient(135deg," + hsl(baseHue - 12, 46, 22) + "," + hsl(baseHue + 2, 56, 10) + ")"];
   var warmStickers = ["✨", "💗", "🌟", "🍀", "🌼", "🫧"];
   var themeFor = function (kind, k) {
-    if (kind === "hero") return { bg: heroBGS[k % heroBGS.length], color: "#eaf0ff", sub: "rgba(206,220,255,0.85)", border: "1.5px solid rgba(150,180,255,0.3)", shadow: "0 8px 22px rgba(20,30,80,0.42)", sticker: "🚀", stars: true };
-    return { bg: warmBGS[k % warmBGS.length], color: "#fff", sub: "rgba(255,255,255,0.9)", border: "1.5px solid rgba(255,255,255,0.14)", shadow: "0 8px 20px rgba(40,20,40,0.25)", sticker: warmStickers[k % warmStickers.length], stars: false };
+    if (kind === "hero") return { bg: heroBGS[k % heroBGS.length], color: "#fff", sub: "rgba(255,255,255,0.84)", border: "1.5px solid rgba(255,255,255,0.16)", shadow: "0 8px 22px rgba(20,12,24,0.4)", sticker: "🚀", stars: true };
+    return { bg: warmBGS[k % warmBGS.length], color: "#fff", sub: "rgba(255,255,255,0.92)", border: "1.5px solid rgba(255,255,255,0.16)", shadow: "0 8px 20px rgba(30,16,30,0.28)", sticker: warmStickers[k % warmStickers.length], stars: false };
   };
   // 发牌式：每天发 6 张，发完整副(7天)才重新洗牌 → 连着 7 天不重样
   var N = POOL.length, per = 6, passes = Math.ceil(N / per);
