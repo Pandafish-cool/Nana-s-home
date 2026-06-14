@@ -55,10 +55,12 @@ if (id === "lunch") {
 ```
 并把 `onClose` 改回 `localStorage.setItem("nana-meal-reward", String(ds.length))`。
 
-### 奖励内容（当前：待定）
-现在抽中的是占位的「🎁 Nana 神秘奖励券（奖品待定）」。确定奖品后，在 `MealLotteryEgg` 里改两处并保持一致：
-1. `nanaAddReward({ ... title, sub ... })`（存进卡包的内容）
-2. `phase === "win"` 展示卡片里的标题/描述文字
+### 奖励内容（当前：饭盒抽奖 → 礼品券）
+- 抽奖盒子是 **🍱 饭盒**（`phase === "pick"` 里 `[0,1,2].map` 的 `"🍱"`），点一个"打卡"。
+- 戳开得到「🎁 Nana 礼品券」，内容写着「**你猜是什么？🤫 请和商家联系～ 📞**」。
+- 想换奖品/文案，在 `MealLotteryEgg` 改两处并保持一致：
+  1. `nanaAddReward({ ... title, sub ... })`（存进卡包的内容）
+  2. `phase === "win"` 展示卡片里的标题/描述文字
 
 ---
 
