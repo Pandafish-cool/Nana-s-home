@@ -17757,7 +17757,7 @@ function NanaMixtapeCard() {
       wantPlay.current = false;
       setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); });
     }
   }, [idx]);
   var toggle = function () {
@@ -17765,9 +17765,10 @@ function NanaMixtapeCard() {
     if (playing) { a.pause(); setPlaying(false); setLoading(false); }
     else {
       a.volume = volume;
+      setError(false);
       if (a.readyState < 3) setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); })["catch"](function () { setError(true); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); })["catch"](function () { setError(true); setLoading(false); });
       else setPlaying(true);
     }
   };
