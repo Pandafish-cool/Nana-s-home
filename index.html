@@ -17669,6 +17669,39 @@ function WeekendBarCard(_refWB) {
       h("div", { style: { fontSize: "0.78rem", color: "rgba(255,235,200,0.92)", marginTop: 4, lineHeight: 1.6 } }, "周末不用保卫世界，Nana 只管 enjoy 自己的时光 🍸"),
       h("div", { style: { fontSize: "0.68rem", color: "rgba(205,175,255,0.75)", marginTop: 8 } }, "进来调一杯 + 配点小吃 →")));
 }
+function GoodNightEgg(_refGN) {
+  var onClose = _refGN.onClose;
+  var h = React.createElement;
+  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    var t1 = setTimeout(function () { setGone(true); }, 6400);
+    var t2 = setTimeout(function () { onClose(); }, 7400);
+    return function () { clearInterval(id); clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  var T = tick;
+  var stars = [];
+  for (var i = 0; i < 28; i++) {
+    var sx = (i * 7.3 + Math.sin(i * 2.3) * 6 + 100) % 100;
+    var sy = (i * 11 + 7) % 94;
+    var tw = (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(T * 0.12 + i))).toFixed(2);
+    stars.push(h("div", { key: "st" + i, style: { position: "absolute", left: sx.toFixed(1) + "%", top: sy.toFixed(1) + "%", width: i % 5 === 0 ? 3 : 2, height: i % 5 === 0 ? 3 : 2, borderRadius: "50%", background: "#fff", opacity: tw, boxShadow: "0 0 6px rgba(200,220,255,0.8)" } }));
+  }
+  var zzz = ["z", "z", "Z"].map(function (c, zi) {
+    return h("div", { key: "zz" + zi, style: { position: "absolute", left: (54 + zi * 5) + "%", top: (34 - zi * 6 + Math.sin(T * 0.08 + zi) * 2) + "%", color: "rgba(220,228,255,0.6)", fontWeight: 800, fontSize: (0.9 + zi * 0.4) + "rem", opacity: (0.4 + 0.2 * Math.sin(T * 0.1 + zi)).toFixed(2) } }, c);
+  });
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "linear-gradient(180deg,#0a1030,#161a3a 55%,#241a40)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 1s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui" } },
+    stars, zzz,
+    h("div", { style: { position: "absolute", left: "50%", top: "40%", transform: "translate(-50%,-50%)", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(180,190,255,0.18), transparent 65%)" } }),
+    h("div", { style: { position: "relative", zIndex: 2, textAlign: "center", padding: "0 26px", animation: "fadeSlideUp 0.9s ease" } },
+      h("div", { style: { fontSize: "3.6rem", transform: "translateY(" + (Math.sin(T * 0.07) * 4).toFixed(1) + "px)", display: "inline-block", filter: "drop-shadow(0 0 22px rgba(190,200,255,0.75))" } }, "🌙"),
+      h("div", { style: { color: "#eaf0ff", fontWeight: 800, fontSize: "clamp(1.5rem,6vw,2.2rem)", marginTop: 16, textShadow: "0 2px 16px rgba(120,140,220,0.6)" } }, "晚安，Nana"),
+      h("div", { style: { color: "rgba(220,228,255,0.88)", fontSize: "0.95rem", marginTop: 12, lineHeight: 2 } }, "夜深了，月亮也在听这首歌 🌙", h("br", null), "把今天轻轻放下，做个好梦～ 💤"),
+      h("div", { style: { color: "rgba(220,228,255,0.45)", fontSize: "0.72rem", marginTop: 18 } }, "（点一下继续）")
+    )
+  );
+}
 function NanaMixtapeCard() {
   var h = React.createElement;
   // 本地 mp3 播放器。加歌：把 mp3 放进仓库根目录，照下面格式加一行 { title, artist, src } 即可。
@@ -17684,6 +17717,8 @@ function NanaMixtapeCard() {
     { title: "You Didn't Need My Love (kuma remix)", artist: "Kuma · Anders", src: "you-didnt-need-my-love.mp3" },
     { title: "GTFO", artist: "Mariah Carey", src: "gtfo.mp3" },
     { title: "cédes", artist: "Rossylo", src: "cedes.mp3" },
+    { title: "Easy -Interlude-", artist: "SPiCYSOL", src: "easy-interlude.mp3" },
+    { title: "月の光 ～ good night", artist: "黒川沙良", src: "good-night.mp3", instrumental: true, goodnight: true },
     { title: "Moonlit Neon", artist: "Harmony Haven Music", src: "moonlit-neon.mp3" }
   ];
   // 加歌词：给某首歌加字段即可。同步用 lrc（带 [mm:ss.xx] 时间轴），纯文本用 lyrics（\n 分行）。
@@ -17695,10 +17730,13 @@ function NanaMixtapeCard() {
   var _v = useState(0.8); var volume = _v[0]; var setVolume = _v[1];
   var _e = useState(false); var error = _e[0]; var setError = _e[1];
   var _ld = useState(false); var loading = _ld[0]; var setLoading = _ld[1];
+  var _gn = useState(false); var showGN = _gn[0]; var setShowGN = _gn[1];
   var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
   var audioRef = useRef(null);
   var wantPlay = useRef(false);
   var cur = tracks[idx];
+  // 午夜彩蛋：午夜(23:00–00:59)播放标了 goodnight 的歌 → 弹晚安动画
+  var triggerGN = function () { var hh = new Date().getHours(); if (cur.goodnight && (hh >= 23 || hh < 1)) setShowGN(true); };
   var _ly = useState(false); var showLy = _ly[0]; var setShowLy = _ly[1];
   var lyricsRef = useRef(null);
   var LYRICS_ENABLED = false; // 歌词先隐藏；以后填词把这里改 true 即可恢复「📝 歌词」
@@ -17757,7 +17795,7 @@ function NanaMixtapeCard() {
       wantPlay.current = false;
       setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); setLoading(false); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); });
     }
   }, [idx]);
   var toggle = function () {
@@ -17768,7 +17806,7 @@ function NanaMixtapeCard() {
       setError(false);
       if (a.readyState < 3) setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); setLoading(false); })["catch"](function () { setError(true); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function () { setError(true); setLoading(false); });
       else setPlaying(true);
     }
   };
@@ -17817,6 +17855,7 @@ function NanaMixtapeCard() {
   return h("div", { style: { background: "linear-gradient(165deg," + mood.tint + ",#fff 70%)", borderRadius: 18, border: "1.5px solid rgba(" + mood.glow + ",0.28)", boxShadow: "0px 10px 22px rgba(" + mood.glow + ",0.14)", overflow: "hidden", transition: "background 0.6s, border-color 0.6s, box-shadow 0.6s" } },
     h("style", null, "@keyframes nanaSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"),
     h("audio", { ref: audioRef, src: cur.src, preload: "auto" }),
+    showGN && h(GoodNightEgg, { onClose: function () { setShowGN(false); } }),
     h("div", { style: { display: "flex", alignItems: "center", gap: 6, padding: "12px 14px 8px" } },
       h("span", { style: { fontSize: "0.56rem", fontWeight: 800, color: "#fff", background: mood.accent, borderRadius: 999, padding: "2px 8px", transition: "background 0.6s", whiteSpace: "nowrap" } }, "🎶 Nana 随身听"),
       h("span", { style: { fontSize: "0.56rem", fontWeight: 700, color: mood.accent2, background: mood.soft, borderRadius: 999, padding: "2px 7px", transition: "all 0.6s", whiteSpace: "nowrap" } }, mood.label)),
