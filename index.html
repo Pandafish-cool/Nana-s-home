@@ -17734,6 +17734,7 @@ function NanaMixtapeCard() {
   var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
   var audioRef = useRef(null);
   var wantPlay = useRef(false);
+  var retried = useRef(false);
   var cur = tracks[idx];
   // 午夜彩蛋：午夜(23:00–00:59)播放标了 goodnight 的歌 → 弹晚安动画
   var triggerGN = function () { var hh = new Date().getHours(); if (cur.goodnight && (hh >= 23 || hh < 1)) setShowGN(true); };
@@ -17762,7 +17763,11 @@ function NanaMixtapeCard() {
     var a = audioRef.current; if (!a) return;
     a.volume = volume;
     var onEnded = function () { if (idx < tracks.length - 1) { wantPlay.current = true; setIdx(idx + 1); } else { setPlaying(false); } };
-    var onErr = function () { setError(true); setPlaying(false); setLoading(false); };
+    var onErr = function () {
+      if (a && a.error && a.error.code === 1) return; // ABORTED：切歌中止，忽略（不是真的放不出来）
+      if (!retried.current) { retried.current = true; try { a.load(); var rp = a.play(); if (rp) rp.then(function () { setError(false); setLoading(false); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); }); } catch (_) { setError(true); setPlaying(false); setLoading(false); } return; }
+      setError(true); setPlaying(false); setLoading(false);
+    };
     var onDur = function () { setDuration(a.duration || 0); };
     var onTime = function () { if (a.duration) setProgress(a.currentTime / a.duration); };
     var onWait = function () { setLoading(true); };
@@ -17787,15 +17792,22 @@ function NanaMixtapeCard() {
     };
   }, [idx]);
   useEffect(function () { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
+  // 预取下一首：当前歌开播 1.5s 后悄悄预下载下一首，warm 浏览器缓存 → 切歌更快、缓冲更短
+  useEffect(function () {
+    var nxt = tracks[idx + 1];
+    if (!nxt || !nxt.src) return;
+    var id = setTimeout(function () { try { fetch(nxt.src).then(function (r) { return r && r.arrayBuffer(); })["catch"](function () {}); } catch (_) {} }, 1500);
+    return function () { clearTimeout(id); };
+  }, [idx]);
   useEffect(function () {
     var a = audioRef.current; if (!a) return;
-    setError(false); setProgress(0); setDuration(0);
+    setError(false); setProgress(0); setDuration(0); retried.current = false;
     a.load();
     if (wantPlay.current) {
       wantPlay.current = false;
       setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function (e) { if (e && e.name === "AbortError") { setLoading(false); return; } setError(true); setPlaying(false); setLoading(false); });
     }
   }, [idx]);
   var toggle = function () {
@@ -17806,7 +17818,7 @@ function NanaMixtapeCard() {
       setError(false);
       if (a.readyState < 3) setLoading(true);
       var pr = a.play();
-      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function () { setError(true); setLoading(false); });
+      if (pr) pr.then(function () { setPlaying(true); setLoading(false); triggerGN(); })["catch"](function (e) { if (e && e.name === "AbortError") { setLoading(false); return; } setError(true); setLoading(false); });
       else setPlaying(true);
     }
   };
