@@ -17762,7 +17762,7 @@ function NanaMixtapeCard() {
   useEffect(function () {
     var a = audioRef.current; if (!a) return;
     a.volume = volume;
-    var onEnded = function () { if (idx < tracks.length - 1) { wantPlay.current = true; setIdx(idx + 1); } else { setPlaying(false); } };
+    var onEnded = function () { wantPlay.current = true; setIdx(idx < tracks.length - 1 ? idx + 1 : 0); };
     var onErr = function () {
       if (a && a.error && a.error.code === 1) return; // ABORTED：切歌中止，忽略（不是真的放不出来）
       if (!retried.current) { retried.current = true; try { a.load(); var rp = a.play(); if (rp) rp.then(function () { setError(false); setLoading(false); })["catch"](function () { setError(true); setPlaying(false); setLoading(false); }); } catch (_) { setError(true); setPlaying(false); setLoading(false); } return; }
