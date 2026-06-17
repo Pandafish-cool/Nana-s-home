@@ -18262,9 +18262,10 @@ function NanasHome() {
         desc: "调酒、点歌、氛围感"
       });
     }
-  })), !room && /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
-      padding: "12px 16px 0"
+      padding: "12px 16px 0",
+      display: room ? "none" : "block"
     }
   }, /*#__PURE__*/React.createElement(NanaMixtapeCard, null)), !room && /*#__PURE__*/React.createElement("div", {
     style: {
