@@ -18078,11 +18078,57 @@ function ScratchBar(_refSC) {
     h(WeekendBarCard, { onOpen: revealed ? onOpen : function () {} }),
     !revealed && h("canvas", { ref: canvasRef, style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", borderRadius: 16, cursor: "pointer", touchAction: "none" } }));
 }
+function FrogSheriffEgg(_refFS) {
+  var onClose = _refFS.onClose;
+  var h = React.createElement;
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  useEffect(function () {
+    var t1 = setTimeout(function () { setGone(true); }, 5200);
+    var t2 = setTimeout(function () { onClose(); }, 6300);
+    return function () { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  var svg =
+    "<svg viewBox='0 0 600 600' width='100%' style='display:block'>" +
+      "<defs>" +
+        "<radialGradient id='frgScr' cx='50%' cy='44%' r='62%'><stop offset='0%' stop-color='#3ea0e2'/><stop offset='100%' stop-color='#125fae'/></radialGradient>" +
+        "<clipPath id='frgL'><circle cx='158' cy='158' r='86'/></clipPath>" +
+        "<clipPath id='frgR'><circle cx='442' cy='158' r='86'/></clipPath>" +
+      "</defs>" +
+      "<rect x='28' y='150' width='544' height='420' rx='70' fill='#57c896'/>" +
+      "<rect x='50' y='165' width='500' height='392' rx='58' fill='#57bd4e' stroke='#2f7d32' stroke-width='3'/>" +
+      "<circle cx='158' cy='150' r='104' fill='#57bd4e' stroke='#2f7d32' stroke-width='3'/>" +
+      "<circle cx='442' cy='150' r='104' fill='#57bd4e' stroke='#2f7d32' stroke-width='3'/>" +
+      "<circle cx='158' cy='158' r='86' fill='#fff' stroke='#2f7d32' stroke-width='3'/>" +
+      "<circle cx='442' cy='158' r='86' fill='#fff' stroke='#2f7d32' stroke-width='3'/>" +
+      "<circle cx='184' cy='208' r='33' fill='#141414'/>" +
+      "<circle cx='416' cy='208' r='33' fill='#141414'/>" +
+      "<g clip-path='url(#frgL)'><polygon points='72,72 244,72 244,150 72,118' fill='#1b1b1b'/></g>" +
+      "<g clip-path='url(#frgR)'><polygon points='356,72 528,72 528,118 356,150' fill='#1b1b1b'/></g>" +
+      "<g clip-path='url(#frgL)'><rect x='70' y='70' width='176' height='0' fill='#57bd4e'><animate attributeName='height' values='0;0;178;0;0' keyTimes='0;0.9;0.94;0.98;1' dur='4s' repeatCount='indefinite'/></rect></g>" +
+      "<g clip-path='url(#frgR)'><rect x='354' y='70' width='176' height='0' fill='#57bd4e'><animate attributeName='height' values='0;0;178;0;0' keyTimes='0;0.9;0.94;0.98;1' dur='4s' repeatCount='indefinite'/></rect></g>" +
+      "<circle cx='291' cy='150' r='4.5' fill='#2c5a2c'/><circle cx='312' cy='150' r='4.5' fill='#2c5a2c'/>" +
+      "<path d='M250 188 Q301 236 352 188' fill='none' stroke='#173017' stroke-width='6' stroke-linecap='round'/>" +
+      "<g fill='#57bd4e' stroke='#2f7d32' stroke-width='3'>" +
+        "<ellipse cx='150' cy='252' rx='30' ry='20' transform='rotate(40 150 252)'/>" +
+        "<ellipse cx='450' cy='252' rx='30' ry='20' transform='rotate(-40 450 252)'/>" +
+        "<ellipse cx='150' cy='492' rx='30' ry='20' transform='rotate(-40 150 492)'/>" +
+        "<ellipse cx='450' cy='492' rx='30' ry='20' transform='rotate(40 450 492)'/>" +
+      "</g>" +
+      "<rect x='138' y='250' width='324' height='244' rx='14' fill='url(#frgScr)'/>" +
+      "<text x='300' y='358' text-anchor='middle' font-family='Arial,sans-serif' font-weight='800' font-size='44' fill='#fff'>Hi Nana 警长</text>" +
+      "<text x='300' y='408' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='24' fill='#eaf4ff'>波棱盖早日恢复 🐸</text>" +
+    "</svg>";
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 10000, background: "radial-gradient(circle at 50% 36%,#1b6fb6,#0c2f54)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 1s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 22px" } },
+    h("div", { style: { width: 330, maxWidth: "86vw", animation: "bounceIn 0.7s ease" }, dangerouslySetInnerHTML: { __html: svg } }),
+    h("div", { style: { color: "#eaf4ff", fontWeight: 800, fontSize: "clamp(1.05rem,4.8vw,1.4rem)", textAlign: "center", marginTop: 22, lineHeight: 1.6 } }, "希望你的波棱盖早日恢复 💚"),
+    h("div", { style: { color: "rgba(234,244,255,0.5)", fontSize: "0.72rem", marginTop: 14 } }, "（点一下进门）"));
+}
 function NanasHome() {
   var _useState321 = useState(true),
     _useState322 = _slicedToArray(_useState321, 2),
     showSplash = _useState322[0],
     setShowSplash = _useState322[1];
+  var _useStateFrog = useState(true), showFrog = _useStateFrog[0], setShowFrog = _useStateFrog[1];
   var _useStateEgg = useState(false),
     showEgg = _useStateEgg[0],
     setShowEgg = _useStateEgg[1];
@@ -18173,7 +18219,9 @@ function NanasHome() {
       maxWidth: 600,
       margin: "0 auto"
     }
-  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
+  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(FrogSheriffEgg, {
+    onClose: function onClose() { setShowFrog(false); }
+  }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
       setShowSplash(false);
       var _ed = new Date();
