@@ -17732,6 +17732,7 @@ function NanaMixtapeCard(_refNM) {
   var _e = useState(false); var error = _e[0]; var setError = _e[1];
   var _ld = useState(false); var loading = _ld[0]; var setLoading = _ld[1];
   var _gn = useState(false); var showGN = _gn[0]; var setShowGN = _gn[1];
+  var _ro = useState(false); var repeatOne = _ro[0]; var setRepeatOne = _ro[1]; // 单曲循环
   var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
   var audioRef = useRef(null);
   var wantPlay = useRef(false);
@@ -17867,7 +17868,7 @@ function NanaMixtapeCard(_refNM) {
   };
   return h(React.Fragment, null,
     h("style", null, "@keyframes nanaSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"),
-    h("audio", { ref: audioRef, src: cur.src, preload: "auto" }),
+    h("audio", { ref: audioRef, src: cur.src, preload: "auto", loop: repeatOne }),
     showGN && h(GoodNightEgg, { onClose: function () { setShowGN(false); } }),
     room && h("div", { style: { position: "fixed", left: 12, right: 12, bottom: 76, zIndex: 45, display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg," + mood.accent2 + "," + mood.accent + ")", borderRadius: 14, padding: "8px 8px 8px 13px", boxShadow: "0 8px 22px rgba(0,0,0,0.32)", border: "1px solid rgba(255,255,255,0.18)" } },
       h("div", { style: { fontSize: "1.2rem", flexShrink: 0 } }, "🎧"),
@@ -17907,6 +17908,7 @@ function NanaMixtapeCard(_refNM) {
     h("div", { style: { display: "flex", alignItems: "center", gap: 8, padding: "2px 16px 10px" } },
       h("span", { style: { fontSize: "0.72rem", color: "#b0a090" } }, "🔈"),
       h("input", { type: "range", min: 0, max: 1, step: 0.05, value: volume, onChange: function (e) { setVolume(+e.target.value); }, style: { flex: 1, accentColor: mood.accent } }),
+      h("button", { onClick: function () { setRepeatOne(!repeatOne); }, title: "单曲循环", style: { background: repeatOne ? mood.accent : "transparent", border: "1px solid rgba(" + mood.glow + ",0.32)", borderRadius: 999, padding: "3px 10px", fontFamily: "inherit", fontSize: "0.7rem", fontWeight: 800, color: repeatOne ? "#fff" : "#9a8575", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.3s" } }, repeatOne ? "🔂 单曲" : "🔁 列表"),
       LYRICS_ENABLED && h("button", { onClick: function () { setShowLy(!showLy); }, style: { background: showLy ? mood.soft : "transparent", border: "1px solid rgba(" + mood.glow + ",0.32)", borderRadius: 999, padding: "3px 10px", fontFamily: "inherit", fontSize: "0.68rem", fontWeight: 700, color: showLy ? mood.accent2 : "#9a8575", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.3s" } }, "📝 歌词")),
     LYRICS_ENABLED && showLy && h("div", { ref: lyricsRef, style: { borderTop: "1px solid rgba(" + mood.glow + ",0.14)", padding: "12px 16px", maxHeight: 176, overflowY: "auto", position: "relative", scrollBehavior: "smooth" } },
       synced ? synced.map(function (l, i) { return h("div", { key: "ly" + i, style: { fontSize: "0.82rem", lineHeight: 2.0, textAlign: "center", color: i === activeIdx ? mood.accent2 : "#b8a99c", fontWeight: i === activeIdx ? 800 : 500, transform: i === activeIdx ? "scale(1.05)" : "scale(1)", transition: "color 0.3s, transform 0.3s" } }, l.text); })
