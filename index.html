@@ -8831,52 +8831,57 @@ function HeroBanner(_ref60) {
   };
   var bgGrad = "linear-gradient(170deg," + scene.bg.join(",") + ")";
   var rc = React.createElement;
-  // 便签池：每天发 5 张，整周(35 张)不重样，每周重新洗牌。改文案就改这一池。
-  var ALLNOTES = [
-    { t: "打工人冲鸭", b: "今天也要赚钱钱，然后偷偷摸条小鱼 🐟", e: "🐟" },
-    { t: "待办清单？", b: "已读，不回。先喝口水压压惊 🫖", e: "🫖" },
-    { t: "勇敢牛牛", b: "不怕困难！实在不行就装死三分钟 🐮", e: "🐮" },
-    { t: "你很努力惹", b: "努力到老板看不见的程度，也是种本事 😎", e: "😎" },
-    { t: "做不完？正常", b: "事情是做不完的，但奶茶可以喝完 🧋", e: "🧋" },
-    { t: "你在发光", b: "亮到同事问你是不是偷偷恋爱了 ✨", e: "✨" },
-    { t: "久坐警告🚨", b: "起来扭一扭，接水是假、放风是真 🚶", e: "🚶" },
-    { t: "抱一个", b: "今日 KPI：被 Nana 自己好好爱一下 🤍", e: "🤍" },
-    { t: "床我焊死了", b: "今天行程：床→沙发→床，完美闭环 🛋️", e: "🛏️" },
+  // 工作日 = 温暖的港湾（下班到家）；周末 = 慵懒搞笑。每天发 5 张，整周不重样，每周重洗。
+  var weekdayNotes = [
+    { t: "到家啦", b: "门一关，今天的累就留在门外了 🚪", e: "🏡" },
+    { t: "欢迎回来", b: "这里只有你和放松，别的都不重要", e: "🛋️" },
+    { t: "卸下盔甲", b: "在外面撑了一天，回家可以软下来了", e: "🤍" },
+    { t: "沙发预热好了", b: "快过来瘫着，位置一直给你留着", e: "🛋️" },
+    { t: "今天辛苦了", b: "不管外面怎样，回到家就没事了 💛", e: "💛" },
+    { t: "猫已就位", b: "家里的一切都在等你回来，包括我 🐱", e: "🐱" },
+    { t: "先喝口热的", b: "给你温了杯水，慢慢喝，不急 🫖", e: "🫖" },
+    { t: "今天的班下了", b: "外面的身份先卸下，你到家了 🌙", e: "🌙" },
+    { t: "这里很安全", b: "在家里，你可以放心地做回自己", e: "🏠" },
+    { t: "深呼吸一下", b: "到家了，肩膀可以塌下来，没事的 🌿", e: "🌿" },
+    { t: "灯给你留着", b: "无论多晚回来，这里都为你亮着 💡", e: "💡" },
+    { t: "你回来真好", b: "家因为有你，才像个家 🏡", e: "🏡" },
+    { t: "烦恼请寄存", b: "进门挂门口，出门再领，也可以不领 🧥", e: "🧥" },
+    { t: "在家慢慢来", b: "不用赶，时间现在是你的了 ⏳", e: "⏳" },
+    { t: "被子晒过啦", b: "软软香香的，等你来钻进去 🛏️", e: "🛏️" },
+    { t: "今天也撑住了", b: "你比自己以为的更厉害，真的 🌟", e: "🌟" },
+    { t: "想吃点啥", b: "冰箱有货，今晚给自己加个菜 🍲", e: "🍲" },
+    { t: "靠过来一会儿", b: "累了就靠着，不说话也没关系 ☁️", e: "☁️" },
+    { t: "外面交给明天", b: "该操心的明天再操心，今晚先歇 🌙", e: "🌙" },
+    { t: "你被爱着", b: "世界再吵，家始终把你放在心上 💗", e: "💗" },
+    { t: "换上软睡衣", b: "脱掉一天的紧绷，舒服最重要 🧦", e: "🧦" },
+    { t: "今天到此为止", b: "剩下的明天说，现在好好放空 🫧", e: "🫧" },
+    { t: "给你留了甜", b: "心里累的话，先吃口甜的补补 🍫", e: "🍫" },
+    { t: "你做得很好", b: "把日子认真过下来，已经很了不起 🌷", e: "🌷" },
+    { t: "晚安预备中", b: "今天结束了，准备好好睡一觉 😴", e: "😴" }
+  ];
+  var weekendNotes = [
+    { t: "床我焊死了", b: "今天行程：床→沙发→床，完美闭环 🛏️", e: "🛏️" },
     { t: "摆烂正经事", b: "躺平不是堕落，是和地心引力和解 🌍", e: "🛋️" },
     { t: "闹钟？不熟", b: "睡到自然醒，醒了接着睡也完全合法 😴", e: "😴" },
     { t: "干饭人快乐", b: "想吃就吃，热量周一再算（周一的事）🍰", e: "🍰" },
     { t: "啥也不干", b: "发呆是高级休息，你在给灵魂放假 ☁️", e: "☁️" },
     { t: "放肆一点点", b: "今天没有「应该」，只有「我乐意」😎", e: "😎" },
-    { t: "理直气壮浪费", b: "时间是你的，奢侈地耗掉它，没人管 ⏳", e: "⏳" },
-    { t: "周末快乐鸭", b: "你值得这份懒，挺起腰板享受它 💛", e: "🦆" },
-    { t: "深呼吸", b: "吸气…呼气…把烦恼一口吹到下周去 🌬️", e: "🌬️" },
-    { t: "emo 也没事", b: "心情像天气，乌云飘过就好，你没坏掉 ⛅", e: "⛅" },
-    { t: "你是限量款", b: "全世界仅此一个 Nana，珍贵到犯规 💎", e: "💎" },
-    { t: "别内耗啦", b: "脑子里那场会，散会！现在开始休息 🧠", e: "🧠" },
-    { t: "小狗看你", b: "想象有只狗崇拜地看你：哇，好棒 🐶", e: "🐶" },
-    { t: "今天也算赢", b: "起床、活着、还看到了我，三连胜 🏆", e: "🏆" },
-    { t: "慢就慢呗", b: "乌龟也能到终点，还顺便看了风景 🐢", e: "🐢" },
-    { t: "零食补给", b: "心情低落？先吃口甜的，糖分会托住你 🍫", e: "🍫" },
-    { t: "你不是机器", b: "允许自己卡顿、宕机、重启，很合理 🔌", e: "🔌" },
-    { t: "抬头看看", b: "窗外有天，杯里有水，你还有我 🌤️", e: "🌤️" },
-    { t: "今天宠自己", b: "想买的小东西，买！这叫精神刚需 🛍️", e: "🛍️" },
-    { t: "别怕搞砸", b: "搞砸就搞砸，反正又不会少块肉 💪", e: "💪" },
-    { t: "你超会的", b: "把日子过下去这件事，你一直做得很好 🌟", e: "🌟" },
-    { t: "摸鱼时间到", b: "伸个懒腰，天塌不下来，老板看不见 🐟", e: "🐟" },
-    { t: "温柔一点", b: "对全世界温柔之前，先对自己温柔 🫶", e: "🫶" },
-    { t: "今天的英雄", b: "能照顾好自己的人，已经很英雄了 🦸", e: "🦸" },
     { t: "躺平许可证", b: "本证授权持有人随时随地葛优瘫 📜", e: "📜" },
-    { t: "夸夸你", b: "没有理由，就是想夸你，今天也好看 🌷", e: "🌷" },
-    { t: "晚点再说", b: "难的事先放一放，先把自己照顾好 🌙", e: "🌙" }
+    { t: "理直气壮浪费", b: "时间是你的，奢侈地耗掉它，没人管 ⏳", e: "⏳" },
+    { t: "想宠就宠自己", b: "想买的小东西买！这叫精神刚需 🛍️", e: "🛍️" },
+    { t: "周末快乐鸭", b: "你值得这份懒，挺起腰板享受它 💛", e: "🦆" }
   ];
-  var PER = 5, passes = Math.ceil(ALLNOTES.length / PER);
+  var PER = 5;
   var _dn = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
-  var _seed = ((Math.floor(_dn / passes) + 1) * 2654435761) >>> 0 || 1;
+  var _week = Math.floor(_dn / 7);
+  var pool = isWeekend ? weekendNotes : weekdayNotes;
+  var _slot = isWeekend ? (dow === 6 ? 0 : 1) : (dow >= 1 && dow <= 5 ? dow - 1 : 0);
+  var _seed = (((_week + 1) * (isWeekend ? 97001 : 19349663)) >>> 0) || 1;
   var _rnd = (function () { var x = _seed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; })();
-  var _pi = ALLNOTES.map(function (_, i) { return i; });
+  var _pi = pool.map(function (_, i) { return i; });
   for (var _i = _pi.length - 1; _i > 0; _i--) { var _j = Math.floor(_rnd() * (_i + 1)); var _t = _pi[_i]; _pi[_i] = _pi[_j]; _pi[_j] = _t; }
-  var _start = (_dn % passes) * PER;
-  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(ALLNOTES[_pi[(_start + _k) % ALLNOTES.length]]); }
+  var _start = (_slot * PER) % pool.length;
+  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(pool[_pi[(_start + _k) % pool.length]]); }
   useEffect(function () {
     var id = setInterval(function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 350); }, 4800);
     return function () { clearInterval(id); };
@@ -8890,7 +8895,7 @@ function HeroBanner(_ref60) {
       rc("div", { style: { position: "absolute", top: 6, width: "93%", maxWidth: 330, height: "86%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
       rc("div", { style: { position: "relative", background: "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 342, borderRadius: 8, padding: "24px 22px 20px", transform: "rotate(-1deg)", boxShadow: "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
         rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: "rgba(255,170,120,0.5)", border: "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
-        rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, "🗒️ 今日便签 · 给 Nana ｜ 点一下翻"),
+        rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana ｜ 点一下翻"),
         rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: "#5a4326", lineHeight: 1.45 } }, note.t),
         rc("div", { style: { fontSize: "0.98rem", color: "#8a6a44", marginTop: 10, lineHeight: 1.7 } }, note.b),
         rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 16 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? "#d8924a" : "rgba(180,140,90,0.35)", transition: "all .3s" } }); })))));
