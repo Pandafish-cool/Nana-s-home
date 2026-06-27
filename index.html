@@ -8831,38 +8831,69 @@ function HeroBanner(_ref60) {
   };
   var bgGrad = "linear-gradient(170deg," + scene.bg.join(",") + ")";
   var rc = React.createElement;
-  // 便签纸：工作日 / 休息日 各一池，按天循环（连续多天不重样）。改文案就改这两组。
-  var weekdayNotes = [
-    { t: "今天也辛苦了", b: "慢慢来就好，你已经做得很棒了", e: "💛" },
-    { t: "别硬撑哦", b: "累了就停一下，歇口气没关系的", e: "🍃" },
-    { t: "勇敢一点点", b: "会怕很正常，可你每次都迈过去了", e: "🦁" },
-    { t: "按你的节奏", b: "不用跟谁比，走得稳就很好", e: "🌿" },
-    { t: "做不完没关系", b: "事情明天还在，先照顾好自己", e: "🌙" },
-    { t: "你在发光呀", b: "认真生活的你，真的很好看 ✨", e: "✨" },
-    { t: "记得喝口水", b: "伸个懒腰，对自己温柔一点", e: "🫖" },
-    { t: "想抱抱你", b: "不管顺不顺，你都值得被好好对待", e: "🤍" }
+  // 便签池：每天发 5 张，整周(35 张)不重样，每周重新洗牌。改文案就改这一池。
+  var ALLNOTES = [
+    { t: "打工人冲鸭", b: "今天也要赚钱钱，然后偷偷摸条小鱼 🐟", e: "🐟" },
+    { t: "待办清单？", b: "已读，不回。先喝口水压压惊 🫖", e: "🫖" },
+    { t: "勇敢牛牛", b: "不怕困难！实在不行就装死三分钟 🐮", e: "🐮" },
+    { t: "你很努力惹", b: "努力到老板看不见的程度，也是种本事 😎", e: "😎" },
+    { t: "做不完？正常", b: "事情是做不完的，但奶茶可以喝完 🧋", e: "🧋" },
+    { t: "你在发光", b: "亮到同事问你是不是偷偷恋爱了 ✨", e: "✨" },
+    { t: "久坐警告🚨", b: "起来扭一扭，接水是假、放风是真 🚶", e: "🚶" },
+    { t: "抱一个", b: "今日 KPI：被 Nana 自己好好爱一下 🤍", e: "🤍" },
+    { t: "床我焊死了", b: "今天行程：床→沙发→床，完美闭环 🛋️", e: "🛏️" },
+    { t: "摆烂正经事", b: "躺平不是堕落，是和地心引力和解 🌍", e: "🛋️" },
+    { t: "闹钟？不熟", b: "睡到自然醒，醒了接着睡也完全合法 😴", e: "😴" },
+    { t: "干饭人快乐", b: "想吃就吃，热量周一再算（周一的事）🍰", e: "🍰" },
+    { t: "啥也不干", b: "发呆是高级休息，你在给灵魂放假 ☁️", e: "☁️" },
+    { t: "放肆一点点", b: "今天没有「应该」，只有「我乐意」😎", e: "😎" },
+    { t: "理直气壮浪费", b: "时间是你的，奢侈地耗掉它，没人管 ⏳", e: "⏳" },
+    { t: "周末快乐鸭", b: "你值得这份懒，挺起腰板享受它 💛", e: "🦆" },
+    { t: "深呼吸", b: "吸气…呼气…把烦恼一口吹到下周去 🌬️", e: "🌬️" },
+    { t: "emo 也没事", b: "心情像天气，乌云飘过就好，你没坏掉 ⛅", e: "⛅" },
+    { t: "你是限量款", b: "全世界仅此一个 Nana，珍贵到犯规 💎", e: "💎" },
+    { t: "别内耗啦", b: "脑子里那场会，散会！现在开始休息 🧠", e: "🧠" },
+    { t: "小狗看你", b: "想象有只狗崇拜地看你：哇，好棒 🐶", e: "🐶" },
+    { t: "今天也算赢", b: "起床、活着、还看到了我，三连胜 🏆", e: "🏆" },
+    { t: "慢就慢呗", b: "乌龟也能到终点，还顺便看了风景 🐢", e: "🐢" },
+    { t: "零食补给", b: "心情低落？先吃口甜的，糖分会托住你 🍫", e: "🍫" },
+    { t: "你不是机器", b: "允许自己卡顿、宕机、重启，很合理 🔌", e: "🔌" },
+    { t: "抬头看看", b: "窗外有天，杯里有水，你还有我 🌤️", e: "🌤️" },
+    { t: "今天宠自己", b: "想买的小东西，买！这叫精神刚需 🛍️", e: "🛍️" },
+    { t: "别怕搞砸", b: "搞砸就搞砸，反正又不会少块肉 💪", e: "💪" },
+    { t: "你超会的", b: "把日子过下去这件事，你一直做得很好 🌟", e: "🌟" },
+    { t: "摸鱼时间到", b: "伸个懒腰，天塌不下来，老板看不见 🐟", e: "🐟" },
+    { t: "温柔一点", b: "对全世界温柔之前，先对自己温柔 🫶", e: "🫶" },
+    { t: "今天的英雄", b: "能照顾好自己的人，已经很英雄了 🦸", e: "🦸" },
+    { t: "躺平许可证", b: "本证授权持有人随时随地葛优瘫 📜", e: "📜" },
+    { t: "夸夸你", b: "没有理由，就是想夸你，今天也好看 🌷", e: "🌷" },
+    { t: "晚点再说", b: "难的事先放一放，先把自己照顾好 🌙", e: "🌙" }
   ];
-  var weekendNotes = [
-    { t: "周末啦，随便躺", b: "摆烂一整天也可以，没人催你", e: "🛋️" },
-    { t: "今天交给你自己", b: "想干嘛干嘛，享受属于你的时间", e: "🌷" },
-    { t: "睡到自然醒", b: "不用定闹钟，赖床是今天的正经事", e: "😴" },
-    { t: "想吃就吃", b: "对自己好点，今天快乐最重要", e: "🍰" },
-    { t: "什么都不做", b: "发呆、追剧、晒太阳，都很值得", e: "☀️" },
-    { t: "放肆一点", b: "今天没有该做，只有你想做的事", e: "✨" },
-    { t: "慢慢过这天", b: "不赶时间，软软地待着就很好", e: "☁️" },
-    { t: "周末快乐 Nana", b: "你值得所有的轻松和好心情", e: "💛" }
-  ];
+  var PER = 5, passes = Math.ceil(ALLNOTES.length / PER);
   var _dn = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
-  var pool = isWeekend ? weekendNotes : weekdayNotes;
-  var note = pool[((_dn % pool.length) + pool.length) % pool.length];
-  return rc("div", { style: { background: bgGrad, padding: "22px 16px 24px", position: "relative", overflow: "hidden", transition: "background 2s ease" } },
-    rc("div", { style: { display: "flex", justifyContent: "center" } },
-      rc("div", { style: { background: "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 344, borderRadius: 8, padding: "26px 22px 28px", transform: "rotate(-1.6deg)", boxShadow: "0 12px 28px rgba(40,30,50,0.32)", position: "relative", fontFamily: "'Comic Sans MS','Segoe Print','PingFang SC',cursive" } },
+  var _seed = ((Math.floor(_dn / passes) + 1) * 2654435761) >>> 0 || 1;
+  var _rnd = (function () { var x = _seed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; })();
+  var _pi = ALLNOTES.map(function (_, i) { return i; });
+  for (var _i = _pi.length - 1; _i > 0; _i--) { var _j = Math.floor(_rnd() * (_i + 1)); var _t = _pi[_i]; _pi[_i] = _pi[_j]; _pi[_j] = _t; }
+  var _start = (_dn % passes) * PER;
+  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(ALLNOTES[_pi[(_start + _k) % ALLNOTES.length]]); }
+  useEffect(function () {
+    var id = setInterval(function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 350); }, 4800);
+    return function () { clearInterval(id); };
+  }, []);
+  var ni = ((msgIdx % PER) + PER) % PER;
+  var note = todays[ni];
+  var advance = function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 200); };
+  return rc("div", { style: { background: bgGrad, padding: "24px 16px 20px", position: "relative", overflow: "hidden", transition: "background 2s ease" } },
+    rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 172 } },
+      rc("div", { style: { position: "absolute", top: 13, width: "90%", maxWidth: 318, height: "82%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+      rc("div", { style: { position: "absolute", top: 6, width: "93%", maxWidth: 330, height: "86%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+      rc("div", { style: { position: "relative", background: "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 342, borderRadius: 8, padding: "24px 22px 20px", transform: "rotate(-1deg)", boxShadow: "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
         rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: "rgba(255,170,120,0.5)", border: "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
-        rc("div", { style: { fontSize: "0.62rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, isWeekend ? "🗒️ 周末便签 · 给 Nana" : "🗒️ 今日便签 · 给 Nana"),
-        rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: "#5a4326", lineHeight: 1.5 } }, note.t),
-        rc("div", { style: { fontSize: "0.98rem", color: "#8a6a44", marginTop: 10, lineHeight: 1.75 } }, note.b),
-        rc("div", { style: { position: "absolute", right: 14, bottom: 10, fontSize: "1.3rem" } }, note.e || "💛"))));
+        rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, "🗒️ 今日便签 · 给 Nana ｜ 点一下翻"),
+        rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: "#5a4326", lineHeight: 1.45 } }, note.t),
+        rc("div", { style: { fontSize: "0.98rem", color: "#8a6a44", marginTop: 10, lineHeight: 1.7 } }, note.b),
+        rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 16 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? "#d8924a" : "rgba(180,140,90,0.35)", transition: "all .3s" } }); })))));
 }
 function WarmNote(_ref65) {
   var accent = _ref65.accent,
@@ -17930,7 +17961,7 @@ function NanasHome() {
       maxWidth: 600,
       margin: "0 auto"
     }
-  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
+  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
     onClose: function onClose() { setShowFrog(false); }
   }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
