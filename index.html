@@ -8829,76 +8829,378 @@ function HeroBanner(_ref60) {
     accent: "#9b7ecb",
     welcomes: ["Nana快去睡觉！（温柔命令）🌙", "今天的事都结束了，好好休息~", "明天的Nana会更好的 💤"]
   };
-  var bgGrad = "linear-gradient(170deg," + scene.bg.join(",") + ")";
-  var rc = React.createElement;
-  // 工作日 = 温暖的港湾（下班到家）；周末 = 慵懒搞笑。每天发 5 张，整周不重样，每周重洗。
-  var weekdayNotes = [
-    { t: "到家啦", b: "门一关，今天的累就留在门外了 🚪", e: "🏡" },
-    { t: "欢迎回来", b: "这里只有你和放松，别的都不重要", e: "🛋️" },
-    { t: "卸下盔甲", b: "在外面撑了一天，回家可以软下来了", e: "🤍" },
-    { t: "沙发预热好了", b: "快过来瘫着，位置一直给你留着", e: "🛋️" },
-    { t: "今天辛苦了", b: "不管外面怎样，回到家就没事了 💛", e: "💛" },
-    { t: "猫已就位", b: "家里的一切都在等你回来，包括我 🐱", e: "🐱" },
-    { t: "先喝口热的", b: "给你温了杯水，慢慢喝，不急 🫖", e: "🫖" },
-    { t: "今天的班下了", b: "外面的身份先卸下，你到家了 🌙", e: "🌙" },
-    { t: "这里很安全", b: "在家里，你可以放心地做回自己", e: "🏠" },
-    { t: "深呼吸一下", b: "到家了，肩膀可以塌下来，没事的 🌿", e: "🌿" },
-    { t: "灯给你留着", b: "无论多晚回来，这里都为你亮着 💡", e: "💡" },
-    { t: "你回来真好", b: "家因为有你，才像个家 🏡", e: "🏡" },
-    { t: "烦恼请寄存", b: "进门挂门口，出门再领，也可以不领 🧥", e: "🧥" },
-    { t: "在家慢慢来", b: "不用赶，时间现在是你的了 ⏳", e: "⏳" },
-    { t: "被子晒过啦", b: "软软香香的，等你来钻进去 🛏️", e: "🛏️" },
-    { t: "今天也撑住了", b: "你比自己以为的更厉害，真的 🌟", e: "🌟" },
-    { t: "想吃点啥", b: "冰箱有货，今晚给自己加个菜 🍲", e: "🍲" },
-    { t: "靠过来一会儿", b: "累了就靠着，不说话也没关系 ☁️", e: "☁️" },
-    { t: "外面交给明天", b: "该操心的明天再操心，今晚先歇 🌙", e: "🌙" },
-    { t: "你被爱着", b: "世界再吵，家始终把你放在心上 💗", e: "💗" },
-    { t: "换上软睡衣", b: "脱掉一天的紧绷，舒服最重要 🧦", e: "🧦" },
-    { t: "今天到此为止", b: "剩下的明天说，现在好好放空 🫧", e: "🫧" },
-    { t: "给你留了甜", b: "心里累的话，先吃口甜的补补 🍫", e: "🍫" },
-    { t: "你做得很好", b: "把日子认真过下来，已经很了不起 🌷", e: "🌷" },
-    { t: "晚安预备中", b: "今天结束了，准备好好睡一觉 😴", e: "😴" }
-  ];
-  var weekendNotes = [
-    { t: "床我焊死了", b: "今天行程：床→沙发→床，完美闭环 🛏️", e: "🛏️" },
-    { t: "摆烂正经事", b: "躺平不是堕落，是和地心引力和解 🌍", e: "🛋️" },
-    { t: "闹钟？不熟", b: "睡到自然醒，醒了接着睡也完全合法 😴", e: "😴" },
-    { t: "干饭人快乐", b: "想吃就吃，热量周一再算（周一的事）🍰", e: "🍰" },
-    { t: "啥也不干", b: "发呆是高级休息，你在给灵魂放假 ☁️", e: "☁️" },
-    { t: "放肆一点点", b: "今天没有「应该」，只有「我乐意」😎", e: "😎" },
-    { t: "躺平许可证", b: "本证授权持有人随时随地葛优瘫 📜", e: "📜" },
-    { t: "理直气壮浪费", b: "时间是你的，奢侈地耗掉它，没人管 ⏳", e: "⏳" },
-    { t: "想宠就宠自己", b: "想买的小东西买！这叫精神刚需 🛍️", e: "🛍️" },
-    { t: "周末快乐鸭", b: "你值得这份懒，挺起腰板享受它 💛", e: "🦆" }
-  ];
-  var PER = 5;
-  var _dn = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
-  var _week = Math.floor(_dn / 7);
-  var pool = isWeekend ? weekendNotes : weekdayNotes;
-  var _slot = isWeekend ? (dow === 6 ? 0 : 1) : (dow >= 1 && dow <= 5 ? dow - 1 : 0);
-  var _seed = (((_week + 1) * (isWeekend ? 97001 : 19349663)) >>> 0) || 1;
-  var _rnd = (function () { var x = _seed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; })();
-  var _pi = pool.map(function (_, i) { return i; });
-  for (var _i = _pi.length - 1; _i > 0; _i--) { var _j = Math.floor(_rnd() * (_i + 1)); var _t = _pi[_i]; _pi[_i] = _pi[_j]; _pi[_j] = _t; }
-  var _start = (_slot * PER) % pool.length;
-  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(pool[_pi[(_start + _k) % pool.length]]); }
   useEffect(function () {
-    var id = setInterval(function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 350); }, 4800);
-    return function () { clearInterval(id); };
+    var id = setInterval(function () {
+      return setTick(function (t) {
+        return t + 1;
+      });
+    }, 100);
+    return function () {
+      return clearInterval(id);
+    };
   }, []);
-  var ni = ((msgIdx % PER) + PER) % PER;
-  var note = todays[ni];
-  var advance = function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 200); };
-  return rc("div", { style: { background: bgGrad, padding: "24px 16px 20px", position: "relative", overflow: "hidden", transition: "background 2s ease" } },
-    rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 172 } },
-      rc("div", { style: { position: "absolute", top: 13, width: "90%", maxWidth: 318, height: "82%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
-      rc("div", { style: { position: "absolute", top: 6, width: "93%", maxWidth: 330, height: "86%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
-      rc("div", { style: { position: "relative", background: "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 342, borderRadius: 8, padding: "24px 22px 20px", transform: "rotate(-1deg)", boxShadow: "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
-        rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: "rgba(255,170,120,0.5)", border: "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
-        rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana ｜ 点一下翻"),
-        rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: "#5a4326", lineHeight: 1.45 } }, note.t),
-        rc("div", { style: { fontSize: "0.98rem", color: "#8a6a44", marginTop: 10, lineHeight: 1.7 } }, note.b),
-        rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 16 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? "#d8924a" : "rgba(180,140,90,0.35)", transition: "all .3s" } }); })))));
+  useEffect(function () {
+    var id = setInterval(function () {
+      setFade(false);
+      setTimeout(function () {
+        setMsgIdx(function (i) {
+          return (i + 1) % activeWelcomes.length;
+        });
+        setFade(true);
+      }, 350);
+    }, 3800);
+    return function () {
+      return clearInterval(id);
+    };
+  }, []);
+
+  // Apply weekend overrides
+  var activeWelcomes = isWeekend ? weekendWelcomes : scene.welcomes;
+  var activeSub = isWeekend ? weekendSub : scene.sub;
+  var bgGrad = "linear-gradient(170deg,".concat(scene.bg.join(","), ")");
+
+  // Decorative elements based on time
+  var starPositions = [[8, 12], [20, 6], [35, 16], [55, 8], [72, 14], [88, 9], [95, 18], [15, 22], [60, 4], [80, 20]];
+  var cloudPositions = [[10, 18, 70], [45, 12, 55], [75, 20, 45]];
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: bgGrad,
+      padding: "0 0 0",
+      position: "relative",
+      overflow: "hidden",
+      transition: "background 2s ease"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "relative",
+      height: 90,
+      overflow: "hidden"
+    }
+  }, scene.stars && starPositions.map(function (_ref61, i) {
+    var _ref62 = _slicedToArray(_ref61, 2),
+      x = _ref62[0],
+      y = _ref62[1];
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        position: "absolute",
+        left: "".concat(x, "%"),
+        top: y,
+        width: tick % (8 + i % 3) < 4 ? 2.5 : 1.5,
+        height: tick % (8 + i % 3) < 4 ? 2.5 : 1.5,
+        background: "#fff",
+        borderRadius: "50%",
+        opacity: 0.4 + Math.sin(tick * 0.08 + i) * 0.4,
+        transition: "all 0.5s",
+        boxShadow: tick % (8 + i % 3) < 4 ? "0 0 4px #fff" : "none"
+      }
+    });
+  }), scene.moon && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      right: 20,
+      top: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 28,
+      height: 28,
+      borderRadius: "50%",
+      background: "#f0e8c0",
+      boxShadow: "0 0 20px rgba(240,232,192,0.5), 0 0 40px rgba(240,232,192,0.2)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 6,
+      left: 8,
+      width: 6,
+      height: 6,
+      borderRadius: "50%",
+      background: "rgba(0,0,0,0.08)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: 14,
+      left: 16,
+      width: 4,
+      height: 4,
+      borderRadius: "50%",
+      background: "rgba(0,0,0,0.06)"
+    }
+  })), scene.sun && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      right: 18,
+      top: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: "50%",
+      background: "radial-gradient(circle,#ffe060,#ffd040)",
+      boxShadow: "0 0 20px rgba(255,210,64,0.6), 0 0 40px rgba(255,200,40,0.3)"
+    }
+  }), [0, 45, 90, 135, 180, 225, 270, 315].map(function (a, i) {
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        position: "absolute",
+        top: 14,
+        left: 14,
+        width: tick % 6 < 3 ? "18px" : "14px",
+        height: 2,
+        background: "rgba(255,200,40,0.6)",
+        borderRadius: 1,
+        transformOrigin: "0 50%",
+        transform: "rotate(".concat(a, "deg) translateX(18px)"),
+        transition: "width 0.6s"
+      }
+    });
+  })), scene.sunset && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      bottom: -10,
+      left: 0,
+      right: 0,
+      height: 50,
+      background: "linear-gradient(to top,rgba(255,140,60,0.5),transparent)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      bottom: 0,
+      right: 30,
+      width: 60,
+      height: 60,
+      borderRadius: "50%",
+      background: "radial-gradient(circle,rgba(255,180,60,0.8),transparent 70%)"
+    }
+  })), scene.clouds && cloudPositions.map(function (_ref63, i) {
+    var _ref64 = _slicedToArray(_ref63, 3),
+      x = _ref64[0],
+      y = _ref64[1],
+      w = _ref64[2];
+    return /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        position: "absolute",
+        left: "".concat(x, "%"),
+        top: y,
+        transform: "translateX(".concat(Math.sin(tick * 0.015 + i) * 3, "px)"),
+        transition: "transform 1s ease"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: w * 0.6,
+        height: 14,
+        background: "rgba(255,255,255,0.85)",
+        borderRadius: 7,
+        margin: "0 auto"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        width: w,
+        height: 18,
+        background: "rgba(255,255,255,0.88)",
+        borderRadius: 9,
+        marginTop: -6
+      }
+    }));
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "center",
+      gap: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "1.2rem",
+      opacity: 0.5,
+      marginBottom: -2
+    }
+  }, "\uD83C\uDF33"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "1rem",
+      opacity: 0.4,
+      marginBottom: -1
+    }
+  }, "\uD83C\uDF32"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center"
+    }
+  }, h >= 18 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "0.6rem",
+      opacity: 0.4,
+      marginBottom: -2
+    }
+  }, "\u3030\uFE0F"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "1.8rem",
+      lineHeight: 1,
+      filter: "drop-shadow(0 -2px 8px rgba(255,180,80,0.3))"
+    }
+  }, "\uD83C\uDFE0")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "1rem",
+      opacity: 0.4,
+      marginBottom: -1
+    }
+  }, "\uD83C\uDF32"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "1.2rem",
+      opacity: 0.5,
+      marginBottom: -2
+    }
+  }, "\uD83C\uDF33"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: "linear-gradient(180deg,rgba(255,255,255,0.0),rgba(255,255,255,0.15))",
+      padding: "14px 20px 18px",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 900,
+      fontSize: "1.72rem",
+      color: scene.textColor,
+      opacity: fade ? 1 : 0,
+      transition: "opacity 0.4s ease",
+      marginBottom: 6,
+      letterSpacing: "-0.3px",
+      fontFamily: "'Nunito',system-ui,sans-serif",
+      textShadow: "0 2px 18px ".concat(scene.accent, "55"),
+      lineHeight: 1.22,
+      minHeight: "4.2rem",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, activeWelcomes[msgIdx]), /*#__PURE__*/React.createElement("div", {
+    style: {
+      color: scene.textColor,
+      fontSize: "0.85rem",
+      opacity: 0.72,
+      marginBottom: 16,
+      fontFamily: "'Nunito',system-ui,sans-serif",
+      fontWeight: 600
+    }
+  }, activeSub), /*#__PURE__*/React.createElement(HomeDeck, {
+    hintColor: scene.textColor
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      background: "rgba(255,255,255,0.22)",
+      backdropFilter: "blur(10px)",
+      borderRadius: 999,
+      padding: "5px 16px",
+      fontSize: "0.78rem",
+      fontWeight: 700,
+      color: scene.textColor,
+      border: "1px solid rgba(255,255,255,0.3)"
+    }
+  }, time), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 5,
+      background: "rgba(255,255,255,0.18)",
+      backdropFilter: "blur(10px)",
+      borderRadius: 999,
+      padding: "5px 12px",
+      border: "1px solid rgba(255,255,255,0.25)"
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "16",
+    height: "14",
+    viewBox: "0 0 16 14",
+    style: {
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("clipPath", {
+    id: "cupClipMini"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M2,4 Q1,12 3,13 Q8,14.5 13,13 Q15,12 14,4 Z"
+  })), /*#__PURE__*/React.createElement("path", {
+    d: "M2,4 Q1,12 3,13 Q8,14.5 13,13 Q15,12 14,4 Z",
+    fill: "rgba(255,255,255,0.25)",
+    stroke: "rgba(255,255,255,0.5)",
+    strokeWidth: "0.8"
+  }), /*#__PURE__*/React.createElement("g", {
+    clipPath: "url(#cupClipMini)"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "0",
+    y: 14 - cozy / 100 * 10,
+    width: "16",
+    height: "14",
+    fill: cozy < 20 ? "rgba(220,200,160,0.7)" : cozy < 50 ? "rgba(200,160,100,0.7)" : cozy < 80 ? "rgba(180,120,60,0.8)" : "rgba(160,90,30,0.85)",
+    style: {
+      transition: "y 1s ease"
+    }
+  })), /*#__PURE__*/React.createElement("path", {
+    d: "M14,6 Q17,6 17,9 Q17,12 14,12",
+    fill: "none",
+    stroke: "rgba(255,255,255,0.5)",
+    strokeWidth: "1",
+    strokeLinecap: "round"
+  }), cozy > 40 && /*#__PURE__*/React.createElement("path", {
+    d: "M6,".concat(3 - Math.sin(tick * 0.15) * 0.5, " Q7,1 8,").concat(3 - Math.sin(tick * 0.1) * 0.5),
+    fill: "none",
+    stroke: "rgba(255,255,255,0.5)",
+    strokeWidth: "0.8",
+    strokeLinecap: "round"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: "0.72rem",
+      fontWeight: 700,
+      color: scene.textColor,
+      opacity: 0.9
+    }
+  }, cozy, "%"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: "0.6rem",
+      color: scene.textColor,
+      opacity: 0.55
+    }
+  }, cozy < 20 ? "😶" : cozy < 50 ? "🙂" : cozy < 80 ? "😊" : "🥰"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "center",
+      gap: 6,
+      marginTop: 10,
+      flexWrap: "wrap"
+    }
+  }, ["🌸", "✨", "🌿", "💛", "🌙", "🌸", "✨"].map(function (e, i) {
+    return /*#__PURE__*/React.createElement("span", {
+      key: i,
+      style: {
+        fontSize: "0.75rem",
+        opacity: tick % (4 + i) < 2 ? 0.9 : 0.35,
+        transition: "opacity 0.4s",
+        filter: tick % (4 + i) < 2 ? "drop-shadow(0 0 4px gold)" : "none"
+      }
+    }, e);
+  }))));
 }
 function WarmNote(_ref65) {
   var accent = _ref65.accent,
@@ -17622,118 +17924,75 @@ function NanaMixtapeCard(_refNM) {
 }
 function HomeDeck(_refHD) {
   var h = React.createElement;
-  var hintColor = _refHD && _refHD.hintColor ? _refHD.hintColor : COLORS.brown;
-  var POOL = [
-    // —— 到家·放松 ——
-    { e: "🏡", t: "到家啦", b: "Nana 到家啦，门一关，今天的累都留在外面，这里只有放松" },
-    { e: "🛋️", t: "瘫着就好", b: "鞋一脱往沙发上一倒，Nana 值得这份懒，什么都别想" },
-    { e: "🌙", t: "今天到此为止", b: "该做的都做了，剩下的明天再说，现在的时间只属于 Nana" },
-    { e: "🧦", t: "卸下来吧", b: "Nana，把撑了一整天的那口气松开，肩膀塌下来，没事的" },
-    { e: "🛌", t: "想躺就躺", b: "Nana 想躺就躺着，什么都不做也行，世界不会因此停下" },
-    // —— 真心·鼓励 ——
-    { e: "⭐", t: "我是真的相信你", b: "不是随口说，Nana 扛过的那些，早证明了你有多强" },
-    { e: "🌱", t: "你一直在发光", b: "Nana 也许没察觉，但你认真生活的样子，真的很好看" },
-    { e: "🔥", t: "再撑一下下", b: "Nana 已经走了好远，剩下这点路，你一定可以的" },
-    { e: "🌻", t: "你已经够好了", b: "Nana 不必再证明什么，你这样，就很值得被好好爱" },
-    { e: "🌈", t: "按你的节奏来", b: "不用和谁比，Nana 慢慢走、走稳了，就已经很棒" },
-    // —— 温暖·被爱 ——
-    { e: "💛", t: "今天辛苦啦", b: "不管今天怎么样，Nana 回到家就好了，有人一直惦记你" },
-    { e: "🫂", t: "过来抱一下", b: "今天要是有点难，Nana 过来，给你一个用力的抱抱" },
-    { e: "🕯️", t: "你被爱着", b: "哪怕世界很吵，也总有人把 Nana 放在心里最重要的位置" },
-    { e: "🫶", t: "对自己温柔点", b: "Nana，像对待最好的朋友那样，也好好对待你自己" },
-    // —— 勇敢 ——
-    { e: "🦁", t: "你比想象中勇敢", b: "会害怕很正常，但 Nana 每次还是走了过去，这就是勇敢" },
-    { e: "🌊", t: "别怕，往前走", b: "前面没那么可怕，Nana 真要面对，也有人陪你一起" },
-    { e: "🪁", t: "放心去试", b: "做不好也没关系，敢去试的 Nana，本身就很了不起" },
-    // —— 尽情放纵·不要有负担 ——
-    { e: "🍰", t: "想吃就吃", b: "那块蛋糕那杯奶茶，Nana 今天通通安排上，开心最重要" },
-    { e: "🛍️", t: "喜欢就买", b: "对自己好点不算乱花，Nana 那么努力，宠自己理所当然" },
-    { e: "🎮", t: "尽情放纵", b: "打游戏追剧躺到天黑都行，Nana 今天没有该做只有想做" },
-    { e: "🍕", t: "放肆一点", b: "宵夜、加辣、被窝里刷手机——Nana 一点愧疚都不许有" },
-    { e: "🫧", t: "深呼吸一下", b: "慢慢吸一口再慢慢吐出来，Nana 把紧绷的自己松一松" },
-    { e: "🍵", t: "泡杯热茶", b: "Nana，水开了，给自己泡一杯，慢慢喝，不急" },
-    { e: "🧸", t: "抱个软的", b: "累了就抱抱身边软软的东西，Nana 治愈一下自己" },
-    { e: "🪟", t: "看会儿窗外", b: "Nana 发会儿呆、看看天，脑子放空一下也很好" },
-    { e: "🌟", t: "你做到的很多", b: "回头看看，Nana 其实已经走了很长一段路了" },
-    { e: "🍀", t: "好事会来的", b: "该做的都做了，Nana 剩下的好事，慢慢就来了" },
-    { e: "🌅", t: "明天会更好", b: "今天先好好睡，Nana，新的一天会更温柔一点" },
-    { e: "💌", t: "想对你说", b: "Nana，谢谢你今天也好好活着，真的很不容易" },
-    { e: "🐱", t: "有人在等你", b: "猫猫在等你，Nana，家里一直为你留着灯" },
-    { e: "☁️", t: "靠一会儿", b: "Nana 累了就靠过来，不用说话，待着就好" },
-    { e: "🌼", t: "你很珍贵", b: "Nana 对很多人来说，都是很特别很重要的存在" },
-    { e: "⚓", t: "你稳得住", b: "再大的浪，Nana 也扛过来了，你比想的更稳" },
-    { e: "🛡️", t: "做自己就好", b: "不必讨好谁，Nana 本来的样子，就已经很好" },
-    { e: "🍫", t: "甜一口", b: "Nana 来块巧克力吧，对今天的自己好一点" },
-    { e: "🛀", t: "泡个热水澡", b: "Nana 今晚泡个澡，把一身疲惫都泡化掉" },
-    { e: "😴", t: "尽情赖床", b: "明天能赖床就尽情赖，Nana 不用设闹钟" },
-    // —— 角色·勇敢鼓励 ——
-    { e: "🚀", k: "hero", t: "巴斯光年说", b: "飞向宇宙，浩瀚无垠！再难的一天，Nana 也能冲过去 ✨" },
-    { e: "🛸", k: "hero", t: "来自巴斯光年", b: "勇敢不是不害怕，Nana，是怕了还愿意继续往前飞 🚀" },
-    { e: "🤠", k: "hero", t: "胡迪想对你说", b: "Nana 你有一个朋友，不管多累，我都永远站在你这边 🎵" },
-    { e: "🪐", k: "hero", t: "巴斯的悄悄话", b: "就算降落陌生星球，Nana 也一定能稳稳着陆 🌟" },
-    { e: "♾️", k: "hero", t: "To infinity…", b: "…and beyond！没有到不了的明天，巴斯相信 Nana 🚀" }
+  var rc = h;
+  var now = new Date();
+  var dow = now.getDay();
+  var isWeekend = dow === 0 || dow === 6;
+  var _f = useState(true); var fade = _f[0]; var setFade = _f[1];
+  var _m = useState(0); var msgIdx = _m[0]; var setMsgIdx = _m[1];
+  // 工作日 = 温暖的港湾（下班到家）；周末 = 慵懒搞笑。每天发 5 张，整周不重样，每周重洗。
+  var weekdayNotes = [
+    { t: "到家啦", b: "门一关，今天的累就留在门外了 🚪", e: "🏡" },
+    { t: "欢迎回来", b: "这里只有你和放松，别的都不重要", e: "🛋️" },
+    { t: "卸下盔甲", b: "在外面撑了一天，回家可以软下来了", e: "🤍" },
+    { t: "沙发预热好了", b: "快过来瘫着，位置一直给你留着", e: "🛋️" },
+    { t: "今天辛苦了", b: "不管外面怎样，回到家就没事了 💛", e: "💛" },
+    { t: "猫已就位", b: "家里的一切都在等你回来，包括我 🐱", e: "🐱" },
+    { t: "先喝口热的", b: "给你温了杯水，慢慢喝，不急 🫖", e: "🫖" },
+    { t: "今天的班下了", b: "外面的身份先卸下，你到家了 🌙", e: "🌙" },
+    { t: "这里很安全", b: "在家里，你可以放心地做回自己", e: "🏠" },
+    { t: "深呼吸一下", b: "到家了，肩膀可以塌下来，没事的 🌿", e: "🌿" },
+    { t: "灯给你留着", b: "无论多晚回来，这里都为你亮着 💡", e: "💡" },
+    { t: "你回来真好", b: "家因为有你，才像个家 🏡", e: "🏡" },
+    { t: "烦恼请寄存", b: "进门挂门口，出门再领，也可以不领 🧥", e: "🧥" },
+    { t: "在家慢慢来", b: "不用赶，时间现在是你的了 ⏳", e: "⏳" },
+    { t: "被子晒过啦", b: "软软香香的，等你来钻进去 🛏️", e: "🛏️" },
+    { t: "今天也撑住了", b: "你比自己以为的更厉害，真的 🌟", e: "🌟" },
+    { t: "想吃点啥", b: "冰箱有货，今晚给自己加个菜 🍲", e: "🍲" },
+    { t: "靠过来一会儿", b: "累了就靠着，不说话也没关系 ☁️", e: "☁️" },
+    { t: "外面交给明天", b: "该操心的明天再操心，今晚先歇 🌙", e: "🌙" },
+    { t: "你被爱着", b: "世界再吵，家始终把你放在心上 💗", e: "💗" },
+    { t: "换上软睡衣", b: "脱掉一天的紧绷，舒服最重要 🧦", e: "🧦" },
+    { t: "今天到此为止", b: "剩下的明天说，现在好好放空 🫧", e: "🫧" },
+    { t: "给你留了甜", b: "心里累的话，先吃口甜的补补 🍫", e: "🍫" },
+    { t: "你做得很好", b: "把日子认真过下来，已经很了不起 🌷", e: "🌷" },
+    { t: "晚安预备中", b: "今天结束了，准备好好睡一觉 😴", e: "😴" }
   ];
-  // 卡组配色跟随当前时段的天色：同一色家族里取邻近色，和背景自然搭配
-  var deckH = new Date().getHours();
-  var baseHue = deckH < 5 ? 265 : deckH < 7 ? 22 : deckH < 10 ? 32 : deckH < 13 ? 40 : deckH < 17 ? 28 : deckH < 19 ? 10 : deckH < 22 ? 272 : 262;
-  var hsl = function (h, s, l) { return "hsl(" + (((h % 360) + 360) % 360) + "," + s + "%," + l + "%)"; };
-  var grad = function (h) { return "linear-gradient(135deg," + hsl(h, 52, 44) + "," + hsl(h + 10, 56, 24) + ")"; };
-  var warmBGS = [baseHue - 20, baseHue - 7, baseHue + 9, baseHue + 24, baseHue - 13, baseHue + 16].map(grad);
-  var heroBGS = ["linear-gradient(135deg," + hsl(baseHue, 46, 24) + "," + hsl(baseHue + 6, 56, 11) + ")", "linear-gradient(135deg," + hsl(baseHue - 12, 46, 22) + "," + hsl(baseHue + 2, 56, 10) + ")"];
-  var warmStickers = ["✨", "💗", "🌟", "🍀", "🌼", "🫧"];
-  var themeFor = function (kind, k) {
-    if (kind === "hero") return { bg: heroBGS[k % heroBGS.length], color: "#fff", sub: "rgba(255,255,255,0.84)", border: "1.5px solid rgba(255,255,255,0.16)", shadow: "0 8px 22px rgba(20,12,24,0.4)", sticker: "🚀", stars: true };
-    return { bg: warmBGS[k % warmBGS.length], color: "#fff", sub: "rgba(255,255,255,0.92)", border: "1.5px solid rgba(255,255,255,0.16)", shadow: "0 8px 20px rgba(30,16,30,0.28)", sticker: warmStickers[k % warmStickers.length], stars: false };
-  };
-  // 发牌式：每天发 6 张，发完整副(7天)才重新洗牌 → 连着 7 天不重样
-  var N = POOL.length, per = 6, passes = Math.ceil(N / per);
-  var dayNum = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
-  var passSeed = ((Math.floor(dayNum / passes) + 1) * 2654435761) >>> 0 || 1;
-  var rng = function () { var x = passSeed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }();
-  var pidx = POOL.map(function (_, i) { return i; });
-  for (var _i = pidx.length - 1; _i > 0; _i--) { var _j = Math.floor(rng() * (_i + 1)); var _t = pidx[_i]; pidx[_i] = pidx[_j]; pidx[_j] = _t; }
-  var _start = (dayNum % passes) * per;
-  var sel = []; for (var _s = 0; _s < per; _s++) { sel.push(pidx[(_start + _s) % N]); }
-  var CARDS = sel.map(function (pi, k) { var c = POOL[pi]; var th = themeFor(c.k || "warm", k); return { e: c.e, t: c.t, b: c.b, bg: th.bg, color: th.color, sub: th.sub, border: th.border, shadow: th.shadow, sticker: th.sticker, stars: th.stars }; });
-  var rot = [-2, 3, -4, 5], tx = [0, 7, -7, 10], ty = [0, 8, 15, 21], sc = [1, 0.97, 0.94, 0.91], op = [1, 0.9, 0.78, 0.64], z = [50, 40, 30, 20];
-  var _o = useState(function () { return CARDS.map(function (_, i) { return i; }); }); var order = _o[0]; var setOrder = _o[1];
-  var _lv = useState(null); var leaving = _lv[0]; var setLeaving = _lv[1];
-  var _en = useState(null); var entering = _en[0]; var setEntering = _en[1];
-  var busy = useRef(false);
-  var t1Ref = useRef(null);
-  var t2Ref = useRef(null);
-  var advance = function advance() {
-    if (busy.current) return; busy.current = true;
-    var top = order[0]; setLeaving(top);
-    t1Ref.current = setTimeout(function () {
-      setOrder(function (o) { return o.slice(1).concat([o[0]]); }); setEntering(top); setLeaving(null);
-      t2Ref.current = setTimeout(function () { setEntering(null); busy.current = false; }, 60);
-    }, 480);
-  };
-  // 卸载时清理动画定时器，避免在已卸载组件上 setState
-  useEffect(function () { return function () { clearTimeout(t1Ref.current); clearTimeout(t2Ref.current); }; }, []);
-  // 跨天后（dayNum 变化）重置堆叠顺序，匹配当天新发的卡
-  useEffect(function () { setOrder(CARDS.map(function (_, i) { return i; })); setLeaving(null); setEntering(null); busy.current = false; }, [dayNum]);
-  var styleFor = function styleFor(id) {
-    var s = { position: "absolute", left: 0, top: 0, width: "100%", height: 104, borderRadius: 16, boxSizing: "border-box", padding: "13px 16px", cursor: "pointer", overflow: "hidden", border: CARDS[id].border, boxShadow: CARDS[id].shadow, color: CARDS[id].color, background: CARDS[id].bg, willChange: "transform,opacity" };
-    if (id === leaving) { s.transition = "transform .5s cubic-bezier(.5,.05,.5,1), opacity .5s ease"; s.transform = "translate(62%,18px) rotate(15deg)"; s.opacity = 0; s.zIndex = 60; return s; }
-    var d = Math.min(order.indexOf(id), 3);
-    s.zIndex = z[d]; s.transform = "translate(" + tx[d] + "px," + ty[d] + "px) rotate(" + rot[d] + "deg) scale(" + sc[d] + ")";
-    if (entering === id) { s.transition = "none"; s.opacity = 0; } else { s.transition = "transform .42s ease, opacity .42s ease"; s.opacity = op[d]; }
-    return s;
-  };
-  return h("div", null,
-    h("div", { style: { position: "relative", width: "100%", height: 140 } }, CARDS.map(function (c, id) {
-      return h("div", { key: "hd" + id, onClick: function () { if (order[0] === id) advance(); }, style: styleFor(id) },
-        h("div", { style: { position: "absolute", right: -10, bottom: -22, fontSize: "5.4rem", opacity: 0.16, transform: "rotate(-12deg)", pointerEvents: "none", lineHeight: 1 } }, c.e),
-        c.stars && [[16, 14], [44, 70], [92, 24], [70, 80], [120, 52]].map(function (p, si) { return h("div", { key: "st" + si, style: { position: "absolute", right: p[0], top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.45 + (si % 3) * 0.2, pointerEvents: "none" } }); }),
-        h("div", { style: { position: "absolute", top: 8, right: 11, fontSize: "0.95rem", transform: "rotate(12deg)", opacity: 0.92, pointerEvents: "none" } }, c.sticker),
-        h("div", { style: { display: "flex", gap: 14, alignItems: "center", height: "100%", position: "relative" } },
-          h("div", { style: { fontSize: "2.2rem", flexShrink: 0, filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.28))" } }, c.e),
-          h("div", { style: { minWidth: 0 } },
-            h("div", { style: { fontWeight: 800, fontSize: "1rem", letterSpacing: "0.3px", color: c.color } }, c.t),
-            h("div", { style: { fontSize: "0.81rem", color: c.sub, marginTop: 5, lineHeight: 1.55 } }, c.b))));
-    })));
+  var weekendNotes = [
+    { t: "床我焊死了", b: "今天行程：床→沙发→床，完美闭环 🛏️", e: "🛏️" },
+    { t: "摆烂正经事", b: "躺平不是堕落，是和地心引力和解 🌍", e: "🛋️" },
+    { t: "闹钟？不熟", b: "睡到自然醒，醒了接着睡也完全合法 😴", e: "😴" },
+    { t: "干饭人快乐", b: "想吃就吃，热量周一再算（周一的事）🍰", e: "🍰" },
+    { t: "啥也不干", b: "发呆是高级休息，你在给灵魂放假 ☁️", e: "☁️" },
+    { t: "放肆一点点", b: "今天没有「应该」，只有「我乐意」😎", e: "😎" },
+    { t: "躺平许可证", b: "本证授权持有人随时随地葛优瘫 📜", e: "📜" },
+    { t: "理直气壮浪费", b: "时间是你的，奢侈地耗掉它，没人管 ⏳", e: "⏳" },
+    { t: "想宠就宠自己", b: "想买的小东西买！这叫精神刚需 🛍️", e: "🛍️" },
+    { t: "周末快乐鸭", b: "你值得这份懒，挺起腰板享受它 💛", e: "🦆" }
+  ];
+  var PER = 5;
+  var _dn = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
+  var _week = Math.floor(_dn / 7);
+  var pool = isWeekend ? weekendNotes : weekdayNotes;
+  var _slot = isWeekend ? (dow === 6 ? 0 : 1) : (dow >= 1 && dow <= 5 ? dow - 1 : 0);
+  var _seed = (((_week + 1) * (isWeekend ? 97001 : 19349663)) >>> 0) || 1;
+  var _rnd = (function () { var x = _seed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; })();
+  var _pi = pool.map(function (_, i) { return i; });
+  for (var _i = _pi.length - 1; _i > 0; _i--) { var _j = Math.floor(_rnd() * (_i + 1)); var _t = _pi[_i]; _pi[_i] = _pi[_j]; _pi[_j] = _t; }
+  var _start = (_slot * PER) % pool.length;
+  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(pool[_pi[(_start + _k) % pool.length]]); }
+  var ni = ((msgIdx % PER) + PER) % PER;
+  var note = todays[ni];
+  var advance = function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % PER; }); setFade(true); }, 200); };
+  return rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 172 } },
+    rc("div", { style: { position: "absolute", top: 13, width: "90%", maxWidth: 318, height: "82%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+    rc("div", { style: { position: "absolute", top: 6, width: "93%", maxWidth: 330, height: "86%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+    rc("div", { style: { position: "relative", background: "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 342, borderRadius: 8, padding: "24px 22px 20px", transform: "rotate(-1deg)", boxShadow: "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
+      rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: "rgba(255,170,120,0.5)", border: "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
+      rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana"),
+      rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: "#5a4326", lineHeight: 1.45 } }, note.t),
+      rc("div", { style: { fontSize: "0.98rem", color: "#8a6a44", marginTop: 10, lineHeight: 1.7 } }, note.b),
+      rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 16 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? "#d8924a" : "rgba(180,140,90,0.35)", transition: "all .3s" } }); }))));
 }
 function ScratchBar(_refSC) {
   var onOpen = _refSC.onOpen;
