@@ -17987,15 +17987,15 @@ function HomeDeck(_refHD) {
   var ni = ((msgIdx % COUNT) + COUNT) % COUNT;
   var note = todays[ni];
   var advance = function () { setFade(false); setTimeout(function () { setMsgIdx(function (i) { return (i + 1) % COUNT; }); setFade(true); }, 200); };
-  return rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 172 } },
-    rc("div", { style: { position: "absolute", top: 13, width: "90%", maxWidth: 318, height: "82%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
-    rc("div", { style: { position: "absolute", top: 6, width: "93%", maxWidth: 330, height: "86%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
-    rc("div", { style: { position: "relative", background: note.special ? "linear-gradient(180deg,#ffeef3,#ffdde8)" : "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 342, borderRadius: 8, padding: "24px 22px 20px", transform: "rotate(-1deg)", boxShadow: note.special ? "0 12px 28px rgba(150,40,80,0.28)" : "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
-      rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: note.special ? "rgba(255,120,160,0.45)" : "rgba(255,170,120,0.5)", border: note.special ? "1px dashed rgba(210,80,120,0.5)" : "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
-      rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: note.special ? "#d2557e" : "#b58a4a", letterSpacing: "0.5px", marginBottom: 8 } }, note.special ? "💗 悄悄叮嘱 · 给 Nana" : (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana"),
-      rc("div", { style: { fontSize: "1.42rem", fontWeight: 800, color: note.special ? "#b2305e" : "#5a4326", lineHeight: 1.45 } }, note.t),
-      rc("div", { style: { fontSize: "0.98rem", color: note.special ? "#a8546e" : "#8a6a44", marginTop: 10, lineHeight: 1.7 } }, note.b),
-      rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 16 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? (note.special ? "#e2629a" : "#d8924a") : "rgba(180,140,90,0.35)", transition: "all .3s" } }); }))));
+  return rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 128 } },
+    rc("div", { style: { position: "absolute", top: 10, width: "90%", maxWidth: 316, height: "78%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+    rc("div", { style: { position: "absolute", top: 5, width: "93%", maxWidth: 328, height: "82%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
+    rc("div", { style: { position: "relative", background: note.special ? "linear-gradient(180deg,#e9f8ee,#d0f0db)" : "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 338, borderRadius: 8, padding: "15px 20px 13px", transform: "rotate(-1deg)", boxShadow: note.special ? "0 12px 28px rgba(40,120,80,0.26)" : "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
+      rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: note.special ? "rgba(110,200,140,0.5)" : "rgba(255,170,120,0.5)", border: note.special ? "1px dashed rgba(80,165,110,0.55)" : "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
+      rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: note.special ? "#3a9d5d" : "#b58a4a", letterSpacing: "0.5px", marginBottom: 5 } }, note.special ? "💚 悄悄叮嘱 · 给 Nana" : (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana"),
+      rc("div", { style: { fontSize: "1.18rem", fontWeight: 800, color: note.special ? "#2c7d49" : "#5a4326", lineHeight: 1.4 } }, note.t),
+      rc("div", { style: { fontSize: "0.88rem", color: note.special ? "#46895f" : "#8a6a44", marginTop: 6, lineHeight: 1.55 } }, note.b),
+      rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 11 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? (note.special ? "#46b06e" : "#d8924a") : "rgba(180,140,90,0.35)", transition: "all .3s" } }); }))));
 }
 function ScratchBar(_refSC) {
   var onOpen = _refSC.onOpen;
