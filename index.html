@@ -10136,14 +10136,23 @@ function BarTastingList() {
   // 高德地图深链：优先唤起高德 App 弹出店铺卡片（地址/照片/评分/导航），没装 App 走网页，全程免登陆。
   // 用店名+区域做关键词，比写死 POI id 更稳、不会失效。callnative=1 优先开原生 App。
   var amap = function (q) { return "https://uri.amap.com/search?keyword=" + encodeURIComponent(q) + "&city=" + encodeURIComponent("广州") + "&src=nanahome&callnative=1"; };
+  // ⬇️ Nana 的评鉴：v 态度（"good"=不错 / "bad"=不得行 / ""=待评鉴），note 评语（一句话）。
+  // 「发我我上线」模式：Nana 把 态度+评语 发我，我填在这里提交，所有人打开都能看到。
   var LIST = [
-    { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8" },
-    { id: "jiutingtai", e: "🍸", n: "旧亭台 bar", q: "旧亭台bar 棠下", area: "棠下 · 特调酒吧", r: "4.1" },
-    { id: "withchill", e: "☕", n: "屿秋 Withchill", q: "屿秋Withchill 中华广场", area: "中华广场 · 咖啡", r: "4.7" },
-    { id: "eagle", e: "🥃", n: "老鹰威士忌吧", q: "老鹰威士忌吧 珠江新城", area: "珠江新城 · 威士忌吧", r: "4.7" },
-    { id: "wanjinyou", e: "🍽️", n: "万金游·中餐Bistro", q: "万金游餐馆 体育西路", area: "正佳广场 · 创意菜", r: "4.0" },
-    { id: "cantina", e: "🍷", n: "CANTINA AAH", q: "CANTINA AAH 猎德 兴盛路", area: "兴盛路/猎德 · 特调", r: "4.5" }
+    { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8", v: "good", note: "微醺刚好，气氛巨舒服 ✦（示例·待 Nana 亲测）" },
+    { id: "jiutingtai", e: "🍸", n: "旧亭台 bar", q: "旧亭台bar 棠下", area: "棠下 · 特调酒吧", r: "4.1", v: "", note: "" },
+    { id: "withchill", e: "☕", n: "屿秋 Withchill", q: "屿秋Withchill 中华广场", area: "中华广场 · 咖啡", r: "4.7", v: "", note: "" },
+    { id: "eagle", e: "🥃", n: "老鹰威士忌吧", q: "老鹰威士忌吧 珠江新城", area: "珠江新城 · 威士忌吧", r: "4.7", v: "", note: "" },
+    { id: "wanjinyou", e: "🍽️", n: "万金游·中餐Bistro", q: "万金游餐馆 体育西路", area: "正佳广场 · 创意菜", r: "4.0", v: "", note: "" },
+    { id: "cantina", e: "🍷", n: "CANTINA AAH", q: "CANTINA AAH 猎德 兴盛路", area: "兴盛路/猎德 · 特调", r: "4.5", v: "bad", note: "酒还行，就是太吵了点 🙉（示例·待 Nana 亲测）" }
   ];
+  var reviewed = function (d) { return d.v === "good" || d.v === "bad" || !!(d.note && d.note.length); };
+  // 没评过的排前面（还没去的先提醒），评过/标记过的沉到后面；稳定排序保持原顺序。
+  var ordered = LIST.map(function (d, i) { return { d: d, i: i }; }).sort(function (a, b) {
+    var ra = reviewed(a.d) ? 1 : 0, rb = reviewed(b.d) ? 1 : 0;
+    return ra !== rb ? ra - rb : a.i - b.i;
+  }).map(function (o) { return o.d; });
+  var done = LIST.filter(reviewed).length;
   // 隐藏横向滚动条（webkit），只注入一次
   useEffect(function () {
     if (document.getElementById("hs-scroll-style")) return;
@@ -10152,35 +10161,32 @@ function BarTastingList() {
     st.textContent = ".hs-scroll::-webkit-scrollbar{display:none}";
     document.head.appendChild(st);
   }, []);
-  var _s = useState(function () { try { return JSON.parse(localStorage.getItem("nana-bar-tasted") || "[]"); } catch (_) { return []; } });
-  var tasted = _s[0], setTasted = _s[1];
-  var toggle = function (id) {
-    setTasted(function (prev) {
-      var next = prev.indexOf(id) >= 0 ? prev.filter(function (x) { return x !== id; }) : prev.concat([id]);
-      try { localStorage.setItem("nana-bar-tasted", JSON.stringify(next)); } catch (_) {}
-      return next;
-    });
-  };
-  var done = tasted.length;
   return h("div", { style: { position: "relative", overflow: "hidden", borderRadius: 18, padding: "13px 0 11px 14px", background: "linear-gradient(140deg,#e9f9f0,#fff4ef 55%,#fdeef5)", border: "1.5px solid rgba(255,255,255,0.9)", boxShadow: "0 8px 22px rgba(190,165,180,0.28)" } },
     h("div", { style: { position: "absolute", top: -32, right: -26, width: 118, height: 118, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,180,205,0.4),transparent 70%)", pointerEvents: "none" } }),
     h("div", { style: { position: "absolute", bottom: -34, left: -20, width: 108, height: 108, borderRadius: "50%", background: "radial-gradient(circle,rgba(140,225,185,0.34),transparent 70%)", pointerEvents: "none" } }),
     h("div", { style: { position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", paddingRight: 14, marginBottom: 10 } },
       h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 } },
         h("span", { style: { color: "#e46a89", fontWeight: 800, fontSize: "0.95rem", whiteSpace: "nowrap" } }, "🍸 Nana 评鉴官"),
-        h("span", { style: { color: "rgba(150,125,140,0.8)", fontSize: "0.62rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "左右滑 · 亲自去打分")),
+        h("span", { style: { color: "rgba(150,125,140,0.8)", fontSize: "0.62rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "左右滑 · 待评鉴在前")),
       h("span", { style: { color: "#3aac79", fontWeight: 800, fontSize: "0.72rem", whiteSpace: "nowrap", flexShrink: 0 } }, "已评鉴 " + done + "/" + LIST.length)),
-    h("div", { className: "hs-scroll", style: { position: "relative", display: "flex", gap: 10, overflowX: "auto", paddingBottom: 3, paddingRight: 14, scrollbarWidth: "none", WebkitOverflowScrolling: "touch", scrollSnapType: "x proximity" } },
-      LIST.map(function (d) {
-        var on = tasted.indexOf(d.id) >= 0;
-        return h("a", { key: d.id, href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flexShrink: 0, width: 126, scrollSnapAlign: "start", display: "block", textDecoration: "none", borderRadius: 15, padding: "10px 11px 9px", background: on ? "linear-gradient(160deg,#d9f6e6,#c6f0d9)" : "rgba(255,255,255,0.78)", border: on ? "1px solid rgba(80,200,150,0.55)" : "1px solid rgba(120,205,175,0.32)", boxShadow: "0 3px 10px rgba(180,160,175,0.18)" } },
-          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-            h("div", { style: { fontSize: "1.5rem", opacity: on ? 0.65 : 1 } }, d.e),
-            h("div", { onClick: function (e) { e.preventDefault(); e.stopPropagation(); toggle(d.id); }, style: { width: 20, height: 20, borderRadius: "50%", flexShrink: 0, cursor: "pointer", border: on ? "none" : "1.5px solid rgba(110,200,160,0.65)", background: on ? "linear-gradient(135deg,#57cb92,#39b077)" : "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.7rem", fontWeight: 800 } }, on ? "✓" : "")),
-          h("div", { style: { color: on ? "rgba(70,140,105,0.8)" : "#5b4a54", fontWeight: 800, fontSize: "0.8rem", marginTop: 7, lineHeight: 1.25, textDecoration: on ? "line-through" : "none", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: "2em" } }, d.n),
-          h("div", { style: { color: "rgba(130,118,128,0.78)", fontSize: "0.6rem", marginTop: 3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.area),
-          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 6 } },
-            h("span", { style: { color: "#f2a02f", fontSize: "0.64rem", fontWeight: 800 } }, "⭐ " + d.r),
+    h("div", { className: "hs-scroll", style: { position: "relative", display: "flex", alignItems: "stretch", gap: 10, overflowX: "auto", paddingBottom: 3, paddingRight: 14, scrollbarWidth: "none", WebkitOverflowScrolling: "touch", scrollSnapType: "x proximity" } },
+      ordered.map(function (d) {
+        var good = d.v === "good", bad = d.v === "bad";
+        var tileBg = good ? "linear-gradient(160deg,#d9f6e6,#c6f0d9)" : bad ? "linear-gradient(160deg,#fde2e7,#f8d2d9)" : "rgba(255,255,255,0.8)";
+        var tileBd = good ? "1px solid rgba(80,200,150,0.55)" : bad ? "1px solid rgba(235,130,145,0.55)" : "1px solid rgba(120,205,175,0.32)";
+        var badgeBg = good ? "rgba(80,200,150,0.22)" : bad ? "rgba(240,120,135,0.2)" : "rgba(150,140,150,0.12)";
+        var badgeCol = good ? "#2ba172" : bad ? "#e0576a" : "rgba(140,125,138,0.9)";
+        var badgeTxt = good ? "👍 不错" : bad ? "👎 不得行" : "· 待评鉴";
+        var note = d.note && d.note.length ? d.note : "";
+        return h("a", { key: d.id, href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flexShrink: 0, width: 150, scrollSnapAlign: "start", display: "flex", flexDirection: "column", textDecoration: "none", borderRadius: 15, padding: "10px 11px 9px", background: tileBg, border: tileBd, boxShadow: "0 3px 10px rgba(180,160,175,0.18)" } },
+          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 } },
+            h("div", { style: { fontSize: "1.4rem", flexShrink: 0 } }, d.e),
+            h("div", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: badgeCol, background: badgeBg, borderRadius: 999, padding: "2px 7px", whiteSpace: "nowrap" } }, badgeTxt)),
+          h("div", { style: { color: "#5b4a54", fontWeight: 800, fontSize: "0.8rem", marginTop: 6, lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" } }, d.n),
+          h("div", { style: { color: "rgba(130,118,128,0.78)", fontSize: "0.58rem", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.area),
+          h("div", { style: { flex: 1, marginTop: 6, color: note ? "#7a6670" : "rgba(150,138,148,0.62)", fontSize: "0.63rem", fontStyle: "italic", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: "2.6em" } }, note ? ("“" + note + "”") : "还没评，去打个卡~"),
+          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 } },
+            h("span", { style: { color: "#f2a02f", fontSize: "0.62rem", fontWeight: 800 } }, "⭐ " + d.r),
             h("span", { style: { color: "#e46a89", fontSize: "0.58rem", fontWeight: 800 } }, "地图 ↗")));
       })));
 }
