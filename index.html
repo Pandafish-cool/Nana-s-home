@@ -7408,6 +7408,80 @@ function CinemaActivity(_refCN) {
       h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点右边小按钮：加入 → 🌟想看 → ✅看过（可打星）")));
 }
 
+// ── 照片存取（IndexedDB，本机私密；压缩后存 dataURL）─────────
+var nanaPhotoDB = function (cb) {
+  try {
+    var req = indexedDB.open("nana-photos", 1);
+    req.onupgradeneeded = function (e) { var db = e.target.result; if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" }); };
+    req.onsuccess = function (e) { cb(null, e.target.result); };
+    req.onerror = function () { cb(req.error || new Error("idb")); };
+  } catch (err) { cb(err); }
+};
+var nanaPhotoSave = function (file, cb) {
+  var fr = new FileReader();
+  fr.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var MAX = 900;
+        var sc = Math.min(1, MAX / Math.max(img.width, img.height));
+        var cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(img.width * sc));
+        cv.height = Math.max(1, Math.round(img.height * sc));
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        var data = cv.toDataURL("image/jpeg", 0.82);
+        var id = "p" + Date.now() + Math.floor(Math.random() * 1000);
+        nanaPhotoDB(function (err, db) {
+          if (err) return cb && cb(err);
+          var tx = db.transaction("photos", "readwrite");
+          tx.objectStore("photos").put({ id: id, data: data });
+          tx.oncomplete = function () { cb && cb(null, id); };
+          tx.onerror = function () { cb && cb(tx.error); };
+        });
+      } catch (err) { cb && cb(err); }
+    };
+    img.onerror = function () { cb && cb(new Error("bad image")); };
+    img.src = fr.result;
+  };
+  fr.onerror = function () { cb && cb(fr.error); };
+  fr.readAsDataURL(file);
+};
+var nanaPhotoGet = function (id, cb) {
+  nanaPhotoDB(function (err, db) {
+    if (err) return cb(err);
+    try {
+      var rq = db.transaction("photos").objectStore("photos").get(id);
+      rq.onsuccess = function () { cb(null, rq.result && rq.result.data); };
+      rq.onerror = function () { cb(rq.error); };
+    } catch (e2) { cb(e2); }
+  });
+};
+var nanaPhotoDel = function (id) {
+  if (!id) return;
+  try { nanaPhotoDB(function (err, db) { if (err) return; db.transaction("photos", "readwrite").objectStore("photos")["delete"](id); }); } catch (_) {}
+};
+// 照片显示组件：从 IndexedDB 取图
+function NanaPhoto(_refNP) {
+  var pid = _refNP.pid; var style = _refNP.style; var onClick = _refNP.onClick;
+  var _s = useState(null); var src = _s[0], setSrc = _s[1];
+  useEffect(function () {
+    var on = true;
+    nanaPhotoGet(pid, function (err, data) { if (on && data) setSrc(data); });
+    return function () { on = false; };
+  }, [pid]);
+  return src
+    ? React.createElement("img", { src: src, onClick: onClick, alt: "", style: style })
+    : React.createElement("div", { onClick: onClick, style: Object.assign({ display: "flex", alignItems: "center", justifyContent: "center", background: "#efe6dc", color: "#b8a894", fontSize: "0.72rem" }, style) }, "🌸");
+}
+// 全屏看图
+function NanaLightbox(_refLB) {
+  var pid = _refLB.pid; var onClose = _refLB.onClose;
+  var h = React.createElement;
+  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(20,12,20,0.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" } },
+    h(NanaPhoto, { pid: pid, style: { maxWidth: "94%", maxHeight: "86%", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain" } }),
+    h("div", { style: { position: "absolute", bottom: 26, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700 } }, "点一下关闭"));
+}
+
 // ── READING ROOM (阅读室 · 信纸读书笔记 + 书单) ──────────────
 function ReadingRoomActivity(_refRR) {
   var onCozy = _refRR.onCozy;
@@ -7419,17 +7493,31 @@ function ReadingRoomActivity(_refRR) {
   var notes = _ns[0], setNotes = _ns[1];
   var saveNotes = function (next) { setNotes(next); try { localStorage.setItem("nana-reading-notes", JSON.stringify(next)); } catch (_) {} };
   var _dr = useState(""); var draft = _dr[0], setDraft = _dr[1];
+  var _dp = useState(null); var draftP = _dp[0], setDraftP = _dp[1];
+  var _lb = useState(null); var lightbox = _lb[0], setLightbox = _lb[1];
   var _dd = useState(null); var delId = _dd[0], setDelId = _dd[1];
+  var onPickPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    nanaPhotoSave(f, function (err, id) {
+      if (err || !id) return;
+      setDraftP(function (old) { if (old) nanaPhotoDel(old); return id; });
+    });
+  };
   var addNote = function () {
-    var t = (draft || "").trim(); if (!t) return;
+    var t = (draft || "").trim(); if (!t && !draftP) return;
     var d = new Date();
-    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t };
+    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t, p: draftP || null };
     saveNotes([note].concat(notes));
-    setDraft(""); if (onCozy) onCozy(5);
+    setDraft(""); setDraftP(null); if (onCozy) onCozy(5);
   };
   var delNote = function (id) {
     if (delId !== id) { setDelId(id); setTimeout(function () { setDelId(function (cur) { return cur === id ? null : cur; }); }, 2500); return; }
-    saveNotes(notes.filter(function (n) { return n.id !== id; })); setDelId(null);
+    var gone = null;
+    saveNotes(notes.filter(function (n) { if (n.id === id) { gone = n; return false; } return true; }));
+    if (gone && gone.p) nanaPhotoDel(gone.p);
+    setDelId(null);
   };
   // 书单 {id, t 书名, s 状态 want|reading|done}
   var _bs = useState(function () { try { return JSON.parse(localStorage.getItem("nana-books") || "[]"); } catch (_) { return []; } });
@@ -7491,8 +7579,15 @@ function ReadingRoomActivity(_refRR) {
           airmail("top"), airmail("bottom"), stamp, watermark("🌸"),
           h("div", { style: { fontFamily: HAND, color: "#b05a52", fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
           h("div", { style: { color: "rgba(170,115,105,0.7)", fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
-          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a3a", lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } })),
-        h("button", { onClick: addNote, disabled: !(draft || "").trim(), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: (draft || "").trim() ? "pointer" : "default", background: (draft || "").trim() ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)" } }, "📮 收进小本本")),
+          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a3a", lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } }),
+          // 贴照片：拍立得预览 + 相机按钮
+          draftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(120,80,80,0.3)", transform: "rotate(-2.4deg)", borderRadius: 3, marginTop: 6 } },
+            h(NanaPhoto, { pid: draftP, onClick: function () { setLightbox(draftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+            h("button", { onClick: function () { nanaPhotoDel(draftP); setDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
+          h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
+            h("label", { htmlFor: "rr-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, draftP ? "📷 换一张" : "📷 贴张照片"),
+            h("input", { id: "rr-photo-input", type: "file", accept: "image/*", onChange: onPickPhoto, style: { display: "none" } }))),
+        h("button", { onClick: addNote, disabled: !((draft || "").trim() || draftP), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((draft || "").trim() || draftP) ? "pointer" : "default", background: ((draft || "").trim() || draftP) ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)" } }, "📮 收进小本本")),
       // ── 已存笔记 ──
       h("div", { style: { marginTop: 34 } },
         notes.length ? h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.74rem", marginBottom: 14 } }, "🗂️ 攒下的小笺 · " + notes.length + " 张") : null,
@@ -7505,7 +7600,9 @@ function ReadingRoomActivity(_refRR) {
               h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
                 h("div", { style: { color: "rgba(170,115,105,0.72)", fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px" } }, "🍂 " + n.d),
                 h("button", { onClick: function () { delNote(n.id); }, style: { position: "relative", zIndex: 1, border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "none", color: delId === n.id ? "#d05050" : "rgba(170,140,110,0.55)", fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.78rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "3px 9px" : "2px 6px" } }, delId === n.id ? "再点一下撕掉" : "✕")),
-              h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a3a", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t),
+              n.p && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(120,80,80,0.28)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "2px 0 6px" } },
+                h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
+              n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a3a", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
               h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, "🌹")));
         }))) :
     h("div", null,
@@ -7526,7 +7623,77 @@ function ReadingRoomActivity(_refRR) {
         h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
           h("input", { value: bookInp, onChange: function (e) { setBookInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addBook(); }, placeholder: "想读的书名，加进来～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(210,140,80,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
           h("button", { onClick: addBook, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#e8a05c,#d07838)", color: "#fff" } }, "＋ 加书")),
-        h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点状态换：🌟想读 → 📖在读 → ✅读完"))));
+        h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点状态换：🌟想读 → 📖在读 → ✅读完"))),
+    lightbox && h(NanaLightbox, { pid: lightbox, onClose: function () { setLightbox(null); } }));
+}
+
+// ── PHOTO BOOTH (咔嚓小站 · 拍立得日记) ──────────────────────
+function PhotoBoothActivity(_refPB) {
+  var onCozy = _refPB.onCozy;
+  var h = React.createElement;
+  var HAND = "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive";
+  var _en = useState(function () { try { return JSON.parse(localStorage.getItem("nana-photo-diary") || "[]"); } catch (_) { return []; } });
+  var entries = _en[0], setEntries = _en[1];
+  var saveEntries = function (next) { setEntries(next); try { localStorage.setItem("nana-photo-diary", JSON.stringify(next)); } catch (_) {} };
+  var _pd = useState(null); var pending = _pd[0], setPending = _pd[1];
+  var _cp = useState(""); var cap = _cp[0], setCap = _cp[1];
+  var _dl = useState(null); var delId = _dl[0], setDelId = _dl[1];
+  var _lb = useState(null); var lightbox = _lb[0], setLightbox = _lb[1];
+  var onPick = function (e) {
+    var f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    nanaPhotoSave(f, function (err, id) {
+      if (err || !id) return;
+      setPending(function (old) { if (old) nanaPhotoDel(old); return id; });
+    });
+  };
+  var post = function () {
+    if (!pending) return;
+    var d = new Date();
+    saveEntries([{ id: "d" + d.getTime(), d: (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", cap: (cap || "").trim(), p: pending }].concat(entries));
+    setPending(null); setCap(""); if (onCozy) onCozy(5);
+  };
+  var delEntry = function (id) {
+    if (delId !== id) { setDelId(id); setTimeout(function () { setDelId(function (cur) { return cur === id ? null : cur; }); }, 2500); return; }
+    var gone = null;
+    saveEntries(entries.filter(function (n) { if (n.id === id) { gone = n; return false; } return true; }));
+    if (gone && gone.p) nanaPhotoDel(gone.p);
+    setDelId(null);
+  };
+  return h("div", null,
+    // ── 拍照台 ──
+    h("div", { style: { background: "linear-gradient(165deg,#1d4450,#153541)", borderRadius: 20, padding: "16px 16px 15px", boxShadow: "0 8px 24px rgba(15,45,55,0.4)", marginBottom: 16, textAlign: "center", position: "relative", overflow: "hidden" } },
+      h("div", { style: { position: "absolute", right: 12, top: 10, fontSize: "0.85rem", animation: "twinkleS 2.4s ease-in-out infinite" } }, "✨"),
+      h("div", { style: { color: "#8ff0e8", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3, marginBottom: 10 } }, "★ PHOTO BOOTH ★"),
+      pending
+        ? h("div", null,
+            h("div", { style: { display: "inline-block", background: "#fff", padding: "8px 8px 24px", boxShadow: "0 10px 24px rgba(0,0,0,0.35)", transform: "rotate(-2deg)", borderRadius: 3 } },
+              h(NanaPhoto, { pid: pending, onClick: function () { setLightbox(pending); }, style: { width: 190, height: 150, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
+            h("input", { value: cap, onChange: function (e) { setCap(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") post(); }, placeholder: "配一句话～（可不写）", style: { display: "block", width: "100%", boxSizing: "border-box", marginTop: 12, border: "1.5px solid rgba(140,230,220,0.4)", borderRadius: 12, padding: "10px 12px", fontFamily: HAND, fontSize: "0.88rem", color: "#1d4450", outline: "none", background: "rgba(255,255,255,0.92)", textAlign: "center" } }),
+            h("div", { style: { display: "flex", gap: 9, marginTop: 11 } },
+              h("button", { onClick: post, style: { flex: 1, border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.88rem", cursor: "pointer", background: "linear-gradient(135deg,#5ee0cf,#2fb3a5)", color: "#0d2d30", boxShadow: "0 5px 14px rgba(60,190,175,0.35)" } }, "📌 贴上墙"),
+              h("button", { onClick: function () { nanaPhotoDel(pending); setPending(null); setCap(""); }, style: { flexShrink: 0, border: "none", borderRadius: 13, padding: "12px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", background: "rgba(255,255,255,0.14)", color: "rgba(220,245,245,0.8)" } }, "重拍")))
+        : h("div", null,
+            h("label", { htmlFor: "pb-photo-input", style: { display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 8, cursor: "pointer", border: "2px dashed rgba(140,230,220,0.5)", borderRadius: 18, padding: "26px 44px", background: "rgba(255,255,255,0.05)" } },
+              h("span", { style: { fontSize: "2.3rem", filter: "drop-shadow(0 0 12px rgba(140,230,220,0.5))" } }, "📷"),
+              h("span", { style: { color: "#c8f2ee", fontWeight: 800, fontSize: "0.9rem" } }, "咔嚓一张"),
+              h("span", { style: { color: "rgba(180,225,220,0.55)", fontSize: "0.62rem" } }, "拍完写一句话，贴到墙上")),
+            h("input", { id: "pb-photo-input", type: "file", accept: "image/*", onChange: onPick, style: { display: "none" } }))),
+    // ── 拍立得墙 ──
+    entries.length === 0
+      ? h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.78rem", padding: "12px 0", fontFamily: HAND } }, "墙上还空着，等第一张拍立得 📸")
+      : h("div", null,
+          h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.74rem", marginBottom: 12 } }, "🖼️ 拍立得墙 · " + entries.length + " 张"),
+          h("div", { style: { display: "flex", flexWrap: "wrap", gap: 12 } },
+            entries.map(function (n, i) {
+              return h("div", { key: n.id, style: { position: "relative", width: "calc(50% - 6px)", boxSizing: "border-box", background: "#fff", padding: "7px 7px 10px", borderRadius: 3, boxShadow: "0 6px 16px rgba(130,95,90,0.25)", transform: "rotate(" + (i % 3 === 0 ? -2 : i % 3 === 1 ? 1.6 : -0.6) + "deg)" } },
+                h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: "100%", height: 128, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+                h("div", { style: { fontFamily: HAND, fontSize: "0.78rem", color: "#5a4a44", marginTop: 7, lineHeight: 1.45, minHeight: "1.4em", wordBreak: "break-word" } }, n.cap || "﹡"),
+                h("div", { style: { fontSize: "0.56rem", color: "rgba(150,125,115,0.65)", marginTop: 3, fontFamily: HAND } }, "📅 " + n.d),
+                h("button", { onClick: function () { delEntry(n.id); }, style: { position: "absolute", right: -7, top: -7, border: "none", borderRadius: 999, background: delId === n.id ? "#e05555" : "rgba(200,170,160,0.9)", color: "#fff", fontWeight: 800, fontSize: delId === n.id ? "0.54rem" : "0.62rem", cursor: "pointer", padding: delId === n.id ? "4px 8px" : "0", width: delId === n.id ? "auto" : 20, height: 20, lineHeight: delId === n.id ? "1" : "20px", boxShadow: "0 2px 6px rgba(120,60,60,0.35)" } }, delId === n.id ? "确定撕" : "✕"));
+            }))),
+    lightbox && h(NanaLightbox, { pid: lightbox, onClose: function () { setLightbox(null); } }));
 }
 
 // ── FUN ROOM LOBBY (游乐场大厅 · 满屏游乐园夜景) ─────────────
@@ -7640,6 +7807,16 @@ function FunRoomLobby(_refFL) {
         h("div", { style: { color: "#7a4a20", fontWeight: 800, fontSize: "1rem" } }, "阅读室"),
         h("div", { style: { color: "rgba(150,105,55,0.75)", fontSize: "0.62rem", marginTop: 3 } }, "暖灯下窝着看会儿书"),
         h("div", { style: { position: "absolute", right: 9, top: 40, fontSize: "0.66rem", animation: "twinkleS 2.8s ease-in-out infinite" } }, "✨"))),
+    // ── 咔嚓小站（拍立得照相馆）──
+    h("div", { onClick: function () { pick("photobooth"); }, style: { marginTop: 13, cursor: "pointer", borderRadius: "18px 26px 16px 28px", background: "linear-gradient(135deg,#173a4a,#1f5a66)", border: "2px solid rgba(110,220,230,0.45)", boxShadow: "0 0 18px rgba(80,200,220,0.25), 0 8px 18px rgba(10,5,30,0.4), 0 0 0 4px rgba(255,255,255,0.05)", padding: "12px 14px", display: "flex", alignItems: "center", gap: 12, transform: "rotate(0.8deg)", position: "relative" } },
+      h("span", { style: { position: "absolute", right: 13, top: 7, fontSize: "0.8rem", animation: "bulbBlink 2.6s ease-in-out infinite" } }, "✨"),
+      h("span", { style: { position: "absolute", top: -15, right: 52, fontSize: "1.15rem", zIndex: 2, animation: "peekBob 3.8s ease-in-out infinite", animationDelay: "1.6s", pointerEvents: "none" } }, "🐧"),
+      h("div", { style: { fontSize: "1.75rem", animation: "tada 9s ease-in-out infinite", animationDelay: "3s" } }, "📸"),
+      h("div", { style: { flex: 1, minWidth: 0 } },
+        h("div", { style: { color: "#8ff0e8", fontWeight: 800, fontSize: "0.58rem", letterSpacing: 2.5 } }, "PHOTO BOOTH"),
+        h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1rem", marginTop: 2 } }, "咔嚓小站"),
+        h("div", { style: { color: "rgba(200,240,240,0.65)", fontSize: "0.62rem", marginTop: 2 } }, "拍立得日记 · 咔嚓一下贴上墙")),
+      h("div", { style: { flexShrink: 0, color: "#8ff0e8", fontWeight: 800, fontSize: "1.05rem" } }, "›")),
     // ── 小卖部装饰条 ──
     h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 9, marginTop: "auto", paddingTop: 16, paddingBottom: 14, position: "relative" } },
       h("span", { style: { fontSize: "1.05rem", animation: "balloonBob 3.2s ease-in-out infinite" } }, "🎈"),
@@ -7802,6 +7979,10 @@ var ACTIVITIES = {
     id: "reading",
     icon: "📚",
     name: "阅读室"
+  }, {
+    id: "photobooth",
+    icon: "📸",
+    name: "咔嚓小站"
   }],
   window: [{
     id: "daydream",
@@ -10532,6 +10713,31 @@ function BarTastingList() {
   };
   var _rv = useState(function () { try { return JSON.parse(localStorage.getItem("nana-bar-reviews") || "{}"); } catch (_) { return {}; } });
   var reviews = _rv[0], setReviews = _rv[1];
+  // 探店照片：{店id: [photoId,...]}，图片本体在 IndexedDB
+  var _bp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-bar-photos") || "{}"); } catch (_) { return {}; } });
+  var barPhotos = _bp[0], setBarPhotos = _bp[1];
+  var _blb = useState(null); var barLightbox = _blb[0], setBarLightbox = _blb[1];
+  var saveBarPhotos = function (next) { setBarPhotos(next); try { localStorage.setItem("nana-bar-photos", JSON.stringify(next)); } catch (_) {} };
+  var addBarPhoto = function (shopId, e) {
+    var f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    nanaPhotoSave(f, function (err, id) {
+      if (err || !id) return;
+      setBarPhotos(function (prev) {
+        var next = {}; for (var k in prev) { if (Object.prototype.hasOwnProperty.call(prev, k)) next[k] = prev[k]; }
+        next[shopId] = (next[shopId] || []).concat([id]);
+        try { localStorage.setItem("nana-bar-photos", JSON.stringify(next)); } catch (_) {}
+        return next;
+      });
+    });
+  };
+  var delBarPhoto = function (shopId, pid) {
+    nanaPhotoDel(pid);
+    var next = {}; for (var k in barPhotos) { if (Object.prototype.hasOwnProperty.call(barPhotos, k)) next[k] = barPhotos[k]; }
+    next[shopId] = (next[shopId] || []).filter(function (x) { return x !== pid; });
+    saveBarPhotos(next);
+  };
   var getV = function (d) { var o = reviews[d.id]; return o && typeof o.v === "string" ? o.v : (d.v || ""); };
   var getNote = function (d) { var o = reviews[d.id]; return o && typeof o.note === "string" ? o.note : (d.note || ""); };
   var saveReview = function (id, patch) {
@@ -10613,11 +10819,22 @@ function BarTastingList() {
             h("div", { style: { color: "#3aac79", fontWeight: 800, fontSize: "0.74rem", marginBottom: 8 } }, "🍸 酒后感"),
             h("div", { style: { display: "flex", gap: 10 } },
               h("button", { onClick: function () { saveReview(d.id, { v: goodOn ? "" : "good" }); }, style: vbtn(goodOn, "good") }, "👍 不错"),
-              h("button", { onClick: function () { saveReview(d.id, { v: badOn ? "" : "bad" }); }, style: vbtn(badOn, "bad") }, "👎 不得行"))),
+              h("button", { onClick: function () { saveReview(d.id, { v: badOn ? "" : "bad" }); }, style: vbtn(badOn, "bad") }, "👎 不得行")),
+            // 📷 探店随手拍
+            h("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, marginTop: 12 } },
+              (barPhotos[d.id] || []).map(function (pid) {
+                return h("div", { key: pid, style: { position: "relative" } },
+                  h(NanaPhoto, { pid: pid, onClick: function () { setBarLightbox(pid); }, style: { width: 56, height: 56, objectFit: "cover", borderRadius: 10, cursor: "pointer", boxShadow: "0 3px 8px rgba(120,80,90,0.25)", display: "block" } }),
+                  h("button", { onClick: function () { delBarPhoto(d.id, pid); }, style: { position: "absolute", right: -6, top: -6, width: 18, height: 18, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.58rem", cursor: "pointer", lineHeight: "18px", padding: 0 } }, "✕"));
+              }),
+              h("label", { htmlFor: "bar-photo-input", style: { width: 56, height: 56, borderRadius: 10, border: "1.5px dashed rgba(180,140,160,0.55)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#b07a8a", fontWeight: 800, fontSize: "0.56rem", gap: 2, background: "rgba(255,255,255,0.5)" } },
+                h("span", { style: { fontSize: "1rem" } }, "📷"), "随手拍"),
+              h("input", { id: "bar-photo-input", type: "file", accept: "image/*", onChange: function (e) { addBarPhoto(d.id, e); }, style: { display: "none" } }))),
           h("div", { style: { display: "flex", gap: 10, marginTop: 18 } },
             h("a", { href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#6cc0f2,#3d90e0)", color: "#fff", fontWeight: 800, fontSize: "0.9rem", borderRadius: 14, padding: "13px 10px", boxShadow: "0 6px 16px rgba(70,140,220,0.35)" } }, "📍 查看地址 · 去高德"),
             h("button", { onClick: function () { setSel(null); }, style: { flexShrink: 0, background: "rgba(150,130,145,0.14)", color: "#8a7a84", fontWeight: 800, fontSize: "0.85rem", border: "none", borderRadius: 14, padding: "13px 18px", fontFamily: "inherit", cursor: "pointer" } }, "完成"))));
-    })());
+    })(),
+    barLightbox && h(NanaLightbox, { pid: barLightbox, onClose: function () { setBarLightbox(null); } }));
 }
 
 // ── CIGAR LOUNGE ─────────────────────────────────────────
@@ -14143,6 +14360,7 @@ function ActivityPanel(_ref106) {
     tv: TVActivity,
     cinema: CinemaActivity,
     reading: ReadingRoomActivity,
+    photobooth: PhotoBoothActivity,
     sleep: SleepActivity,
     bath: BathActivity,
     daydream: DaydreamActivity,
