@@ -10,7 +10,7 @@
 
 | 彩蛋 | 触发方式 | 现在的条件 | 是否还会触发 |
 |---|---|---|---|
-| 🎮 游戏连胜 | 行为 | **连续**玩游戏满 7 天（每 7 天一次） | ✅ 一直有效 |
+| 🎪 游乐场畅玩 | 行为 | 游乐场里**累计玩满 10 次**（每 10 次一次） | ✅ 一直有效 |
 | 🍽️ 好好吃饭 | 行为 | **连续吃午饭**满 7 天触发（断了清零）；奖品**待定** | ✅ 一直有效 |
 | 🌙 午夜晚安 | 行为+时间 | **午夜(23:00–00:59)** 播放「月の光 ～ good night」→ 弹晚安动画 | ✅ 一直有效 |
 | 🎈 儿童节 | 日期 | 每年 6/1 进门 | ✅ 每年 6/1 |
@@ -78,16 +78,15 @@ var triggerGN = function () { var hh = new Date().getHours(); if (cur.goodnight 
 - 现在挂在「月の光 ～ good night」这首上（`tracks` 里该条加了 `goodnight: true`）。想换别的歌触发，把 `goodnight: true` 移到那条即可。
 - 改时间窗：改 `hh >= 23 || hh < 1`。改文案/动画：改 `GoodNightEgg` 组件。
 
-## 三、🎮 游戏连胜彩蛋
+## 三、🎪 游乐场畅玩彩蛋（原 🎮 游戏连胜，已改规则）
 
-**组件**：`GameActivity`（弹窗 `GameStreakEgg`），localStorage 键 `nana-game-streak`（`{last, streak, claimed}`）。
-
-- 每天玩游戏记一次；**连续**才累加，断了从 1 重算（`s.streak = s.last === y ? streak+1 : 1`）。
-- 触发行（在 `GameActivity` 里）：
-```js
-if ((s.streak || 0) >= (s.claimed || 0) + 7) setShowGameLottery(true); // ← 改这个 7 = 连续天数
-```
-- 奖励：「⌨️ Nana 专属键盘券」（在 `GameStreakEgg` 的 `nanaAddReward({...})` 改文案）。
+**触发**：在 **NanasHome 的 `selectActivity`** 里——在游乐场（room.id==="gaming"）每进一个馆（电影院/游戏室/阅读室/咔嚓小站）记 1 次，**累计满 10 次**弹抽奖（翻金币）。不要求连续，每满 10 次再来一次。
+- localStorage：`nana-fun-plays`（累计次数）、`nana-fun-claimed`（已领水位，关弹窗时 = floor(plays/10)*10）。
+- 改次数：把 `selectActivity` 里的 `claimed + 10` 和 `closeFunLottery` 里的 `/ 10) * 10` 一起改。
+- 弹窗仍是 `GameStreakEgg`（标题「🎪 游乐场畅玩 X 次 · 抽奖时间！」）。
+- 奖励不变：「⌨️ Nana 专属键盘券」进奖励钱包（改文案在 `GameStreakEgg` 的 `nanaAddReward({...})` 和展示卡两处）。
+- 旧的「连续 7 天」逻辑已摘除（`nana-game-streak` 仍在记天数但不再触发）。
+> 测试：控制台 `localStorage.setItem("nana-fun-plays","9")` 后进游乐场随便点一个馆。
 
 ---
 
@@ -125,7 +124,8 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
 |---|---|
 | `nana-meals` | 今天勾了哪几餐 `{date, meals}` |
 | `nana-meal-streak` | 午餐**连续**打卡 `{last, streak, claimed}`（吃饭彩蛋用） |
-| `nana-game-streak` | 游戏连胜 `{last, streak, claimed}` |
+| `nana-game-streak` | （旧游戏连胜数据，仍记录但不再触发） |
+| `nana-fun-plays` / `nana-fun-claimed` | 游乐场畅玩次数 / 已领奖水位（键盘券彩蛋用） |
 | `nana-rewards` | 奖励钱包里的所有券 |
 | ~~`nana-bar-tasted`~~ | （已弃用）旧版「评鉴官」打卡用；现在评鉴改由 `LIST` 里的 `v`/`note` 直接提交，不再用 localStorage |
 | `nana-bar-scratch-<日期>` | 当天的周末刮刮乐是否已刮开（周末刮刮乐已退役，此键弃用） |

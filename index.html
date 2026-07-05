@@ -7058,7 +7058,6 @@ function GameActivity(_ref49) {
         if (s.streak < (s.claimed || 0)) s.claimed = 0;
         localStorage.setItem("nana-game-streak", JSON.stringify(s));
       }
-      if ((s.streak || 0) >= (s.claimed || 0) + 7) setShowGameLottery(true);
     } catch (_) {}
   };
   var closeGameLottery = function closeGameLottery() {
@@ -7216,10 +7215,7 @@ function GameActivity(_ref49) {
       }
     }, renderGame()));
   }
-  return /*#__PURE__*/React.createElement("div", null, showGameLottery && /*#__PURE__*/React.createElement(GameStreakEgg, {
-    days: gameStreak,
-    onClose: closeGameLottery
-  }), /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 7,
@@ -17049,7 +17045,7 @@ function RewardsWallet() {
   );
 }
 function GameStreakEgg(_refGS) {
-  var onClose = _refGS.onClose, days = _refGS.days;
+  var onClose = _refGS.onClose, plays = _refGS.plays, days = _refGS.days;
   var h = React.createElement;
   var _p = useState("pick"); var phase = _p[0]; var setPhase = _p[1];
   var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
@@ -17070,7 +17066,7 @@ function GameStreakEgg(_refGS) {
   }
   return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(16,22,40,0.88)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 20px" } },
     conf,
-    h("div", { style: { color: "#8fd0ff", fontWeight: 800, fontSize: "0.8rem", letterSpacing: 1, marginBottom: 8, textAlign: "center", zIndex: 2 } }, "🎮 连续玩游戏 " + days + " 天 · 抽奖时间！"),
+    h("div", { style: { color: "#8fd0ff", fontWeight: 800, fontSize: "0.8rem", letterSpacing: 1, marginBottom: 8, textAlign: "center", zIndex: 2 } }, "🎪 游乐场畅玩 " + (plays || days || 0) + " 次 · 抽奖时间！"),
     phase === "pick" && h("div", { style: { textAlign: "center", zIndex: 2 } },
       h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.3rem,5vw,1.8rem)", marginBottom: 6 } }, "选一个金币翻开 👇"),
       h("div", { style: { color: "rgba(255,255,255,0.6)", fontSize: "0.72rem", marginBottom: 18 } }, "只能翻一次哦，想好再下手～"),
@@ -19074,6 +19070,8 @@ function NanasHome() {
     showSplash = _useState322[0],
     setShowSplash = _useState322[1];
   var _useStateFrog = useState(true), showFrog = _useStateFrog[0], setShowFrog = _useStateFrog[1];
+  var _useFunLot = useState(false), showFunLottery = _useFunLot[0], setShowFunLottery = _useFunLot[1];
+  var _useFunPl = useState(0), funPlays = _useFunPl[0], setFunPlays = _useFunPl[1];
   var _useStateEgg = useState(false),
     showEgg = _useStateEgg[0],
     setShowEgg = _useStateEgg[1];
@@ -19154,6 +19152,22 @@ function NanasHome() {
     setActivity(a);
     addCozy(5);
     showToast("".concat(a.icon, " ").concat(a.name, "~"));
+    // 🎪 游乐场奖励：在游乐场里每玩一次（进任意一个馆）记一次，满 10 次抽键盘券
+    if (room && room.id === "gaming") {
+      try {
+        var plays = (parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0) + 1;
+        localStorage.setItem("nana-fun-plays", String(plays));
+        var claimed = parseInt(localStorage.getItem("nana-fun-claimed") || "0", 10) || 0;
+        if (plays >= claimed + 10) { setFunPlays(plays); setShowFunLottery(true); }
+      } catch (_) {}
+    }
+  };
+  var closeFunLottery = function closeFunLottery() {
+    try {
+      var plays = parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0;
+      localStorage.setItem("nana-fun-claimed", String(Math.floor(plays / 10) * 10));
+    } catch (_) {}
+    setShowFunLottery(false);
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -19166,6 +19180,9 @@ function NanasHome() {
     }
   }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
     onClose: function onClose() { setShowFrog(false); }
+  }), showFunLottery && /*#__PURE__*/React.createElement(GameStreakEgg, {
+    plays: funPlays,
+    onClose: closeFunLottery
   }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
       setShowSplash(false);
