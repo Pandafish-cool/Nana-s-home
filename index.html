@@ -10234,7 +10234,6 @@ function BarTastingList() {
             d.tags.map(function (t, i) { return h("span", { key: i, style: { fontSize: "0.66rem", fontWeight: 700, color: "#3a8a68", background: "rgba(120,205,175,0.18)", borderRadius: 999, padding: "3px 9px" } }, t); })),
           h("div", { style: { marginTop: 16 } },
             h("div", { style: { color: "#e46a89", fontWeight: 800, fontSize: "0.74rem", marginBottom: 5 } }, "🌟 店铺特色"),
-            d.photos && d.photos.length ? h("div", { className: "hs-scroll", style: { display: "flex", gap: 8, overflowX: "auto", margin: "8px 0 10px", paddingBottom: 2, scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } }, d.photos.map(function (src, i) { return h("img", { key: i, src: src, alt: "", loading: "lazy", style: { height: 120, width: "auto", maxWidth: 200, borderRadius: 12, objectFit: "cover", flexShrink: 0, boxShadow: "0 3px 10px rgba(120,90,110,0.22)" } }); })) : null,
             h("div", { style: { color: "#5b4a54", fontSize: "0.85rem", lineHeight: 1.75 } }, d.feat)),
           h("div", { style: { marginTop: 18 } },
             h("div", { style: { color: "#3aac79", fontWeight: 800, fontSize: "0.74rem", marginBottom: 8 } }, "🍸 酒后感"),
