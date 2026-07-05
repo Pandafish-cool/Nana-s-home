@@ -7502,7 +7502,9 @@ function CinemaActivity(_refCN) {
               m.s === "seen" && h("div", { style: { marginTop: 3, display: "flex", gap: 2 } }, [1, 2, 3, 4, 5].map(function (i) {
                 return h("span", { key: i, onClick: function (ev) { ev.stopPropagation(); setStars(f.id, i); }, style: { cursor: "pointer", fontSize: "0.8rem", opacity: i <= (m.r || 0) ? 1 : 0.25 } }, "⭐");
               }))),
-            h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
+            m.s === "seen"
+              ? h("button", { onClick: function () { cycle(f.id); }, title: "看过 · 点一下改状态", style: { flexShrink: 0, width: 22, height: 22, borderRadius: "50%", border: "none", background: "rgba(110,205,150,0.16)", color: "#2ba172", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", lineHeight: "22px", padding: 0, textAlign: "center" } }, "✓")
+              : h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
         };
         return h("div", null,
           SECTIONS.map(function (sec, si) {
@@ -19310,14 +19312,14 @@ function NanasHome() {
         var plays = (parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0) + 1;
         localStorage.setItem("nana-fun-plays", String(plays));
         var claimed = parseInt(localStorage.getItem("nana-fun-claimed") || "0", 10) || 0;
-        if (plays >= claimed + 10) { setFunPlays(plays); setShowFunLottery(true); }
+        if (plays >= claimed + 30) { setFunPlays(plays); setShowFunLottery(true); }
       } catch (_) {}
     }
   };
   var closeFunLottery = function closeFunLottery() {
     try {
       var plays = parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0;
-      localStorage.setItem("nana-fun-claimed", String(Math.floor(plays / 10) * 10));
+      localStorage.setItem("nana-fun-claimed", String(Math.floor(plays / 30) * 30));
     } catch (_) {}
     setShowFunLottery(false);
   };
