@@ -7716,7 +7716,7 @@ function ReadingRoomActivity(_refRR) {
   var addNote = function () {
     var t = (draft || "").trim(); if (!t && !draftP) return;
     var d = new Date();
-    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t, p: draftP || null };
+    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t, p: draftP || null, th: writeTheme };
     saveNotes([note].concat(notes));
     setDraft(""); setDraftP(null); if (onCozy) onCozy(5);
   };
@@ -7751,69 +7751,90 @@ function ReadingRoomActivity(_refRR) {
     return { txt: "🌟 想读", bg: "rgba(120,160,230,0.2)", col: "#4a72b8" };
   };
   var doneN = books.filter(function (b) { return b.s === "done"; }).length;
-  // 信纸公共样式：横线 + 左侧玫瑰线 + 四角水彩晕染
-  var paperBase = {
-    background: "repeating-linear-gradient(180deg, transparent 0 27px, rgba(205,155,175,0.32) 27px 28px), linear-gradient(90deg, transparent 0 34px, rgba(235,140,160,0.55) 34px 35.5px, transparent 35.5px 100%), radial-gradient(circle at 100% 0%, rgba(255,185,200,0.28), transparent 42%), radial-gradient(circle at 0% 100%, rgba(185,210,255,0.24), transparent 40%), radial-gradient(circle at 92% 96%, rgba(255,220,160,0.25), transparent 36%), linear-gradient(180deg,#fffdf6,#fff6ec)",
-    borderRadius: 10, border: "1px solid rgba(228,178,158,0.55)", boxShadow: "0 12px 26px rgba(150,105,95,0.2), inset 0 0 0 1px rgba(255,255,255,0.6)", overflow: "hidden"
+  // 信纸样式：跟随所选主题 t（与分享图共用 NANA_LETTER_THEMES）
+  var themeById = function (id) {
+    for (var ti = 0; ti < NANA_LETTER_THEMES.length; ti++) { if (NANA_LETTER_THEMES[ti].id === id) return NANA_LETTER_THEMES[ti]; }
+    return NANA_LETTER_THEMES[0];
   };
-  // 和纸胶带：粉白斜条纹半透明
-  var tape = function (rot, left) {
-    return h("div", { style: { position: "absolute", top: -11, left: left || "50%", transform: "translateX(-50%) rotate(" + rot + "deg)", width: 88, height: 24, background: "repeating-linear-gradient(45deg, rgba(255,150,180,0.55) 0 7px, rgba(255,255,255,0.7) 7px 14px)", boxShadow: "0 1px 4px rgba(160,100,110,0.25)", borderRadius: 2, pointerEvents: "none", opacity: 0.92, zIndex: 2 } });
+  var _wt = useState(function () { try { return localStorage.getItem("nana-note-theme") || "air"; } catch (_) { return "air"; } });
+  var writeTheme = _wt[0], setWriteTheme = _wt[1];
+  var pickWriteTheme = function (id) { setWriteTheme(id); try { localStorage.setItem("nana-note-theme", id); } catch (_) {} };
+  var paperStyle = function (t) {
+    return {
+      background: "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
+      borderRadius: 10, border: "1px solid " + (t.id === "night" ? "rgba(150,140,215,0.5)" : "rgba(228,178,158,0.55)"), boxShadow: "0 12px 26px rgba(90,65,80,0.22), inset 0 0 0 1px rgba(255,255,255," + (t.id === "night" ? "0.08" : "0.6") + ")", overflow: "hidden"
+    };
   };
-  // 航空信封红蓝斜纹边
-  var airmail = function (pos) {
-    var st = { position: "absolute", left: 0, right: 0, height: 5, background: "repeating-linear-gradient(45deg,#ef8a95 0 9px,#fffdf6 9px 16px,#8aa8e0 16px 25px,#fffdf6 25px 32px)", pointerEvents: "none" };
+  // 和纸胶带（主题色斜条纹）
+  var tape = function (t, rot, left) {
+    return h("div", { style: { position: "absolute", top: -11, left: left || "50%", transform: "translateX(-50%) rotate(" + rot + "deg)", width: 88, height: 24, background: "repeating-linear-gradient(45deg, " + t.tapeA + " 0 7px, " + t.tapeB + " 7px 14px)", boxShadow: "0 1px 4px rgba(90,60,70,0.3)", borderRadius: 2, pointerEvents: "none", opacity: 0.92, zIndex: 2 } });
+  };
+  // 信封斜纹边（主题色）
+  var airmail = function (t, pos) {
+    var st = { position: "absolute", left: 0, right: 0, height: 5, background: "repeating-linear-gradient(45deg," + t.stripes[0] + " 0 9px," + t.stripes[1] + " 9px 16px," + t.stripes[2] + " 16px 25px," + t.stripes[3] + " 25px 32px)", pointerEvents: "none" };
     if (pos === "top") { st.top = 0; } else { st.bottom = 0; }
     return h("div", { style: st });
   };
-  // 右上角小邮票
-  var stamp = h("div", { style: { position: "absolute", right: 12, top: 13, width: 34, height: 40, background: "#fffaf2", border: "2px dashed rgba(225,150,155,0.65)", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", transform: "rotate(5deg)", boxShadow: "0 2px 6px rgba(160,100,110,0.18)", pointerEvents: "none" } }, "🌷");
-  // 大水印花
-  var watermark = function (e, size) {
-    return h("div", { style: { position: "absolute", right: 6, bottom: 2, fontSize: size || "3rem", opacity: 0.08, transform: "rotate(-14deg)", pointerEvents: "none" } }, e);
+  // 右上角小邮票（主题图案）
+  var stamp = function (t) {
+    return h("div", { style: { position: "absolute", right: 12, top: 13, width: 34, height: 40, background: t.stampBg, border: "2px dashed " + t.stampBd, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", transform: "rotate(5deg)", boxShadow: "0 2px 6px rgba(90,60,70,0.22)", pointerEvents: "none" } }, t.stamp);
+  };
+  // 大水印（主题图案）
+  var watermark = function (t, size) {
+    return h("div", { style: { position: "absolute", right: 6, bottom: 2, fontSize: size || "3rem", opacity: t.wmA, color: t.text, transform: "rotate(-14deg)", pointerEvents: "none" } }, t.wm);
   };
   var tabBtn = function (id, label) {
     var on = tab === id;
     return h("button", { onClick: function () { setTab(id); }, style: { flex: 1, border: "none", borderRadius: 999, padding: "10px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.84rem", cursor: "pointer", background: on ? "linear-gradient(135deg,#e8a05c,#d07838)" : "transparent", color: on ? "#fff" : "#9a7a5a", boxShadow: on ? "0 4px 12px rgba(210,130,60,0.35)" : "none", transition: "all 0.2s" } }, label);
   };
+  var wt = themeById(writeTheme);
   return h("div", null,
-    h("div", { style: { display: "flex", gap: 4, background: "#f6ead8", borderRadius: 999, padding: 4, marginBottom: 18 } },
+    h("div", { style: { display: "flex", gap: 4, background: "#f6ead8", borderRadius: 999, padding: 4, marginBottom: 16 } },
       tabBtn("note", "✍️ 读书笔记"), tabBtn("list", "📚 我的书单")),
     tab === "note" ? h("div", null,
+      // ── 选信纸 ──
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } },
+        h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
+        NANA_LETTER_THEMES.map(function (t) {
+          var on = writeTheme === t.id;
+          return h("button", { key: t.id, onClick: function () { pickWriteTheme(t.id); }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 36, height: 36, fontSize: "1.02rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.12)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
+        }),
+        h("span", { style: { color: "rgba(150,120,95,0.6)", fontSize: "0.64rem", marginLeft: 2 } }, wt.name)),
       // ── 信纸写作区 ──
-      h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 6 } },
-        tape(-3),
-        h("div", { style: Object.assign({}, paperBase, { padding: "22px 16px 18px 44px" }) },
-          airmail("top"), airmail("bottom"), stamp, watermark("🌸"),
-          h("div", { style: { fontFamily: HAND, color: "#b05a52", fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
-          h("div", { style: { color: "rgba(170,115,105,0.7)", fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
-          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a3a", lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } }),
+      h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 4 } },
+        tape(wt, -3),
+        h("div", { style: Object.assign({}, paperStyle(wt), { padding: "22px 16px 18px 44px" }) },
+          airmail(wt, "top"), airmail(wt, "bottom"), stamp(wt), watermark(wt),
+          h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
+          h("div", { style: { color: wt.date, fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
+          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } }),
           // 贴照片：拍立得预览 + 相机按钮
-          draftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(120,80,80,0.3)", transform: "rotate(-2.4deg)", borderRadius: 3, marginTop: 6 } },
+          draftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(-2.4deg)", borderRadius: 3, marginTop: 6 } },
             h(NanaPhoto, { pid: draftP, onClick: function () { setLightbox(draftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
             h("button", { onClick: function () { nanaPhotoDel(draftP); setDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
           h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
-            h("label", { htmlFor: "rr-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, draftP ? "📷 换一张" : "📷 贴张照片"),
+            h("label", { htmlFor: "rr-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, draftP ? "📷 换一张" : "📷 贴张照片"),
             h("input", { id: "rr-photo-input", type: "file", accept: "image/*", onChange: onPickPhoto, style: { display: "none" } }))),
-        h("button", { onClick: addNote, disabled: !((draft || "").trim() || draftP), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((draft || "").trim() || draftP) ? "pointer" : "default", background: ((draft || "").trim() || draftP) ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)" } }, "📮 收进小本本")),
+        h("button", { onClick: addNote, disabled: !((draft || "").trim() || draftP), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((draft || "").trim() || draftP) ? "pointer" : "default", background: ((draft || "").trim() || draftP) ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)", zIndex: 2 } }, "📮 收进小本本")),
       // ── 已存笔记 ──
       h("div", { style: { marginTop: 34 } },
         notes.length ? h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.74rem", marginBottom: 14 } }, "🗂️ 攒下的小笺 · " + notes.length + " 张") : null,
         notes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "16px 0 6px", fontFamily: HAND } }, "还没有笔记，第一张小笺等你来写 ♡") :
         notes.map(function (n, i) {
-          return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.9 : -0.9) + "deg)", marginBottom: 22 } },
-            tape(i % 2 ? 4 : -4, i % 3 === 0 ? "30%" : i % 3 === 1 ? "50%" : "68%"),
-            h("div", { style: Object.assign({}, paperBase, { padding: "14px 14px 16px 44px" }) },
-              airmail("bottom"), watermark(["🌸", "🌙", "🌿", "🫧"][i % 4], "2.3rem"),
-              h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-                h("div", { style: { color: "rgba(170,115,105,0.72)", fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px" } }, "🍂 " + n.d),
-                h("div", { style: { display: "flex", alignItems: "center", gap: 2, position: "relative", zIndex: 1 } },
-                  h("button", { onClick: function () { if (sharingId) return; setShareFor(n.id); }, title: "把这张小笺做成图片送出去", style: { border: "none", background: "none", color: "#c8788a", fontFamily: "inherit", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", padding: "2px 6px", opacity: sharingId === n.id ? 0.4 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
-                  h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "none", color: delId === n.id ? "#d05050" : "rgba(170,140,110,0.55)", fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.78rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "3px 9px" : "2px 6px" } }, delId === n.id ? "再点一下撕掉" : "✕"))),
-              n.p && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(120,80,80,0.28)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "2px 0 6px" } },
+          var nt = themeById(n.th);
+          return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.9 : -0.9) + "deg)", marginBottom: 24 } },
+            tape(nt, i % 2 ? 4 : -4, i % 3 === 0 ? "30%" : i % 3 === 1 ? "50%" : "68%"),
+            h("div", { style: Object.assign({}, paperStyle(nt), { padding: "14px 14px 16px 44px" }) },
+              airmail(nt, "bottom"), watermark(nt, "2.3rem"),
+              h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 } },
+                h("div", { style: { color: nt.date, fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "🍂 " + n.d),
+                h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
+                  h("button", { onClick: function () { if (sharingId) return; setShareFor(n.id); }, title: "把这张小笺做成图片送出去", style: { border: "none", borderRadius: 999, padding: "6px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", whiteSpace: "nowrap", opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️ 生成中…" : "💌 送出去"),
+                  h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: delId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "4px 9px" : "4px 8px" } }, delId === n.id ? "再点一下撕掉" : "✕"))),
+              n.p && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "2px 0 6px" } },
                 h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
-              n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a3a", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
-              h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, "🌹")));
+              n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
+              h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
         }))) :
     h("div", null,
       // ── 书单 ──
