@@ -7424,6 +7424,15 @@ function FunRoomLobby(_refFL) {
     var acts = ACTIVITIES.gaming || [];
     for (var i = 0; i < acts.length; i++) { if (acts[i].id === id) return onActivity(acts[i]); }
   };
+  // 🛁 草地上的小浴缸彩蛋：点一下冒泡说话
+  var _tb = useState(false); var tubTalk = _tb[0], setTubTalk = _tb[1];
+  var tubTimer = useRef(null);
+  useEffect(function () { return function () { if (tubTimer.current) clearTimeout(tubTimer.current); }; }, []);
+  var pokeTub = function () {
+    setTubTalk(true);
+    if (tubTimer.current) clearTimeout(tubTimer.current);
+    tubTimer.current = setTimeout(function () { setTubTalk(false); }, 2800);
+  };
   var bulbs = function (n, delayBase) {
     var arr = [];
     for (var i = 0; i < n; i++) {
@@ -7510,6 +7519,11 @@ function FunRoomLobby(_refFL) {
       h("span", { style: { position: "absolute", left: "31%", bottom: 30, fontSize: "1.15rem", filter: "drop-shadow(0 0 9px rgba(255,220,130,0.9))" } }, "🏮"),
       h("span", { style: { position: "absolute", right: "31%", bottom: 30, fontSize: "1.15rem", filter: "drop-shadow(0 0 9px rgba(255,220,130,0.9))" } }, "🏮"),
       h("span", { style: { position: "absolute", bottom: 10, fontSize: "1.25rem", animation: "catWalk 15s ease-in-out infinite" } }, "🐈"),
+      // 🛁 露天小浴缸（点它！）
+      h("span", { onClick: pokeTub, style: { position: "absolute", right: "6%", bottom: 26, fontSize: "1.5rem", cursor: "pointer", zIndex: 3, transform: tubTalk ? "rotate(-6deg) scale(1.12)" : "none", transition: "transform 0.2s", filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.35))" } }, "🛁"),
+      h("span", { style: { position: "absolute", right: "9%", bottom: 52, fontSize: "0.62rem", animation: "twinkleS 2.2s ease-in-out infinite", pointerEvents: "none" } }, "🫧"),
+      h("span", { style: { position: "absolute", right: "5%", bottom: 58, fontSize: "0.5rem", animation: "twinkleS 2.2s ease-in-out infinite", animationDelay: "0.8s", pointerEvents: "none" } }, "🫧"),
+      tubTalk && h("div", { style: { position: "absolute", right: "3%", bottom: 66, zIndex: 4, background: "rgba(255,255,255,0.95)", color: "#5a4a54", fontWeight: 800, fontSize: "0.64rem", borderRadius: "12px 12px 3px 12px", padding: "6px 10px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", whiteSpace: "nowrap", animation: "fadeSlideUp 0.25s ease" } }, "游乐场露天泡澡，快乐加倍 🫧"),
       h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 8, textAlign: "center", color: "rgba(220,235,225,0.5)", fontSize: "0.56rem", fontWeight: 700, letterSpacing: 1 } }, "🎟️ 一票畅玩 · NANA 专属乐园")),
     // 草地延伸到页面最底（穿到播放条/导航栏后面）
     h("div", { style: { height: 128, marginLeft: -16, marginRight: -16, background: "linear-gradient(180deg,#152b21,#0e1f17)" } }));
