@@ -10206,7 +10206,7 @@ function BarTastingList() {
             h("div", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: vs.badgeCol, background: vs.badgeBg, borderRadius: 999, padding: "2px 7px", whiteSpace: "nowrap" } }, vs.badgeTxt)),
           h("div", { style: { color: "#5b4a54", fontWeight: 800, fontSize: "0.8rem", marginTop: 6, lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" } }, d.n),
           h("div", { style: { color: "rgba(130,118,128,0.78)", fontSize: "0.58rem", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.area),
-          h("div", { style: { flex: 1, marginTop: 6, color: note ? "#7a6670" : "rgba(150,138,148,0.62)", fontSize: "0.63rem", fontStyle: "italic", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: "2.6em" } }, note ? ("“" + note + "”") : "种草中，还没拔草 🌱"),
+          h("div", { style: { flex: 1, marginTop: 6, color: note ? "#7a6670" : "rgba(150,138,148,0.62)", fontSize: "0.63rem", fontStyle: "italic", lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: "2.6em" } }, note ? ("“" + note + "”") : ((vs.good || vs.bad) ? "打卡过啦 ✓" : "种草中，还没拔草 🌱")),
           h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 } },
             h("span", { style: { color: "#f2a02f", fontSize: "0.62rem", fontWeight: 800 } }, "⭐ " + d.r),
             h("span", { style: { color: "#e46a89", fontSize: "0.58rem", fontWeight: 800 } }, "详情 ›")));
@@ -10239,8 +10239,7 @@ function BarTastingList() {
             h("div", { style: { color: "#3aac79", fontWeight: 800, fontSize: "0.74rem", marginBottom: 8 } }, "🍸 酒后感"),
             h("div", { style: { display: "flex", gap: 10 } },
               h("button", { onClick: function () { saveReview(d.id, { v: goodOn ? "" : "good" }); }, style: vbtn(goodOn, "good") }, "👍 不错"),
-              h("button", { onClick: function () { saveReview(d.id, { v: badOn ? "" : "bad" }); }, style: vbtn(badOn, "bad") }, "👎 不得行")),
-            h("textarea", { value: snote, onChange: function (e) { saveReview(d.id, { note: e.target.value }); }, placeholder: "再写句评语…（气氛 / 酒品 / 推荐，随便说～）", rows: 2, style: { width: "100%", boxSizing: "border-box", marginTop: 10, border: "1px solid rgba(120,205,175,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.84rem", fontFamily: "inherit", color: "#5b4a54", background: "rgba(255,255,255,0.8)", resize: "none", outline: "none", lineHeight: 1.55 } })),
+              h("button", { onClick: function () { saveReview(d.id, { v: badOn ? "" : "bad" }); }, style: vbtn(badOn, "bad") }, "👎 不得行"))),
           h("div", { style: { display: "flex", gap: 10, marginTop: 18 } },
             h("a", { href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#6cc0f2,#3d90e0)", color: "#fff", fontWeight: 800, fontSize: "0.9rem", borderRadius: 14, padding: "13px 10px", boxShadow: "0 6px 16px rgba(70,140,220,0.35)" } }, "📍 查看地址 · 去高德"),
             h("button", { onClick: function () { setSel(null); }, style: { flexShrink: 0, background: "rgba(150,130,145,0.14)", color: "#8a7a84", fontWeight: 800, fontSize: "0.85rem", border: "none", borderRadius: 14, padding: "13px 18px", fontFamily: "inherit", cursor: "pointer" } }, "完成"))));
