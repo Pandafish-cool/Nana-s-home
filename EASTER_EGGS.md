@@ -151,6 +151,8 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
   - **🎮 游戏室** `GameActivity`：原 12+ 游戏不变，连续 7 天彩蛋照旧。
   - **📚 阅读室** `ReadingRoomActivity`：航空信纸读书笔记（写完「收进小本本」，✕两步确认删除）+ 我的书单（🌟想读→📖在读→✅读完）。localStorage：`nana-reading-notes`、`nana-books`。
   - **🛁 浴缸彩蛋**：大厅草地右侧的小浴缸，点一下会歪头说「游乐场露天泡澡，快乐加倍 🫧」。
+  - **📸 咔嚓小站** `PhotoBoothActivity`：拍立得日记——拍一张（或从相册选）+ 配一句话「贴上墙」，双列拍立得墙，✕两步确认撕掉，点图全屏看。localStorage：`nana-photo-diary`（照片本体在 IndexedDB `nana-photos`）。
+- **📷 拍照基建**：`nanaPhotoSave/Get/Del` + `NanaPhoto`/`NanaLightbox` 组件。照片 canvas 压缩（最长边900px JPEG）后存 IndexedDB，**全部本机私密不上传**。三处入口：阅读室小笺贴照片（`note.p`）、探店弹层随手拍（localStorage `nana-bar-photos`）、咔嚓小站。删除记录时会连带清理照片本体。
 
 ---
 
