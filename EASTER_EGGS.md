@@ -10,7 +10,7 @@
 
 | 彩蛋 | 触发方式 | 现在的条件 | 是否还会触发 |
 |---|---|---|---|
-| 🎪 游乐场畅玩 | 行为 | 游乐场里**累计玩满 30 次**（每 30 次一次） | ✅ 一直有效 |
+| 🎪 游乐场畅玩 | 行为 | 游乐场里**累计玩满 30 次**（仅第一次，一次性奖励） | ✅ 一直有效 |
 | 🍽️ 好好吃饭 | 行为 | **连续吃午饭**满 7 天触发（断了清零）；奖品**待定** | ✅ 一直有效 |
 | 🌙 午夜晚安 | 行为+时间 | **午夜(23:00–00:59)** 播放「月の光 ～ good night」→ 弹晚安动画 | ✅ 一直有效 |
 | 🎈 儿童节 | 日期 | 每年 6/1 进门 | ✅ 每年 6/1 |
@@ -80,9 +80,9 @@ var triggerGN = function () { var hh = new Date().getHours(); if (cur.goodnight 
 
 ## 三、🎪 游乐场畅玩彩蛋（原 🎮 游戏连胜，已改规则）
 
-**触发**：在 **NanasHome 的 `selectActivity`** 里——在游乐场（room.id==="gaming"）每进一个馆（电影院/游戏室/阅读室/咔嚓小站）记 1 次，**累计满 30 次**弹抽奖（翻金币）。不要求连续，每满 30 次再来一次。
-- localStorage：`nana-fun-plays`（累计次数）、`nana-fun-claimed`（已领水位，关弹窗时 = floor(plays/30)*30）。
-- 改次数：把 `selectActivity` 里的 `claimed + 30` 和 `closeFunLottery` 里的 `/ 30) * 30` 一起改。
+**触发**：在 **NanasHome 的 `selectActivity`** 里——在游乐场（room.id==="gaming"）每进一个馆（电影院/游戏室/阅读室/咔嚓小站）记 1 次，**第一次累计满 30 次**弹抽奖（翻金币）。不要求连续；**一次性奖励**，领过之后不再触发。
+- localStorage：`nana-fun-plays`（累计次数）、`nana-fun-claimed`（是否已领：关弹窗时置 1，>0 即不再触发）。
+- 改次数：改 `selectActivity` 里的 `plays >= 30`。想恢复循环奖励：条件改回 `plays >= claimed + 30` 并让 `closeFunLottery` 存 `floor(plays/30)*30`。
 - 弹窗仍是 `GameStreakEgg`（标题「🎪 游乐场畅玩 X 次 · 抽奖时间！」）。
 - 奖励不变：「⌨️ Nana 专属键盘券」进奖励钱包（改文案在 `GameStreakEgg` 的 `nanaAddReward({...})` 和展示卡两处）。
 - 旧的「连续 7 天」逻辑已摘除（`nana-game-streak` 仍在记天数但不再触发）。

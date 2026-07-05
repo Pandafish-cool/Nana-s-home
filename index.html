@@ -19312,15 +19312,13 @@ function NanasHome() {
         var plays = (parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0) + 1;
         localStorage.setItem("nana-fun-plays", String(plays));
         var claimed = parseInt(localStorage.getItem("nana-fun-claimed") || "0", 10) || 0;
-        if (plays >= claimed + 30) { setFunPlays(plays); setShowFunLottery(true); }
+        // 一次性奖励：只有第一次攒满 30 次触发，领过（claimed>0）就不再弹
+        if (claimed < 1 && plays >= 30) { setFunPlays(plays); setShowFunLottery(true); }
       } catch (_) {}
     }
   };
   var closeFunLottery = function closeFunLottery() {
-    try {
-      var plays = parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0;
-      localStorage.setItem("nana-fun-claimed", String(Math.floor(plays / 30) * 30));
-    } catch (_) {}
+    try { localStorage.setItem("nana-fun-claimed", "1"); } catch (_) {}
     setShowFunLottery(false);
   };
   return /*#__PURE__*/React.createElement("div", {
