@@ -10136,7 +10136,7 @@ function BarTastingList() {
   // 高德地图深链：优先唤起高德 App 弹出店铺卡片（地址/照片/评分/导航），没装 App 走网页，全程免登陆。
   // 用店名+区域做关键词，比写死 POI id 更稳、不会失效。callnative=1 优先开原生 App。
   var amap = function (q) { return "https://uri.amap.com/search?keyword=" + encodeURIComponent(q) + "&city=" + encodeURIComponent("广州") + "&src=nanahome&callnative=1"; };
-  // ⬇️ Nana 的评鉴：v 态度（"good"=不错 / "bad"=不得行 / ""=待评鉴），note 评语（一句话）。
+  // ⬇️ Nana 的评鉴：v 态度（"good"=不错 / "bad"=不得行 / ""=待酒），note 评语（一句话）。
   // 「发我我上线」模式：Nana 把 态度+评语 发我，我填在这里提交，所有人打开都能看到。
   var LIST = [
     { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8", v: "", note: "" },
@@ -10167,7 +10167,7 @@ function BarTastingList() {
     h("div", { style: { position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", paddingRight: 14, marginBottom: 10 } },
       h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 } },
         h("span", { style: { color: "#e46a89", fontWeight: 800, fontSize: "0.95rem", whiteSpace: "nowrap" } }, "🍸 酒蒙子雷达"),
-        h("span", { style: { color: "rgba(150,125,140,0.8)", fontSize: "0.62rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "左右滑 · 待评鉴在前")),
+        h("span", { style: { color: "rgba(150,125,140,0.8)", fontSize: "0.62rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "左右滑 · 待酒在前")),
       h("span", { style: { color: "#3aac79", fontWeight: 800, fontSize: "0.72rem", whiteSpace: "nowrap", flexShrink: 0 } }, "酒了 " + done + "/" + LIST.length)),
     h("div", { className: "hs-scroll", style: { position: "relative", display: "flex", alignItems: "stretch", gap: 10, overflowX: "auto", paddingBottom: 3, paddingRight: 14, scrollbarWidth: "none", WebkitOverflowScrolling: "touch", scrollSnapType: "x proximity" } },
       ordered.map(function (d) {
@@ -10176,7 +10176,7 @@ function BarTastingList() {
         var tileBd = good ? "1px solid rgba(80,200,150,0.55)" : bad ? "1px solid rgba(235,130,145,0.55)" : "1px solid rgba(120,205,175,0.32)";
         var badgeBg = good ? "rgba(80,200,150,0.22)" : bad ? "rgba(240,120,135,0.2)" : "rgba(150,140,150,0.12)";
         var badgeCol = good ? "#2ba172" : bad ? "#e0576a" : "rgba(140,125,138,0.9)";
-        var badgeTxt = good ? "👍 不错" : bad ? "👎 不得行" : "· 待评鉴";
+        var badgeTxt = good ? "👍 不错" : bad ? "👎 不得行" : "· 待酒";
         var note = d.note && d.note.length ? d.note : "";
         return h("a", { key: d.id, href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flexShrink: 0, width: 150, scrollSnapAlign: "start", display: "flex", flexDirection: "column", textDecoration: "none", borderRadius: 15, padding: "10px 11px 9px", background: tileBg, border: tileBd, boxShadow: "0 3px 10px rgba(180,160,175,0.18)" } },
           h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 } },
