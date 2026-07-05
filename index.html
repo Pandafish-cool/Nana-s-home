@@ -10139,12 +10139,12 @@ function BarTastingList() {
   // ⬇️ Nana 的评鉴：v 态度（"good"=不错 / "bad"=不得行 / ""=待评鉴），note 评语（一句话）。
   // 「发我我上线」模式：Nana 把 态度+评语 发我，我填在这里提交，所有人打开都能看到。
   var LIST = [
-    { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8", v: "good", note: "微醺刚好，气氛巨舒服 ✦（示例·待 Nana 亲测）" },
+    { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8", v: "", note: "" },
     { id: "jiutingtai", e: "🍸", n: "旧亭台 bar", q: "旧亭台bar 棠下", area: "棠下 · 特调酒吧", r: "4.1", v: "", note: "" },
     { id: "withchill", e: "☕", n: "屿秋 Withchill", q: "屿秋Withchill 中华广场", area: "中华广场 · 咖啡", r: "4.7", v: "", note: "" },
     { id: "eagle", e: "🥃", n: "老鹰威士忌吧", q: "老鹰威士忌吧 珠江新城", area: "珠江新城 · 威士忌吧", r: "4.7", v: "", note: "" },
     { id: "wanjinyou", e: "🍽️", n: "万金游·中餐Bistro", q: "万金游餐馆 体育西路", area: "正佳广场 · 创意菜", r: "4.0", v: "", note: "" },
-    { id: "cantina", e: "🍷", n: "CANTINA AAH", q: "CANTINA AAH 猎德 兴盛路", area: "兴盛路/猎德 · 特调", r: "4.5", v: "bad", note: "酒还行，就是太吵了点 🙉（示例·待 Nana 亲测）" }
+    { id: "cantina", e: "🍷", n: "CANTINA AAH", q: "CANTINA AAH 猎德 兴盛路", area: "兴盛路/猎德 · 特调", r: "4.5", v: "", note: "" }
   ];
   var reviewed = function (d) { return d.v === "good" || d.v === "bad" || !!(d.note && d.note.length); };
   // 没评过的排前面（还没去的先提醒），评过/标记过的沉到后面；稳定排序保持原顺序。
