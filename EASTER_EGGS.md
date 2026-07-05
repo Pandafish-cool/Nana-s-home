@@ -146,6 +146,11 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
   - 这张卡**顶替了原来的周末刮刮乐酒吧卡**，现在天天显示。想改回只在周末出现：把渲染处的 `!room &&` 换成 `(new Date().getDay()%6===0) && !room &&`（周日=0、周六=6）。
 - **周末刮刮乐酒吧卡（已退役）** `ScratchBar` / `WeekendBarCard`：组件还在代码里但不再渲染。酒吧房间仍可从「房间地图」进入。
 - **奖励钱包** `RewardsWallet`：收集上面抽到的券，可「兑换」。
+- **🎪 游乐场（原游戏室升级）** `FunRoomLobby`：满屏游乐园夜景大厅（摩天轮/木马/彩旗/小卖部/散步猫），三个入口：
+  - **🎬 电影院** `CinemaActivity`：「今晚看什么」随机抽片（清单里标了🌟想看就只从想看里抽）+ 观影清单（加入→想看→看过打星，可自己加片）。localStorage：`nana-films`、`nana-films-custom`。
+  - **🎮 游戏室** `GameActivity`：原 12+ 游戏不变，连续 7 天彩蛋照旧。
+  - **📚 阅读室** `ReadingRoomActivity`：航空信纸读书笔记（写完「收进小本本」，✕两步确认删除）+ 我的书单（🌟想读→📖在读→✅读完）。localStorage：`nana-reading-notes`、`nana-books`。
+  - **🛁 浴缸彩蛋**：大厅草地右侧的小浴缸，点一下会歪头说「游乐场露天泡澡，快乐加倍 🫧」。
 
 ---
 
