@@ -7988,15 +7988,15 @@ function ReadingRoomActivity(_refRR) {
   var wt = themeById(writeTheme);
   return h("div", null,
     h("div", { style: { display: "flex", gap: 4, background: "#f6ead8", borderRadius: 999, padding: 4, marginBottom: 16 } },
-      tabBtn("note", "✍️ 小笺"), tabBtn("shared", "💕 小本本"), tabBtn("list", "📚 书单")),
+      tabBtn("note", "✍️ 小笺"), tabBtn("shared", "🏠 221B"), tabBtn("list", "📚 书单")),
     tab === "shared" ? (function () {
       var me = null, other = null;
       for (var ai = 0; ai < NANA_AUTHORS.length; ai++) { if (NANA_AUTHORS[ai].id === myAuthor) { me = NANA_AUTHORS[ai]; } else { other = NANA_AUTHORS[ai]; } }
       if (!me) {
         return h("div", { style: { background: "#fff", borderRadius: 20, padding: "28px 18px 24px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)", textAlign: "center" } },
           h("div", { style: { fontSize: "2.2rem" } }, "💕"),
-          h("div", { style: { fontWeight: 800, fontSize: "1rem", color: COLORS.dark, marginTop: 10 } }, "这本小本本是两个人的"),
-          h("div", { style: { color: "rgba(150,120,95,0.7)", fontSize: "0.74rem", marginTop: 6, fontFamily: HAND } }, "你写的 TA 能看到，TA 写的你也能看到 ✨", h("br", null), "先告诉小本本：你是谁呀？（选一次就记住）"),
+          h("div", { style: { fontWeight: 800, fontSize: "1rem", color: COLORS.dark, marginTop: 10 } }, "欢迎来到贝克街 221B"),
+          h("div", { style: { color: "rgba(150,120,95,0.7)", fontSize: "0.74rem", marginTop: 6, fontFamily: HAND } }, "这里住着两位侦探，来信互相都能看到 🔍", h("br", null), "请问阁下是哪位住户？（选一次就记住）"),
           h("div", { style: { display: "flex", gap: 10, marginTop: 18 } },
             NANA_AUTHORS.map(function (a) {
               return h("button", { key: a.id, onClick: function () { setMyAuthor(a.id); try { localStorage.setItem("nana-author", a.id); } catch (_) {} }, style: { flex: 1, border: "1.5px solid " + a.col, borderRadius: 16, padding: "16px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.92rem", cursor: "pointer", background: a.bg, color: a.col } }, a.e + " 我是 " + a.label);
@@ -8004,7 +8004,7 @@ function ReadingRoomActivity(_refRR) {
       }
       return h("div", null,
         h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
-          h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.76rem" } }, "💕 我们的小本本 · " + sharedNotes.length + " 张"),
+          h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.76rem" } }, "🏠 贝克街 221B · " + sharedNotes.length + " 封信"),
           h("div", { style: { display: "flex", gap: 6, alignItems: "center" } },
             h("button", { onClick: loadShared, style: { border: "1px solid rgba(200,135,26,0.35)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#c8871a" } }, sharedLoading ? "…" : "🔄 刷新"),
             h("button", { onClick: function () { setMyAuthor(""); try { localStorage.removeItem("nana-author"); } catch (_) {} }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.62rem", cursor: "pointer", color: "rgba(150,125,110,0.6)" } }, me.e + " 换人"))),
@@ -8018,13 +8018,13 @@ function ReadingRoomActivity(_refRR) {
           tape(wt, -3),
           h("div", { style: Object.assign({}, paperStyle(wt), { padding: "20px 16px 34px 44px" }) },
             airmail(wt, "top"), airmail(wt, "bottom"), stamp(wt), watermark(wt),
-            h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "0.98rem", lineHeight: "28px" } }, me.e + " " + me.label + " 想说："),
-            h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + "，也写给自己 ♡", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } })),
-          h("button", { onClick: postShared, disabled: !((sharedDraft || "").trim()) || sharedPosting, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((sharedDraft || "").trim() && !sharedPosting) ? "pointer" : "default", background: ((sharedDraft || "").trim() && !sharedPosting) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄出中…" : "📮 寄进小本本")),
-        sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, "连不上小本本 😢 " + sharedErr),
+            h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "0.98rem", lineHeight: "28px" } }, me.e + " " + me.label + " 的来信："),
+            h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + " 的信 · 案情、书影、或今天的迷雾 🔍", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } })),
+          h("button", { onClick: postShared, disabled: !((sharedDraft || "").trim()) || sharedPosting, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((sharedDraft || "").trim() && !sharedPosting) ? "pointer" : "default", background: ((sharedDraft || "").trim() && !sharedPosting) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : "📮 寄往 221B")),
+        sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, "信没送到贝克街 😢 " + sharedErr),
         h("div", { style: { marginTop: 32 } },
-          sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "小本本翻页中…") : null,
-          !sharedLoading && !sharedErr && sharedNotes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.78rem", padding: "10px 0", fontFamily: HAND } }, "第一页还空着，写下第一句吧 ♡") : null,
+          sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
+          !sharedLoading && !sharedErr && sharedNotes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.78rem", padding: "10px 0", fontFamily: HAND } }, "壁炉边还没有来信，写下第一封吧 🕯️") : null,
           sharedNotes.map(function (n, i) {
             var nt = themeById(n.th);
             var a = nanaAuthorById(n.author);
@@ -8039,7 +8039,7 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
                     h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
-                    mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下撕掉" : "✕") : null)),
+                    mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
                 h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t),
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
           })));
