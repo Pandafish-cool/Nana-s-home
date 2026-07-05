@@ -19272,7 +19272,7 @@ function HomeDeck(_refHD) {
   var _start = (_slot * PER) % pool.length;
   var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(pool[_pi[(_start + _k) % pool.length]]); }
   // 特殊便签：每天都出现，粉色区别于普通便签 🩹
-  todays.unshift({ t: "罚款通知", b: "要控制好自己啊，不要扣啊，扣了罚款 💸", e: "🚨", special: true });
+  todays.unshift({ t: "赛博罚单提醒", b: "要控制好自己啊，不要扣啊，扣了罚款 💸", e: "🚨", special: true });
   var COUNT = todays.length;
   var ni = ((msgIdx % COUNT) + COUNT) % COUNT;
   var note = todays[ni];
