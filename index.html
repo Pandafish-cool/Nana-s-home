@@ -10133,8 +10133,9 @@ function BarActivity(_ref67) {
 }
 function BarTastingList() {
   var h = React.createElement;
-  // 广州大众点评 city id = 4；用店名做搜索深链，点开直达该店（比写死店铺 id 更稳，不会失效）
-  var dp = function (q) { return "https://www.dianping.com/search/keyword/4/0_" + encodeURIComponent(q); };
+  // 高德地图深链：优先唤起高德 App 弹出店铺卡片（地址/照片/评分/导航），没装 App 走网页，全程免登陆。
+  // 用店名+区域做关键词，比写死 POI id 更稳、不会失效。callnative=1 优先开原生 App。
+  var amap = function (q) { return "https://uri.amap.com/search?keyword=" + encodeURIComponent(q) + "&city=" + encodeURIComponent("广州") + "&src=nanahome&callnative=1"; };
   var LIST = [
     { id: "latable", e: "🍸", n: "La Table", q: "La Table 特调酒吧 五羊新城", area: "五羊新城 · 特调酒吧", r: "4.8" },
     { id: "jiutingtai", e: "🍸", n: "旧亭台 bar", q: "旧亭台bar 棠下", area: "棠下 · 特调酒吧", r: "4.1" },
@@ -10172,7 +10173,7 @@ function BarTastingList() {
     h("div", { className: "hs-scroll", style: { position: "relative", display: "flex", gap: 10, overflowX: "auto", paddingBottom: 3, paddingRight: 14, scrollbarWidth: "none", WebkitOverflowScrolling: "touch", scrollSnapType: "x proximity" } },
       LIST.map(function (d) {
         var on = tasted.indexOf(d.id) >= 0;
-        return h("a", { key: d.id, href: dp(d.q || d.n), target: "_blank", rel: "noopener", style: { flexShrink: 0, width: 126, scrollSnapAlign: "start", display: "block", textDecoration: "none", borderRadius: 15, padding: "10px 11px 9px", background: on ? "linear-gradient(160deg,#d9f6e6,#c6f0d9)" : "rgba(255,255,255,0.78)", border: on ? "1px solid rgba(80,200,150,0.55)" : "1px solid rgba(120,205,175,0.32)", boxShadow: "0 3px 10px rgba(180,160,175,0.18)" } },
+        return h("a", { key: d.id, href: amap(d.q || d.n), target: "_blank", rel: "noopener", style: { flexShrink: 0, width: 126, scrollSnapAlign: "start", display: "block", textDecoration: "none", borderRadius: 15, padding: "10px 11px 9px", background: on ? "linear-gradient(160deg,#d9f6e6,#c6f0d9)" : "rgba(255,255,255,0.78)", border: on ? "1px solid rgba(80,200,150,0.55)" : "1px solid rgba(120,205,175,0.32)", boxShadow: "0 3px 10px rgba(180,160,175,0.18)" } },
           h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
             h("div", { style: { fontSize: "1.5rem", opacity: on ? 0.65 : 1 } }, d.e),
             h("div", { onClick: function (e) { e.preventDefault(); e.stopPropagation(); toggle(d.id); }, style: { width: 20, height: 20, borderRadius: "50%", flexShrink: 0, cursor: "pointer", border: on ? "none" : "1.5px solid rgba(110,200,160,0.65)", background: on ? "linear-gradient(135deg,#57cb92,#39b077)" : "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.7rem", fontWeight: 800 } }, on ? "✓" : "")),
@@ -10180,7 +10181,7 @@ function BarTastingList() {
           h("div", { style: { color: "rgba(130,118,128,0.78)", fontSize: "0.6rem", marginTop: 3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, d.area),
           h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 6 } },
             h("span", { style: { color: "#f2a02f", fontSize: "0.64rem", fontWeight: 800 } }, "⭐ " + d.r),
-            h("span", { style: { color: "#e46a89", fontSize: "0.58rem", fontWeight: 800 } }, "点评 ↗")));
+            h("span", { style: { color: "#e46a89", fontSize: "0.58rem", fontWeight: 800 } }, "地图 ↗")));
       })));
 }
 
