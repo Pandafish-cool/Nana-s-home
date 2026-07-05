@@ -7864,6 +7864,22 @@ function ReadingRoomActivity(_refRR) {
   var _sdd = useState(""); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
   var _spp = useState(false); var sharedPosting = _spp[0], setSharedPosting = _spp[1];
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
+  // 长按住户徽章 3 秒才能换人（防手滑，也不碍眼）
+  var holdRef = useRef(null);
+  var _hh = useState(false); var holding = _hh[0], setHolding = _hh[1];
+  useEffect(function () { return function () { if (holdRef.current) clearTimeout(holdRef.current); }; }, []);
+  var startHold = function () {
+    if (holdRef.current) clearTimeout(holdRef.current);
+    setHolding(true);
+    holdRef.current = setTimeout(function () {
+      holdRef.current = null; setHolding(false);
+      setMyAuthor(""); try { localStorage.removeItem("nana-author"); } catch (_) {}
+    }, 3000);
+  };
+  var cancelHold = function () {
+    setHolding(false);
+    if (holdRef.current) { clearTimeout(holdRef.current); holdRef.current = null; }
+  };
   var loadShared = function () {
     setSharedLoading(true); setSharedErr(null);
     nanaSharedList(function (err, rows) {
@@ -8007,7 +8023,7 @@ function ReadingRoomActivity(_refRR) {
           h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.76rem" } }, "🏠 贝克街 221B · " + sharedNotes.length + " 封信"),
           h("div", { style: { display: "flex", gap: 6, alignItems: "center" } },
             h("button", { onClick: loadShared, style: { border: "1px solid rgba(200,135,26,0.35)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#c8871a" } }, sharedLoading ? "…" : "🔄 刷新"),
-            h("button", { onClick: function () { setMyAuthor(""); try { localStorage.removeItem("nana-author"); } catch (_) {} }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.62rem", cursor: "pointer", color: "rgba(150,125,110,0.6)" } }, me.e + " 换人"))),
+            h("span", { onTouchStart: startHold, onTouchEnd: cancelHold, onTouchMove: cancelHold, onTouchCancel: cancelHold, onMouseDown: startHold, onMouseUp: cancelHold, onMouseLeave: cancelHold, onContextMenu: function (e) { e.preventDefault(); }, title: "长按 3 秒换人", style: { fontSize: "0.62rem", fontWeight: 800, color: me.col, background: me.bg, borderRadius: 999, padding: "4px 10px", cursor: "pointer", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", whiteSpace: "nowrap", transform: holding ? "scale(0.92)" : "none", opacity: holding ? 0.65 : 1, transition: "transform 0.2s, opacity 0.2s" } }, holding ? "🕰️ 按住换人…" : me.e + " " + me.label))),
         h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } },
           h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
           NANA_LETTER_THEMES.map(function (t) {
