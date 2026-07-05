@@ -7408,6 +7408,79 @@ function CinemaActivity(_refCN) {
       h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点右边小按钮：加入 → 🌟想看 → ✅看过（可打星）")));
 }
 
+// ── FUN ROOM LOBBY (娱乐室大厅 · 游乐园夜景) ─────────────────
+function FunRoomLobby(_refFL) {
+  var onActivity = _refFL.onActivity;
+  var h = React.createElement;
+  useEffect(function () {
+    if (document.getElementById("funroom-style")) return;
+    var st = document.createElement("style");
+    st.id = "funroom-style";
+    st.textContent = "@keyframes bulbBlink{0%,100%{opacity:1}50%{opacity:0.25}}@keyframes neonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes twinkleS{0%,100%{opacity:0.25;transform:scale(0.8)}50%{opacity:0.9;transform:scale(1.1)}}";
+    document.head.appendChild(st);
+  }, []);
+  var pick = function (id) {
+    var acts = ACTIVITIES.gaming || [];
+    for (var i = 0; i < acts.length; i++) { if (acts[i].id === id) return onActivity(acts[i]); }
+  };
+  var bulbs = function (n, delayBase) {
+    var arr = [];
+    for (var i = 0; i < n; i++) {
+      arr.push(h("span", { key: i, style: { width: 6, height: 6, borderRadius: "50%", background: i % 2 ? "#ffd86a" : "#ff9d5c", boxShadow: "0 0 6px rgba(255,200,90,0.9)", animation: "bulbBlink 1.2s ease-in-out infinite", animationDelay: (delayBase + i * 0.15) + "s" } }));
+    }
+    return h("div", { style: { display: "flex", justifyContent: "space-between", padding: "0 4px" } }, arr);
+  };
+  var stars = [[8, 6, 0], [22, 14, 0.7], [45, 4, 1.3], [68, 12, 0.4], [86, 7, 1.0], [93, 18, 1.6], [33, 20, 1.9], [57, 16, 0.2]].map(function (s, i) {
+    return h("span", { key: "st" + i, style: { position: "absolute", left: s[0] + "%", top: s[1] + "%", fontSize: i % 3 === 0 ? "0.7rem" : "0.5rem", animation: "twinkleS 2.4s ease-in-out infinite", animationDelay: s[2] + "s", pointerEvents: "none" } }, "✦");
+  });
+  return h("div", { style: { position: "relative", borderRadius: 28, overflow: "hidden", background: "linear-gradient(180deg,#141033 0%,#241a4d 45%,#332055 100%)", padding: "20px 16px 18px", boxShadow: "0 10px 30px rgba(25,15,60,0.45)" } },
+    stars,
+    // 顶部彩灯串
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 3, background: "linear-gradient(90deg,#ff6a8a,#ffd86a,#6ae8b0,#6ab6ff,#c88aff,#ff6a8a)" } }),
+    h("div", { style: { textAlign: "center", marginBottom: 14, position: "relative" } },
+      h("div", { style: { display: "inline-block", color: "#ffd86a", fontWeight: 800, fontSize: "1.02rem", letterSpacing: 2, textShadow: "0 0 14px rgba(255,216,106,0.65)", animation: "neonFloat 3s ease-in-out infinite" } }, "🎪 NANA 游乐场 🎪"),
+      h("div", { style: { color: "rgba(220,210,250,0.55)", fontSize: "0.64rem", marginTop: 4, fontWeight: 700 } }, "今晚想去哪儿玩？点一个亮灯的～")),
+    // ── 电影院：灯泡跑马灯招牌 ──
+    h("div", { onClick: function () { pick("cinema"); }, style: { position: "relative", cursor: "pointer", borderRadius: 18, overflow: "hidden", background: "linear-gradient(165deg,#1a1240,#2a1a55)", border: "2px solid rgba(255,216,106,0.55)", boxShadow: "0 0 22px rgba(255,180,80,0.22), 0 8px 20px rgba(10,5,30,0.5)", padding: "10px 12px 13px", marginBottom: 12 } },
+      bulbs(14, 0),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 12, padding: "10px 4px 8px" } },
+        h("div", { style: { position: "relative", flexShrink: 0, width: 64, height: 64, borderRadius: 14, background: "radial-gradient(circle at 50% 42%,#3a2a6a,#171040)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", border: "1.5px solid rgba(200,150,255,0.35)" } }, "🎬",
+          h("span", { style: { position: "absolute", right: -6, top: -6, fontSize: "1rem", transform: "rotate(18deg)" } }, "🎟️")),
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "NOW SHOWING"),
+          h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.12rem", marginTop: 2 } }, "电影院"),
+          h("div", { style: { color: "rgba(220,205,255,0.7)", fontSize: "0.68rem", marginTop: 3 } }, "🍿 今晚看什么 · 抽一部 + 观影清单")),
+        h("div", { style: { flexShrink: 0, color: "#ffd86a", fontWeight: 800, fontSize: "1.1rem" } }, "›")),
+      bulbs(14, 0.4)),
+    // ── 下排：街机 + 书屋 ──
+    h("div", { style: { display: "flex", gap: 12 } },
+      // 游戏室：街机机台
+      h("div", { onClick: function () { pick("games"); }, style: { flex: 1, cursor: "pointer", borderRadius: "18px 18px 14px 14px", overflow: "hidden", background: "linear-gradient(175deg,#4a2a8a 0%,#33206a 55%,#241650 100%)", border: "2px solid rgba(140,110,255,0.5)", boxShadow: "0 0 18px rgba(120,90,255,0.25), 0 8px 18px rgba(10,5,30,0.45)", padding: "12px 12px 12px", textAlign: "center", position: "relative" } },
+        h("div", { style: { color: "#8ae8ff", fontWeight: 800, fontSize: "0.56rem", letterSpacing: 2, marginBottom: 7 } }, "★ ARCADE ★"),
+        h("div", { style: { borderRadius: 10, background: "linear-gradient(160deg,#0d1a3a,#12305a)", border: "1.5px solid rgba(120,200,255,0.4)", padding: "10px 6px 9px", marginBottom: 9 } },
+          h("div", { style: { fontSize: "1.7rem" } }, "🎮"),
+          h("div", { style: { color: "#8ae8ff", fontWeight: 800, fontSize: "0.56rem", letterSpacing: 1.5, marginTop: 4, animation: "bulbBlink 1.6s steps(1) infinite" } }, "PRESS START")),
+        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 8 } },
+          h("span", { style: { fontSize: "0.9rem" } }, "🕹️"),
+          h("span", { style: { width: 11, height: 11, borderRadius: "50%", background: "#ff5a7a", boxShadow: "0 2px 0 #a02040" } }),
+          h("span", { style: { width: 11, height: 11, borderRadius: "50%", background: "#ffd84a", boxShadow: "0 2px 0 #b08a10" } })),
+        h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "0.92rem" } }, "游戏室"),
+        h("div", { style: { color: "rgba(210,200,255,0.65)", fontSize: "0.6rem", marginTop: 2 } }, "12+ 台游戏机随便玩")),
+      // 阅读室：暖灯小书屋
+      h("div", { onClick: function () { pick("read"); }, style: { flex: 1, cursor: "pointer", borderRadius: 18, overflow: "hidden", background: "linear-gradient(170deg,#fff6e2 0%,#ffe9c2 60%,#f8d8a8 100%)", border: "2px solid rgba(240,180,90,0.55)", boxShadow: "0 0 18px rgba(255,190,90,0.28), 0 8px 18px rgba(10,5,30,0.35)", padding: "12px 12px 12px", textAlign: "center", position: "relative" } },
+        h("div", { style: { position: "absolute", left: "50%", top: 7, transform: "translateX(-50%)", fontSize: "0.85rem", filter: "drop-shadow(0 0 8px rgba(255,200,90,0.9))" } }, "💡"),
+        h("div", { style: { height: 14 } }),
+        h("div", { style: { fontSize: "1.7rem", marginBottom: 5 } }, "🛋️"),
+        // 书架
+        h("div", { style: { display: "flex", justifyContent: "center", gap: 3, marginBottom: 9 } },
+          ["#e46a6a", "#5a9ad0", "#68b880", "#e8a84a", "#a878d0", "#e46a9a"].map(function (c, i) {
+            return h("span", { key: i, style: { width: 7, height: 20 + (i % 3) * 4, borderRadius: 2, background: c, alignSelf: "flex-end" } });
+          })),
+        h("div", { style: { color: "#7a4a20", fontWeight: 800, fontSize: "0.92rem" } }, "阅读室"),
+        h("div", { style: { color: "rgba(150,105,55,0.75)", fontSize: "0.6rem", marginTop: 2 } }, "暖灯下窝着看会儿书"))),
+    h("div", { style: { textAlign: "center", color: "rgba(210,200,245,0.4)", fontSize: "0.6rem", marginTop: 13, position: "relative" } }, "🎟️ 一票畅玩 · Nana 专属乐园"));
+}
+
 // ── ROOMS ─────────────────────────────────────────────────
 
 var ROOMS = [{
@@ -7437,7 +7510,7 @@ var ROOMS = [{
 }, {
   id: "gaming",
   emoji: "🎪",
-  name: "娱乐室",
+  name: "游乐场",
   color: "#BAEAff",
   desc: "电影 · 游戏 · 阅读"
 }, {
@@ -14015,7 +14088,7 @@ function HouseMap(_ref107) {
   }, {
     id: "gaming",
     emoji: "🎪",
-    name: "娱乐室",
+    name: "游乐场",
     x: "8%",
     y: 52,
     desc: "movie · play"
@@ -17130,7 +17203,7 @@ function BottomNav(_ref135) {
     living: "客厅",
     bedroom: "卧室",
     bath: "盥洗室",
-    gaming: "娱乐"
+    gaming: "游乐场"
   };
   var NavBtn = function NavBtn(_ref136) {
     var emoji = _ref136.emoji,
@@ -18583,7 +18656,7 @@ function NanasHome() {
       gap: 4,
       letterSpacing: "0.3px"
     }
-  }, "\u2190 Back home"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2190 Back home"), room.id !== "gaming" && /*#__PURE__*/React.createElement("div", {
     style: {
       background: room.color,
       borderRadius: 36,
@@ -18625,7 +18698,7 @@ function NanasHome() {
       marginTop: 4,
       color: room.id === "travel" || room.id === "music" || room.id === "bar" ? "#fff" : COLORS.brown
     }
-  }, room.desc)), /*#__PURE__*/React.createElement("div", {
+  }, room.desc)), room.id !== "gaming" && /*#__PURE__*/React.createElement("div", {
     style: {
       fontWeight: 700,
       fontSize: "0.75rem",
@@ -18634,7 +18707,9 @@ function NanasHome() {
       marginBottom: 10,
       letterSpacing: "1px"
     }
-  }, "WHAT DOES NANA WANT TO DO?"), /*#__PURE__*/React.createElement("div", {
+  }, "WHAT DOES NANA WANT TO DO?"), room.id === "gaming" ? /*#__PURE__*/React.createElement(FunRoomLobby, {
+    onActivity: selectActivity
+  }) : /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
