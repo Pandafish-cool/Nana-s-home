@@ -7300,6 +7300,114 @@ function GameActivity(_ref49) {
   }, "\u26F6 \u5168\u5C4F\u6E38\u620F")), renderGame()));
 }
 
+// ── CINEMA (娱乐室·电影院) ─────────────────────────────────
+function CinemaActivity(_refCN) {
+  var onCozy = _refCN.onCozy;
+  var h = React.createElement;
+  var FILMS = [
+    { id: "lalaland", t: "爱乐之城 La La Land", e: "🎹", g: "歌舞 · 浪漫" },
+    { id: "chihiro", t: "千与千寻", e: "🐉", g: "吉卜力 · 治愈" },
+    { id: "howl", t: "哈尔的移动城堡", e: "🏰", g: "吉卜力 · 奇幻" },
+    { id: "totoro", t: "龙猫", e: "🌳", g: "吉卜力 · 温暖" },
+    { id: "interstellar", t: "星际穿越", e: "🚀", g: "科幻 · 震撼" },
+    { id: "flipped", t: "怦然心动", e: "🍑", g: "初恋 · 甜" },
+    { id: "budapest", t: "布达佩斯大饭店", e: "🏨", g: "韦斯安德森 · 色彩" },
+    { id: "zootopia", t: "疯狂动物城", e: "🦊", g: "动画 · 欢乐" },
+    { id: "yourname", t: "你的名字。", e: "☄️", g: "新海诚 · 浪漫" },
+    { id: "whisper", t: "侧耳倾听", e: "📚", g: "吉卜力 · 少女心" },
+    { id: "pianist1900", t: "海上钢琴师", e: "🚢", g: "经典 · 音乐" },
+    { id: "amelie", t: "天使爱美丽", e: "🍒", g: "法式 · 俏皮" },
+    { id: "truman", t: "楚门的世界", e: "📺", g: "经典 · 思考" },
+    { id: "soul", t: "心灵奇旅 Soul", e: "🎷", g: "皮克斯 · 治愈" }
+  ];
+  var _cf = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films-custom") || "[]"); } catch (_) { return []; } });
+  var custom = _cf[0], setCustom = _cf[1];
+  var all = FILMS.concat(custom);
+  var _mk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films") || "{}"); } catch (_) { return {}; } });
+  var marks = _mk[0], setMarks = _mk[1];
+  var save = function (next) { setMarks(next); try { localStorage.setItem("nana-films", JSON.stringify(next)); } catch (_) {} };
+  var copyMarks = function () { var n = {}; for (var k in marks) { if (Object.prototype.hasOwnProperty.call(marks, k)) n[k] = marks[k]; } return n; };
+  var cycle = function (id) {
+    var cur = (marks[id] && marks[id].s) || "";
+    var nextS = cur === "" ? "want" : cur === "want" ? "seen" : "";
+    var n = copyMarks(); n[id] = { s: nextS, r: (marks[id] && marks[id].r) || 0 };
+    save(n); if (onCozy) onCozy(2);
+  };
+  var setStars = function (id, r) { var n = copyMarks(); n[id] = { s: "seen", r: r }; save(n); };
+  var _pk = useState(null); var pick = _pk[0], setPick = _pk[1];
+  var _rl = useState(false); var rolling = _rl[0], setRolling = _rl[1];
+  var spinRef = useRef(null);
+  useEffect(function () { return function () { if (spinRef.current) clearInterval(spinRef.current); }; }, []);
+  var spin = function () {
+    if (rolling) return;
+    setRolling(true);
+    var wants = all.filter(function (f) { return marks[f.id] && marks[f.id].s === "want"; });
+    var pool = wants.length >= 1 ? wants : all;
+    var n = 0;
+    spinRef.current = setInterval(function () {
+      n++;
+      setPick(pool[Math.floor(Math.random() * pool.length)]);
+      if (n > 16) { clearInterval(spinRef.current); spinRef.current = null; setRolling(false); if (onCozy) onCozy(3); }
+    }, 85);
+  };
+  var _inp = useState(""); var inp = _inp[0], setInp = _inp[1];
+  var addFilm = function () {
+    var t = (inp || "").trim(); if (!t) return;
+    var nf = { id: "c" + Date.now(), t: t, e: "🎞️", g: "Nana 私藏" };
+    var next = custom.concat([nf]); setCustom(next);
+    try { localStorage.setItem("nana-films-custom", JSON.stringify(next)); } catch (_) {}
+    setInp("");
+  };
+  var seenCount = all.filter(function (f) { return marks[f.id] && marks[f.id].s === "seen"; }).length;
+  var chip = function (s) {
+    if (s === "want") return { txt: "🌟 想看", bg: "rgba(255,200,90,0.22)", col: "#c8871a" };
+    if (s === "seen") return { txt: "✅ 看过", bg: "rgba(110,205,150,0.22)", col: "#2ba172" };
+    return { txt: "＋ 加入", bg: "rgba(255,255,255,0.1)", col: "rgba(230,220,240,0.75)" };
+  };
+  return h("div", null,
+    // ── 影厅 ──
+    h("div", { style: { background: "linear-gradient(180deg,#1a1030,#241640 60%,#160d28)", borderRadius: 20, padding: "18px 16px 16px", boxShadow: "0 8px 28px rgba(20,10,40,0.5)", marginBottom: 14, position: "relative", overflow: "hidden" } },
+      h("div", { style: { textAlign: "center", color: "#ffd86a", fontWeight: 800, fontSize: "0.72rem", letterSpacing: 4, marginBottom: 10 } }, "★ NANA CINEMA ★"),
+      h("div", { style: { position: "relative", borderRadius: 12, overflow: "hidden", border: "3px solid #3a2a5a", background: "linear-gradient(160deg,#0d0820,#1a1235)", minHeight: 118, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "14px 12px" } },
+        h("div", { style: { position: "absolute", left: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
+        h("div", { style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
+        pick
+          ? h("div", { style: { textAlign: "center", animation: "fadeSlideUp 0.3s ease" } },
+              h("div", { style: { fontSize: "2.2rem" } }, pick.e),
+              h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.02rem", marginTop: 6 } }, pick.t),
+              h("div", { style: { color: "rgba(220,200,255,0.65)", fontSize: "0.68rem", marginTop: 4 } }, pick.g),
+              !rolling && h("div", { style: { color: "#ffd86a", fontSize: "0.64rem", fontWeight: 700, marginTop: 8 } }, "🎟️ 今晚就它了！"))
+          : h("div", { style: { textAlign: "center" } },
+              h("div", { style: { fontSize: "2rem" } }, "🎬"),
+              h("div", { style: { color: "rgba(220,210,240,0.8)", fontWeight: 700, fontSize: "0.82rem", marginTop: 6 } }, "幕布已就位，选片开演～")),
+        null),
+      h("div", { style: { textAlign: "center", fontSize: "0.9rem", letterSpacing: 6, margin: "10px 0 4px", opacity: 0.9 } }, "💺💺💺🐻💺💺💺"),
+      h("button", { onClick: spin, disabled: rolling, style: { display: "block", width: "100%", marginTop: 8, background: rolling ? "rgba(255,216,106,0.4)" : "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", border: "none", borderRadius: 14, padding: "13px 10px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: rolling ? "default" : "pointer", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, rolling ? "🎡 抽片中…" : "🍿 今晚看什么？抽一部！"),
+      h("div", { style: { textAlign: "center", color: "rgba(220,210,240,0.5)", fontSize: "0.62rem", marginTop: 8 } }, "清单里标了 🌟想看 的话，就只从想看里抽哦")),
+    // ── 观影清单 ──
+    h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
+      h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "🎞️ 观影清单"),
+        h("div", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.72rem" } }, "看过 " + seenCount + "/" + all.length)),
+      all.map(function (f) {
+        var m = marks[f.id] || { s: "", r: 0 };
+        var c = chip(m.s);
+        return h("div", { key: f.id, style: { display: "flex", alignItems: "center", gap: 9, padding: "8px 6px", borderBottom: "1px solid rgba(160,130,130,0.1)" } },
+          h("div", { style: { fontSize: "1.25rem", flexShrink: 0 } }, f.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 700, fontSize: "0.82rem", color: COLORS.dark, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, f.t),
+            h("div", { style: { fontSize: "0.6rem", color: "rgba(120,100,105,0.7)", marginTop: 1 } }, f.g),
+            m.s === "seen" && h("div", { style: { marginTop: 3, display: "flex", gap: 2 } }, [1, 2, 3, 4, 5].map(function (i) {
+              return h("span", { key: i, onClick: function (ev) { ev.stopPropagation(); setStars(f.id, i); }, style: { cursor: "pointer", fontSize: "0.8rem", opacity: i <= (m.r || 0) ? 1 : 0.25 } }, "⭐");
+            }))),
+          h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
+      }),
+      h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+        h("input", { value: inp, onChange: function (e) { setInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addFilm(); }, placeholder: "想看的片子，自己加一部～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,135,26,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
+        h("button", { onClick: addFilm, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, "＋ 加片")),
+      h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点右边小按钮：加入 → 🌟想看 → ✅看过（可打星）")));
+}
+
 // ── ROOMS ─────────────────────────────────────────────────
 
 var ROOMS = [{
@@ -7328,10 +7436,10 @@ var ROOMS = [{
   desc: "Tend plants, spot visitors"
 }, {
   id: "gaming",
-  emoji: "🎮",
-  name: "Game Room",
+  emoji: "🎪",
+  name: "娱乐室",
   color: "#BAEAff",
-  desc: "Play, fish, farm, stargaze"
+  desc: "电影 · 游戏 · 阅读"
 }, {
   id: "window",
   emoji: "🪟",
@@ -7425,9 +7533,17 @@ var ACTIVITIES = {
     name: "My Garden"
   }],
   gaming: [{
+    id: "cinema",
+    icon: "🎬",
+    name: "电影院"
+  }, {
     id: "games",
     icon: "🎮",
-    name: "Play Games"
+    name: "游戏室"
+  }, {
+    id: "read",
+    icon: "📚",
+    name: "阅读室"
   }],
   window: [{
     id: "daydream",
@@ -13767,6 +13883,7 @@ function ActivityPanel(_ref106) {
     onCozy = _ref106.onCozy;
   var map = {
     tv: TVActivity,
+    cinema: CinemaActivity,
     sleep: SleepActivity,
     bath: BathActivity,
     daydream: DaydreamActivity,
@@ -13897,11 +14014,11 @@ function HouseMap(_ref107) {
     desc: "spa · candles"
   }, {
     id: "gaming",
-    emoji: "🎮",
-    name: "Games",
+    emoji: "🎪",
+    name: "娱乐室",
     x: "8%",
     y: 52,
-    desc: "play · race"
+    desc: "movie · play"
   }, {
     id: "garden",
     emoji: "🌿",
@@ -17013,7 +17130,7 @@ function BottomNav(_ref135) {
     living: "客厅",
     bedroom: "卧室",
     bath: "盥洗室",
-    gaming: "游戏"
+    gaming: "娱乐"
   };
   var NavBtn = function NavBtn(_ref136) {
     var emoji = _ref136.emoji,
