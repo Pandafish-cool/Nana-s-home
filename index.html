@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
  * @license React
  * react.production.min.js
  *
@@ -8319,9 +8319,9 @@ function FunRoomLobby(_refFL) {
   var flies = [["✨", 12, 56, 0.2, "0.7rem"], ["🎆", 78, 58, 1.1, "1.05rem"], ["✨", 32, 64, 1.8, "0.6rem"], ["🎇", 55, 68, 0.6, "0.95rem"], ["✨", 86, 70, 1.4, "0.65rem"], ["✨", 20, 74, 0.9, "0.55rem"], ["🫧", 68, 78, 2.0, "0.8rem"], ["✨", 44, 80, 0.4, "0.6rem"]].map(function (f, i) {
     return h("span", { key: "fl" + i, style: { position: "absolute", left: f[1] + "%", top: f[2] + "%", fontSize: f[4], animation: "twinkleS 3s ease-in-out infinite", animationDelay: f[3] + "s", pointerEvents: "none", opacity: 0.8 } }, f[0]);
   });
-  return h("div", { style: { position: "relative", overflow: "hidden", background: "linear-gradient(180deg,#0f0c2e 0%,#1d1547 34%,#2c1c5e 62%,#3a2a6e 82%,#2a3555 100%)", padding: "50px 16px 0", margin: "-16px -16px -80px", minHeight: "100vh", display: "flex", flexDirection: "column" } },
+  return h("div", { style: { position: "relative", overflow: "hidden", background: "linear-gradient(180deg,#0f0c2e 0%,#1d1547 34%,#2c1c5e 62%,#3a2a6e 82%,#2a3555 100%)", padding: "calc(50px + env(safe-area-inset-top,0px)) 16px 0", margin: "calc(-16px - env(safe-area-inset-top,0px)) -16px -80px", minHeight: "100vh", display: "flex", flexDirection: "column" } },
     stars, flies,
-    onBack && h("button", { onClick: onBack, style: { position: "absolute", left: 12, top: 12, zIndex: 6, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 999, padding: "6px 13px", color: "#f0e8ff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", backdropFilter: "blur(4px)" } }, "← 回家"),
+    onBack && h("button", { onClick: onBack, style: { position: "absolute", left: 12, top: "calc(12px + env(safe-area-inset-top,0px))", zIndex: 6, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 999, padding: "6px 13px", color: "#f0e8ff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", backdropFilter: "blur(4px)" } }, "← 回家"),
     // 顶部彩虹灯带
     h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 4, background: "linear-gradient(90deg,#ff6a8a,#ffd86a,#6ae8b0,#6ab6ff,#c88aff,#ff6a8a)" } }),
     // 月亮 + 云
@@ -10002,7 +10002,7 @@ function HeroBanner(_ref60) {
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: bgGrad,
-      padding: "0 0 0",
+      padding: "env(safe-area-inset-top,0px) 0 0",
       position: "relative",
       overflow: "hidden",
       transition: "background 2s ease"
@@ -19534,7 +19534,7 @@ function NanasHome() {
       maxWidth: 600,
       margin: "0 auto"
     }
-  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
+  }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');\n        html, body { background: #FFF8F7; }\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
     onClose: function onClose() { setShowFrog(false); }
   }), showFunLottery && /*#__PURE__*/React.createElement(GameStreakEgg, {
     plays: funPlays,
@@ -19638,7 +19638,7 @@ function NanasHome() {
     }
   }, /*#__PURE__*/React.createElement(MealCheckIn, null)), /*#__PURE__*/React.createElement("main", {
     style: {
-      padding: "16px 16px 80px"
+      padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
     }
   }, !room && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
