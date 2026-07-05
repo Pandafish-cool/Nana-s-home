@@ -7300,31 +7300,135 @@ function GameActivity(_ref49) {
 function CinemaActivity(_refCN) {
   var onCozy = _refCN.onCozy;
   var h = React.createElement;
-  var FILMS = [
-    { id: "lalaland", t: "爱乐之城 La La Land", e: "🎹", g: "歌舞 · 浪漫" },
-    { id: "chihiro", t: "千与千寻", e: "🐉", g: "吉卜力 · 治愈" },
-    { id: "howl", t: "哈尔的移动城堡", e: "🏰", g: "吉卜力 · 奇幻" },
-    { id: "totoro", t: "龙猫", e: "🌳", g: "吉卜力 · 温暖" },
-    { id: "interstellar", t: "星际穿越", e: "🚀", g: "科幻 · 震撼" },
-    { id: "flipped", t: "怦然心动", e: "🍑", g: "初恋 · 甜" },
-    { id: "budapest", t: "布达佩斯大饭店", e: "🏨", g: "韦斯安德森 · 色彩" },
-    { id: "zootopia", t: "疯狂动物城", e: "🦊", g: "动画 · 欢乐" },
-    { id: "yourname", t: "你的名字。", e: "☄️", g: "新海诚 · 浪漫" },
-    { id: "whisper", t: "侧耳倾听", e: "📚", g: "吉卜力 · 少女心" },
-    { id: "pianist1900", t: "海上钢琴师", e: "🚢", g: "经典 · 音乐" },
-    { id: "amelie", t: "天使爱美丽", e: "🍒", g: "法式 · 俏皮" },
-    { id: "truman", t: "楚门的世界", e: "📺", g: "经典 · 思考" },
-    { id: "soul", t: "心灵奇旅 Soul", e: "🎷", g: "皮克斯 · 治愈" }
+  // 观影清单：按影片类型分区（pre:"seen"=默认看过，来自豆瓣记录；点状态按钮可改）
+  var SECTIONS = [
+    { name: "🏯 吉卜力 & 动画", films: [
+      { id: "chihiro", t: "千与千寻", e: "🐉", g: "吉卜力 · 治愈", pre: "seen" },
+      { id: "howl", t: "哈尔的移动城堡", e: "🏰", g: "吉卜力 · 奇幻", pre: "seen" },
+      { id: "totoro", t: "龙猫", e: "🌳", g: "吉卜力 · 温暖", pre: "seen" },
+      { id: "db-porco", t: "红猪", e: "🐷", g: "吉卜力 · 浪漫", pre: "seen" },
+      { id: "db-kiki", t: "魔女宅急便", e: "🧹", g: "吉卜力 · 治愈", pre: "seen" },
+      { id: "db-nausicaa", t: "风之谷", e: "🦋", g: "吉卜力 · 史诗", pre: "seen" },
+      { id: "db-laputa", t: "天空之城", e: "☁️", g: "吉卜力 · 冒险", pre: "seen" },
+      { id: "db-ponyo", t: "崖上的波妞", e: "🐟", g: "吉卜力 · 可爱", pre: "seen" },
+      { id: "whisper", t: "侧耳倾听", e: "📚", g: "吉卜力 · 少女心" },
+      { id: "yourname", t: "你的名字。", e: "☄️", g: "新海诚 · 浪漫" },
+      { id: "db2-anohana", t: "未闻花名 剧场版", e: "🎆", g: "催泪 · 青春", pre: "seen" },
+      { id: "zootopia", t: "疯狂动物城", e: "🦊", g: "动画 · 欢乐" },
+      { id: "db-zootopia2", t: "疯狂动物城2", e: "🦊", g: "动画 · 欢乐", pre: "seen" },
+      { id: "soul", t: "心灵奇旅 Soul", e: "🎷", g: "皮克斯 · 治愈" },
+      { id: "db-robotdreams", t: "机器人之梦", e: "🤖", g: "动画 · 友情", pre: "seen" },
+      { id: "db-mononoke", t: "怪化猫：火鼠", e: "🔥", g: "剧场版 · 和风", pre: "seen" },
+      { id: "db2-gintama", t: "银魂", e: "🍬", g: "热血 · 搞笑", pre: "seen" },
+      { id: "db-stubby", t: "斯塔比中士", e: "🐕", g: "动画 · 传记", pre: "seen" }
+    ] },
+    { name: "💘 爱情 & 治愈", films: [
+      { id: "lalaland", t: "爱乐之城 La La Land", e: "🎹", g: "歌舞 · 浪漫" },
+      { id: "flipped", t: "怦然心动", e: "🍑", g: "初恋 · 甜" },
+      { id: "amelie", t: "天使爱美丽", e: "🍒", g: "法式 · 俏皮" },
+      { id: "db-mood", t: "花样年华", e: "🌹", g: "王家卫 · 氛围", pre: "seen" },
+      { id: "db-firstkiss", t: "初吻 ファーストキス", e: "💋", g: "日影 · 恋爱", pre: "seen" },
+      { id: "db2-ideaofyou", t: "对你的想象", e: "💌", g: "浪漫 · 姐弟", pre: "seen" },
+      { id: "db2-psilu", t: "附注：我爱你", e: "💐", g: "浪漫 · 治愈", pre: "seen" },
+      { id: "db2-carol", t: "卡罗尔 Carol", e: "❄️", g: "文艺 · 冬日", pre: "seen" },
+      { id: "db2-lamant", t: "情人 L'amant", e: "🥀", g: "文艺 · 经典", pre: "seen" },
+      { id: "db2-hidamari", t: "向阳处的她", e: "☀️", g: "日影 · 奇幻恋爱", pre: "seen" },
+      { id: "db-veil", t: "面纱 The Painted Veil", e: "🎐", g: "经典 · 爱情", pre: "seen" },
+      { id: "db2-dreamers", t: "戏梦巴黎", e: "🎞️", g: "文艺 · 迷影", pre: "seen" },
+      { id: "db-onlyyou", t: "只有你 오직 그대만", e: "🥊", g: "韩影 · 爱情", pre: "seen" },
+      { id: "db-herstory", t: "好东西", e: "🌸", g: "华语 · 温暖", pre: "seen" },
+      { id: "db-swimmer", t: "泳者之心", e: "🏊", g: "传记 · 励志", pre: "seen" },
+      { id: "db2-billy", t: "跳出我天地 Billy Elliot", e: "🩰", g: "励志 · 起舞", pre: "seen" }
+    ] },
+    { name: "🎭 经典 & 剧情", films: [
+      { id: "budapest", t: "布达佩斯大饭店", e: "🏨", g: "韦斯安德森 · 色彩" },
+      { id: "pianist1900", t: "海上钢琴师", e: "🚢", g: "经典 · 音乐" },
+      { id: "truman", t: "楚门的世界", e: "📺", g: "经典 · 思考" },
+      { id: "interstellar", t: "星际穿越", e: "🚀", g: "科幻 · 震撼" },
+      { id: "db-hailmary", t: "挽救计划 Project Hail Mary", e: "🛸", g: "科幻 · 冒险", pre: "seen" },
+      { id: "db-arrival", t: "降临 Arrival", e: "👽", g: "科幻 · 语言", pre: "seen" },
+      { id: "db-advent", t: "异形：契约-番外：出现", e: "👾", g: "科幻 · 番外", pre: "seen" },
+      { id: "db2-oppenheimer", t: "奥本海默", e: "⚛️", g: "传记 · 史诗", pre: "seen" },
+      { id: "db2-barbie", t: "芭比 Barbie", e: "💗", g: "粉红宇宙", pre: "seen" },
+      { id: "db2-napoleon", t: "拿破仑 Napoleon", e: "👑", g: "历史 · 战争", pre: "seen" },
+      { id: "db2-elle", t: "她 Elle", e: "🖤", g: "法影 · 凌厉", pre: "seen" },
+      { id: "db2-monalisa", t: "蒙娜丽莎的微笑", e: "🖼️", g: "女性 · 成长", pre: "seen" },
+      { id: "db2-basisofsex", t: "性别为本", e: "⚖️", g: "传记 · 平权", pre: "seen" },
+      { id: "db2-dustlight", t: "隐入尘烟", e: "🌾", g: "华语 · 土地", pre: "seen" },
+      { id: "db2-oldfox", t: "老狐狸", e: "🦊", g: "台影 · 成长", pre: "seen" },
+      { id: "db2-miryang", t: "密阳 밀양", e: "🕯️", g: "韩影 · 沉静", pre: "seen" },
+      { id: "db2-fairytale", t: "童话·世界", e: "🧩", g: "台影 · 议题", pre: "seen" },
+      { id: "db2-edgeuniverse", t: "旅行到宇宙边缘", e: "🌌", g: "纪录 · 宇宙", pre: "seen" },
+      { id: "db2-bauhaus", t: "百年包豪斯 Bauhaus 100", e: "📐", g: "纪录 · 设计", pre: "seen" }
+    ] },
+    { name: "💥 动作 & 悬疑", films: [
+      { id: "db-se7en", t: "七宗罪 Se7en", e: "📦", g: "悬疑经典", pre: "seen" },
+      { id: "db-laconf", t: "洛城机密 L.A. Confidential", e: "🕶️", g: "黑色经典", pre: "seen" },
+      { id: "db-f1", t: "F1：狂飙飞车", e: "🏎️", g: "竞速 · 热血", pre: "seen" },
+      { id: "db-spy", t: "特工 공작", e: "🕴️", g: "韩影 · 谍战", pre: "seen" },
+      { id: "db2-furiosa", t: "疯狂的麦克斯：狂暴女神", e: "🔥", g: "废土 · 狂飙", pre: "seen" },
+      { id: "db2-bosslevel", t: "领袖水准 Boss Level", e: "🔁", g: "时间循环 · 爽片", pre: "seen" },
+      { id: "db2-denthieves", t: "贼巢 Den of Thieves", e: "💰", g: "劫案 · 硬派", pre: "seen" },
+      { id: "db2-vengeance", t: "复仇 Vengeance", e: "🤠", g: "黑色幽默", pre: "seen" },
+      { id: "db2-ptu", t: "机动部队 PTU", e: "🚓", g: "港影 · 杜琪峰", pre: "seen" },
+      { id: "db2-election", t: "黑社会", e: "🀄", g: "港影 · 杜琪峰", pre: "seen" },
+      { id: "db2-nanshan", t: "南山的部长们", e: "🕶️", g: "韩影 · 政治", pre: "seen" },
+      { id: "db2-killboksoon", t: "杀死福顺 길복순", e: "🔪", g: "韩影 · 杀手", pre: "seen" },
+      { id: "db2-killer", t: "杀手 The Killer", e: "🎯", g: "芬奇 · 冷冽", pre: "seen" },
+      { id: "db2-johnwick4", t: "疾速追杀4", e: "🔫", g: "动作 · 枪火", pre: "seen" },
+      { id: "db2-extraction2", t: "惊天营救2", e: "🪖", g: "动作 · 营救", pre: "seen" },
+      { id: "db2-13hours", t: "危机13小时", e: "🌵", g: "战争 · 实录", pre: "seen" },
+      { id: "db2-lonesurv", t: "孤独的幸存者", e: "🏔️", g: "战争 · 实录", pre: "seen" },
+      { id: "db2-covenant", t: "盟约 The Covenant", e: "🤝", g: "战争 · 信义", pre: "seen" },
+      { id: "db2-exorcist", t: "教皇的驱魔人", e: "✝️", g: "恐怖 · 驱魔", pre: "seen" },
+      { id: "db2-missing2", t: "网络谜踪2 Missing", e: "💻", g: "桌面悬疑", pre: "seen" }
+    ] },
+    { name: "📺 剧集", films: [
+      { id: "db-agency", t: "传奇办公室：中央情报 S1", e: "🕵️", g: "美剧 · 谍战", pre: "seen" },
+      { id: "db-squid2", t: "鱿鱼游戏 第二季", e: "🦑", g: "韩剧 · 悬疑", pre: "seen" },
+      { id: "db-jackal", t: "豺狼的日子 S1", e: "🐺", g: "英剧 · 惊悚", pre: "seen" },
+      { id: "db-arcane2", t: "双城之战 第二季", e: "⚔️", g: "动画剧 · 炸裂", pre: "seen" },
+      { id: "db2-bluesamurai", t: "蓝眼武士 S1", e: "🗡️", g: "动画剧 · 凌厉", pre: "seen" },
+      { id: "db2-pantheon", t: "万神殿 S1", e: "🧠", g: "动画剧 · 科幻", pre: "seen" },
+      { id: "db2-scavengers", t: "拾荒者统治", e: "🪐", g: "动画剧 · 异星", pre: "seen" },
+      { id: "db2-beepuppycat", t: "蜂妹与狗狗猫", e: "🐝", g: "动画剧 · 软萌", pre: "seen" },
+      { id: "db2-inside9", t: "9号秘事 第八季", e: "9️⃣", g: "英剧 · 反转", pre: "seen" },
+      { id: "db2-deadloch", t: "戴洛奇小镇 S1", e: "🕵️‍♀️", g: "澳剧 · 喜剧悬疑", pre: "seen" },
+      { id: "db2-liebeskind", t: "亲爱的孩子 Liebes Kind", e: "🚪", g: "德剧 · 惊悚", pre: "seen" },
+      { id: "db-prison", t: "机智牢房生活", e: "🍞", g: "韩剧 · 温情", pre: "seen" },
+      { id: "db2-springnight", t: "春夜 봄밤", e: "🌃", g: "韩剧 · 恋爱", pre: "seen" },
+      { id: "db2-sixthsense", t: "第六感之吻", e: "💫", g: "韩剧 · 奇幻恋爱", pre: "seen" },
+      { id: "db2-revenge", t: "Re:复仇－在欲望的尽头－", e: "🩸", g: "日剧 · 复仇", pre: "seen" },
+      { id: "db2-asa", t: "阿浅来了 あさが来た", e: "🌅", g: "日剧 · 晨间", pre: "seen" },
+      { id: "db2-maiko", t: "舞伎家的料理人", e: "🍙", g: "日剧 · 温柔", pre: "seen" },
+      { id: "db-umi", t: "海之始 海のはじまり", e: "🌊", g: "日剧 · 亲情", pre: "seen" },
+      { id: "db-tokyogirl", t: "东京少女", e: "🗼", g: "日影 · 青春", pre: "seen" },
+      { id: "db2-notgood", t: "不够善良的我们", e: "🍂", g: "台剧 · 人生", pre: "seen" },
+      { id: "db2-hell", t: "何百芮的地狱毒白", e: "🎙️", g: "台剧 · 犀利", pre: "seen" },
+      { id: "db2-8chimen", t: "八尺门的辩护人", e: "🧑‍⚖️", g: "台剧 · 司法", pre: "seen" },
+      { id: "db2-tangerine", t: "橘子红了", e: "🍊", g: "经典剧 · 旧时光", pre: "seen" }
+    ] }
   ];
   var _cf = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films-custom") || "[]"); } catch (_) { return []; } });
   var custom = _cf[0], setCustom = _cf[1];
-  var all = FILMS.concat(custom);
+  var baseAll = [];
+  (function () { for (var si = 0; si < SECTIONS.length; si++) { baseAll = baseAll.concat(SECTIONS[si].films); } })();
+  var every = baseAll.concat(custom);
+  var _os = useState({}); var openSecs = _os[0], setOpenSecs = _os[1];
+  var toggleSec = function (i) {
+    setOpenSecs(function (prev) {
+      var n = {}; for (var k in prev) { if (Object.prototype.hasOwnProperty.call(prev, k)) n[k] = prev[k]; }
+      n[i] = !n[i]; return n;
+    });
+  };
   var _mk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films") || "{}"); } catch (_) { return {}; } });
   var marks = _mk[0], setMarks = _mk[1];
   var save = function (next) { setMarks(next); try { localStorage.setItem("nana-films", JSON.stringify(next)); } catch (_) {} };
+  var preOf = function (id) { var i; for (i = 0; i < every.length; i++) { if (every[i].id === id) return every[i].pre || ""; } return ""; };
+  var getMark = function (f) { return marks[f.id] || { s: f.pre || "", r: 0 }; };
   var copyMarks = function () { var n = {}; for (var k in marks) { if (Object.prototype.hasOwnProperty.call(marks, k)) n[k] = marks[k]; } return n; };
   var cycle = function (id) {
-    var cur = (marks[id] && marks[id].s) || "";
+    var cur = marks[id] ? (marks[id].s || "") : preOf(id);
     var nextS = cur === "" ? "want" : cur === "want" ? "seen" : "";
     var n = copyMarks(); n[id] = { s: nextS, r: (marks[id] && marks[id].r) || 0 };
     save(n); if (onCozy) onCozy(2);
@@ -7337,8 +7441,9 @@ function CinemaActivity(_refCN) {
   var spin = function () {
     if (rolling) return;
     setRolling(true);
-    var wants = all.filter(function (f) { return marks[f.id] && marks[f.id].s === "want"; });
-    var pool = wants.length >= 1 ? wants : all;
+    var wants = every.filter(function (f) { return getMark(f).s === "want"; });
+    var unseen = every.filter(function (f) { return getMark(f).s !== "seen"; });
+    var pool = wants.length >= 1 ? wants : (unseen.length >= 1 ? unseen : every);
     var n = 0;
     spinRef.current = setInterval(function () {
       n++;
@@ -7354,7 +7459,7 @@ function CinemaActivity(_refCN) {
     try { localStorage.setItem("nana-films-custom", JSON.stringify(next)); } catch (_) {}
     setInp("");
   };
-  var seenCount = all.filter(function (f) { return marks[f.id] && marks[f.id].s === "seen"; }).length;
+  var seenCount = every.filter(function (f) { return getMark(f).s === "seen"; }).length;
   var chip = function (s) {
     if (s === "want") return { txt: "🌟 想看", bg: "rgba(255,200,90,0.22)", col: "#c8871a" };
     if (s === "seen") return { txt: "✅ 看过", bg: "rgba(110,205,150,0.22)", col: "#2ba172" };
@@ -7384,20 +7489,37 @@ function CinemaActivity(_refCN) {
     h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
         h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "🎞️ 观影清单"),
-        h("div", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.72rem" } }, "看过 " + seenCount + "/" + all.length)),
-      all.map(function (f) {
-        var m = marks[f.id] || { s: "", r: 0 };
-        var c = chip(m.s);
-        return h("div", { key: f.id, style: { display: "flex", alignItems: "center", gap: 9, padding: "8px 6px", borderBottom: "1px solid rgba(160,130,130,0.1)" } },
-          h("div", { style: { fontSize: "1.25rem", flexShrink: 0 } }, f.e),
-          h("div", { style: { flex: 1, minWidth: 0 } },
-            h("div", { style: { fontWeight: 700, fontSize: "0.82rem", color: COLORS.dark, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, f.t),
-            h("div", { style: { fontSize: "0.6rem", color: "rgba(120,100,105,0.7)", marginTop: 1 } }, f.g),
-            m.s === "seen" && h("div", { style: { marginTop: 3, display: "flex", gap: 2 } }, [1, 2, 3, 4, 5].map(function (i) {
-              return h("span", { key: i, onClick: function (ev) { ev.stopPropagation(); setStars(f.id, i); }, style: { cursor: "pointer", fontSize: "0.8rem", opacity: i <= (m.r || 0) ? 1 : 0.25 } }, "⭐");
-            }))),
-          h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
-      }),
+        h("div", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.72rem" } }, "看过 " + seenCount + "/" + every.length)),
+      (function () {
+        var filmRow = function (f) {
+          var m = getMark(f);
+          var c = chip(m.s);
+          return h("div", { key: f.id, style: { display: "flex", alignItems: "center", gap: 9, padding: "8px 6px", borderBottom: "1px solid rgba(160,130,130,0.1)" } },
+            h("div", { style: { fontSize: "1.25rem", flexShrink: 0 } }, f.e),
+            h("div", { style: { flex: 1, minWidth: 0 } },
+              h("div", { style: { fontWeight: 700, fontSize: "0.82rem", color: COLORS.dark, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, f.t),
+              h("div", { style: { fontSize: "0.6rem", color: "rgba(120,100,105,0.7)", marginTop: 1 } }, f.g),
+              m.s === "seen" && h("div", { style: { marginTop: 3, display: "flex", gap: 2 } }, [1, 2, 3, 4, 5].map(function (i) {
+                return h("span", { key: i, onClick: function (ev) { ev.stopPropagation(); setStars(f.id, i); }, style: { cursor: "pointer", fontSize: "0.8rem", opacity: i <= (m.r || 0) ? 1 : 0.25 } }, "⭐");
+              }))),
+            h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
+        };
+        return h("div", null,
+          SECTIONS.map(function (sec, si) {
+            var open = !!openSecs[si];
+            var secSeen = sec.films.filter(function (f) { return getMark(f).s === "seen"; }).length;
+            return h("div", { key: sec.name },
+              h("div", { onClick: function () { toggleSec(si); }, style: { display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", marginTop: si === 0 ? 0 : 8, padding: "10px 12px", borderRadius: 12, background: "rgba(200,135,26,0.08)", border: "1px solid rgba(200,135,26,0.18)" } },
+                h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: COLORS.dark } }, sec.name),
+                h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 } },
+                  h("span", { style: { color: "#2ba172", fontWeight: 800, fontSize: "0.64rem" } }, secSeen + "/" + sec.films.length),
+                  h("span", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.78rem" } }, open ? "▾" : "▸"))),
+              open && h("div", { style: { padding: "0 2px" } }, sec.films.map(filmRow)));
+          }),
+          custom.length ? h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: COLORS.dark, margin: "12px 0 2px", padding: "0 2px" } }, "🎞️ Nana 自己加的 · " + custom.length),
+            custom.map(filmRow)) : null);
+      })(),
       h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
         h("input", { value: inp, onChange: function (e) { setInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addFilm(); }, placeholder: "想看的片子，自己加一部～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,135,26,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
         h("button", { onClick: addFilm, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, "＋ 加片")),
