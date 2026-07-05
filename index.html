@@ -7455,13 +7455,26 @@ function ReadingRoomActivity(_refRR) {
     return { txt: "🌟 想读", bg: "rgba(120,160,230,0.2)", col: "#4a72b8" };
   };
   var doneN = books.filter(function (b) { return b.s === "done"; }).length;
-  // 信纸公共样式：横线 + 左侧红线
+  // 信纸公共样式：横线 + 左侧玫瑰线 + 四角水彩晕染
   var paperBase = {
-    background: "repeating-linear-gradient(180deg, transparent 0 27px, rgba(180,150,120,0.35) 27px 28px), linear-gradient(90deg, transparent 0 34px, rgba(230,120,120,0.5) 34px 35.5px, transparent 35.5px 100%), linear-gradient(180deg,#fffdf4,#fff8e8)",
-    borderRadius: 6, border: "1px solid rgba(210,180,140,0.5)", boxShadow: "0 10px 24px rgba(140,105,80,0.2)"
+    background: "repeating-linear-gradient(180deg, transparent 0 27px, rgba(205,155,175,0.32) 27px 28px), linear-gradient(90deg, transparent 0 34px, rgba(235,140,160,0.55) 34px 35.5px, transparent 35.5px 100%), radial-gradient(circle at 100% 0%, rgba(255,185,200,0.28), transparent 42%), radial-gradient(circle at 0% 100%, rgba(185,210,255,0.24), transparent 40%), radial-gradient(circle at 92% 96%, rgba(255,220,160,0.25), transparent 36%), linear-gradient(180deg,#fffdf6,#fff6ec)",
+    borderRadius: 10, border: "1px solid rgba(228,178,158,0.55)", boxShadow: "0 12px 26px rgba(150,105,95,0.2), inset 0 0 0 1px rgba(255,255,255,0.6)", overflow: "hidden"
   };
+  // 和纸胶带：粉白斜条纹半透明
   var tape = function (rot, left) {
-    return h("div", { style: { position: "absolute", top: -11, left: left || "50%", transform: "translateX(-50%) rotate(" + rot + "deg)", width: 84, height: 24, background: "rgba(255,190,150,0.55)", border: "1px dashed rgba(190,120,80,0.4)", borderRadius: 2, pointerEvents: "none" } });
+    return h("div", { style: { position: "absolute", top: -11, left: left || "50%", transform: "translateX(-50%) rotate(" + rot + "deg)", width: 88, height: 24, background: "repeating-linear-gradient(45deg, rgba(255,150,180,0.55) 0 7px, rgba(255,255,255,0.7) 7px 14px)", boxShadow: "0 1px 4px rgba(160,100,110,0.25)", borderRadius: 2, pointerEvents: "none", opacity: 0.92, zIndex: 2 } });
+  };
+  // 航空信封红蓝斜纹边
+  var airmail = function (pos) {
+    var st = { position: "absolute", left: 0, right: 0, height: 5, background: "repeating-linear-gradient(45deg,#ef8a95 0 9px,#fffdf6 9px 16px,#8aa8e0 16px 25px,#fffdf6 25px 32px)", pointerEvents: "none" };
+    if (pos === "top") { st.top = 0; } else { st.bottom = 0; }
+    return h("div", { style: st });
+  };
+  // 右上角小邮票
+  var stamp = h("div", { style: { position: "absolute", right: 12, top: 13, width: 34, height: 40, background: "#fffaf2", border: "2px dashed rgba(225,150,155,0.65)", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", transform: "rotate(5deg)", boxShadow: "0 2px 6px rgba(160,100,110,0.18)", pointerEvents: "none" } }, "🌷");
+  // 大水印花
+  var watermark = function (e, size) {
+    return h("div", { style: { position: "absolute", right: 6, bottom: 2, fontSize: size || "3rem", opacity: 0.08, transform: "rotate(-14deg)", pointerEvents: "none" } }, e);
   };
   var tabBtn = function (id, label) {
     var on = tab === id;
@@ -7474,10 +7487,11 @@ function ReadingRoomActivity(_refRR) {
       // ── 信纸写作区 ──
       h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 6 } },
         tape(-3),
-        h("div", { style: Object.assign({}, paperBase, { padding: "18px 16px 14px 44px" }) },
-          h("div", { style: { fontFamily: HAND, color: "#a8642a", fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
-          h("div", { style: { color: "rgba(160,120,85,0.65)", fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
-          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a30", lineHeight: "28px", padding: 0, marginTop: 0 } })),
+        h("div", { style: Object.assign({}, paperBase, { padding: "22px 16px 18px 44px" }) },
+          airmail("top"), airmail("bottom"), stamp, watermark("🌸"),
+          h("div", { style: { fontFamily: HAND, color: "#b05a52", fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
+          h("div", { style: { color: "rgba(170,115,105,0.7)", fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
+          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a3a", lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } })),
         h("button", { onClick: addNote, disabled: !(draft || "").trim(), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: (draft || "").trim() ? "pointer" : "default", background: (draft || "").trim() ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)" } }, "📮 收进小本本")),
       // ── 已存笔记 ──
       h("div", { style: { marginTop: 34 } },
@@ -7486,11 +7500,13 @@ function ReadingRoomActivity(_refRR) {
         notes.map(function (n, i) {
           return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.9 : -0.9) + "deg)", marginBottom: 22 } },
             tape(i % 2 ? 4 : -4, i % 3 === 0 ? "30%" : i % 3 === 1 ? "50%" : "68%"),
-            h("div", { style: Object.assign({}, paperBase, { padding: "14px 14px 12px 44px" }) },
+            h("div", { style: Object.assign({}, paperBase, { padding: "14px 14px 16px 44px" }) },
+              airmail("bottom"), watermark(["🌸", "🌙", "🌿", "🫧"][i % 4], "2.3rem"),
               h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-                h("div", { style: { color: "rgba(160,120,85,0.7)", fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px" } }, "🍂 " + n.d),
-                h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "none", color: delId === n.id ? "#d05050" : "rgba(170,140,110,0.55)", fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.78rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "3px 9px" : "2px 6px" } }, delId === n.id ? "再点一下撕掉" : "✕")),
-              h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a30", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t)));
+                h("div", { style: { color: "rgba(170,115,105,0.72)", fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px" } }, "🍂 " + n.d),
+                h("button", { onClick: function () { delNote(n.id); }, style: { position: "relative", zIndex: 1, border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "none", color: delId === n.id ? "#d05050" : "rgba(170,140,110,0.55)", fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.78rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "3px 9px" : "2px 6px" } }, delId === n.id ? "再点一下撕掉" : "✕")),
+              h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a3a", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t),
+              h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, "🌹")));
         }))) :
     h("div", null,
       // ── 书单 ──
