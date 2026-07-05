@@ -7417,7 +7417,7 @@ function FunRoomLobby(_refFL) {
     if (document.getElementById("funroom-style2")) return;
     var st = document.createElement("style");
     st.id = "funroom-style2";
-    st.textContent = "@keyframes bulbBlink{0%,100%{opacity:1}50%{opacity:0.25}}@keyframes neonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes twinkleS{0%,100%{opacity:0.25;transform:scale(0.8)}50%{opacity:0.9;transform:scale(1.1)}}@keyframes wheelSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes cloudDrift{0%,100%{transform:translateX(-12px)}50%{transform:translateX(14px)}}@keyframes balloonBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}@keyframes catWalk{0%{left:6%;transform:scaleX(-1)}46%{left:70%;transform:scaleX(-1)}50%{left:70%;transform:scaleX(1)}96%{left:6%;transform:scaleX(1)}100%{left:6%;transform:scaleX(-1)}}@keyframes tada{0%,88%,100%{transform:scale(1)}92%{transform:scale(1.12) rotate(-4deg)}96%{transform:scale(1.06) rotate(3deg)}}";
+    st.textContent = "@keyframes bulbBlink{0%,100%{opacity:1}50%{opacity:0.25}}@keyframes neonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes twinkleS{0%,100%{opacity:0.25;transform:scale(0.8)}50%{opacity:0.9;transform:scale(1.1)}}@keyframes wheelSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes cloudDrift{0%,100%{transform:translateX(-12px)}50%{transform:translateX(14px)}}@keyframes balloonBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}@keyframes catWalk{0%{left:6%;transform:scaleX(-1)}46%{left:70%;transform:scaleX(-1)}50%{left:70%;transform:scaleX(1)}96%{left:6%;transform:scaleX(1)}100%{left:6%;transform:scaleX(-1)}}@keyframes tada{0%,88%,100%{transform:scale(1)}92%{transform:scale(1.12) rotate(-4deg)}96%{transform:scale(1.06) rotate(3deg)}}@keyframes joyWiggle{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}@keyframes peekBob{0%,100%{transform:translateY(0) rotate(5deg)}50%{transform:translateY(-4px) rotate(-4deg)}}";
     document.head.appendChild(st);
   }, []);
   var pick = function (id) {
@@ -7463,11 +7463,17 @@ function FunRoomLobby(_refFL) {
         h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "1.16rem", letterSpacing: 2, textShadow: "0 0 16px rgba(255,216,106,0.7)", animation: "neonFloat 3s ease-in-out infinite", whiteSpace: "nowrap" } }, "NANA 游乐场"),
         h("div", { style: { color: "rgba(220,210,250,0.6)", fontSize: "0.64rem", marginTop: 4, fontWeight: 700, letterSpacing: 1 } }, "✨ 夜场开放中 · 点亮灯的进 ✨")),
       h("span", { style: { fontSize: "2.1rem", display: "inline-block", animation: "balloonBob 3.4s ease-in-out infinite", filter: "drop-shadow(0 0 10px rgba(255,150,200,0.5))" } }, "🎠")),
-    // 门票彩带
-    h("div", { style: { display: "flex", justifyContent: "center", gap: 6, margin: "6px 0 14px", position: "relative" } },
-      ["🎈", "🎟️", "🎈"].map(function (e, i) { return h("span", { key: i, style: { fontSize: i === 1 ? "0.85rem" : "0.75rem", animation: "balloonBob 3s ease-in-out infinite", animationDelay: i * 0.5 + "s" } }, e); })),
+    // 三角彩旗串（游园会拉旗）
+    h("div", { style: { position: "relative", height: 16, margin: "4px 6px 12px" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 2, background: "rgba(255,255,255,0.25)", borderRadius: 2 } }),
+      h("div", { style: { display: "flex", justifyContent: "space-between", padding: "2px 10px 0" } },
+        ["#ff6a8a", "#ffd86a", "#6ae8b0", "#6ab6ff", "#c88aff", "#ff9d5c", "#ff6a8a", "#ffd86a", "#6ae8b0"].map(function (c, i) {
+          return h("span", { key: i, style: { width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: "12px solid " + c, transform: "rotate(" + (i % 2 ? 3 : -3) + "deg)", opacity: 0.9 } });
+        }))),
     // ── 电影院：跑马灯招牌 ──
-    h("div", { onClick: function () { pick("cinema"); }, style: { position: "relative", cursor: "pointer", borderRadius: 20, overflow: "hidden", background: "linear-gradient(165deg,#1a1240,#2a1a55)", border: "2px solid rgba(255,216,106,0.55)", boxShadow: "0 0 26px rgba(255,180,80,0.26), 0 8px 20px rgba(10,5,30,0.5)", padding: "11px 13px 14px", marginBottom: 14 } },
+    h("div", { onClick: function () { pick("cinema"); }, style: { position: "relative", cursor: "pointer", borderRadius: "28px 16px 32px 18px", background: "linear-gradient(165deg,#1a1240,#2a1a55)", border: "2px solid rgba(255,216,106,0.55)", boxShadow: "0 0 26px rgba(255,180,80,0.26), 0 8px 20px rgba(10,5,30,0.5), 0 0 0 4px rgba(255,255,255,0.05)", padding: "11px 13px 14px", marginBottom: 18, transform: "rotate(-1.3deg)" } },
+      h("span", { style: { position: "absolute", top: -17, right: 30, fontSize: "1.25rem", zIndex: 2, animation: "peekBob 3.6s ease-in-out infinite", pointerEvents: "none" } }, "🐻"),
+      h("span", { style: { position: "absolute", bottom: -11, right: 40, fontSize: "1.25rem", zIndex: 2, transform: "rotate(14deg)", pointerEvents: "none", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))" } }, "🍿"),
       bulbs(14, 0),
       h("div", { style: { display: "flex", alignItems: "center", gap: 13, padding: "12px 4px 10px" } },
         h("div", { style: { position: "relative", flexShrink: 0, width: 72, height: 72, borderRadius: 16, background: "radial-gradient(circle at 50% 42%,#3a2a6a,#171040)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.3rem", border: "1.5px solid rgba(200,150,255,0.35)", animation: "tada 6s ease-in-out infinite" } }, "🎬",
@@ -7480,29 +7486,39 @@ function FunRoomLobby(_refFL) {
       bulbs(14, 0.4)),
     // ── 下排：街机 + 书屋 ──
     h("div", { style: { display: "flex", gap: 13, alignItems: "stretch" } },
-      h("div", { onClick: function () { pick("games"); }, style: { flex: 1, cursor: "pointer", borderRadius: "20px 20px 15px 15px", overflow: "hidden", background: "linear-gradient(175deg,#4a2a8a 0%,#33206a 55%,#241650 100%)", border: "2px solid rgba(140,110,255,0.5)", boxShadow: "0 0 20px rgba(120,90,255,0.28), 0 8px 18px rgba(10,5,30,0.45)", padding: "13px 12px 14px", textAlign: "center", position: "relative" } },
+      h("div", { onClick: function () { pick("games"); }, style: { flex: 1, cursor: "pointer", borderRadius: "26px 14px 18px 30px", background: "linear-gradient(175deg,#4a2a8a 0%,#33206a 55%,#241650 100%)", border: "2px solid rgba(140,110,255,0.5)", boxShadow: "0 0 20px rgba(120,90,255,0.28), 0 8px 18px rgba(10,5,30,0.45), 0 0 0 4px rgba(255,255,255,0.05)", padding: "13px 12px 14px", textAlign: "center", position: "relative", transform: "rotate(1.6deg)" } },
+        h("span", { style: { position: "absolute", top: -16, left: 16, fontSize: "1.2rem", zIndex: 2, animation: "peekBob 3.2s ease-in-out infinite", animationDelay: "0.9s", pointerEvents: "none" } }, "🐰"),
         h("div", { style: { color: "#8ae8ff", fontWeight: 800, fontSize: "0.58rem", letterSpacing: 2.5, marginBottom: 8 } }, "★ ARCADE ★"),
         h("div", { style: { borderRadius: 12, background: "linear-gradient(160deg,#0d1a3a,#12305a)", border: "1.5px solid rgba(120,200,255,0.4)", padding: "12px 6px 11px", marginBottom: 10 } },
           h("div", { style: { fontSize: "1.95rem", animation: "tada 7s ease-in-out infinite", animationDelay: "1s", display: "inline-block" } }, "🎮"),
           h("div", { style: { color: "#8ae8ff", fontWeight: 800, fontSize: "0.58rem", letterSpacing: 1.5, marginTop: 5, animation: "bulbBlink 1.6s steps(1) infinite" } }, "PRESS START")),
-        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 9 } },
-          h("span", { style: { fontSize: "1rem" } }, "🕹️"),
+        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 5 } },
+          h("span", { style: { fontSize: "1rem", display: "inline-block", animation: "joyWiggle 2.4s ease-in-out infinite", transformOrigin: "50% 88%" } }, "🕹️"),
           h("span", { style: { width: 12, height: 12, borderRadius: "50%", background: "#ff5a7a", boxShadow: "0 2px 0 #a02040" } }),
           h("span", { style: { width: 12, height: 12, borderRadius: "50%", background: "#ffd84a", boxShadow: "0 2px 0 #b08a10" } })),
+        h("div", { style: { color: "rgba(255,216,106,0.8)", fontWeight: 800, fontSize: "0.5rem", letterSpacing: 1.5, marginBottom: 7, animation: "bulbBlink 2.2s steps(1) infinite" } }, "INSERT COIN 🪙 ¥0"),
         h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1rem" } }, "游戏室"),
         h("div", { style: { color: "rgba(210,200,255,0.65)", fontSize: "0.62rem", marginTop: 3 } }, "12+ 台游戏机随便玩"),
         h("div", { style: { position: "absolute", left: "50%", bottom: 4, transform: "translateX(-50%)", width: 26, height: 3.5, borderRadius: 2, background: "rgba(255,216,106,0.55)" } })),
-      h("div", { onClick: function () { pick("read"); }, style: { flex: 1, cursor: "pointer", borderRadius: 20, overflow: "hidden", background: "linear-gradient(170deg,#fff6e2 0%,#ffe9c2 60%,#f8d8a8 100%)", border: "2px solid rgba(240,180,90,0.55)", boxShadow: "0 0 20px rgba(255,190,90,0.3), 0 8px 18px rgba(10,5,30,0.35)", padding: "13px 12px 14px", textAlign: "center", position: "relative" } },
-        h("div", { style: { position: "absolute", left: "50%", top: 8, transform: "translateX(-50%)", fontSize: "0.95rem", filter: "drop-shadow(0 0 10px rgba(255,200,90,0.95))", animation: "bulbBlink 3.4s ease-in-out infinite" } }, "💡"),
-        h("div", { style: { height: 17 } }),
+      h("div", { onClick: function () { pick("read"); }, style: { flex: 1, cursor: "pointer", borderRadius: "16px 28px 30px 16px", overflow: "hidden", background: "linear-gradient(170deg,#fff6e2 0%,#ffe9c2 60%,#f8d8a8 100%)", border: "2px solid rgba(240,180,90,0.55)", boxShadow: "0 0 20px rgba(255,190,90,0.3), 0 8px 18px rgba(10,5,30,0.35), 0 0 0 4px rgba(255,255,255,0.05)", padding: "13px 12px 14px", textAlign: "center", position: "relative", transform: "rotate(-1.8deg)" } },
+        // 书屋条纹雨棚（波浪边）
+        h("div", { style: { position: "absolute", left: 0, right: 0, top: 0 } },
+          h("div", { style: { height: 8, background: "repeating-linear-gradient(90deg,#ff8a5c 0 14px,#fff3dd 14px 28px)" } }),
+          h("div", { style: { display: "flex" } },
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (i) {
+              return h("span", { key: i, style: { flex: 1, height: 7, borderRadius: "0 0 99px 99px", background: i % 2 ? "#fff3dd" : "#ff8a5c" } });
+            }))),
+        h("div", { style: { position: "absolute", left: "50%", top: 16, transform: "translateX(-50%)", fontSize: "0.95rem", filter: "drop-shadow(0 0 10px rgba(255,200,90,0.95))", animation: "bulbBlink 3.4s ease-in-out infinite" } }, "💡"),
+        h("div", { style: { height: 24 } }),
         h("div", { style: { fontSize: "1.95rem", marginBottom: 6, animation: "tada 8s ease-in-out infinite", animationDelay: "2s", display: "inline-block" } }, "🛋️"),
-        h("div", { style: { display: "flex", justifyContent: "center", gap: 3, marginBottom: 10 } },
+        h("div", { style: { display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 3, marginBottom: 10 } },
           ["#e46a6a", "#5a9ad0", "#68b880", "#e8a84a", "#a878d0", "#e46a9a"].map(function (c, i) {
-            return h("span", { key: i, style: { width: 7.5, height: 21 + (i % 3) * 5, borderRadius: 2, background: c, alignSelf: "flex-end" } });
-          })),
+            return h("span", { key: i, style: { width: 7.5, height: 21 + (i % 3) * 5, borderRadius: 2, background: c } });
+          }),
+          h("span", { style: { fontSize: "0.95rem", marginLeft: 2, transform: "rotate(8deg)" } }, "🧸")),
         h("div", { style: { color: "#7a4a20", fontWeight: 800, fontSize: "1rem" } }, "阅读室"),
         h("div", { style: { color: "rgba(150,105,55,0.75)", fontSize: "0.62rem", marginTop: 3 } }, "暖灯下窝着看会儿书"),
-        h("div", { style: { position: "absolute", right: 9, top: 34, fontSize: "0.66rem", animation: "twinkleS 2.8s ease-in-out infinite" } }, "✨"))),
+        h("div", { style: { position: "absolute", right: 9, top: 40, fontSize: "0.66rem", animation: "twinkleS 2.8s ease-in-out infinite" } }, "✨"))),
     // ── 小卖部装饰条 ──
     h("div", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 9, marginTop: "auto", paddingTop: 16, paddingBottom: 14, position: "relative" } },
       h("span", { style: { fontSize: "1.05rem", animation: "balloonBob 3.2s ease-in-out infinite" } }, "🎈"),
