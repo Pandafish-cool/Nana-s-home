@@ -127,7 +127,8 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
 | `nana-meal-streak` | 午餐**连续**打卡 `{last, streak, claimed}`（吃饭彩蛋用） |
 | `nana-game-streak` | 游戏连胜 `{last, streak, claimed}` |
 | `nana-rewards` | 奖励钱包里的所有券 |
-| `nana-bar-scratch-<日期>` | 当天的周末刮刮乐是否已刮开 |
+| `nana-bar-tasted` | 「🍸 Nana 评鉴官」探店清单里评鉴过（打卡）的店 id 数组 |
+| `nana-bar-scratch-<日期>` | 当天的周末刮刮乐是否已刮开（周末刮刮乐已退役，此键弃用） |
 | `nana-meal-days` / `nana-meal-reward` | （旧"累计"版用，现已弃用；切回累计版时才需要） |
 
 > 测试吃饭彩蛋：控制台执行
@@ -137,9 +138,11 @@ if (_ed.getFullYear() === 2026 && _ed.getMonth() === 5 && _ed.getDate() === 9 &&
 ---
 
 ## 六、其它相关惊喜（非弹窗彩蛋）
-- **周末刮刮乐酒吧卡** `ScratchBar` / `WeekendBarCard`：周末出现，手指刮开。
+- **🍸 Nana 评鉴官（广州探店清单）** `BarTastingList`：首页横向滑动小卡（在 香港/迪士尼 回忆卡下方），列 6 家广州收藏店铺。点小卡 → 打开大众点评搜该店（`dp()` 用店名做搜索深链，广州 city=4）；点右上圆圈 → 标记「评鉴过」，进度存 `nana-bar-tasted`。改店铺：在 `BarTastingList` 的 `LIST` 数组增删（`{id, e 品类emoji, n 店名, q 搜索关键词, area 区域·类型, r 评分}`）。
+  - 这张卡**顶替了原来的周末刮刮乐酒吧卡**，现在天天显示。想改回只在周末出现：把渲染处的 `!room &&` 换成 `(new Date().getDay()%6===0) && !room &&`（周日=0、周六=6）。
+- **周末刮刮乐酒吧卡（已退役）** `ScratchBar` / `WeekendBarCard`：组件还在代码里但不再渲染。酒吧房间仍可从「房间地图」进入。
 - **奖励钱包** `RewardsWallet`：收集上面抽到的券，可「兑换」。
 
 ---
 
-_最后更新：2026-06-14。改完任意规则后，自测 → 合并到 `main` 即上线。_
+_最后更新：2026-07-05。改完任意规则后，自测 → 合并到 `main` 即上线。_
