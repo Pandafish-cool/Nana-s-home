@@ -7561,7 +7561,9 @@ var nanaShareNote = function (note, theme, done) {
       }
       if (!lines.length) lines.push("");
       var LH = 60, headerH = 200;
-      var phFrameH = photoImg ? 500 : 0;
+      var shFrW = note.ps === "s" ? 400 : note.ps === "l" ? 720 : 560;
+      var shFrH = Math.round(shFrW * 0.82);
+      var phFrameH = photoImg ? shFrH + 40 : 0;
       var paperY = 70;
       var paperH = headerH + phFrameH + lines.length * LH + 170;
       var H = paperY + paperH + 70;
@@ -7621,7 +7623,7 @@ var nanaShareNote = function (note, theme, done) {
       var yPos = paperY + headerH;
       // 拍立得照片
       if (photoImg) {
-        var frW = 560, frH = 460, imW = frW - 44, imH = frH - 110;
+        var frW = shFrW, frH = shFrH, imW = frW - 44, imH = frH - 110;
         ctx.save(); ctx.translate(textX + frW / 2, yPos + frH / 2 + 8); ctx.rotate(-0.035);
         ctx.shadowColor = "rgba(30,20,30,0.45)"; ctx.shadowBlur = 26; ctx.shadowOffsetY = 10;
         ctx.fillStyle = "#fff"; ctx.fillRect(-frW / 2, -frH / 2, frW, frH);
@@ -7692,6 +7694,10 @@ function ReadingRoomActivity(_refRR) {
   var saveNotes = function (next) { setNotes(next); try { localStorage.setItem("nana-reading-notes", JSON.stringify(next)); } catch (_) {} };
   var _dr = useState(""); var draft = _dr[0], setDraft = _dr[1];
   var _dp = useState(null); var draftP = _dp[0], setDraftP = _dp[1];
+  var _dps = useState("m"); var draftPS = _dps[0], setDraftPS = _dps[1];
+  // 照片显示尺寸（小/中/大）
+  var PH_SIZES = { s: { w: 92, h: 72 }, m: { w: 128, h: 100 }, l: { w: 210, h: 164 } };
+  var phSize = function (ps) { return PH_SIZES[ps] || PH_SIZES.m; };
   var _lb = useState(null); var lightbox = _lb[0], setLightbox = _lb[1];
   var _dd = useState(null); var delId = _dd[0], setDelId = _dd[1];
   var _sh = useState(null); var sharingId = _sh[0], setSharingId = _sh[1];
@@ -7716,7 +7722,7 @@ function ReadingRoomActivity(_refRR) {
   var addNote = function () {
     var t = (draft || "").trim(); if (!t && !draftP) return;
     var d = new Date();
-    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t, p: draftP || null, th: writeTheme };
+    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t, p: draftP || null, ps: draftPS, th: writeTheme };
     saveNotes([note].concat(notes));
     setDraft(""); setDraftP(null); if (onCozy) onCozy(5);
   };
@@ -7810,11 +7816,16 @@ function ReadingRoomActivity(_refRR) {
           h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, marginTop: 0, position: "relative", zIndex: 1 } }),
           // 贴照片：拍立得预览 + 相机按钮
           draftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(-2.4deg)", borderRadius: 3, marginTop: 6 } },
-            h(NanaPhoto, { pid: draftP, onClick: function () { setLightbox(draftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+            h(NanaPhoto, { pid: draftP, onClick: function () { setLightbox(draftP); }, style: { width: phSize(draftPS).w, height: phSize(draftPS).h, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer", transition: "width 0.2s, height 0.2s" } }),
             h("button", { onClick: function () { nanaPhotoDel(draftP); setDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
-          h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
+          h("div", { style: { position: "relative", zIndex: 1, marginTop: 8, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 7 } },
             h("label", { htmlFor: "rr-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, draftP ? "📷 换一张" : "📷 贴张照片"),
-            h("input", { id: "rr-photo-input", type: "file", accept: "image/*", onChange: onPickPhoto, style: { display: "none" } }))),
+            h("input", { id: "rr-photo-input", type: "file", accept: "image/*", onChange: onPickPhoto, style: { display: "none" } }),
+            draftP && h("div", { style: { display: "inline-flex", alignItems: "center", gap: 4, background: "rgba(255,255,255,0.75)", borderRadius: 999, padding: "3px 5px", border: "1px solid rgba(210,140,140,0.35)" } },
+              [["s", "小"], ["m", "中"], ["l", "大"]].map(function (o) {
+                var on = draftPS === o[0];
+                return h("button", { key: o[0], onClick: function () { setDraftPS(o[0]); }, style: { border: "none", borderRadius: 999, padding: "4px 10px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: on ? "linear-gradient(135deg,#e8a05c,#d07838)" : "transparent", color: on ? "#fff" : "#b06a62" } }, o[1]);
+              })))),
         h("button", { onClick: addNote, disabled: !((draft || "").trim() || draftP), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((draft || "").trim() || draftP) ? "pointer" : "default", background: ((draft || "").trim() || draftP) ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)", zIndex: 2 } }, "📮 收进小本本")),
       // ── 已存笔记 ──
       h("div", { style: { marginTop: 34 } },
@@ -7829,10 +7840,10 @@ function ReadingRoomActivity(_refRR) {
               h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 } },
                 h("div", { style: { color: nt.date, fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "🍂 " + n.d),
                 h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
-                  h("button", { onClick: function () { if (sharingId) return; setShareFor(n.id); }, title: "把这张小笺做成图片送出去", style: { border: "none", borderRadius: 999, padding: "6px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", whiteSpace: "nowrap", opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️ 生成中…" : "💌 送出去"),
+                  h("button", { onClick: function () { if (sharingId) return; setShareFor(n.id); }, title: "把这张小笺做成图片送出去", style: { border: "none", borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", whiteSpace: "nowrap", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                   h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: delId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "4px 9px" : "4px 8px" } }, delId === n.id ? "再点一下撕掉" : "✕"))),
               n.p && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "2px 0 6px" } },
-                h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
+                h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: phSize(n.ps).w, height: phSize(n.ps).h, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
               n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
               h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
         }))) :
