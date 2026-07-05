@@ -7408,6 +7408,111 @@ function CinemaActivity(_refCN) {
       h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点右边小按钮：加入 → 🌟想看 → ✅看过（可打星）")));
 }
 
+// ── READING ROOM (阅读室 · 信纸读书笔记 + 书单) ──────────────
+function ReadingRoomActivity(_refRR) {
+  var onCozy = _refRR.onCozy;
+  var h = React.createElement;
+  var HAND = "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive";
+  var _tab = useState("note"); var tab = _tab[0], setTab = _tab[1];
+  // 笔记 {id, d 日期, t 内容}
+  var _ns = useState(function () { try { return JSON.parse(localStorage.getItem("nana-reading-notes") || "[]"); } catch (_) { return []; } });
+  var notes = _ns[0], setNotes = _ns[1];
+  var saveNotes = function (next) { setNotes(next); try { localStorage.setItem("nana-reading-notes", JSON.stringify(next)); } catch (_) {} };
+  var _dr = useState(""); var draft = _dr[0], setDraft = _dr[1];
+  var _dd = useState(null); var delId = _dd[0], setDelId = _dd[1];
+  var addNote = function () {
+    var t = (draft || "").trim(); if (!t) return;
+    var d = new Date();
+    var note = { id: "n" + d.getTime(), d: d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日", t: t };
+    saveNotes([note].concat(notes));
+    setDraft(""); if (onCozy) onCozy(5);
+  };
+  var delNote = function (id) {
+    if (delId !== id) { setDelId(id); setTimeout(function () { setDelId(function (cur) { return cur === id ? null : cur; }); }, 2500); return; }
+    saveNotes(notes.filter(function (n) { return n.id !== id; })); setDelId(null);
+  };
+  // 书单 {id, t 书名, s 状态 want|reading|done}
+  var _bs = useState(function () { try { return JSON.parse(localStorage.getItem("nana-books") || "[]"); } catch (_) { return []; } });
+  var books = _bs[0], setBooks = _bs[1];
+  var saveBooks = function (next) { setBooks(next); try { localStorage.setItem("nana-books", JSON.stringify(next)); } catch (_) {} };
+  var _bi = useState(""); var bookInp = _bi[0], setBookInp = _bi[1];
+  var _bd = useState(null); var delBookId = _bd[0], setDelBookId = _bd[1];
+  var addBook = function () {
+    var t = (bookInp || "").trim(); if (!t) return;
+    saveBooks(books.concat([{ id: "b" + Date.now(), t: t, s: "want" }]));
+    setBookInp(""); if (onCozy) onCozy(3);
+  };
+  var cycleBook = function (id) {
+    saveBooks(books.map(function (b) { return b.id === id ? { id: b.id, t: b.t, s: b.s === "want" ? "reading" : b.s === "reading" ? "done" : "want" } : b; }));
+  };
+  var delBook = function (id) {
+    if (delBookId !== id) { setDelBookId(id); setTimeout(function () { setDelBookId(function (cur) { return cur === id ? null : cur; }); }, 2500); return; }
+    saveBooks(books.filter(function (b) { return b.id !== id; })); setDelBookId(null);
+  };
+  var bchip = function (s) {
+    if (s === "reading") return { txt: "📖 在读", bg: "rgba(255,200,90,0.25)", col: "#b07a14" };
+    if (s === "done") return { txt: "✅ 读完", bg: "rgba(110,205,150,0.25)", col: "#2b9166" };
+    return { txt: "🌟 想读", bg: "rgba(120,160,230,0.2)", col: "#4a72b8" };
+  };
+  var doneN = books.filter(function (b) { return b.s === "done"; }).length;
+  // 信纸公共样式：横线 + 左侧红线
+  var paperBase = {
+    background: "repeating-linear-gradient(180deg, transparent 0 27px, rgba(180,150,120,0.35) 27px 28px), linear-gradient(90deg, transparent 0 34px, rgba(230,120,120,0.5) 34px 35.5px, transparent 35.5px 100%), linear-gradient(180deg,#fffdf4,#fff8e8)",
+    borderRadius: 6, border: "1px solid rgba(210,180,140,0.5)", boxShadow: "0 10px 24px rgba(140,105,80,0.2)"
+  };
+  var tape = function (rot, left) {
+    return h("div", { style: { position: "absolute", top: -11, left: left || "50%", transform: "translateX(-50%) rotate(" + rot + "deg)", width: 84, height: 24, background: "rgba(255,190,150,0.55)", border: "1px dashed rgba(190,120,80,0.4)", borderRadius: 2, pointerEvents: "none" } });
+  };
+  var tabBtn = function (id, label) {
+    var on = tab === id;
+    return h("button", { onClick: function () { setTab(id); }, style: { flex: 1, border: "none", borderRadius: 999, padding: "10px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.84rem", cursor: "pointer", background: on ? "linear-gradient(135deg,#e8a05c,#d07838)" : "transparent", color: on ? "#fff" : "#9a7a5a", boxShadow: on ? "0 4px 12px rgba(210,130,60,0.35)" : "none", transition: "all 0.2s" } }, label);
+  };
+  return h("div", null,
+    h("div", { style: { display: "flex", gap: 4, background: "#f6ead8", borderRadius: 999, padding: 4, marginBottom: 18 } },
+      tabBtn("note", "✍️ 读书笔记"), tabBtn("list", "📚 我的书单")),
+    tab === "note" ? h("div", null,
+      // ── 信纸写作区 ──
+      h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 6 } },
+        tape(-3),
+        h("div", { style: Object.assign({}, paperBase, { padding: "18px 16px 14px 44px" }) },
+          h("div", { style: { fontFamily: HAND, color: "#a8642a", fontSize: "1.02rem", lineHeight: "28px" } }, "Nana 的读书小笺 ✒️"),
+          h("div", { style: { color: "rgba(160,120,85,0.65)", fontSize: "0.66rem", lineHeight: "28px", fontFamily: HAND } }, (function () { var d = new Date(); return d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月 " + d.getDate() + " 日 · 微风正好"; })()),
+          h("textarea", { value: draft, onChange: function (e) { setDraft(e.target.value); }, placeholder: "写点什么吧…读到的句子、小感想、或者只是今天的心情 ♡", rows: 6, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: "#6a4a30", lineHeight: "28px", padding: 0, marginTop: 0 } })),
+        h("button", { onClick: addNote, disabled: !(draft || "").trim(), style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: (draft || "").trim() ? "pointer" : "default", background: (draft || "").trim() ? "linear-gradient(135deg,#e8a05c,#d07838)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(180,110,50,0.35)" } }, "📮 收进小本本")),
+      // ── 已存笔记 ──
+      h("div", { style: { marginTop: 34 } },
+        notes.length ? h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.74rem", marginBottom: 14 } }, "🗂️ 攒下的小笺 · " + notes.length + " 张") : null,
+        notes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "16px 0 6px", fontFamily: HAND } }, "还没有笔记，第一张小笺等你来写 ♡") :
+        notes.map(function (n, i) {
+          return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.9 : -0.9) + "deg)", marginBottom: 22 } },
+            tape(i % 2 ? 4 : -4, i % 3 === 0 ? "30%" : i % 3 === 1 ? "50%" : "68%"),
+            h("div", { style: Object.assign({}, paperBase, { padding: "14px 14px 12px 44px" }) },
+              h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+                h("div", { style: { color: "rgba(160,120,85,0.7)", fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px" } }, "🍂 " + n.d),
+                h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "none", color: delId === n.id ? "#d05050" : "rgba(170,140,110,0.55)", fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.78rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "3px 9px" : "2px 6px" } }, delId === n.id ? "再点一下撕掉" : "✕")),
+              h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: "#6a4a30", lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t)));
+        }))) :
+    h("div", null,
+      // ── 书单 ──
+      h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 14px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
+        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "📚 Nana 的书单"),
+          books.length ? h("div", { style: { color: "#2b9166", fontWeight: 800, fontSize: "0.72rem" } }, "读完 " + doneN + "/" + books.length) : null),
+        books.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "14px 0", fontFamily: HAND } }, "书单还空着，把想读的书放进来吧 📖") :
+        books.map(function (b) {
+          var c = bchip(b.s);
+          return h("div", { key: b.id, style: { display: "flex", alignItems: "center", gap: 9, padding: "9px 4px", borderBottom: "1px solid rgba(160,130,130,0.1)" } },
+            h("div", { style: { fontSize: "1.15rem", flexShrink: 0, opacity: b.s === "done" ? 0.6 : 1 } }, b.s === "done" ? "📕" : b.s === "reading" ? "📖" : "📘"),
+            h("div", { style: { flex: 1, minWidth: 0, fontWeight: 700, fontSize: "0.84rem", color: b.s === "done" ? "rgba(120,100,105,0.55)" : COLORS.dark, textDecoration: b.s === "done" ? "line-through" : "none", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, b.t),
+            h("button", { onClick: function () { cycleBook(b.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt),
+            h("button", { onClick: function () { delBook(b.id); }, style: { flexShrink: 0, border: "none", background: delBookId === b.id ? "rgba(230,100,100,0.15)" : "none", color: delBookId === b.id ? "#d05050" : "rgba(170,140,110,0.5)", fontFamily: "inherit", fontWeight: 800, fontSize: delBookId === b.id ? "0.58rem" : "0.74rem", cursor: "pointer", borderRadius: 999, padding: delBookId === b.id ? "3px 8px" : "2px 5px" } }, delBookId === b.id ? "确定" : "✕"));
+        }),
+        h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+          h("input", { value: bookInp, onChange: function (e) { setBookInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addBook(); }, placeholder: "想读的书名，加进来～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(210,140,80,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
+          h("button", { onClick: addBook, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#e8a05c,#d07838)", color: "#fff" } }, "＋ 加书")),
+        h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点状态换：🌟想读 → 📖在读 → ✅读完"))));
+}
+
 // ── FUN ROOM LOBBY (游乐场大厅 · 满屏游乐园夜景) ─────────────
 function FunRoomLobby(_refFL) {
   var onActivity = _refFL.onActivity;
@@ -7500,7 +7605,7 @@ function FunRoomLobby(_refFL) {
         h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1rem" } }, "游戏室"),
         h("div", { style: { color: "rgba(210,200,255,0.65)", fontSize: "0.62rem", marginTop: 3 } }, "12+ 台游戏机随便玩"),
         h("div", { style: { position: "absolute", left: "50%", bottom: 4, transform: "translateX(-50%)", width: 26, height: 3.5, borderRadius: 2, background: "rgba(255,216,106,0.55)" } })),
-      h("div", { onClick: function () { pick("read"); }, style: { flex: 1, cursor: "pointer", borderRadius: "16px 28px 30px 16px", overflow: "hidden", background: "linear-gradient(170deg,#fff6e2 0%,#ffe9c2 60%,#f8d8a8 100%)", border: "2px solid rgba(240,180,90,0.55)", boxShadow: "0 0 20px rgba(255,190,90,0.3), 0 8px 18px rgba(10,5,30,0.35), 0 0 0 4px rgba(255,255,255,0.05)", padding: "13px 12px 14px", textAlign: "center", position: "relative", transform: "rotate(-1.8deg)" } },
+      h("div", { onClick: function () { pick("reading"); }, style: { flex: 1, cursor: "pointer", borderRadius: "16px 28px 30px 16px", overflow: "hidden", background: "linear-gradient(170deg,#fff6e2 0%,#ffe9c2 60%,#f8d8a8 100%)", border: "2px solid rgba(240,180,90,0.55)", boxShadow: "0 0 20px rgba(255,190,90,0.3), 0 8px 18px rgba(10,5,30,0.35), 0 0 0 4px rgba(255,255,255,0.05)", padding: "13px 12px 14px", textAlign: "center", position: "relative", transform: "rotate(-1.8deg)" } },
         // 书屋条纹雨棚（波浪边）
         h("div", { style: { position: "absolute", left: 0, right: 0, top: 0 } },
           h("div", { style: { height: 8, background: "repeating-linear-gradient(90deg,#ff8a5c 0 14px,#fff3dd 14px 28px)" } }),
@@ -7678,7 +7783,7 @@ var ACTIVITIES = {
     icon: "🎮",
     name: "游戏室"
   }, {
-    id: "read",
+    id: "reading",
     icon: "📚",
     name: "阅读室"
   }],
@@ -14021,6 +14126,7 @@ function ActivityPanel(_ref106) {
   var map = {
     tv: TVActivity,
     cinema: CinemaActivity,
+    reading: ReadingRoomActivity,
     sleep: SleepActivity,
     bath: BathActivity,
     daydream: DaydreamActivity,
