@@ -58,8 +58,12 @@
   - 「📮 收进小本本」保存；每张小笺记住自己的信纸和照片尺寸
   - **💌 分享**：点粉色胶囊 → 选信纸样式 → canvas 生成精美信纸图片 → 系统分享面板发微信/存相册
   - 删除两步确认「再点一下撕掉」
+- **💕 我们的小本本（双人共享）**：第三个标签页——两个人写的信纸互相都能看到（云端同步，Supabase）
+  - 第一次进入选身份：🌸 Nana / 🐼 熊猫鱼（记住在本机 `nana-author`，可「换人」）
+  - 写信同样可选四款信纸；「📮 寄进小本本」即同步；每张带作者徽章+日期；自己写的才能撕（两步确认）；💌 可做成带署名的信纸图片分享
+  - 云端：Supabase 表 `shared_notes`（配置在代码 `NANA_SYNC`，anon key 公开安全）；连不上会显示错误提示+🔄刷新重试
 - **📚 我的书单**：加书；状态循环 `🌟想读 → 📖在读 → ✅读完`（图标跟着变、读完划线计数）
-- 数据：`nana-reading-notes` / `nana-books`
+- 数据：`nana-reading-notes` / `nana-books`（本机）；共享小笺在 Supabase
 
 ### 📸 咔嚓小站 `PhotoBoothActivity`
 - 拍一张（或从相册选）→ 配一句话 → 「📌 贴上墙」
@@ -114,6 +118,8 @@
 | `nana-bar-reviews` / `nana-bar-photos` | 探店 酒后感 / 随手拍索引 |
 | `nana-films` / `nana-films-custom` | 观影清单标记 / 自加影片 |
 | `nana-reading-notes` / `nana-books` / `nana-note-theme` | 读书笔记 / 书单 / 默认信纸 |
+| `nana-author` | 小本本身份（nana/panda） |
+| Supabase `shared_notes` | 💕 我们的小本本（云端共享） |
 | `nana-photo-diary` | 拍立得日记索引 |
 | `nana-fun-plays` / `nana-fun-claimed` | 游乐场畅玩次数 / 已领奖水位 |
 | IndexedDB `nana-photos` | 所有照片本体 |
