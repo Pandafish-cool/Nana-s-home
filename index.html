@@ -7537,7 +7537,7 @@ var nanaPhotoDB = function (cb) {
     req.onerror = function () { cb(req.error || new Error("idb")); };
   } catch (err) { cb(err); }
 };
-var nanaPhotoSave = function (file, cb) {
+var nanaPhotoCompress = function (file, cb) {
   var fr = new FileReader();
   fr.onload = function () {
     var img = new Image();
@@ -7549,22 +7549,27 @@ var nanaPhotoSave = function (file, cb) {
         cv.width = Math.max(1, Math.round(img.width * sc));
         cv.height = Math.max(1, Math.round(img.height * sc));
         cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
-        var data = cv.toDataURL("image/jpeg", 0.82);
-        var id = "p" + Date.now() + Math.floor(Math.random() * 1000);
-        nanaPhotoDB(function (err, db) {
-          if (err) return cb && cb(err);
-          var tx = db.transaction("photos", "readwrite");
-          tx.objectStore("photos").put({ id: id, data: data });
-          tx.oncomplete = function () { cb && cb(null, id); };
-          tx.onerror = function () { cb && cb(tx.error); };
-        });
-      } catch (err) { cb && cb(err); }
+        cb(null, cv.toDataURL("image/jpeg", 0.82));
+      } catch (err) { cb(err); }
     };
-    img.onerror = function () { cb && cb(new Error("bad image")); };
+    img.onerror = function () { cb(new Error("bad image")); };
     img.src = fr.result;
   };
-  fr.onerror = function () { cb && cb(fr.error); };
+  fr.onerror = function () { cb(fr.error); };
   fr.readAsDataURL(file);
+};
+var nanaPhotoSave = function (file, cb) {
+  nanaPhotoCompress(file, function (err, data) {
+    if (err) return cb && cb(err);
+    var id = "p" + Date.now() + Math.floor(Math.random() * 1000);
+    nanaPhotoDB(function (err2, db) {
+      if (err2) return cb && cb(err2);
+      var tx = db.transaction("photos", "readwrite");
+      tx.objectStore("photos").put({ id: id, data: data });
+      tx.oncomplete = function () { cb && cb(null, id); };
+      tx.onerror = function () { cb && cb(tx.error); };
+    });
+  });
 };
 var nanaPhotoGet = function (id, cb) {
   nanaPhotoDB(function (err, db) {
@@ -7595,10 +7600,11 @@ function NanaPhoto(_refNP) {
 }
 // 全屏看图
 function NanaLightbox(_refLB) {
-  var pid = _refLB.pid; var onClose = _refLB.onClose;
+  var pid = _refLB.pid; var src = _refLB.src; var onClose = _refLB.onClose;
   var h = React.createElement;
+  var imgStyle = { maxWidth: "94%", maxHeight: "86%", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain" };
   return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(20,12,20,0.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" } },
-    h(NanaPhoto, { pid: pid, style: { maxWidth: "94%", maxHeight: "86%", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain" } }),
+    src ? h("img", { src: src, alt: "", style: imgStyle }) : h(NanaPhoto, { pid: pid, style: imgStyle }),
     h("div", { style: { position: "absolute", bottom: 26, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700 } }, "点一下关闭"));
 }
 
@@ -7630,6 +7636,32 @@ var nanaSyncReq = function (method, path, body, cb) {
 var nanaSharedList = function (cb) { nanaSyncReq("GET", "shared_notes?select=*&order=created_at.desc&limit=200", null, cb); };
 var nanaSharedAdd = function (note, cb) { nanaSyncReq("POST", "shared_notes", note, cb); };
 var nanaSharedDel = function (id, cb) { nanaSyncReq("DELETE", "shared_notes?id=eq." + encodeURIComponent(id), null, cb); };
+// 共享照片：压缩图上传到 Supabase Storage（公开桶 notes）
+var nanaSharedUpload = function (dataUrl, id, cb) {
+  try {
+    var parts = dataUrl.split(",");
+    var bin = atob(parts[1]);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    var blob = new Blob([arr], { type: "image/jpeg" });
+    var path = "notes/" + id + ".jpg";
+    fetch(NANA_SYNC.url + "/storage/v1/object/" + path, {
+      method: "POST",
+      headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "image/jpeg", "x-upsert": "true" },
+      body: blob
+    }).then(function (res) {
+      if (!res.ok) return cb(new Error("HTTP " + res.status));
+      cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
+    })["catch"](function (err) { cb(err); });
+  } catch (err) { cb(err); }
+};
+var nanaSharedPhotoDel = function (pu) {
+  try {
+    var path = (pu || "").split("/object/public/")[1];
+    if (!path) return;
+    fetch(NANA_SYNC.url + "/storage/v1/object/" + path, { method: "DELETE", headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key } })["catch"](function () {});
+  } catch (_) {}
+};
 
 // ── 小笺分享：canvas 画成信纸图片 → 系统分享/下载 ─────────────
 var nanaRoundRect = function (ctx, x, y, w, hgt, r) {
@@ -7815,7 +7847,13 @@ var nanaShareNote = function (note, theme, done) {
     } catch (err) { finish(false); }
   };
   var start = function () {
-    if (note.p) {
+    if (note.pu) {
+      var uimg = new Image();
+      uimg.crossOrigin = "anonymous";
+      uimg.onload = function () { withPhoto(uimg); };
+      uimg.onerror = function () { withPhoto(null); };
+      uimg.src = note.pu;
+    } else if (note.p) {
       nanaPhotoGet(note.p, function (err, data) {
         if (err || !data) return withPhoto(null);
         var img = new Image();
@@ -7864,6 +7902,23 @@ function ReadingRoomActivity(_refRR) {
   var _sdd = useState(""); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
   var _spp = useState(false); var sharedPosting = _spp[0], setSharedPosting = _spp[1];
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
+  var _sup = useState(null); var sharedDraftP = _sup[0], setSharedDraftP = _sup[1];
+  var _sug = useState(false); var sharedUploading = _sug[0], setSharedUploading = _sug[1];
+  var onPickSharedPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f || sharedUploading) return;
+    setSharedUploading(true);
+    nanaPhotoCompress(f, function (err, data) {
+      if (err || !data) { setSharedUploading(false); setSharedErr("照片处理失败，再试一次？"); return; }
+      nanaSharedUpload(data, "sp" + Date.now() + Math.floor(Math.random() * 900), function (err2, url) {
+        setSharedUploading(false);
+        if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
+        setSharedErr(null);
+        setSharedDraftP(function (old) { if (old) nanaSharedPhotoDel(old); return url; });
+      });
+    });
+  };
   // 长按住户徽章 3 秒才能换人（防手滑，也不碍眼）
   var holdRef = useRef(null);
   var _hh = useState(false); var holding = _hh[0], setHolding = _hh[1];
@@ -7890,23 +7945,26 @@ function ReadingRoomActivity(_refRR) {
   };
   useEffect(function () { if (tab === "shared" && myAuthor) loadShared(); }, [tab, myAuthor]);
   var postShared = function () {
-    var t = (sharedDraft || "").trim(); if (!t || sharedPosting) return;
+    var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftP) || sharedPosting) return;
     var dt = new Date();
-    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: t, th: writeTheme };
+    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: t, th: writeTheme, pu: sharedDraftP || null };
     setSharedPosting(true);
     nanaSharedAdd(note, function (err) {
       setSharedPosting(false);
       if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
       setSharedErr(null);
       setSharedNotes(function (prev) { return [note].concat(prev); });
-      setSharedDraft(""); if (onCozy) onCozy(5);
+      setSharedDraft(""); setSharedDraftP(null); if (onCozy) onCozy(5);
     });
   };
   var delShared = function (id) {
     if (sharedDelId !== id) { setSharedDelId(id); setTimeout(function () { setSharedDelId(function (c) { return c === id ? null : c; }); }, 2500); return; }
     setSharedDelId(null);
+    var target = null;
+    for (var di = 0; di < sharedNotes.length; di++) { if (sharedNotes[di].id === id) { target = sharedNotes[di]; break; } }
     nanaSharedDel(id, function (err) {
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
+      if (target && target.pu) nanaSharedPhotoDel(target.pu);
       setSharedNotes(function (prev) { return prev.filter(function (x) { return x.id !== id; }); });
     });
   };
@@ -8035,7 +8093,13 @@ function ReadingRoomActivity(_refRR) {
           h("div", { style: Object.assign({}, paperStyle(wt), { padding: "20px 16px 34px 44px" }) },
             airmail(wt, "top"), airmail(wt, "bottom"), stamp(wt), watermark(wt),
             h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "0.98rem", lineHeight: "28px" } }, me.e + " " + me.label + " 的来信："),
-            h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + " 的信 · 案情、书影、或今天的迷雾 🔍", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } })),
+            h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + " 的信 · 案情、书影、或今天的迷雾 🔍", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } }),
+            sharedDraftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(-2.2deg)", borderRadius: 3, marginTop: 4 } },
+              h("img", { src: sharedDraftP, alt: "", onClick: function () { setLightbox(sharedDraftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+              h("button", { onClick: function () { nanaSharedPhotoDel(sharedDraftP); setSharedDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
+            h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
+              h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftP ? "📷 换一张" : "📷 贴张照片")),
+              h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }))),
           h("button", { onClick: postShared, disabled: !((sharedDraft || "").trim()) || sharedPosting, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((sharedDraft || "").trim() && !sharedPosting) ? "pointer" : "default", background: ((sharedDraft || "").trim() && !sharedPosting) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : "📮 寄往 221B")),
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, "信没送到贝克街 😢 " + sharedErr),
         h("div", { style: { marginTop: 32 } },
@@ -8054,9 +8118,11 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
                     h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
-                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
+                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: n.pu, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                     mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
-                h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t),
+                n.pu ? h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "6px 0 4px" } },
+                  h("img", { src: n.pu, alt: "", onClick: function () { setLightbox(n.pu); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
+                n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
           })));
     })() : tab === "note" ? h("div", null,
@@ -8142,7 +8208,7 @@ function ReadingRoomActivity(_refRR) {
                 h("div", { style: { fontWeight: 800, fontSize: "0.82rem", marginTop: 5, color: t.id === "night" ? "#f0eaff" : t.header } }, t.name)));
           })),
         h("button", { onClick: function () { setShareFor(null); }, style: { display: "block", width: "100%", marginTop: 14, border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.84rem", cursor: "pointer", background: "rgba(170,140,150,0.14)", color: "#8a6a72" } }, "先不发"))),
-    lightbox && h(NanaLightbox, { pid: lightbox, onClose: function () { setLightbox(null); } }));
+    lightbox && h(NanaLightbox, String(lightbox).indexOf("http") === 0 ? { src: lightbox, onClose: function () { setLightbox(null); } } : { pid: lightbox, onClose: function () { setLightbox(null); } }));
 }
 
 // ── PHOTO BOOTH (咔嚓小站 · 拍立得日记) ──────────────────────
