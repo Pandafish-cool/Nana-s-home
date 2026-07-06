@@ -7625,12 +7625,15 @@ var nanaSyncReq = function (method, path, body, cb) {
   try {
     var headers = { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "application/json" };
     if (method === "POST") headers["Prefer"] = "return=minimal";
-    fetch(NANA_SYNC.url + "/rest/v1/" + path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined })
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 12000) : null;
+    var done = function (err, data) { if (timer) { clearTimeout(timer); timer = null; } cb(err, data); };
+    fetch(NANA_SYNC.url + "/rest/v1/" + path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined, signal: ctrl ? ctrl.signal : undefined })
       .then(function (res) {
-        if (!res.ok) { return res.text().then(function (tx) { cb(new Error("HTTP " + res.status)); }, function () { cb(new Error("HTTP " + res.status)); }); }
-        if (method === "GET") { return res.json().then(function (j) { cb(null, j); }, function (e2) { cb(e2); }); }
-        cb(null);
-      })["catch"](function (err) { cb(err); });
+        if (!res.ok) { return res.text().then(function () { done(new Error("HTTP " + res.status)); }, function () { done(new Error("HTTP " + res.status)); }); }
+        if (method === "GET") { return res.json().then(function (j) { done(null, j); }, function (e2) { done(e2); }); }
+        done(null);
+      })["catch"](function (err) { done(err && err.name === "AbortError" ? new Error("连接超时，稍后点刷新再试") : err); });
   } catch (err) { cb(err); }
 };
 var nanaSharedList = function (cb) { nanaSyncReq("GET", "shared_notes?select=*&order=created_at.desc&limit=200", null, cb); };
@@ -7645,16 +7648,23 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
     for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
     var blob = new Blob([arr], { type: "image/jpeg" });
     var path = "notes/" + id + ".jpg";
+    var uctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var utimer = uctrl ? setTimeout(function () { try { uctrl.abort(); } catch (_) {} }, 25000) : null;
     fetch(NANA_SYNC.url + "/storage/v1/object/" + path, {
       method: "POST",
       headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "image/jpeg", "x-upsert": "true" },
-      body: blob
+      body: blob,
+      signal: uctrl ? uctrl.signal : undefined
     }).then(function (res) {
+      if (utimer) clearTimeout(utimer);
       if (!res.ok) return cb(new Error("HTTP " + res.status));
       cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
-    })["catch"](function (err) { cb(err); });
+    })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
 };
+// 云图加载失败的占位（网络抽风时不至于一片空白）
+var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
+var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
 var nanaSharedPhotoDel = function (pu) {
   try {
     var path = (pu || "").split("/object/public/")[1];
@@ -8100,7 +8110,7 @@ function ReadingRoomActivity(_refRR) {
             h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "0.98rem", lineHeight: "28px" } }, me.e + " " + me.label + " 的来信："),
             h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + " 的信 · 案情、书影、或今天的迷雾 🔍", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } }),
             sharedDraftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(-2.2deg)", borderRadius: 3, marginTop: 4 } },
-              h("img", { src: sharedDraftP, alt: "", onClick: function () { setLightbox(sharedDraftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+              h("img", { src: sharedDraftP, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(sharedDraftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
               h("button", { onClick: function () { nanaSharedPhotoDel(sharedDraftP); setSharedDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
               h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftP ? "📷 换一张" : "📷 贴张照片")),
@@ -8126,7 +8136,7 @@ function ReadingRoomActivity(_refRR) {
                     h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: n.pu, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                     mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
                 n.pu ? h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "6px 0 4px" } },
-                  h("img", { src: n.pu, alt: "", onClick: function () { setLightbox(n.pu); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
+                  h("img", { src: n.pu, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(n.pu); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
           })));
