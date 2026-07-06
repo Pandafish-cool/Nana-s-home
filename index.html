@@ -7896,7 +7896,10 @@ function ReadingRoomActivity(_refRR) {
   // ── 💕 我们的小本本（共享区）──
   var _au = useState(function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } });
   var myAuthor = _au[0], setMyAuthor = _au[1];
-  var _snn = useState([]); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
+  // 秒开优化：先展示上次缓存的信，后台再拉最新（stale-while-revalidate）
+  var readSharedCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } };
+  var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 200))); } catch (_) {} };
+  var _snn = useState(readSharedCache); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
   var _see = useState(null); var sharedErr = _see[0], setSharedErr = _see[1];
   var _sdd = useState(""); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
@@ -7941,9 +7944,11 @@ function ReadingRoomActivity(_refRR) {
       setSharedLoading(false);
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
       setSharedNotes(rows || []);
+      saveSharedCache(rows || []);
     });
   };
-  useEffect(function () { if (tab === "shared" && myAuthor) loadShared(); }, [tab, myAuthor]);
+  useEffect(function () { if (myAuthor) loadShared(); }, [myAuthor]);
+  useEffect(function () { if (tab === "shared" && myAuthor && !sharedLoading) loadShared(); }, [tab]);
   var postShared = function () {
     var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftP) || sharedPosting) return;
     var dt = new Date();
@@ -7953,7 +7958,7 @@ function ReadingRoomActivity(_refRR) {
       setSharedPosting(false);
       if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
       setSharedErr(null);
-      setSharedNotes(function (prev) { return [note].concat(prev); });
+      setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); return next; });
       setSharedDraft(""); setSharedDraftP(null); if (onCozy) onCozy(5);
     });
   };
@@ -7965,7 +7970,7 @@ function ReadingRoomActivity(_refRR) {
     nanaSharedDel(id, function (err) {
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
       if (target && target.pu) nanaSharedPhotoDel(target.pu);
-      setSharedNotes(function (prev) { return prev.filter(function (x) { return x.id !== id; }); });
+      setSharedNotes(function (prev) { var next = prev.filter(function (x) { return x.id !== id; }); saveSharedCache(next); return next; });
     });
   };
   var doShare = function (theme) {
