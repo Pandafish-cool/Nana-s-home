@@ -7802,7 +7802,7 @@ var nanaShareNote = function (note, theme, done) {
       // 抬头
       ctx.textAlign = "left";
       ctx.font = "46px " + HANDF; ctx.fillStyle = t.header;
-      ctx.fillText((note.by ? note.by + " 的小笺 ✒️" : "Nana 的读书小笺 ✒️"), textX, paperY + 96);
+      ctx.fillText((note.by ? "221B 的来信 ✒️" : "Nana 的读书小笺 ✒️"), textX, paperY + 96);
       ctx.font = "30px " + HANDF; ctx.fillStyle = t.date;
       ctx.fillText("🍂 " + (note.d || ""), textX, paperY + 152);
       var yPos = paperY + headerH;
@@ -7827,7 +7827,7 @@ var nanaShareNote = function (note, theme, done) {
       }
       // 落款
       ctx.font = "30px " + HANDF; ctx.fillStyle = t.foot; ctx.textAlign = "right";
-      ctx.fillText("—— 来自 " + (note.by || "Nana") + " 的小笺 💌", paperX + paperW - 90, paperY + paperH - 52);
+      ctx.fillText(note.by ? "—— 来自 " + note.by + " 💌" : "—— 来自 Nana 的小笺 💌", paperX + paperW - 90, paperY + paperH - 52);
       ctx.font = "38px sans-serif";
       ctx.fillText(t.footE, paperX + paperW - 36, paperY + paperH - 44);
       cv.toBlob(function (blob) {
