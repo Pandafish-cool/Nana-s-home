@@ -19220,57 +19220,172 @@ function HomeDeck(_refHD) {
   var isWeekend = dow === 0 || dow === 6;
   var _f = useState(true); var fade = _f[0]; var setFade = _f[1];
   var _m = useState(0); var msgIdx = _m[0]; var setMsgIdx = _m[1];
-  // 工作日 = 温暖的港湾（下班到家）；周末 = 慵懒搞笑。每天发 5 张，整周不重样，每周重洗。
-  var weekdayNotes = [
-    { t: "欢迎回巢", b: "外面的风雨到此为止，里面全是软软的 🪺", e: "🪺" },
-    { t: "营业结束", b: "「懂事的大人」已下线，现在是家里的小朋友 🧸", e: "🧸" },
-    { t: "拖鞋已就位", b: "左脚右脚请入座，烦恼请和鞋一起靠边站 🥿", e: "🥿" },
-    { t: "信号满格", b: "家里的 WiFi 连的不是网，是安全感 📶", e: "📶" },
-    { t: "今日辛苦费", b: "发你一个抱抱，不够可以无限续杯 🤗", e: "🤗" },
-    { t: "沙发点名", b: "Nana——到！好，全体瘫下 🛋️", e: "🛋️" },
-    { t: "卸妆卸甲", b: "卸掉的不止是妆，还有今天的兵荒马乱 🌙", e: "🌙" },
-    { t: "厨房预告", b: "今晚给自己做点好吃的，米饭已经在路上 🍚", e: "🍚" },
-    { t: "烦恼回收站", b: "已清空。别问怎么清的，问就是猫踩了删除键 🐈", e: "🐈" },
-    { t: "进门三件事", b: "换鞋、喝水、夸自己一句「今天也好可爱」💮", e: "💮" },
-    { t: "电量修复中", b: "你不用一直发光，回家充电才是正经事 🔋", e: "🔋" },
-    { t: "今日营业额", b: "赚到了：平安回家一次。这个最值钱 🪙", e: "🪙" },
-    { t: "披风收好", b: "白天当超人，晚上请安心当被子卷 🌯", e: "🌯" },
-    { t: "家规第一条", b: "在这里不许硬撑，违者罚抱抱枕十分钟 📜", e: "📜" },
-    { t: "热水已烧好", b: "泡脚泡澡泡茶随你选，反正今晚要泡一下 ♨️", e: "♨️" },
-    { t: "星星下班了", b: "它们也回家了，你也是，时间刚刚好 ✨", e: "✨" },
-    { t: "你今天很棒", b: "证据不足？我说的就是证据 😤💛", e: "💛" },
-    { t: "小卖部通知", b: "冰箱里藏着点甜的，仅限今晚的你领取 🍮", e: "🍮" },
-    { t: "重要会议", b: "议题：今晚吃什么。与会人员：你和你的胃 🍜", e: "🍜" },
-    { t: "窗帘拉上", b: "世界暂停营业，家里的灯光刚刚好 🕯️", e: "🕯️" },
-    { t: "抱枕集合", b: "全体软物已列队完毕，请 Nana 检阅 🫡", e: "🛏️" },
-    { t: "今日份可爱", b: "你带着可爱平安到家，本日任务完成 ✅", e: "✅" },
-    { t: "慢速模式", b: "进家门自动切换 0.5 倍速，急什么呀 🐢", e: "🐢" },
-    { t: "晚风快递", b: "给你捎了一阵舒服的风，麻烦签收一下 🍃", e: "🍃" },
-    { t: "晚安预告片", b: "今晚的梦已排好片：场场都是好事 🎬", e: "🎬" }
+  // 白天(6-18点)=打工加油站：幽默鼓励+爱意；晚上=避难所：卸盔甲/放松/自由。各 70 条，每天 10 张，整周不重样。
+  var dayNotes = [
+    { t: "上班充电宝", b: "今天的元气我先给你充满，亏了找我补 🔋" },
+    { t: "通勤播报", b: "前方到站：又酷又能干的 Nana 站 🚇" },
+    { t: "会议生存指南", b: "听不懂就点头，点头的时候想我 😌" },
+    { t: "摸鱼合法化", b: "适度摸鱼有益健康，本便签盖章认证 🐟" },
+    { t: "工牌加成", b: "戴上工牌的你：战斗力+100，可爱+300 💳" },
+    { t: "咖啡续命", b: "第一口敬自己，第二口敬下班 ☕" },
+    { t: "键盘侠(褒义)", b: "请敲得噼里啪啦，气势先赢一半 ⌨️" },
+    { t: "午饭是大事", b: "干饭是第一生产力，中午必须好好吃 🍱" },
+    { t: "小人退散", b: "烦人的人和事统统弹开，你有结界 🛡️" },
+    { t: "打工人语录", b: "钱是老板的，本事是自己的——血赚 💪" },
+    { t: "电梯祝福", b: "愿你今天电梯秒到，会议秒散 🛗" },
+    { t: "今日天气", b: "晴，伴有 Nana 的高光时刻 ☀️" },
+    { t: "摸头预约", b: "凭本便签，下班回家可领取摸头一次 🫳" },
+    { t: "职场悄悄话", b: "做不完的活让它排队，你不用排 📮" },
+    { t: "能量快递", b: "一箱勇气已送达工位，请签收 📦" },
+    { t: "反卷宣言", b: "卷不动就不卷，你的价值不靠加班证明 🧘" },
+    { t: "人形打气筒", b: "噗噗噗——好了气打满了，冲吧 🎈" },
+    { t: "幸运掉落", b: "今天会捡到一点点好运，注意脚下 🍀" },
+    { t: "表情管理", b: "对讨厌的事微笑，心里给它打叉 ❌" },
+    { t: "工位玄学", b: "在桌上想象一只猫，运气+20% 🐈" },
+    { t: "下午三点", b: "犯困高发期，起来接杯水，顺便想我 🚰" },
+    { t: "状态播报", b: "Nana 今日状态良好，请勿打扰她发光 ✨" },
+    { t: "小奖章", b: "昨天也撑过来了，颁发金牌一枚 🥇" },
+    { t: "灵感附体", b: "好点子今天会自己来找你，开门就行 💡" },
+    { t: "周报文学", b: "「持续推进中」——多好用的四个字 📝" },
+    { t: "心理防弹衣", b: "批评弹开，阴阳绕开，你只管可爱 🦺" },
+    { t: "打工冷知识", b: "下班前十分钟是一天中最漫长的 ⏳" },
+    { t: "玄学保洁", b: "心情乱就先擦桌子，很灵，别问 🧻" },
+    { t: "带薪喝水", b: "站起来接水走两步，这也算工作 🚶" },
+    { t: "秘密武器", b: "你一笑，todo 都得让三分 😁" },
+    { t: "加油鸭", b: "嘎嘎嘎（翻译：Nana 天下第一）🦆" },
+    { t: "忙里偷甜", b: "抽屉里藏颗糖，苦的时候吃 🍬" },
+    { t: "今日穿搭", b: "最好看的配饰是你的从容 🧣" },
+    { t: "打怪日常", b: "今天的怪兽名单已列好，一个一个来 👾" },
+    { t: "下班倒计时", b: "每过一小时，离沙发就近一小时 🛋️" },
+    { t: "会议室占卜", b: "今天的会：能散。宜带水，忌带气 🔮" },
+    { t: "已读乱回", b: "离谱消息就已读乱回，保护心情要紧 💬" },
+    { t: "榜一大哥", b: "在我心里你天天霸榜，不用刷礼物 🏆" },
+    { t: "元气外挂", b: "偷偷给你开了顺风局，别声张 🎮" },
+    { t: "白日梦补贴", b: "发呆三分钟，工资照发，快去 💭" },
+    { t: "打工人套餐", b: "一份努力两份从容，甜度：满杯 🧋" },
+    { t: "免死金牌", b: "今天允许犯一个小错，已备案 🪙" },
+    { t: "世界静音键", b: "太吵就按下静音，你说了算 🔇" },
+    { t: "高光预告", b: "今天某个瞬间你会特别帅，别错过 🌟" },
+    { t: "快递已达", b: "拆开是我打包的一整天好心情 📦" },
+    { t: "摸鱼搭子", b: "你摸鱼我放哨，暗号：咳咳 🤫" },
+    { t: "大女主剧本", b: "这集我提前看过了，你赢 📖" },
+    { t: "补水提示", b: "喝口水，这局你先赢 💧" },
+    { t: "阳光平替", b: "晒不到太阳就晒晒这张便签，同款温暖 🌞" },
+    { t: "灵魂拷问", b: "今天想我了吗？想了就对了 😏" },
+    { t: "神秘代码", b: "输入「下班」，幸福感自动+999 ⌨️" },
+    { t: "职场护身符", b: "此贴防加班、防内耗、防不开心 🧿" },
+    { t: "午睡执照", b: "趴十分钟充电两小时，合法合规 😴" },
+    { t: "好运WiFi", b: "已连接，信号满格，全天不断线 📡" },
+    { t: "减负通知", b: "担子我背一半，你背可爱那一半 🎒" },
+    { t: "键盘起飞", b: "指尖冒火星的样子，帅到冒烟 🔥" },
+    { t: "情绪回收站", b: "不开心的丢进来，我半夜偷偷倒掉 🗑️" },
+    { t: "打卡机情书", b: "连打卡机都觉得你今天很好看 💘" },
+    { t: "战术喝茶", b: "谈不拢就喝茶，喝着喝着就赢了 🍵" },
+    { t: "万能四字", b: "「好的收到」——职场保命真言 ✅" },
+    { t: "隐藏任务", b: "对镜子笑一下，今日奖励翻倍 🪞" },
+    { t: "应急口袋", b: "口袋里装着我的支持，随取随用 🧷" },
+    { t: "定心丸", b: "搞不定的事，明天的你更会搞 💊" },
+    { t: "自带BGM", b: "你走路带风的样子，有主题曲的 🎶" },
+    { t: "下午茶宣言", b: "甜品进肚的瞬间，班味清零 🍰" },
+    { t: "护肝提醒", b: "谁气你，我就在便签里瞪谁 👀" },
+    { t: "收工咒语", b: "念三遍「关我什么事」，瞬间轻松 🪄" },
+    { t: "悄悄骄傲", b: "别人还不知道吧，你私下这么可爱 🤭" },
+    { t: "风雨免疫", b: "今天风再大，也吹不动我们 Nana 🌂" },
+    { t: "预支拥抱", b: "先抱为敬，晚上回家兑现 🤗" }
   ];
-  var weekendNotes = [
-    { t: "周末营业公告", b: "本人今日只受理：躺、吃、笑。其他业务请下周一再来 📋", e: "📋" },
-    { t: "起床失败", b: "尝试起了一下，失败了。那就不起了，非常合理 🛌", e: "🛌" },
-    { t: "人体钟摆", b: "床到沙发，沙发到床——今日运动量已达标 🏅", e: "🏅" },
-    { t: "奶茶审批单", b: "申请人：Nana。理由：想喝。审批结果：光速通过 🧋", e: "🧋" },
-    { t: "高强度懒", b: "懒也要懒出专业水准，而你是这个领域的专家 🎓", e: "🎓" },
-    { t: "剧荒救援队", b: "片单在电影院等你抽一部，爆米花小卖部免费续 🍿", e: "🍿" },
-    { t: "今日日程", b: "上午：无。下午：无。晚上：接着无。完美的一天 🗓️", e: "🗓️" },
-    { t: "充电进行时", b: "两天充不满就慢慢充，插头我帮你看着，不许人拔 🔌", e: "🔌" },
-    { t: "太阳晒屁股", b: "晒就晒吧，它也就周末敢这么放肆 ☀️", e: "☀️" },
-    { t: "结案陈词", b: "本周辛苦属实，但罪名不成立——当庭释放，去玩！🎈", e: "🎈" }
+  var nightNotes = [
+    { t: "避难所开门", b: "口令正确——欢迎回来，今天的你 🗝️" },
+    { t: "盔甲寄存处", b: "叮，盔甲已收好，明早之前不许穿 🛡️" },
+    { t: "大人下班了", b: "从现在起，只需要当个舒服的人 🌙" },
+    { t: "安全区提示", b: "已进入无内耗区域，请随意瘫倒 🛋️" },
+    { t: "热水已备", b: "烦恼请随花洒冲进下水道 🚿" },
+    { t: "自由宣言", b: "在家想干嘛干嘛，宪法级别的自由 📜" },
+    { t: "沙发认领", b: "这只沙发今晚归你，含无限躺权限 🪑" },
+    { t: "夜宵赦免令", b: "晚上吃的不算热量，本所盖章 🍜" },
+    { t: "情绪卸货区", b: "白天的委屈倒这里，我来分类回收 📦" },
+    { t: "世界调成静音", b: "只留下你喜欢的声音 🔕" },
+    { t: "被窝预热中", b: "已达最佳温度，随时可入住 🛏️" },
+    { t: "脸部放假", b: "表情管理下班了，想垮就垮 😪" },
+    { t: "门口有结界", b: "烦心事进不来，它们没有门禁卡 🚪" },
+    { t: "今晚不营业", b: "「懂事」和「坚强」暂停服务 🌌" },
+    { t: "星星查房", b: "星星探头看了一眼：Nana 平安到家 ⭐" },
+    { t: "软肋保护区", b: "可以软下来，软的地方我帮你守 🤍" },
+    { t: "眼泪合法化", b: "想哭就哭一会儿，这里没人打分 💧" },
+    { t: "手机倒扣", b: "工作群翻不了身，你翻个身睡舒服 📵" },
+    { t: "减压气泡纸", b: "捏捏这张便签，噗噗噗，解压了 🫧" },
+    { t: "夜间热饮", b: "一杯热的下肚，心跟着松一格 🍫" },
+    { t: "免检通道", b: "回家不用汇报表现，直接通过 🟢" },
+    { t: "月亮代班", b: "今晚的温柔由月亮值班，我监工 🌙" },
+    { t: "躺平之夜", b: "今晚允许什么都不做，做了算加分 🐢" },
+    { t: "抱枕会议", b: "议题：怎么抱最舒服，请亲自出席 🧸" },
+    { t: "呼吸练习", b: "吸气四秒呼气四秒，把今天呼出去 🌬️" },
+    { t: "夜风快递", b: "一阵刚刚好的风已到窗边，请签收 🍃" },
+    { t: "自我表扬", b: "今天没放弃，鼓掌！小声点，你累了 👏" },
+    { t: "心事保管箱", b: "密码只有你知道，我负责看门 🔐" },
+    { t: "卸妆仪式", b: "卸掉妆，也卸掉「必须完美」 🌸" },
+    { t: "沙发点歌台", b: "今晚想听什么？随身听已就位 🎧" },
+    { t: "慢炖模式", b: "把自己小火慢炖在沙发里 🍲" },
+    { t: "免罪声明", b: "今天没做完的事，无罪释放 🕊️" },
+    { t: "脚丫解放日", b: "袜子一脱，自由度+200% 🧦" },
+    { t: "温柔警报", b: "检测到 Nana 到家，全屋温柔已启动 🏠" },
+    { t: "枕头已测", b: "蓬松度满分，非常适合入睡 🛌" },
+    { t: "深夜食堂", b: "冰箱里那口甜，是留给今晚的你 🍮" },
+    { t: "今晚白噪音", b: "雨声、风声、和「不用管了」的声音 🌧️" },
+    { t: "熄灯预告", b: "再玩一会儿就睡哦，梦里给你留位 🌠" },
+    { t: "抱抱储蓄罐", b: "白天存的抱抱，晚上连本带利取出 🐷" },
+    { t: "今日已归档", b: "好坏都封箱，不许再翻出来想 📁" },
+    { t: "躺平认证", b: "姿势标准，评分满分，请保持 🏅" },
+    { t: "夜谈热线", b: "想聊就写进 221B，贝克街永远在线 🏠" },
+    { t: "安心上锁", b: "门锁好了，世界关外面，你在里面 🔒" },
+    { t: "充电勿扰", b: "Nana 充电中，梦境直达电梯已开 🔋" },
+    { t: "泡脚哲学", b: "水温刚好，人生也会刚好的 ♨️" },
+    { t: "免疫补丁", b: "已安装「别人的话」免疫补丁 v2.0 🛠️" },
+    { t: "夜空放映厅", b: "窗外正在放映星空，免票入场 🎬" },
+    { t: "松弛感超标", b: "检测到高浓度舒服，请尽情享受 ☁️" },
+    { t: "小夜灯留言", b: "它说今晚也想陪着你 💡" },
+    { t: "重启预约", b: "睡一觉，明天自动满血复活 🔄" },
+    { t: "委屈粉碎机", b: "白天受的气放进来——咔嚓，碎了 🌀" },
+    { t: "自由呼吸区", b: "不想笑就不笑，不用讨好任何人 🍃" },
+    { t: "被爱确认", b: "叮——你今天也被好好爱着 💗" },
+    { t: "夜宵搭子", b: "泡面加蛋，人生圆满，我看你吃 🍳" },
+    { t: "明日预报", b: "多云转好运，局部有惊喜 🌤️" },
+    { t: "减速带提示", b: "前方是家，请减速慢行，安心通过 🚸" },
+    { t: "玩偶站岗", b: "玩偶们已上岗，噩梦一律拦截 🧸" },
+    { t: "热毛巾服务", b: "敷敷眼睛，让它们也下个班 👀" },
+    { t: "万物皆可明天", b: "洗碗？明天。焦虑？也明天 📆" },
+    { t: "静谧模式", b: "全屋已切换轻声细语模式 🕯️" },
+    { t: "温柔三连", b: "你很好、你很棒、你最好 💘" },
+    { t: "睡前小结", b: "今天的你：辛苦100%，可爱120% 📊" },
+    { t: "云朵外卖", b: "订了一朵云当枕头，马上送达 ☁️" },
+    { t: "免熬夜券", b: "今晚早点睡，奖励梦里加鸡腿 🍗" },
+    { t: "拥抱补给站", b: "白天欠你的抱抱，现在补发 🤗" },
+    { t: "心灵SPA", b: "项目：发呆、傻笑、放空，任选 💆" },
+    { t: "安全着陆", b: "今天飞得再颠簸，现在稳稳落地了 🛬" },
+    { t: "梦境菜单", b: "今晚推荐：海边、猫咪、一整天假期 🍽️" },
+    { t: "声控晚安", b: "轻轻说声晚安，全屋进入梦乡 🌙" },
+    { t: "最后一条", b: "翻到这里的人，明天一定顺利 🎁" }
   ];
-  var PER = 5;
+  // 彩色便签纸（绿色专属特殊张，不在此列）
+  var PALS = [
+    { bg: "linear-gradient(180deg,#fffdf2,#fff6d6)", tag: "#b58a4a", title: "#5a4326", body: "#8a6a44", tape: "rgba(255,170,120,0.5)", tapeBd: "rgba(180,110,70,0.45)", dot: "#d8924a" },
+    { bg: "linear-gradient(180deg,#fff5f7,#ffdfe8)", tag: "#c86a85", title: "#96455e", body: "#a86e80", tape: "rgba(255,150,180,0.45)", tapeBd: "rgba(200,105,135,0.45)", dot: "#e58aa5" },
+    { bg: "linear-gradient(180deg,#f2f9ff,#dcefff)", tag: "#5a8ec2", title: "#33567e", body: "#68809c", tape: "rgba(130,190,240,0.45)", tapeBd: "rgba(90,140,190,0.45)", dot: "#6fa8dc" },
+    { bg: "linear-gradient(180deg,#f9f5ff,#ebdfff)", tag: "#8f6cc0", title: "#563a8b", body: "#7d6a9e", tape: "rgba(190,150,240,0.45)", tapeBd: "rgba(140,105,190,0.45)", dot: "#a98add" },
+    { bg: "linear-gradient(180deg,#fff6f0,#ffe3cf)", tag: "#c9762e", title: "#8f5222", body: "#a4744f", tape: "rgba(255,180,110,0.5)", tapeBd: "rgba(195,125,60,0.5)", dot: "#e09a5f" }
+  ];
+  var PER = 10;
+  var hourNow = now.getHours();
+  var isNight = hourNow >= 18 || hourNow < 6;
   var _dn = Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / 86400000);
   var _week = Math.floor(_dn / 7);
-  var pool = isWeekend ? weekendNotes : weekdayNotes;
-  var _slot = isWeekend ? (dow === 6 ? 0 : 1) : (dow >= 1 && dow <= 5 ? dow - 1 : 0);
-  var _seed = (((_week + 1) * (isWeekend ? 97001 : 19349663)) >>> 0) || 1;
+  var pool = isNight ? nightNotes : dayNotes;
+  var _slot = dow;
+  var _seed = (((_week + 1) * (isNight ? 77003 : 19349663)) >>> 0) || 1;
   var _rnd = (function () { var x = _seed; return function () { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; })();
   var _pi = pool.map(function (_, i) { return i; });
   for (var _i = _pi.length - 1; _i > 0; _i--) { var _j = Math.floor(_rnd() * (_i + 1)); var _t = _pi[_i]; _pi[_i] = _pi[_j]; _pi[_j] = _t; }
   var _start = (_slot * PER) % pool.length;
-  var todays = []; for (var _k = 0; _k < PER; _k++) { todays.push(pool[_pi[(_start + _k) % pool.length]]); }
+  var todays = []; for (var _k = 0; _k < PER; _k++) { var _sn = pool[_pi[(_start + _k) % pool.length]]; todays.push({ t: _sn.t, b: _sn.b, c: PALS[_k % PALS.length] }); }
   // 特殊便签：每天都出现，粉色区别于普通便签 🩹
   todays.unshift({ t: "赛博罚单提醒", b: "要控制好自己啊，不要扣啊，扣了罚款 💸", e: "🚨", special: true });
   var COUNT = todays.length;
@@ -19280,12 +19395,12 @@ function HomeDeck(_refHD) {
   return rc("div", { onClick: advance, style: { position: "relative", display: "flex", justifyContent: "center", cursor: "pointer", minHeight: 128 } },
     rc("div", { style: { position: "absolute", top: 10, width: "90%", maxWidth: 316, height: "78%", background: "#fbeec0", borderRadius: 8, transform: "rotate(3.5deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
     rc("div", { style: { position: "absolute", top: 5, width: "93%", maxWidth: 328, height: "82%", background: "#fff3cf", borderRadius: 8, transform: "rotate(-2.6deg)", boxShadow: "0 8px 18px rgba(40,30,50,0.16)" } }),
-    rc("div", { style: { position: "relative", background: note.special ? "linear-gradient(180deg,#e9f8ee,#d0f0db)" : "linear-gradient(180deg,#fffdf2,#fff6d6)", width: "100%", maxWidth: 338, borderRadius: 8, padding: "15px 20px 13px", transform: "rotate(-1deg)", boxShadow: note.special ? "0 12px 28px rgba(40,120,80,0.26)" : "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
-      rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: note.special ? "rgba(110,200,140,0.5)" : "rgba(255,170,120,0.5)", border: note.special ? "1px dashed rgba(80,165,110,0.55)" : "1px dashed rgba(180,110,70,0.45)", borderRadius: 2 } }),
-      rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: note.special ? "#3a9d5d" : "#b58a4a", letterSpacing: "0.5px", marginBottom: 5 } }, note.special ? "💚 悄悄叮嘱 · 给 Nana" : (isWeekend ? "🛋️ 周末便签" : "🏡 到家啦") + " · 给 Nana"),
-      rc("div", { style: { fontSize: "1.18rem", fontWeight: 800, color: note.special ? "#2c7d49" : "#5a4326", lineHeight: 1.4 } }, note.t),
-      rc("div", { style: { fontSize: "0.88rem", color: note.special ? "#46895f" : "#8a6a44", marginTop: 6, lineHeight: 1.55 } }, note.b),
-      rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 11 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? (note.special ? "#46b06e" : "#d8924a") : "rgba(180,140,90,0.35)", transition: "all .3s" } }); }))));
+    rc("div", { style: { position: "relative", background: note.special ? "linear-gradient(180deg,#e9f8ee,#d0f0db)" : (note.c ? note.c.bg : "linear-gradient(180deg,#fffdf2,#fff6d6)"), width: "100%", maxWidth: 338, borderRadius: 8, padding: "15px 20px 13px", transform: "rotate(-1deg)", boxShadow: note.special ? "0 12px 28px rgba(40,120,80,0.26)" : "0 12px 28px rgba(40,30,50,0.3)", fontFamily: "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", opacity: fade ? 1 : 0, transition: "opacity 0.32s" } },
+      rc("div", { style: { position: "absolute", top: -12, left: "50%", transform: "translateX(-50%) rotate(3deg)", width: 108, height: 26, background: note.special ? "rgba(110,200,140,0.5)" : (note.c ? note.c.tape : "rgba(255,170,120,0.5)"), border: note.special ? "1px dashed rgba(80,165,110,0.55)" : "1px dashed " + (note.c ? note.c.tapeBd : "rgba(180,110,70,0.45)"), borderRadius: 2 } }),
+      rc("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: note.special ? "#3a9d5d" : (note.c ? note.c.tag : "#b58a4a"), letterSpacing: "0.5px", marginBottom: 5 } }, note.special ? "💚 悄悄叮嘱 · 给 Nana" : (isNight ? "🌙 避难所模式" : "☀️ 元气补给站") + " · 给 Nana"),
+      rc("div", { style: { fontSize: "1.18rem", fontWeight: 800, color: note.special ? "#2c7d49" : (note.c ? note.c.title : "#5a4326"), lineHeight: 1.4 } }, note.t),
+      rc("div", { style: { fontSize: "0.88rem", color: note.special ? "#46895f" : (note.c ? note.c.body : "#8a6a44"), marginTop: 6, lineHeight: 1.55 } }, note.b),
+      rc("div", { style: { display: "flex", gap: 6, justifyContent: "center", marginTop: 11 } }, todays.map(function (_x, d) { return rc("div", { key: d, style: { width: d === ni ? 16 : 7, height: 7, borderRadius: 99, background: d === ni ? (note.special ? "#46b06e" : (note.c ? note.c.dot : "#d8924a")) : "rgba(180,140,90,0.35)", transition: "all .3s" } }); }))));
 }
 function ScratchBar(_refSC) {
   var onOpen = _refSC.onOpen;
