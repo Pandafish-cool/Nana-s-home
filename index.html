@@ -16610,7 +16610,10 @@ function BasementScene(_refB1) {
     dart: ["🎯 正中红心！十环！", "🎯 9 环！手很稳嘛", "🎯 3 环…就当热身了", "哎呀，飞镖插进墙里了 😅"],
     games: ["今晚玩哪盒？剪刀石头布决定", "UNO！！（先喊为敬）", "骰子滚到柜子底下去了…"],
     apple: ["咕嘟咕嘟…苹果汁满上 🍎", "冰镇的！一口透心凉～", "一天一杯苹果汁，烦恼远离我"],
-    carrot: ["胡萝卜汁！兔子看了都眼红 🐰", "维生素 +10，眼睛更亮 ✨", "好好闻了一下，转身走了 🐈"]
+    carrot: ["胡萝卜汁！兔子看了都眼红 🐰", "维生素 +10，眼睛更亮 ✨", "好好闻了一下，转身走了 🐈"],
+    chair: ["吱呀——是椅子在打招呼", "板凳一号，随时候命", "坐下歇会儿，果汁我帮你端"],
+    sofa: ["一坐就陷进去的那种 😌", "沙发已就位，就差你和一杯果汁", "好好偶尔也来这儿踩奶"],
+    strap: ["嘿嘿，想捆点什么呢 😏", "捆纸箱、捆行李…用途自由发挥", "好好：不许捆猫！！🐈"]
   };
   var speak = function (src) {
     var lines = LINES[src];
@@ -16664,6 +16667,13 @@ function BasementScene(_refB1) {
         disco && h("span", { style: { position: "absolute", right: -10, top: 26, fontSize: "0.5rem", color: "#9be3ff", animation: "bsTwinkle 2s ease-in-out infinite", animationDelay: "0.5s" } }, "✦")),
       // 摇滚海报
       h("div", { style: { position: "absolute", left: 118, top: 100, width: 46, height: 56, borderRadius: 8, background: "#2a2438", border: "4px solid #6f543a", transform: "rotate(-4deg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" } }, "🎸"),
+      // 墙上挂的捆捆带（点击）
+      h("div", { onClick: function () { speak("strap"); }, style: { position: "absolute", left: 200, top: 96, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("strap", { left: -30, top: -30 }),
+        h("div", { style: { width: 8, height: 8, borderRadius: "50%", background: "#8f7150", margin: "0 auto 2px" } }),
+        h("div", { style: { position: "relative", width: 34, height: 34, margin: "0 auto", borderRadius: "50%", border: "7px solid #b06a4a", boxShadow: "inset 0 0 0 2px #8a4e32" } },
+          h("div", { style: { position: "absolute", right: -4, bottom: -14, width: 6, height: 20, borderRadius: 3, background: "#b06a4a", transform: "rotate(14deg)" } })),
+        lbl("🪢 捆捆带")),
       // 飞镖盘（点击投一镖）
       h("div", { onClick: function () { speak("dart"); }, style: { position: "absolute", right: 30, top: 96, cursor: "pointer", zIndex: 2, textAlign: "center" } },
         bubble("dart", { right: 0, top: -32 }),
@@ -16688,6 +16698,26 @@ function BasementScene(_refB1) {
           return h("div", { key: "bx" + i, style: { width: 56, height: 13, margin: "1px auto 0", borderRadius: 4, background: b[0], border: "2px solid rgba(0,0,0,0.25)", transform: "rotate(" + b[1] + "deg)" } });
         }),
         lbl("🎲 桌游堆")),
+      // 小木椅（点击）
+      h("div", { onClick: function () { speak("chair"); }, style: { position: "absolute", left: 186, top: 238, width: 38, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("chair", { left: -30, top: -28 }),
+        h("div", { style: { width: 30, height: 24, margin: "0 auto", borderRadius: "6px 6px 0 0", border: "3px solid #7a6250", borderBottom: "none", background: "repeating-linear-gradient(90deg,#8a7058 0 6px,#7a6250 6px 9px)" } }),
+        h("div", { style: { width: 38, height: 9, margin: "0 auto", borderRadius: 3, background: "#8a7058", border: "2px solid #6f543a" } }),
+        h("div", { style: { display: "flex", justifyContent: "space-between", padding: "0 5px" } },
+          h("div", { style: { width: 5, height: 14, background: "#6f543a", borderRadius: "0 0 2px 2px" } }),
+          h("div", { style: { width: 5, height: 14, background: "#6f543a", borderRadius: "0 0 2px 2px" } })),
+        lbl("🪑 椅子")),
+      // 陷进去小沙发（点击）
+      h("div", { onClick: function () { speak("sofa"); }, style: { position: "absolute", right: 16, bottom: 16, width: 116, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("sofa", { right: 0, top: -34 }),
+        h("div", { style: { position: "relative", width: 116, height: 30, margin: "0 auto", borderRadius: "14px 14px 0 0", background: "#8a4a5a", border: "3px solid #6f3a48", borderBottom: "none" } },
+          h("div", { style: { position: "absolute", left: 10, top: 9, width: 40, height: 18, borderRadius: 7, background: "#d9a0a8" } }),
+          h("div", { style: { position: "absolute", right: 10, top: 9, width: 40, height: 18, borderRadius: 7, background: "#f2c94c" } })),
+        h("div", { style: { width: 116, height: 16, margin: "0 auto", borderRadius: "6px 6px 8px 8px", background: "#7a4050", border: "3px solid #6f3a48" } }),
+        h("div", { style: { display: "flex", justifyContent: "space-between", padding: "0 10px" } },
+          h("div", { style: { width: 7, height: 8, background: "#4f2a34", borderRadius: "0 0 3px 3px" } }),
+          h("div", { style: { width: 7, height: 8, background: "#4f2a34", borderRadius: "0 0 3px 3px" } })),
+        lbl("🛋️ 小沙发")),
       // 果汁吧（苹果汁 / 胡萝卜汁）
       h("div", { style: { position: "absolute", right: 12, top: 232, width: 130, textAlign: "center", zIndex: 2 } },
         bubble("apple", { left: -20, top: -6 }),
@@ -16726,7 +16756,7 @@ function BasementScene(_refB1) {
     h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } },
       toggle(light, function () { setLight(!light); }, light ? "💡 灯泡开" : "💡 灯泡关"),
       toggle(disco, function () { setDisco(!disco); }, disco ? "🪩 蹦迪中！" : "🪩 迪斯科关")),
-    h("div", { style: { textAlign: "center", fontSize: "0.74rem", color: "rgba(120,95,100,0.75)", marginBottom: 4 } }, "都能戳戳看：街机 · 飞镖 · 桌游 · 果汁瓶 · 纸箱里的好好"),
+    h("div", { style: { textAlign: "center", fontSize: "0.74rem", color: "rgba(120,95,100,0.75)", marginBottom: 4 } }, "都能戳戳看：街机 · 飞镖 · 桌游 · 果汁瓶 · 椅子沙发 · 捆捆带 · 纸箱里的好好"),
     h("button", { onClick: onBack, style: { display: "block", margin: "14px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
 }
 
@@ -17561,7 +17591,7 @@ function BottomNav(_ref135) {
     _useState316 = _slicedToArray(_useState315, 2),
     drawerOpen = _useState316[0],
     setDrawerOpen = _useState316[1];
-  var pinned = ["living", "bedroom", "bath", "gaming"];
+  var pinned = ["living", "bedroom", "basement", "gaming"];
   var pinnedRooms = rooms.filter(function (r) {
     return pinned.includes(r.id);
   });
@@ -17574,7 +17604,7 @@ function BottomNav(_ref135) {
   var pinLabels = {
     living: "客厅",
     bedroom: "卧室",
-    bath: "盥洗室",
+    basement: "地下室",
     gaming: "游乐场"
   };
   var NavBtn = function NavBtn(_ref136) {
