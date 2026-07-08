@@ -8461,6 +8461,12 @@ var ROOMS = [{
   color: "#9AE1FF",
   desc: "泡澡 · 如厕区 · 化妆台 · 衣帽间"
 }, {
+  id: "basement",
+  emoji: "🕹️",
+  name: "地下室",
+  color: "#CBBCE0",
+  desc: "街机 · 飞镖 · 果汁吧"
+}, {
   id: "garden",
   emoji: "🌿",
   name: "Garden",
@@ -16578,6 +16584,152 @@ function BedroomScene(_ref125) {
     h("button", { onClick: onBack, style: { display: "block", margin: "16px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
 }
 
+// ── BASEMENT SCENE（地下室秘密基地） ──────────────────────
+function BasementScene(_refB1) {
+  var onBack = _refB1.onBack;
+  var h = React.createElement;
+  var _li = useState(true); var light = _li[0], setLight = _li[1];
+  var _di = useState(false); var disco = _di[0], setDisco = _di[1];
+  var _sy = useState(null); var say = _sy[0], setSay = _sy[1];
+  var _ap = useState(0); var apple = _ap[0], setApple = _ap[1];
+  var _ca = useState(0); var carrot = _ca[0], setCarrot = _ca[1];
+  var _gl = useState(null); var glass = _gl[0], setGlass = _gl[1];
+  var sayTimer = useRef(null);
+  useEffect(function () {
+    if (!document.getElementById("basement-style")) {
+      var st = document.createElement("style");
+      st.id = "basement-style";
+      st.textContent = "@keyframes bsSpin{to{transform:rotate(360deg)}}@keyframes bsFlash{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(160deg)}}@keyframes bsBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes bsZz{0%{opacity:0;transform:translate(0,0) scale(0.8)}30%{opacity:0.85}100%{opacity:0;transform:translate(9px,-18px) scale(1.15)}}@keyframes bsTwinkle{0%,100%{opacity:0.25}50%{opacity:0.95}}";
+      document.head.appendChild(st);
+    }
+    return function () { if (sayTimer.current) clearTimeout(sayTimer.current); };
+  }, []);
+  var LINES = {
+    cat: ["喵…纸箱是世界上最好的家具", "别看了，这箱子已经是好好的了", "呼噜呼噜（假装没看见你）"],
+    arcade: ["新纪录！NANA-9999 分 ✨", "GAME OVER…不服再来一局！", "隐藏关卡解锁！奖励一口果汁 🧃"],
+    dart: ["🎯 正中红心！十环！", "🎯 9 环！手很稳嘛", "🎯 3 环…就当热身了", "哎呀，飞镖插进墙里了 😅"],
+    games: ["今晚玩哪盒？剪刀石头布决定", "UNO！！（先喊为敬）", "骰子滚到柜子底下去了…"],
+    apple: ["咕嘟咕嘟…苹果汁满上 🍎", "冰镇的！一口透心凉～", "一天一杯苹果汁，烦恼远离我"],
+    carrot: ["胡萝卜汁！兔子看了都眼红 🐰", "维生素 +10，眼睛更亮 ✨", "好好闻了一下，转身走了 🐈"]
+  };
+  var speak = function (src) {
+    var lines = LINES[src];
+    setSay({ src: src, t: lines[Math.floor(Math.random() * lines.length)] });
+    if (sayTimer.current) clearTimeout(sayTimer.current);
+    sayTimer.current = setTimeout(function () { setSay(null); }, 2600);
+  };
+  var bubble = function (src, style) {
+    if (!say || say.src !== src) return null;
+    var base = { position: "absolute", background: "rgba(255,255,255,0.97)", color: "#5a4a7a", fontWeight: 800, fontSize: "0.62rem", borderRadius: "10px 10px 10px 2px", padding: "5px 9px", boxShadow: "0 4px 10px rgba(0,0,0,0.3)", whiteSpace: "nowrap", zIndex: 6 };
+    for (var k in style) base[k] = style[k];
+    return h("div", { style: base }, say.t);
+  };
+  var caption = disco ? "灯球转起来！地下室蹦迪模式 🪩" : !light ? "黑漆漆…只有好好的眼睛在发光 👀" : "地下室的快乐，楼上听不见 🤫";
+  var toggle = function (on, onClick, label) {
+    return h("button", { onClick: onClick, style: { flex: 1, border: on ? "2px solid #d9c26a" : "1.5px solid rgba(180,150,140,0.4)", background: on ? "#fdf6d8" : "#fff", borderRadius: 999, padding: "10px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", color: "#6a5344", cursor: "pointer" } }, label);
+  };
+  var lbl = function (txt, extra) {
+    var base = { margin: "4px auto 0", fontSize: "0.56rem", fontWeight: 800, color: "#fff", background: "rgba(90,80,110,0.9)", borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap", textAlign: "center", width: "fit-content" };
+    for (var k in (extra || {})) base[k] = extra[k];
+    return h("div", { style: base }, txt);
+  };
+  return h("div", null,
+    h("div", { style: { position: "relative", borderRadius: 26, overflow: "hidden", border: "6px solid #b08a62", boxShadow: "0 10px 26px rgba(40,30,70,0.35)", height: 460, background: "linear-gradient(180deg,#4c4358 0%,#5c5065 44%, #6e5a47 44%, #5c4a39 100%)" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: "44%", height: "56%", background: "repeating-linear-gradient(90deg, rgba(40,25,15,0.18) 0 2px, transparent 2px 52px)" } }),
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: "44%", height: 4, background: "rgba(40,28,18,0.45)" } }),
+      // 天花板管道
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 8, height: 8, background: "#3a3448", borderRadius: 4 } }),
+      h("div", { style: { position: "absolute", left: "22%", top: 5, width: 10, height: 14, background: "#332e40", borderRadius: 3 } }),
+      h("div", { style: { position: "absolute", left: "74%", top: 5, width: 10, height: 14, background: "#332e40", borderRadius: 3 } }),
+      // 楼梯（点击上楼）
+      h("div", { onClick: onBack, style: { position: "absolute", left: 10, top: 34, width: 86, cursor: "pointer", zIndex: 2 } },
+        h("div", { style: { position: "relative", height: 84 } },
+          [[86, 0], [64, 21], [42, 42], [20, 63]].map(function (s, i) {
+            return h("div", { key: "st" + i, style: { position: "absolute", left: 0, bottom: s[1], width: s[0], height: 21, background: "#7a6250", borderTop: "3px solid #93785f", borderRight: "3px solid #5f4c38" } });
+          })),
+        lbl("⬆️ 上楼回家", { background: "rgba(143,106,72,0.95)" })),
+      // B1 门牌
+      h("div", { style: { position: "absolute", right: 14, top: 30, background: "#6f543a", border: "3px solid #8f7150", borderRadius: 8, padding: "3px 9px", color: "#f2e2c0", fontWeight: 900, fontSize: "0.64rem", transform: "rotate(3deg)" } }, "B1 · 秘密基地"),
+      // 吊灯泡（点击开关）
+      h("div", { onClick: function () { setLight(!light); }, style: { position: "absolute", left: "46%", top: 16, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        h("div", { style: { width: 2, height: 24, background: "#8a8098", margin: "0 auto" } }),
+        h("div", { style: { width: 20, height: 20, borderRadius: "50%", background: light ? "#ffe9a0" : "#b9a48e", boxShadow: light ? "0 0 26px rgba(255,225,140,0.9)" : "none", margin: "0 auto", transition: "all 0.4s" } }),
+        h("div", { style: { width: 1.5, height: 14, background: "#cfc6da", margin: "2px auto 0" } }),
+        h("div", { style: { width: 5, height: 5, borderRadius: "50%", background: "#d9c26a", margin: "0 auto" } })),
+      // 迪斯科球（点击开蹦迪）
+      h("div", { onClick: function () { setDisco(!disco); }, style: { position: "absolute", left: "64%", top: 16, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        h("div", { style: { width: 2, height: 12, background: "#8a8098", margin: "0 auto" } }),
+        h("div", { style: { width: 30, height: 30, borderRadius: "50%", margin: "0 auto", background: "repeating-linear-gradient(0deg,#cfd4e2 0 5px,#aeb6cc 5px 10px), repeating-linear-gradient(90deg,rgba(255,255,255,0.5) 0 5px,rgba(120,130,160,0.4) 5px 10px)", backgroundBlendMode: "overlay", boxShadow: disco ? "0 0 22px rgba(180,200,255,0.9)" : "0 2px 6px rgba(0,0,0,0.3)", transition: "box-shadow 0.4s" } }),
+        disco && h("span", { style: { position: "absolute", left: -10, top: 14, fontSize: "0.5rem", color: "#ffe9a0", animation: "bsTwinkle 1.6s ease-in-out infinite" } }, "✦"),
+        disco && h("span", { style: { position: "absolute", right: -10, top: 26, fontSize: "0.5rem", color: "#9be3ff", animation: "bsTwinkle 2s ease-in-out infinite", animationDelay: "0.5s" } }, "✦")),
+      // 摇滚海报
+      h("div", { style: { position: "absolute", left: 118, top: 100, width: 46, height: 56, borderRadius: 8, background: "#2a2438", border: "4px solid #6f543a", transform: "rotate(-4deg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" } }, "🎸"),
+      // 飞镖盘（点击投一镖）
+      h("div", { onClick: function () { speak("dart"); }, style: { position: "absolute", right: 30, top: 96, cursor: "pointer", zIndex: 2, textAlign: "center" } },
+        bubble("dart", { right: 0, top: -32 }),
+        h("div", { style: { width: 56, height: 56, borderRadius: "50%", border: "4px solid #6f543a", background: "radial-gradient(circle, #c0563a 0 14%, #f6e8c8 14% 32%, #2a5a3a 32% 52%, #f6e8c8 52% 74%, #c0563a 74% 100%)", margin: "0 auto", boxShadow: "0 3px 8px rgba(0,0,0,0.35)" } }),
+        lbl("🎯 飞镖")),
+      // 街机（点击开玩）
+      h("div", { onClick: function () { speak("arcade"); }, style: { position: "absolute", left: 14, top: 218, width: 82, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("arcade", { left: 0, top: -30 }),
+        h("div", { style: { height: 12, borderRadius: "8px 8px 0 0", background: "linear-gradient(90deg,#ff6b9d,#ffd24a,#6cc6ff)", border: "3px solid #23223a", borderBottom: "none" } }),
+        h("div", { style: { position: "relative", height: 96, background: "#32304a", border: "3px solid #23223a", borderRadius: "0 0 8px 8px" } },
+          h("div", { style: { width: 56, height: 36, margin: "8px auto 0", borderRadius: 6, background: "linear-gradient(45deg,#ff6b9d,#6cc6ff,#9be36b)", animation: "bsFlash 2.4s ease-in-out infinite", border: "2px solid #1a1930" } }),
+          h("div", { style: { position: "absolute", left: 14, bottom: 12, width: 3, height: 12, background: "#8a8098" } }),
+          h("div", { style: { position: "absolute", left: 10, bottom: 22, width: 11, height: 11, borderRadius: "50%", background: "#c0563a" } }),
+          h("div", { style: { position: "absolute", right: 24, bottom: 14, width: 9, height: 9, borderRadius: "50%", background: "#ffd24a" } }),
+          h("div", { style: { position: "absolute", right: 10, bottom: 14, width: 9, height: 9, borderRadius: "50%", background: "#9be36b" } })),
+        lbl("🕹️ 街机")),
+      // 桌游堆（点击）
+      h("div", { onClick: function () { speak("games"); }, style: { position: "absolute", left: 126, top: 274, width: 62, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("games", { left: -10, top: -34 }),
+        h("span", { style: { fontSize: "0.95rem", display: "inline-block", animation: "bsBob 3s ease-in-out infinite" } }, "🎲"),
+        [["#c0563a", -2], ["#4a6a9a", 2], ["#5a9a5a", -1]].map(function (b, i) {
+          return h("div", { key: "bx" + i, style: { width: 56, height: 13, margin: "1px auto 0", borderRadius: 4, background: b[0], border: "2px solid rgba(0,0,0,0.25)", transform: "rotate(" + b[1] + "deg)" } });
+        }),
+        lbl("🎲 桌游堆")),
+      // 果汁吧（苹果汁 / 胡萝卜汁）
+      h("div", { style: { position: "absolute", right: 12, top: 232, width: 130, textAlign: "center", zIndex: 2 } },
+        bubble("apple", { left: -20, top: -6 }),
+        bubble("carrot", { right: -6, top: -6 }),
+        lbl("🧃 果汁吧", { margin: "0 auto 30px", background: "rgba(143,106,72,0.95)" }),
+        h("div", { style: { position: "relative", height: 56, background: "#8a6a4a", border: "4px solid #6f543a", borderRadius: "10px 10px 6px 6px" } },
+          // 苹果汁瓶
+          h("div", { onClick: function () { setApple(apple + 1); setGlass("apple"); speak("apple"); }, style: { position: "absolute", left: 12, top: -32, width: 28, cursor: "pointer" } },
+            h("div", { style: { width: 12, height: 7, background: "#c0563a", borderRadius: "4px 4px 0 0", margin: "0 auto" } }),
+            h("div", { style: { width: 26, height: 26, margin: "0 auto", borderRadius: "6px 6px 4px 4px", background: "linear-gradient(180deg,#b8e39a,#8fce76)", border: "2px solid #6da354", fontSize: "0.62rem", lineHeight: "26px" } }, "🍎")),
+          // 中间杯子
+          h("div", { style: { position: "absolute", left: "50%", top: -24, transform: "translateX(-50%)", width: 18, height: 24, border: "2.5px solid rgba(255,255,255,0.85)", borderTop: "none", borderRadius: "2px 2px 6px 6px", overflow: "hidden" } },
+            glass && h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "68%", background: glass === "apple" ? "#c5e88a" : "#f5a44a", transition: "background 0.4s" } })),
+          // 胡萝卜汁瓶
+          h("div", { onClick: function () { setCarrot(carrot + 1); setGlass("carrot"); speak("carrot"); }, style: { position: "absolute", right: 12, top: -32, width: 28, cursor: "pointer" } },
+            h("div", { style: { width: 12, height: 7, background: "#5a9a5a", borderRadius: "4px 4px 0 0", margin: "0 auto" } }),
+            h("div", { style: { width: 26, height: 26, margin: "0 auto", borderRadius: "6px 6px 4px 4px", background: "linear-gradient(180deg,#ffc37a,#f09a4a)", border: "2px solid #cf7c2e", fontSize: "0.62rem", lineHeight: "26px" } }, "🥕")),
+          h("div", { style: { position: "absolute", left: 8, right: 8, bottom: 8, height: 3, borderRadius: 2, background: "rgba(60,40,25,0.4)" } })),
+        h("div", { style: { marginTop: 4, fontSize: "0.54rem", fontWeight: 800, color: "#e8d8c0" } }, "已干杯 🧃×" + apple + " ｜ 🥕×" + carrot)),
+      // 好好的纸箱（她真正的窝）
+      h("div", { onClick: function () { speak("cat"); }, style: { position: "absolute", left: 20, bottom: 16, width: 74, cursor: "pointer", textAlign: "center", zIndex: 2 } },
+        bubble("cat", { left: 10, top: -44 }),
+        h("div", { style: { position: "relative", width: 70, height: 38, margin: "0 auto", background: "#c8a06a", border: "3px solid #a5825a", borderRadius: 4 } },
+          h("div", { style: { position: "absolute", left: -8, top: -6, width: 22, height: 9, background: "#b8905a", border: "2px solid #a5825a", transform: "rotate(-24deg)", borderRadius: 2 } }),
+          h("div", { style: { position: "absolute", right: -8, top: -6, width: 22, height: 9, background: "#b8905a", border: "2px solid #a5825a", transform: "rotate(24deg)", borderRadius: 2 } }),
+          h("span", { style: { position: "absolute", left: "50%", top: -15, transform: "translateX(-50%)", fontSize: "1.15rem", animation: "bsBob 3.6s ease-in-out infinite" } }, "🐈"),
+          h("span", { style: { position: "absolute", right: 2, top: -20, fontSize: "0.54rem", color: "#cfd8ef", fontWeight: 800, animation: "bsZz 2.8s ease-out infinite" } }, "z")),
+        h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: "#cbbcd9", marginTop: 4, whiteSpace: "nowrap" } }, "纸箱（好好真正的窝）")),
+      // 小圆毯
+      h("div", { style: { position: "absolute", left: "50%", bottom: 8, transform: "translateX(-50%)", width: 120, height: 20, borderRadius: "50%", background: "rgba(160,60,70,0.3)", border: "3px dashed rgba(190,120,120,0.4)" } }),
+      // 蹦迪彩光
+      disco && h("div", { style: { position: "absolute", left: "-80%", top: "-90%", width: "260%", paddingBottom: "260%", borderRadius: "50%", background: "conic-gradient(#ff6b9d,#ffd24a,#6cc6ff,#9be36b,#c79bff,#ff6b9d)", opacity: 0.2, animation: "bsSpin 7s linear infinite", pointerEvents: "none", zIndex: 3 } }),
+      // 关灯变暗
+      light ? null : h("div", { style: { position: "absolute", inset: 0, background: "rgba(10,8,25,0.5)", pointerEvents: "none", transition: "background 0.5s", zIndex: 3 } })),
+    h("div", { style: { textAlign: "center", color: "#8a6a5a", fontStyle: "italic", fontSize: "0.86rem", margin: "14px 4px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, caption),
+    h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } },
+      toggle(light, function () { setLight(!light); }, light ? "💡 灯泡开" : "💡 灯泡关"),
+      toggle(disco, function () { setDisco(!disco); }, disco ? "🪩 蹦迪中！" : "🪩 迪斯科关")),
+    h("div", { style: { textAlign: "center", fontSize: "0.74rem", color: "rgba(120,95,100,0.75)", marginBottom: 4 } }, "都能戳戳看：街机 · 飞镖 · 桌游 · 果汁瓶 · 纸箱里的好好"),
+    h("button", { onClick: onBack, style: { display: "block", margin: "14px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
+}
+
 function nanaAddReward(r) {
   try {
     var a = JSON.parse(localStorage.getItem("nana-rewards") || "[]");
@@ -18991,7 +19143,7 @@ function NanasHome() {
     }
   }, !room && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
-  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
+  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setRoom(null);
     },
@@ -19122,6 +19274,10 @@ function NanasHome() {
     }
   }), room && !activity && room.id === "bedroom" && /*#__PURE__*/React.createElement(BedroomScene, {
     onActivity: selectActivity,
+    onBack: function onBack() {
+      return setRoom(null);
+    }
+  }), room && !activity && room.id === "basement" && /*#__PURE__*/React.createElement(BasementScene, {
     onBack: function onBack() {
       return setRoom(null);
     }
