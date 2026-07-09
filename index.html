@@ -18803,7 +18803,7 @@ function HomeDeck(_refHD) {
   var _start = (_slot * PER) % pool.length;
   var todays = []; for (var _k = 0; _k < PER; _k++) { var _sn = pool[_pi[(_start + _k) % pool.length]]; todays.push({ t: _sn.t, b: _sn.b, c: PALS[_k % PALS.length] }); }
   // 特殊便签：每天都出现，粉色区别于普通便签 🩹
-  todays.unshift({ t: "诶～恭喜你获得罚单 🎫", b: "抠没抠？抠了。痂痂眼看就长好了，又被宁一手拆迁。宁就说怎么办吧 🤷", e: "🚨", special: true });
+  todays.unshift({ t: "诶～恭喜你获得罚单 🎫", b: "又抠啦？行吧行吧，痂痂重新开工，工期顺延三天 🐌 工头喊话：请甲方管好自己的小爪爪 🐾", e: "🚨", special: true });
   var COUNT = todays.length;
   var ni = ((msgIdx % COUNT) + COUNT) % COUNT;
   var note = todays[ni];
