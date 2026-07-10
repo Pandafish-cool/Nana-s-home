@@ -7450,7 +7450,7 @@ function OurFilmsBoard(_refOF) {
     var score = num(f[who + "_score"]);
     var myScore = num(f[me + "_score"]);
     var mark = function (txt, on, col, bg, onClick) {
-      return h("button", { onClick: mine ? onClick : undefined, style: { border: "none", borderRadius: 999, padding: "4px 9px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.62rem", cursor: mine ? "pointer" : "default", background: on ? bg : "rgba(150,130,130,0.08)", color: on ? col : "rgba(140,120,125,0.55)", opacity: mine || on ? 1 : 0.55, whiteSpace: "nowrap", flexShrink: 0 } }, txt);
+      return h("button", { onClick: mine ? onClick : undefined, style: { border: "none", borderRadius: 999, padding: "4px 9px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.62rem", cursor: mine ? "pointer" : "default", background: on ? bg : "rgba(150,130,130,0.08)", color: on ? col : "rgba(140,120,125,0.55)", filter: on ? "none" : "grayscale(1)", opacity: on ? 1 : mine ? 0.6 : 0.38, whiteSpace: "nowrap", flexShrink: 0 } }, txt);
     };
     var scoreArea = null;
     if (mine) {
