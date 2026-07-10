@@ -7304,7 +7304,8 @@ var nanaFilmsPatch = function (id, patch, cb) { nanaSyncReq("PATCH", "shared_fil
 var nanaFilmsDel = function (id, cb) { nanaSyncReq("DELETE", "shared_films?id=eq." + encodeURIComponent(id), null, cb); };
 var readFilmsCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-films-cache") || "[]"); } catch (_) { return []; } };
 var saveFilmsCache = function (list) { try { localStorage.setItem("nana-shared-films-cache", JSON.stringify((list || []).slice(0, 300))); } catch (_) {} };
-function OurFilmsBoard() {
+function OurFilmsBoard(_refOF) {
+  var importSource = (_refOF && _refOF.importSource) || [];
   var h = React.createElement;
   var _au = useState(function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } });
   var myAuthor = _au[0], setMyAuthor = _au[1];
@@ -7314,6 +7315,8 @@ function OurFilmsBoard() {
   var _in = useState(""); var inp = _in[0], setInp = _in[1];
   var _fi = useState("all"); var filter = _fi[0], setFilter = _fi[1];
   var _dc = useState(null); var delConfirm = _dc[0], setDelConfirm = _dc[1];
+  var _im = useState(false); var impOpen = _im[0], setImpOpen = _im[1];
+  var _ib = useState(false); var impBusy = _ib[0], setImpBusy = _ib[1];
   var me = myAuthor === "nana" ? "n" : "p";
   var meta = { p: nanaAuthorById("panda"), n: nanaAuthorById("nana") };
   var refresh = function (silent) {
@@ -7351,6 +7354,34 @@ function OurFilmsBoard() {
     var next = films.filter(function (x) { return x.id !== f.id; });
     setFilms(next); saveFilmsCache(next); setDelConfirm(null);
     nanaFilmsDel(f.id, function (e) { if (e) { setFilms(prev); saveFilmsCache(prev); setErr("没删掉 · 再试一次"); } });
+  };
+  // 从 Nana 影库导入（去重；影库的状态记到 Nana 名下）
+  var impCandidates = function (onlyWant) {
+    var have = {};
+    films.forEach(function (f) { have[(f.t || "").trim()] = true; });
+    return importSource.filter(function (f) {
+      if (have[(f.t || "").trim()]) return false;
+      return onlyWant ? f.s === "want" : true;
+    });
+  };
+  var doImport = function (onlyWant) {
+    if (impBusy) return;
+    var list = impCandidates(onlyWant);
+    if (!list.length) { setErr("没有可导的新片子（都已经在片单里了）"); setImpOpen(false); return; }
+    setImpBusy(true); setErr("");
+    var stamp = Date.now();
+    var rows = list.map(function (f, i) {
+      return { id: "f" + stamp + "i" + i, t: f.t, g: f.g || "", e: f.e || "🎬", added_by: myAuthor,
+        p_want: false, n_want: f.s === "want", p_seen: false, n_seen: f.s === "seen",
+        p_score: null, n_score: f.s === "seen" && f.r > 0 ? f.r : null };
+    });
+    var prev = films;
+    var next = rows.concat(films);
+    setFilms(next); saveFilmsCache(next);
+    nanaFilmsAdd(rows, function (e) {
+      setImpBusy(false); setImpOpen(false);
+      if (e) { setFilms(prev); saveFilmsCache(prev); setErr((e.message || "导入失败") + " · 再试一次"); }
+    });
   };
   var num = function (v) { var x = Number(v); return isNaN(x) ? 0 : x; };
   var bothWant = function (f) { return !!f.p_want && !!f.n_want && !(f.p_seen && f.n_seen); };
@@ -7457,7 +7488,16 @@ function OurFilmsBoard() {
     h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
       h("input", { value: inp, onChange: function (e) { setInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") add(); }, placeholder: "加一部想一起看的片子～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,135,26,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
       h("button", { onClick: add, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, "＋ 加片")),
-    h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "加片的人自动标上 🌟 想看 · 都打完分自动开牌，分差 ≥2 盖 ⚡，一致盖 💯"));
+    h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "加片的人自动标上 🌟 想看 · 都打完分自动开牌，分差 ≥2 盖 ⚡，一致盖 💯"),
+    importSource.length > 0 && h("div", { style: { marginTop: 8, textAlign: "center" } },
+      !impOpen
+        ? h("button", { onClick: function () { setImpOpen(true); }, style: { border: "1.5px dashed rgba(200,135,26,0.4)", background: "none", color: "#c8871a", borderRadius: 999, padding: "7px 14px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "⬇️ 从 Nana 影库导入")
+        : h("div", { style: { border: "1.5px solid rgba(200,135,26,0.3)", borderRadius: 14, padding: "10px 12px", background: "#fffaf2" } },
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(120,100,105,0.8)", fontWeight: 700, marginBottom: 8, lineHeight: 1.6 } }, "影库的想看/看过/星星会记到 Nana 名下，已在片单里的自动跳过。在 Nana 手机上导，她打过的星星才带得上哦～"),
+            h("div", { style: { display: "flex", gap: 8 } },
+              h("button", { onClick: function () { doImport(true); }, disabled: impBusy, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "rgba(255,200,90,0.25)", color: "#c8871a" } }, impBusy ? "导入中…" : "只导 🌟想看 (" + impCandidates(true).length + ")"),
+              h("button", { onClick: function () { doImport(false); }, disabled: impBusy, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, impBusy ? "导入中…" : "导全部 (" + impCandidates(false).length + ")"),
+              h("button", { onClick: function () { setImpOpen(false); }, disabled: impBusy, style: { flexShrink: 0, border: "none", background: "none", color: "rgba(150,125,120,0.6)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "算了")))));
 }
 
 function CinemaActivity(_refCN) {
@@ -7633,7 +7673,9 @@ function CinemaActivity(_refCN) {
     if (s === "seen") return { txt: "✅ 看过", bg: "rgba(110,205,150,0.22)", col: "#2ba172" };
     return { txt: "＋ 加入", bg: "rgba(255,255,255,0.1)", col: "rgba(230,220,240,0.75)" };
   };
-  if (cnTab === "ours") return h("div", null, cnTabRow, h(OurFilmsBoard, null));
+  if (cnTab === "ours") return h("div", null, cnTabRow, h(OurFilmsBoard, {
+    importSource: every.map(function (f) { var m = getMark(f); return { t: f.t, e: f.e, g: f.g, s: m.s, r: m.r || 0 }; })
+  }));
   return h("div", null,
     cnTabRow,
     // ── 影厅 ──
