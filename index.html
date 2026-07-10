@@ -7302,6 +7302,21 @@ var nanaFilmsList = function (cb) { nanaSyncReq("GET", "shared_films?select=*&or
 var nanaFilmsAdd = function (film, cb) { nanaSyncReq("POST", "shared_films", film, cb); };
 var nanaFilmsPatch = function (id, patch, cb) { nanaSyncReq("PATCH", "shared_films?id=eq." + encodeURIComponent(id), patch, cb); };
 var nanaFilmsDel = function (id, cb) { nanaSyncReq("DELETE", "shared_films?id=eq." + encodeURIComponent(id), null, cb); };
+var nanaFilmsBulk = function (rows, cb) {
+  try {
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 20000) : null;
+    fetch(NANA_SYNC.url + "/rest/v1/shared_films", {
+      method: "POST",
+      headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "application/json", "Prefer": "resolution=ignore-duplicates,return=minimal" },
+      body: JSON.stringify(rows),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      if (timer) clearTimeout(timer);
+      cb(res.ok ? null : new Error("HTTP " + res.status));
+    })["catch"](function (err) { if (timer) clearTimeout(timer); cb(err); });
+  } catch (err) { cb(err); }
+};
 var readFilmsCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-films-cache") || "[]"); } catch (_) { return []; } };
 var saveFilmsCache = function (list) { try { localStorage.setItem("nana-shared-films-cache", JSON.stringify((list || []).slice(0, 300))); } catch (_) {} };
 function OurFilmsBoard(_refOF) {
@@ -7315,8 +7330,10 @@ function OurFilmsBoard(_refOF) {
   var _in = useState(""); var inp = _in[0], setInp = _in[1];
   var _fi = useState("all"); var filter = _fi[0], setFilter = _fi[1];
   var _dc = useState(null); var delConfirm = _dc[0], setDelConfirm = _dc[1];
-  var _im = useState(false); var impOpen = _im[0], setImpOpen = _im[1];
-  var _ib = useState(false); var impBusy = _ib[0], setImpBusy = _ib[1];
+  var _pk2 = useState(null); var pick = _pk2[0], setPick = _pk2[1];
+  var _rl2 = useState(false); var rolling = _rl2[0], setRolling = _rl2[1];
+  var spinRef = useRef(null);
+  var migRef = useRef(false);
   var me = myAuthor === "nana" ? "n" : "p";
   var meta = { p: nanaAuthorById("panda"), n: nanaAuthorById("nana") };
   var refresh = function (silent) {
@@ -7325,10 +7342,11 @@ function OurFilmsBoard(_refOF) {
     nanaFilmsList(function (e, data) {
       setLoading(false);
       if (e) { if (!silent) setErr(e.message || "同步失败"); return; }
-      if (data) { setFilms(data); saveFilmsCache(data); }
+      if (data) { setFilms(data); saveFilmsCache(data); if (!migRef.current) { migRef.current = true; maybeMigrate(data); } }
     });
   };
   useEffect(function () { if (myAuthor) refresh(readFilmsCache().length > 0); }, [myAuthor]);
+  useEffect(function () { return function () { if (spinRef.current) clearInterval(spinRef.current); }; }, []);
   var mutate = function (id, patch) {
     var prev = films;
     var next = films.map(function (f) {
@@ -7355,33 +7373,57 @@ function OurFilmsBoard(_refOF) {
     setFilms(next); saveFilmsCache(next); setDelConfirm(null);
     nanaFilmsDel(f.id, function (e) { if (e) { setFilms(prev); saveFilmsCache(prev); setErr("没删掉 · 再试一次"); } });
   };
-  // 从 Nana 影库导入（去重；影库的状态记到 Nana 名下）
-  var impCandidates = function (onlyWant) {
-    var have = {};
-    films.forEach(function (f) { have[(f.t || "").trim()] = true; });
-    return importSource.filter(function (f) {
-      if (have[(f.t || "").trim()]) return false;
-      return onlyWant ? f.s === "want" : true;
-    });
+  // 旧影库自动搬家：首次同步后把还没有的片子批量搬进来（id 固定 lib-*，云端重复自动忽略）
+  var maybeMigrate = function (server) {
+    try {
+      if (!importSource.length) return;
+      var have = {};
+      server.forEach(function (f) { have[f.id] = true; have["t:" + (f.t || "").trim()] = true; });
+      var rows = [];
+      importSource.forEach(function (f) {
+        var id = "lib-" + f.id;
+        if (have[id] || have["t:" + (f.t || "").trim()]) return;
+        rows.push({ id: id, t: f.t, g: f.g || "", e: f.e || "🎬", added_by: "nana", p_want: false, n_want: f.s === "want", p_seen: false, n_seen: f.s === "seen", p_score: null, n_score: (f.s === "seen" && f.r > 0) ? f.r : null });
+      });
+      // 这台设备本地打过的星星，补写到云端空位（只跑一次）
+      var patches = [];
+      var merged = false;
+      try { merged = !!localStorage.getItem("nana-lib-stars-merged"); } catch (_) {}
+      if (!merged) {
+        importSource.forEach(function (f) {
+          if (!(f.r > 0)) return;
+          var sid = "lib-" + f.id, srv = null;
+          for (var i = 0; i < server.length; i++) { if (server[i].id === sid) { srv = server[i]; break; } }
+          if (srv && srv.n_score == null) patches.push({ id: sid, n_score: f.r });
+        });
+      }
+      if (rows.length) nanaFilmsBulk(rows, function (e) { if (!e) refresh(true); });
+      if (patches.length) {
+        var done = 0;
+        patches.forEach(function (p) {
+          nanaFilmsPatch(p.id, { n_score: p.n_score, n_seen: true }, function () {
+            done++;
+            if (done === patches.length) { try { localStorage.setItem("nana-lib-stars-merged", "1"); } catch (_) {} refresh(true); }
+          });
+        });
+      } else if (!merged) { try { localStorage.setItem("nana-lib-stars-merged", "1"); } catch (_) {} }
+    } catch (_) {}
   };
-  var doImport = function (onlyWant) {
-    if (impBusy) return;
-    var list = impCandidates(onlyWant);
-    if (!list.length) { setErr("没有可导的新片子（都已经在片单里了）"); setImpOpen(false); return; }
-    setImpBusy(true); setErr("");
-    var stamp = Date.now();
-    var rows = list.map(function (f, i) {
-      return { id: "f" + stamp + "i" + i, t: f.t, g: f.g || "", e: f.e || "🎬", added_by: myAuthor,
-        p_want: false, n_want: f.s === "want", p_seen: false, n_seen: f.s === "seen",
-        p_score: null, n_score: f.s === "seen" && f.r > 0 ? f.r : null };
-    });
-    var prev = films;
-    var next = rows.concat(films);
-    setFilms(next); saveFilmsCache(next);
-    nanaFilmsAdd(rows, function (e) {
-      setImpBusy(false); setImpOpen(false);
-      if (e) { setFilms(prev); saveFilmsCache(prev); setErr((e.message || "导入失败") + " · 再试一次"); }
-    });
+  // 抽片机：都想看 > 有人想看 > 还没都看过 > 全部
+  var spin = function () {
+    if (rolling) return;
+    var both = films.filter(bothWant);
+    var any = films.filter(function (f) { return (f.p_want || f.n_want) && !(f.p_seen && f.n_seen); });
+    var unseen = films.filter(function (f) { return !(f.p_seen && f.n_seen); });
+    var pool = both.length ? both : any.length ? any : unseen.length ? unseen : films;
+    if (!pool.length) { setErr("片单还空着，先加一部再抽～"); return; }
+    setRolling(true);
+    var n = 0;
+    spinRef.current = setInterval(function () {
+      n++;
+      setPick(pool[Math.floor(Math.random() * pool.length)]);
+      if (n > 16) { clearInterval(spinRef.current); spinRef.current = null; setRolling(false); }
+    }, 85);
   };
   var num = function (v) { var x = Number(v); return isNaN(x) ? 0 : x; };
   var bothWant = function (f) { return !!f.p_want && !!f.n_want && !(f.p_seen && f.n_seen); };
@@ -7402,7 +7444,7 @@ function OurFilmsBoard(_refOF) {
   if (!myAuthor) {
     return h("div", { style: { background: "#fff", borderRadius: 20, padding: "22px 18px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)", textAlign: "center" } },
       h("div", { style: { fontSize: "1.6rem", marginBottom: 6 } }, "💞"),
-      h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark, marginBottom: 4 } }, "我们的片单"),
+      h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark, marginBottom: 4 } }, "🍿 两个人的电影节"),
       h("div", { style: { fontSize: "0.74rem", color: "rgba(120,100,105,0.7)", marginBottom: 14 } }, "先说好你是谁（和 221B 通用，只选一次）"),
       h("div", { style: { display: "flex", gap: 10 } }, NANA_AUTHORS.map(function (a) {
         return h("button", { key: a.id, onClick: function () { setMyAuthor(a.id); try { localStorage.setItem("nana-author", a.id); } catch (_) {} }, style: { flex: 1, border: "1.5px solid " + a.col, borderRadius: 16, padding: "14px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: a.bg, color: a.col } }, a.e + " 我是 " + a.label);
@@ -7471,11 +7513,30 @@ function OurFilmsBoard(_refOF) {
     filter === "rec" ? "暂时没有安利——谁先看到 4 星好片谁先安利" :
     filter === "opened" ? "还没有都打完分的片子，开牌区空着呢" :
     "片单还空着，加第一部吧 🎬";
-  return h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
+  var hall = h("div", { style: { background: "linear-gradient(180deg,#1a1030,#241640 60%,#160d28)", borderRadius: 20, padding: "18px 16px 16px", boxShadow: "0 8px 28px rgba(20,10,40,0.5)", marginBottom: 14, position: "relative", overflow: "hidden" } },
+    h("div", { style: { textAlign: "center", color: "#ffd86a", fontWeight: 800, fontSize: "0.72rem", letterSpacing: 4, marginBottom: 10 } }, "★ NANA & PANDA FILM FESTIVAL ★"),
+    h("div", { style: { position: "relative", borderRadius: 12, overflow: "hidden", border: "3px solid #3a2a5a", background: "linear-gradient(160deg,#0d0820,#1a1235)", minHeight: 118, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "14px 12px" } },
+      h("div", { style: { position: "absolute", left: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
+      h("div", { style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
+      pick
+        ? h("div", { style: { textAlign: "center", animation: "fadeSlideUp 0.3s ease" } },
+            h("div", { style: { fontSize: "2.2rem" } }, pick.e || "🎬"),
+            h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.02rem", marginTop: 6 } }, pick.t),
+            h("div", { style: { color: "rgba(220,200,255,0.65)", fontSize: "0.68rem", marginTop: 4 } }, pick.g || (nanaAuthorById(pick.added_by).e + " " + nanaAuthorById(pick.added_by).label + " 提名")),
+            !rolling && h("div", { style: { color: "#ffd86a", fontSize: "0.64rem", fontWeight: 700, marginTop: 8 } }, "🎟️ 本届最佳，就它了！"))
+        : h("div", { style: { textAlign: "center" } },
+            h("div", { style: { fontSize: "2rem" } }, "🎬"),
+            h("div", { style: { color: "rgba(220,210,240,0.8)", fontWeight: 700, fontSize: "0.82rem", marginTop: 6 } }, "红毯已铺好，评审入座～"))),
+    h("div", { style: { textAlign: "center", fontSize: "0.9rem", letterSpacing: 6, margin: "10px 0 4px", opacity: 0.9 } }, "💺💺🐼🐈💺💺"),
+    h("button", { onClick: spin, disabled: rolling, style: { display: "block", width: "100%", marginTop: 8, background: rolling ? "rgba(255,216,106,0.4)" : "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", border: "none", borderRadius: 14, padding: "13px 10px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: rolling ? "default" : "pointer", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, rolling ? "🎡 评审抽选中…" : "🍿 今晚看什么？抽一部！"),
+    h("div", { style: { textAlign: "center", color: "rgba(220,210,240,0.5)", fontSize: "0.62rem", marginTop: 8 } }, "标了 🍿都想看 的片子优先入围哦"));
+  return h("div", null,
+    hall,
+    h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
     h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "💞 我们的片单"),
+      h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "🍿 两个人的电影节"),
       h("button", { onClick: function () { refresh(false); }, disabled: loading, style: { border: "none", background: "none", color: "#c8871a", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", padding: 2 } }, loading ? "同步中…" : "🔄 刷新")),
-    h("div", { style: { fontSize: "0.62rem", color: "rgba(150,125,120,0.6)", marginBottom: 10 } }, "片子是公共的 · 想看/看过/打分各是各的 · 没打分之前看不到对方的分"),
+    h("div", { style: { fontSize: "0.62rem", color: "rgba(150,125,120,0.6)", marginBottom: 10 } }, "评审只有我们俩 · 想看/看过/打分各是各的 · 没打分前看不到对方的分"),
     err && h("div", { style: { fontSize: "0.66rem", color: "#c04040", background: "rgba(220,90,90,0.08)", borderRadius: 8, padding: "6px 9px", marginBottom: 8, fontWeight: 700 } }, "⚠️ " + err),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" } },
       pill(filter === "all", "全部 " + films.length, function () { setFilter("all"); }),
@@ -7488,26 +7549,12 @@ function OurFilmsBoard(_refOF) {
     h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
       h("input", { value: inp, onChange: function (e) { setInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") add(); }, placeholder: "加一部想一起看的片子～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,135,26,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
       h("button", { onClick: add, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, "＋ 加片")),
-    h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "加片的人自动标上 🌟 想看 · 都打完分自动开牌，分差 ≥2 盖 ⚡，一致盖 💯"),
-    importSource.length > 0 && h("div", { style: { marginTop: 8, textAlign: "center" } },
-      !impOpen
-        ? h("button", { onClick: function () { setImpOpen(true); }, style: { border: "1.5px dashed rgba(200,135,26,0.4)", background: "none", color: "#c8871a", borderRadius: 999, padding: "7px 14px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "⬇️ 从 Nana 影库导入")
-        : h("div", { style: { border: "1.5px solid rgba(200,135,26,0.3)", borderRadius: 14, padding: "10px 12px", background: "#fffaf2" } },
-            h("div", { style: { fontSize: "0.66rem", color: "rgba(120,100,105,0.8)", fontWeight: 700, marginBottom: 8, lineHeight: 1.6 } }, "影库的想看/看过/星星会记到 Nana 名下，已在片单里的自动跳过。在 Nana 手机上导，她打过的星星才带得上哦～"),
-            h("div", { style: { display: "flex", gap: 8 } },
-              h("button", { onClick: function () { doImport(true); }, disabled: impBusy, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "rgba(255,200,90,0.25)", color: "#c8871a" } }, impBusy ? "导入中…" : "只导 🌟想看 (" + impCandidates(true).length + ")"),
-              h("button", { onClick: function () { doImport(false); }, disabled: impBusy, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, impBusy ? "导入中…" : "导全部 (" + impCandidates(false).length + ")"),
-              h("button", { onClick: function () { setImpOpen(false); }, disabled: impBusy, style: { flexShrink: 0, border: "none", background: "none", color: "rgba(150,125,120,0.6)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "算了")))));
+    h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "加片的人自动标上 🌟 想看 · 都打完分自动开牌，分差 ≥2 盖 ⚡，一致盖 💯")));
 }
 
 function CinemaActivity(_refCN) {
   var onCozy = _refCN.onCozy;
   var h = React.createElement;
-  var _tb = useState("nana"); var cnTab = _tb[0], setCnTab = _tb[1];
-  var cnTabRow = h("div", { style: { display: "flex", gap: 8, marginBottom: 12 } }, [["nana", "🎬 Nana 影库"], ["ours", "💞 我们的片单"]].map(function (tb) {
-    var on = cnTab === tb[0];
-    return h("button", { key: tb[0], onClick: function () { setCnTab(tb[0]); }, style: { flex: 1, border: on ? "2px solid #c8871a" : "1.5px solid rgba(160,130,130,0.25)", background: on ? "rgba(255,200,90,0.16)" : "#fff", color: on ? "#c8871a" : "rgba(120,100,105,0.75)", borderRadius: 14, padding: "10px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer" } }, tb[1]);
-  }));
   // 观影清单：按影片类型分区（pre:"seen"=默认看过，来自豆瓣记录；点状态按钮可改）
   var SECTIONS = [
     { name: "🏯 吉卜力 & 动画", films: [
@@ -7617,127 +7664,17 @@ function CinemaActivity(_refCN) {
       { id: "db2-tangerine", t: "橘子红了", e: "🍊", g: "经典剧 · 旧时光", pre: "seen" }
     ] }
   ];
-  var _cf = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films-custom") || "[]"); } catch (_) { return []; } });
-  var custom = _cf[0], setCustom = _cf[1];
-  var baseAll = [];
-  (function () { for (var si = 0; si < SECTIONS.length; si++) { baseAll = baseAll.concat(SECTIONS[si].films); } })();
-  var every = baseAll.concat(custom);
-  var _os = useState({}); var openSecs = _os[0], setOpenSecs = _os[1];
-  var toggleSec = function (i) {
-    setOpenSecs(function (prev) {
-      var n = {}; for (var k in prev) { if (Object.prototype.hasOwnProperty.call(prev, k)) n[k] = prev[k]; }
-      n[i] = !n[i]; return n;
-    });
-  };
-  var _mk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-films") || "{}"); } catch (_) { return {}; } });
-  var marks = _mk[0], setMarks = _mk[1];
-  var save = function (next) { setMarks(next); try { localStorage.setItem("nana-films", JSON.stringify(next)); } catch (_) {} };
-  var preOf = function (id) { var i; for (i = 0; i < every.length; i++) { if (every[i].id === id) return every[i].pre || ""; } return ""; };
-  var getMark = function (f) { return marks[f.id] || { s: f.pre || "", r: 0 }; };
-  var copyMarks = function () { var n = {}; for (var k in marks) { if (Object.prototype.hasOwnProperty.call(marks, k)) n[k] = marks[k]; } return n; };
-  var cycle = function (id) {
-    var cur = marks[id] ? (marks[id].s || "") : preOf(id);
-    var nextS = cur === "" ? "want" : cur === "want" ? "seen" : "";
-    var n = copyMarks(); n[id] = { s: nextS, r: (marks[id] && marks[id].r) || 0 };
-    save(n); if (onCozy) onCozy(2);
-  };
-  var setStars = function (id, r) { var n = copyMarks(); n[id] = { s: "seen", r: r }; save(n); };
-  var _pk = useState(null); var pick = _pk[0], setPick = _pk[1];
-  var _rl = useState(false); var rolling = _rl[0], setRolling = _rl[1];
-  var spinRef = useRef(null);
-  useEffect(function () { return function () { if (spinRef.current) clearInterval(spinRef.current); }; }, []);
-  var spin = function () {
-    if (rolling) return;
-    setRolling(true);
-    var wants = every.filter(function (f) { return getMark(f).s === "want"; });
-    var unseen = every.filter(function (f) { return getMark(f).s !== "seen"; });
-    var pool = wants.length >= 1 ? wants : (unseen.length >= 1 ? unseen : every);
-    var n = 0;
-    spinRef.current = setInterval(function () {
-      n++;
-      setPick(pool[Math.floor(Math.random() * pool.length)]);
-      if (n > 16) { clearInterval(spinRef.current); spinRef.current = null; setRolling(false); if (onCozy) onCozy(3); }
-    }, 85);
-  };
-  var _inp = useState(""); var inp = _inp[0], setInp = _inp[1];
-  var addFilm = function () {
-    var t = (inp || "").trim(); if (!t) return;
-    var nf = { id: "c" + Date.now(), t: t, e: "🎞️", g: "Nana 私藏" };
-    var next = custom.concat([nf]); setCustom(next);
-    try { localStorage.setItem("nana-films-custom", JSON.stringify(next)); } catch (_) {}
-    setInp("");
-  };
-  var seenCount = every.filter(function (f) { return getMark(f).s === "seen"; }).length;
-  var chip = function (s) {
-    if (s === "want") return { txt: "🌟 想看", bg: "rgba(255,200,90,0.22)", col: "#c8871a" };
-    if (s === "seen") return { txt: "✅ 看过", bg: "rgba(110,205,150,0.22)", col: "#2ba172" };
-    return { txt: "＋ 加入", bg: "rgba(255,255,255,0.1)", col: "rgba(230,220,240,0.75)" };
-  };
-  if (cnTab === "ours") return h("div", null, cnTabRow, h(OurFilmsBoard, {
-    importSource: every.map(function (f) { var m = getMark(f); return { t: f.t, e: f.e, g: f.g, s: m.s, r: m.r || 0 }; })
-  }));
-  return h("div", null,
-    cnTabRow,
-    // ── 影厅 ──
-    h("div", { style: { background: "linear-gradient(180deg,#1a1030,#241640 60%,#160d28)", borderRadius: 20, padding: "18px 16px 16px", boxShadow: "0 8px 28px rgba(20,10,40,0.5)", marginBottom: 14, position: "relative", overflow: "hidden" } },
-      h("div", { style: { textAlign: "center", color: "#ffd86a", fontWeight: 800, fontSize: "0.72rem", letterSpacing: 4, marginBottom: 10 } }, "★ NANA CINEMA ★"),
-      h("div", { style: { position: "relative", borderRadius: 12, overflow: "hidden", border: "3px solid #3a2a5a", background: "linear-gradient(160deg,#0d0820,#1a1235)", minHeight: 118, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "14px 12px" } },
-        h("div", { style: { position: "absolute", left: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
-        h("div", { style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 14, background: "repeating-linear-gradient(180deg,#5a1a2a 0 14px,#7a2a3a 14px 28px)" } }),
-        pick
-          ? h("div", { style: { textAlign: "center", animation: "fadeSlideUp 0.3s ease" } },
-              h("div", { style: { fontSize: "2.2rem" } }, pick.e),
-              h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.02rem", marginTop: 6 } }, pick.t),
-              h("div", { style: { color: "rgba(220,200,255,0.65)", fontSize: "0.68rem", marginTop: 4 } }, pick.g),
-              !rolling && h("div", { style: { color: "#ffd86a", fontSize: "0.64rem", fontWeight: 700, marginTop: 8 } }, "🎟️ 今晚就它了！"))
-          : h("div", { style: { textAlign: "center" } },
-              h("div", { style: { fontSize: "2rem" } }, "🎬"),
-              h("div", { style: { color: "rgba(220,210,240,0.8)", fontWeight: 700, fontSize: "0.82rem", marginTop: 6 } }, "幕布已就位，选片开演～")),
-        null),
-      h("div", { style: { textAlign: "center", fontSize: "0.9rem", letterSpacing: 6, margin: "10px 0 4px", opacity: 0.9 } }, "💺💺💺🐻💺💺💺"),
-      h("button", { onClick: spin, disabled: rolling, style: { display: "block", width: "100%", marginTop: 8, background: rolling ? "rgba(255,216,106,0.4)" : "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", border: "none", borderRadius: 14, padding: "13px 10px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: rolling ? "default" : "pointer", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, rolling ? "🎡 抽片中…" : "🍿 今晚看什么？抽一部！"),
-      h("div", { style: { textAlign: "center", color: "rgba(220,210,240,0.5)", fontSize: "0.62rem", marginTop: 8 } }, "清单里标了 🌟想看 的话，就只从想看里抽哦")),
-    // ── 观影清单 ──
-    h("div", { style: { background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 4px 14px rgba(160,120,120,0.12)" } },
-      h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.95rem", color: COLORS.dark } }, "🎞️ 观影清单"),
-        h("div", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.72rem" } }, "看过 " + seenCount + "/" + every.length)),
-      (function () {
-        var filmRow = function (f) {
-          var m = getMark(f);
-          var c = chip(m.s);
-          return h("div", { key: f.id, style: { display: "flex", alignItems: "center", gap: 9, padding: "8px 6px", borderBottom: "1px solid rgba(160,130,130,0.1)" } },
-            h("div", { style: { fontSize: "1.25rem", flexShrink: 0 } }, f.e),
-            h("div", { style: { flex: 1, minWidth: 0 } },
-              h("div", { style: { fontWeight: 700, fontSize: "0.82rem", color: COLORS.dark, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, f.t),
-              h("div", { style: { fontSize: "0.6rem", color: "rgba(120,100,105,0.7)", marginTop: 1 } }, f.g),
-              m.s === "seen" && h("div", { style: { marginTop: 3, display: "flex", gap: 2 } }, [1, 2, 3, 4, 5].map(function (i) {
-                return h("span", { key: i, onClick: function (ev) { ev.stopPropagation(); setStars(f.id, i); }, style: { cursor: "pointer", fontSize: "0.8rem", opacity: i <= (m.r || 0) ? 1 : 0.25 } }, "⭐");
-              }))),
-            m.s === "seen"
-              ? h("button", { onClick: function () { cycle(f.id); }, title: "看过 · 点一下改状态", style: { flexShrink: 0, width: 22, height: 22, borderRadius: "50%", border: "none", background: "rgba(110,205,150,0.16)", color: "#2ba172", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", lineHeight: "22px", padding: 0, textAlign: "center" } }, "✓")
-              : h("button", { onClick: function () { cycle(f.id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
-        };
-        return h("div", null,
-          SECTIONS.map(function (sec, si) {
-            var open = !!openSecs[si];
-            var secSeen = sec.films.filter(function (f) { return getMark(f).s === "seen"; }).length;
-            return h("div", { key: sec.name },
-              h("div", { onClick: function () { toggleSec(si); }, style: { display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", marginTop: si === 0 ? 0 : 8, padding: "10px 12px", borderRadius: 12, background: "rgba(200,135,26,0.08)", border: "1px solid rgba(200,135,26,0.18)" } },
-                h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: COLORS.dark } }, sec.name),
-                h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexShrink: 0 } },
-                  h("span", { style: { color: "#2ba172", fontWeight: 800, fontSize: "0.64rem" } }, secSeen + "/" + sec.films.length),
-                  h("span", { style: { color: "#c8871a", fontWeight: 800, fontSize: "0.78rem" } }, open ? "▾" : "▸"))),
-              open && h("div", { style: { padding: "0 2px" } }, sec.films.map(filmRow)));
-          }),
-          custom.length ? h("div", null,
-            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: COLORS.dark, margin: "12px 0 2px", padding: "0 2px" } }, "🎞️ Nana 自己加的 · " + custom.length),
-            custom.map(filmRow)) : null);
-      })(),
-      h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
-        h("input", { value: inp, onChange: function (e) { setInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addFilm(); }, placeholder: "想看的片子，自己加一部～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,135,26,0.35)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.8rem", color: COLORS.dark, outline: "none", background: "#fffaf2" } }),
-        h("button", { onClick: addFilm, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405" } }, "＋ 加片")),
-      h("div", { style: { textAlign: "center", color: "rgba(150,125,120,0.55)", fontSize: "0.62rem", marginTop: 10 } }, "点右边小按钮：加入 → 🌟想看 → ✅看过（可打星）")));
+  // 旧影库（SECTIONS + 自加影片 + 本机标记）现在只作为一次性迁移数据源，页面即「两个人的电影节」
+  var custom = (function () { try { return JSON.parse(localStorage.getItem("nana-films-custom") || "[]"); } catch (_) { return []; } })();
+  var marks = (function () { try { return JSON.parse(localStorage.getItem("nana-films") || "{}"); } catch (_) { return {}; } })();
+  var every = [];
+  (function () { for (var si = 0; si < SECTIONS.length; si++) { every = every.concat(SECTIONS[si].films); } })();
+  every = every.concat(custom);
+  var importSource = every.map(function (f) {
+    var m = marks[f.id] || { s: f.pre || "", r: 0 };
+    return { id: f.id, t: f.t, e: f.e, g: f.g, s: m.s || "", r: m.r || 0 };
+  });
+  return h(OurFilmsBoard, { importSource: importSource });
 }
 
 // ── 照片存取（IndexedDB，本机私密；压缩后存 dataURL）─────────
