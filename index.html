@@ -7383,30 +7383,9 @@ function OurFilmsBoard(_refOF) {
       importSource.forEach(function (f) {
         var id = "lib-" + f.id;
         if (have[id] || have["t:" + (f.t || "").trim()]) return;
-        rows.push({ id: id, t: f.t, g: f.g || "", e: f.e || "🎬", added_by: "nana", p_want: false, n_want: f.s === "want", p_seen: false, n_seen: f.s === "seen", p_score: null, n_score: (f.s === "seen" && f.r > 0) ? f.r : null });
+        rows.push({ id: id, t: f.t, g: f.g || "", e: f.e || "🎬", added_by: "nana", p_want: false, n_want: f.s === "want", p_seen: false, n_seen: false, p_score: null, n_score: null });
       });
-      // 这台设备本地打过的星星，补写到云端空位（只跑一次）
-      var patches = [];
-      var merged = false;
-      try { merged = !!localStorage.getItem("nana-lib-stars-merged"); } catch (_) {}
-      if (!merged) {
-        importSource.forEach(function (f) {
-          if (!(f.r > 0)) return;
-          var sid = "lib-" + f.id, srv = null;
-          for (var i = 0; i < server.length; i++) { if (server[i].id === sid) { srv = server[i]; break; } }
-          if (srv && srv.n_score == null) patches.push({ id: sid, n_score: f.r });
-        });
-      }
       if (rows.length) nanaFilmsBulk(rows, function (e) { if (!e) refresh(true); });
-      if (patches.length) {
-        var done = 0;
-        patches.forEach(function (p) {
-          nanaFilmsPatch(p.id, { n_score: p.n_score, n_seen: true }, function () {
-            done++;
-            if (done === patches.length) { try { localStorage.setItem("nana-lib-stars-merged", "1"); } catch (_) {} refresh(true); }
-          });
-        });
-      } else if (!merged) { try { localStorage.setItem("nana-lib-stars-merged", "1"); } catch (_) {} }
     } catch (_) {}
   };
   // 抽片机：都想看 > 有人想看 > 还没都看过 > 全部
