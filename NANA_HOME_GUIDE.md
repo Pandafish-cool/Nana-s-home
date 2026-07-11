@@ -3,7 +3,7 @@
 > 网站：https://pandafish-cool.github.io/Nana-s-home/
 > 代码：全部在 `index.html`（React.createElement 写法，无 JSX）。彩蛋细则见 `EASTER_EGGS.md`。
 > 上线方式：改代码 → 合并到 `main` → GitHub Pages 自动部署（约 1 分钟）。
-> _最后更新：2026-07-05_
+> _最后更新：2026-07-11_
 
 ---
 
@@ -61,7 +61,8 @@
 - **🏠 贝克街 221B（双人共享小本本）**：第三个标签页——两位「住户」的来信互相都能看到（云端同步，Supabase）。侦探风文案：寄往 221B / 门房取信 / 再点一下烧掉
   - 第一次进入选身份：🌸 Nana / 🐼 熊猫鱼（记住在本机 `nana-author`，可「换人」）
   - 写信同样可选四款信纸；「📮 寄进小本本」即同步；每张带作者徽章+日期；自己写的才能撕（两步确认）；💌 可做成带署名的信纸图片分享
-  - **📷 信里可以贴照片**：压缩后传到 Supabase Storage 公开桶 `notes`（两人都能看到），信纸上以拍立得展示，点图全屏；删信/换图会连带清理云端图片\n  - 云端：Supabase 表 `shared_notes`（`pu` 列存图片 URL）+ Storage 桶 `notes`（配置在代码 `NANA_SYNC`，anon key 公开安全）；连不上会显示错误提示+🔄刷新重试
+  - **📷 信里可以贴照片**：压缩后传到 Supabase Storage 公开桶 `notes`（两人都能看到），信纸上以拍立得展示，点图全屏；删信/换图会连带清理云端图片；**一封信最多可贴 3 张**（多张以 JSON 数组存进 `pu` 字段，旧单图信兼容）
+  - 云端：Supabase 表 `shared_notes`（`pu` 列存图片 URL）+ Storage 桶 `notes`（配置在代码 `NANA_SYNC`，anon key 公开安全）；连不上会显示错误提示+🔄刷新重试
 - **📚 我的书单**：加书；状态循环 `🌟想读 → 📖在读 → ✅读完`（图标跟着变、读完划线计数）
 - 数据：`nana-reading-notes` / `nana-books`（本机）；共享小笺在 Supabase
 
