@@ -16910,6 +16910,19 @@ function RewardsWallet() {
   var _o = useState(false); var open = _o[0]; var setOpen = _o[1];
   var _v = useState(0); var setVer = _v[1];
   var _c = useState(null); var confirmId = _c[0]; var setConfirmId = _c[1];
+  // 补发：大餐兑换券（装订遗漏款，按编号去重，只发一次）
+  useEffect(function () {
+    try {
+      var a = JSON.parse(localStorage.getItem("nana-rewards") || "[]");
+      var has = false;
+      for (var i = 0; i < a.length; i++) { if (a[i].serial === "NANA-FEAST-001") { has = true; break; } }
+      if (!has) {
+        a.push({ id: "feast-001", type: "meal", icon: "🍽️", title: "Nana 大餐兑换券", sub: "经查，此券装订时被漏发，现郑重补上——凭券兑换大餐一顿，吃什么 Nana 挑，时间随时约 🍽️", serial: "NANA-FEAST-001", date: new Date().toLocaleDateString("zh-CN") });
+        localStorage.setItem("nana-rewards", JSON.stringify(a));
+        setVer(function (n) { return n + 1; });
+      }
+    } catch (_) {}
+  }, []);
   var all = nanaGetRewards();
   var redeem = function redeem(id) { nanaRedeemReward(id); setConfirmId(null); setVer(function (n) { return n + 1; }); };
   var voucher = function voucher(r, i) {
