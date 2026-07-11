@@ -16960,232 +16960,103 @@ function RewardsWallet() {
   );
 }
 function MealCheckIn() {
+  var h = React.createElement;
   var today = new Date().toDateString();
-  var _useState287 = useState(function () {
-      try {
-        var s = localStorage.getItem("nana-meals");
-        if (!s) return {};
-        var d = JSON.parse(s);
-        return d.date === today ? d.meals : {};
-      } catch (_) {
-        return {};
-      }
-    }),
-    _useState288 = _slicedToArray(_useState287, 2),
-    meals = _useState288[0],
-    setMeals = _useState288[1];
-  var _useState289 = useState(null),
-    _useState290 = _slicedToArray(_useState289, 2),
-    aiMsg = _useState290[0],
-    setAiMsg = _useState290[1];
-  var _useState291 = useState(false),
-    _useState292 = _slicedToArray(_useState291, 2),
-    loading = _useState292[0],
-    setLoading = _useState292[1];
-  var _useState293 = useState(null),
-    _useState294 = _slicedToArray(_useState293, 2),
-    lastFetch = _useState294[0],
-    setLastFetch = _useState294[1];
-  var _useState295 = useState(null),
-    _useState296 = _slicedToArray(_useState295, 2),
-    burst = _useState296[0],
-    setBurst = _useState296[1];
-  var h = new Date().getHours();
-  var mealSlots = [{
-    id: "breakfast",
-    emoji: "🍳",
-    name: "早饭",
-    active: h >= 6
-  }, {
-    id: "lunch",
-    emoji: "🍱",
-    name: "午饭",
-    active: h >= 10
-  }, {
-    id: "dinner",
-    emoji: "🍜",
-    name: "晚饭",
-    active: h >= 16
-  }];
-  var checkedCount = Object.values(meals).filter(Boolean).length;
-  var missedSlot = mealSlots.filter(function (m) {
-    return m.active;
-  }).find(function (m) {
-    return !meals[m.id];
-  });
-  useEffect(function () {
-    if (lastFetch === today + checkedCount) return;
-    fetchAiReminder();
-  }, [checkedCount]);
-  var fetchAiReminder = /*#__PURE__*/function () {
-    var _ref130 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee16() {
-      var h2, timeStr, had, _d$content, resp, d, msg, _t9;
-      return _regenerator().w(function (_context16) {
-        while (1) switch (_context16.p = _context16.n) {
-          case 0:
-            setLoading(true);
-            h2 = new Date().getHours();
-            timeStr = "".concat(h2, ":").concat(String(new Date().getMinutes()).padStart(2, '0'));
-            had = mealSlots.filter(function (m) {
-              return meals[m.id];
-            }).map(function (m) {
-              return m.name;
-            }).join("、") || "还没有";
-            _context16.p = 1;
-            _context16.n = 2;
-            return fetch("https://api.anthropic.com/v1/messages", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 80,
-                system: "你是温柔关心人的朋友，提醒叫Nana的人好好吃饭。一句话15字以内，温暖自然，加一个emoji。",
-                messages: [{
-                  role: "user",
-                  content: "".concat(timeStr, "\uFF0C\u4ECA\u65E5\u5DF2\u5403\uFF1A").concat(had, "\u3002").concat(missedSlot ? "".concat(missedSlot.name, "\u8FD8\u6CA1\u5403\u3002") : "三餐都吃了！", "\u8BF4\u4E00\u53E5\u8BDD\u3002")
-                }]
-              })
-            });
-          case 2:
-            resp = _context16.v;
-            _context16.n = 3;
-            return resp.json();
-          case 3:
-            d = _context16.v;
-            msg = (_d$content = d.content) === null || _d$content === void 0 || (_d$content = _d$content[0]) === null || _d$content === void 0 || (_d$content = _d$content.text) === null || _d$content === void 0 ? void 0 : _d$content.trim();
-            if (msg) {
-              setAiMsg(msg);
-              setLastFetch(today + checkedCount);
-            }
-            _context16.n = 5;
-            break;
-          case 4:
-            _context16.p = 4;
-            _t9 = _context16.v;
-          case 5:
-            setLoading(false);
-          case 6:
-            return _context16.a(2);
-        }
-      }, _callee16, null, [[1, 4]]);
-    }));
-    return function fetchAiReminder() {
-      return _ref130.apply(this, arguments);
-    };
-  }();
-  var check = function check(id) {
-    var nm = _objectSpread(_objectSpread({}, meals), {}, _defineProperty({}, id, true));
-    setMeals(nm);
-    setBurst(id);
-    setTimeout(function () {
-      return setBurst(null);
-    }, 800);
+  var load = function () {
     try {
-      localStorage.setItem("nana-meals", JSON.stringify({
-        date: today,
-        meals: nm
-      }));
-    } catch (_) {}
+      var d = JSON.parse(localStorage.getItem("nana-meals") || "{}");
+      if (d.date === today) return { date: today, meals: d.meals || {}, coffee: d.coffee || 0 };
+      return { date: today, meals: {}, coffee: 0 };
+    } catch (_) { return { date: today, meals: {}, coffee: 0 }; }
   };
-  return /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "#fff",
-      borderRadius: 14,
-      border: "1.5px solid #D5C2C4",
-      boxShadow: "0px 8px 16px rgba(129,81,90,0.08)",
-      overflow: "visible",
-      position: "relative"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "10px 14px 8px",
-      display: "flex",
-      alignItems: "center",
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: "1.1rem"
-    }
-  }, "\uD83C\uDF7D\uFE0F"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 0
-    }
-  }, loading ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: "0.72rem",
-      color: "#b0a090",
-      fontStyle: "italic"
-    }
-  }, "\uD83E\uDD16 \u60F3\u8BF4\u4EC0\u4E48...") : aiMsg ? /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: "0.75rem",
-      color: "#7a5a30",
-      lineHeight: 1.4
-    }
-  }, aiMsg) : /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: "0.75rem",
-      color: "#b0a090"
-    }
-  }, "\u4ECA\u5929\u597D\u597D\u5403\u996D\u4E86\u5417\uFF0CNana\uFF1F")), !loading && /*#__PURE__*/React.createElement("button", {
-    onClick: fetchAiReminder,
-    style: {
-      background: "none",
-      border: "none",
-      cursor: "pointer",
-      fontSize: "0.65rem",
-      color: "#c0b0a0",
-      padding: 2
-    }
-  }, "\uD83D\uDD04")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 6,
-      padding: "0 10px 10px"
-    }
-  }, mealSlots.map(function (m) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: m.id,
-      onClick: function onClick() {
-        return !meals[m.id] && m.active && check(m.id);
-      },
-      style: {
-        flex: 1,
-        textAlign: "center",
-        borderRadius: 11,
-        padding: "8px 4px",
-        background: meals[m.id] ? "#D6F5E0" : m.active ? "#FFF8F7" : "#f5f0e8",
-        border: "1.5px solid ".concat(meals[m.id] ? "#5a9a5a" : m.active ? "#D5C2C4" : "#e0d0b8"),
-        cursor: meals[m.id] || !m.active ? "default" : "pointer",
-        opacity: m.active ? 1 : 0.45,
-        transform: burst === m.id ? "scale(1.12)" : "scale(1)",
-        transition: "all 0.2s"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: "1.2rem",
-        marginBottom: 2
-      }
-    }, meals[m.id] ? "✅" : m.emoji), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: "0.65rem",
-        fontWeight: 800,
-        color: meals[m.id] ? "#3a7a3a" : "#514345"
-      }
-    }, m.name));
-  })), checkedCount === 3 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      textAlign: "center",
-      padding: "0 14px 8px",
-      fontSize: "0.72rem",
-      color: "#5a9a5a",
-      fontWeight: 700
-    }
-  }, "\uD83C\uDF1F \u4E09\u9910\u90FD\u6253\u5361\u4E86\uFF0CNana\u597D\u68D2\uFF01"));
+  var _st = useState(load); var st = _st[0], setSt = _st[1];
+  var meals = st.meals || {};
+  var coffee = st.coffee || 0;
+  var _oa = useState(null); var oath = _oa[0], setOath = _oa[1];
+  var _mg = useState(""); var msg = _mg[0], setMsg = _mg[1];
+  var _bu = useState(null); var burst = _bu[0], setBurst = _bu[1];
+  var hourNow = new Date().getHours();
+  var save = function (next) { setSt(next); try { localStorage.setItem("nana-meals", JSON.stringify(next)); } catch (_) {} };
+  var pick = function (arr) { return arr[Math.floor(Math.random() * arr.length)]; };
+  var SLOTS = [
+    { id: "breakfast", emoji: "🍳", name: "早饭", active: hourNow >= 6,
+      praise: ["人类开机成功，今日版本加载完毕 ✅", "早饭到位，办事处放行 🍳", "开机仪式完成，运行流畅 🚀"] },
+    { id: "lunch", emoji: "🍱", name: "午饭", active: hourNow >= 10,
+      praise: ["中场加油完毕，下半场稳了 ⛽", "干饭速度合格，品味人生达标 🍚", "午饭已签收，办事处盖章 ✅"] },
+    { id: "dinner", emoji: "🍜", name: "晚饭", active: hourNow >= 16,
+      praise: ["今日饲养收尾，好好很满意 🐾", "晚饭入库，进入消化瘫模式 🛋️", "今日份 Nana 喂养完毕 🌙"] }
+  ];
+  var OATH_Q = ["办事处例行审查：这顿真的吃了吗？", "好好竖起尾巴盯着你：真吃了？", "打卡前请如实回答：吃了没有？"];
+  var DENY = ["好好目送你去吃 👀 吃完回来盖章", "去去去，先吃饭，章给你留着 😤", "办事处等你，饭可不等你 🍚"];
+  var COFFEE_LINES = [
+    "☕ 第 1 杯：开机液已注入，Nana 正式上线",
+    "⚡ 第 2 杯：续航加满，战斗力翻倍",
+    "📢 第 3 杯：咖啡因预算超支，请对心脏温柔一点 💓",
+    "🐾 第 4 杯：好好按住了你的杯子（喵：改喝水！）"
+  ];
+  var doneCount = 0;
+  SLOTS.forEach(function (sl) { if (meals[sl.id]) doneCount++; });
+  var allDone = doneCount === 3;
+  var idleMsg = function () {
+    if (allDone) return "今日投喂达标，监工好好已签收 🐾" + (coffee > 0 ? " 外加 " + coffee + " 杯燃料 ☕" : "");
+    var next = null;
+    for (var i = 0; i < SLOTS.length; i++) { if (SLOTS[i].active && !meals[SLOTS[i].id]) { next = SLOTS[i]; break; } }
+    if (next) return next.name + "窗口已开放，本处不接受「不饿」作为理由 😤";
+    return "办事处营业中，到点记得来打卡 🍚";
+  };
+  var confirmEat = function (slot) {
+    var n = { date: today, meals: {}, coffee: coffee };
+    for (var k in meals) { if (Object.prototype.hasOwnProperty.call(meals, k)) n.meals[k] = meals[k]; }
+    n.meals[slot.id] = true;
+    save(n); setOath(null); setBurst(slot.id);
+    setTimeout(function () { setBurst(null); }, 800);
+    var late = slot.id === "breakfast" && hourNow >= 14;
+    var doneNow = 0;
+    SLOTS.forEach(function (sl) { if (n.meals[sl.id]) doneNow++; });
+    setMsg(late ? "这个点的早饭…已标记为『早午晚饭』🤨" : doneNow === 3 ? "🐾 三餐齐了！监工好好郑重盖上爪印" : pick(slot.praise));
+  };
+  var addCoffee = function () {
+    var c = coffee + 1;
+    save({ date: today, meals: meals, coffee: c });
+    setBurst("coffee");
+    setTimeout(function () { setBurst(null); }, 800);
+    setMsg(COFFEE_LINES[Math.min(c, 4) - 1]);
+  };
+  var oathSlot = null;
+  if (oath) { for (var oi = 0; oi < SLOTS.length; oi++) { if (SLOTS[oi].id === oath) oathSlot = SLOTS[oi]; } }
+  var cell = function (slot) {
+    var done = !!meals[slot.id];
+    return h("div", {
+      key: slot.id,
+      onClick: function () { if (!done && slot.active) setOath(slot.id); },
+      style: { flex: 1, textAlign: "center", borderRadius: 11, padding: "8px 2px", background: done ? "#D6F5E0" : slot.active ? "#FFF8F7" : "#f5f0e8", border: "1.5px solid " + (done ? "#5a9a5a" : slot.active ? "#D5C2C4" : "#e0d0b8"), cursor: done || !slot.active ? "default" : "pointer", opacity: slot.active ? 1 : 0.45, transform: burst === slot.id ? "scale(1.12)" : "scale(1)", transition: "all 0.2s" }
+    },
+      h("div", { style: { fontSize: "1.2rem", marginBottom: 2 } }, done ? "✅" : slot.emoji),
+      h("div", { style: { fontSize: "0.65rem", fontWeight: 800, color: done ? "#3a7a3a" : "#514345" } }, slot.name));
+  };
+  return h("div", { style: { background: "#fff", borderRadius: 14, border: "1.5px solid #D5C2C4", boxShadow: "0px 8px 16px rgba(129,81,90,0.08)", overflow: "visible", position: "relative" } },
+    // 达标爪印章
+    allDone && h("div", { style: { position: "absolute", top: -9, right: 10, transform: "rotate(7deg)", border: "2px solid #5a9a5a", color: "#3a7a3a", background: "#eafaf0", borderRadius: 8, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 900, zIndex: 2, boxShadow: "0 3px 7px rgba(60,140,90,0.25)" } }, "🐾 投喂达标"),
+    h("div", { style: { padding: "10px 14px 6px", display: "flex", alignItems: "center", gap: 8 } },
+      h("span", { style: { fontSize: "1.1rem" } }, "🍚"),
+      h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#514345", flex: 1, minWidth: 0 } }, "Nana 投喂办事处"),
+      h("span", { style: { fontSize: "0.58rem", fontWeight: 800, color: "#8a6aa0", background: "rgba(150,110,190,0.1)", borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap" } }, "监工：好好 🐈")),
+    h("div", { style: { padding: "0 14px 8px", fontSize: "0.72rem", color: "#7a5a30", lineHeight: 1.5, minHeight: 18 } }, msg || idleMsg()),
+    oathSlot
+      ? h("div", { style: { margin: "0 10px 10px", background: "#fffaf2", border: "1.5px dashed rgba(200,135,26,0.4)", borderRadius: 12, padding: "10px 12px" } },
+          h("div", { style: { fontSize: "0.76rem", fontWeight: 800, color: "#6a5344", marginBottom: 8, textAlign: "center" } }, pick(OATH_Q).replace("这顿", oathSlot.name)),
+          h("div", { style: { display: "flex", gap: 8 } },
+            h("button", { onClick: function () { confirmEat(oathSlot); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "#D6F5E0", color: "#2e7d4f" } }, "吃了，我发誓 ✋"),
+            h("button", { onClick: function () { setOath(null); setMsg(pick(DENY)); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "rgba(220,120,90,0.12)", color: "#b05a3a" } }, "还没…这就去 😳")))
+      : h("div", { style: { display: "flex", gap: 6, padding: "0 10px 10px" } },
+          SLOTS.map(cell),
+          h("div", {
+            onClick: addCoffee,
+            style: { flex: 1, textAlign: "center", borderRadius: 11, padding: "8px 2px", background: coffee > 0 ? "#f6ead8" : "#FFF8F7", border: "1.5px solid " + (coffee > 0 ? "#c8871a" : "#D5C2C4"), cursor: "pointer", position: "relative", transform: burst === "coffee" ? "scale(1.12)" : "scale(1)", transition: "all 0.2s" }
+          },
+            coffee > 0 && h("div", { style: { position: "absolute", top: -6, right: -4, minWidth: 16, height: 16, padding: "0 4px", borderRadius: 9, background: "#c8871a", color: "#fff", fontSize: "0.58rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #fff" } }, coffee > 9 ? "9+" : coffee),
+            h("div", { style: { fontSize: "1.2rem", marginBottom: 2 } }, "☕"),
+            h("div", { style: { fontSize: "0.65rem", fontWeight: 800, color: coffee > 0 ? "#8a5a10" : "#514345" } }, "咖啡"))));
 }
 // ── HK MEMORY CARD — homepage ────────────────────────────
 function HKMemoryCard(_ref131) {
