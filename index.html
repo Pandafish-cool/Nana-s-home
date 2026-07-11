@@ -16979,13 +16979,14 @@ function MealCheckIn() {
   var save = function (next) { setSt(next); try { localStorage.setItem("nana-meals", JSON.stringify(next)); } catch (_) {} };
   var pick = function (arr) { return arr[Math.floor(Math.random() * arr.length)]; };
   var SLOTS = [
-    { id: "breakfast", emoji: "🍳", name: "早饭", active: hourNow >= 6,
+    { id: "breakfast", emoji: "🍳", name: "早饭", from: 6, to: 10,
       praise: ["人类开机成功，今日版本加载完毕 ✅", "早饭到位，办事处放行 🍳", "开机仪式完成，运行流畅 🚀"] },
-    { id: "lunch", emoji: "🍱", name: "午饭", active: hourNow >= 10,
+    { id: "lunch", emoji: "🍱", name: "午饭", from: 10, to: 15,
       praise: ["中场加油完毕，下半场稳了 ⛽", "干饭速度合格，品味人生达标 🍚", "午饭已签收，办事处盖章 ✅"] },
-    { id: "dinner", emoji: "🍜", name: "晚饭", active: hourNow >= 16,
+    { id: "dinner", emoji: "🍜", name: "晚饭", from: 16, to: 23,
       praise: ["今日饲养收尾，好好很满意 🐾", "晚饭入库，进入消化瘫模式 🛋️", "今日份 Nana 喂养完毕 🌙"] }
   ];
+  SLOTS.forEach(function (sl) { sl.active = hourNow >= sl.from && hourNow < sl.to; });
   var OATH_Q = ["办事处例行审查：这顿真的吃了吗？", "好好竖起尾巴盯着你：真吃了？", "打卡前请如实回答：吃了没有？"];
   var DENY = ["好好目送你去吃 👀 吃完回来盖章", "去去去，先吃饭，章给你留着 😤", "办事处等你，饭可不等你 🍚"];
   var COFFEE_LINES = [
@@ -16999,10 +17000,15 @@ function MealCheckIn() {
   var allDone = doneCount === 3;
   var idleMsg = function () {
     if (allDone) return "今日投喂达标，监工好好已签收 🐾" + (coffee > 0 ? " 外加 " + coffee + " 杯燃料 ☕" : "");
-    var next = null;
-    for (var i = 0; i < SLOTS.length; i++) { if (SLOTS[i].active && !meals[SLOTS[i].id]) { next = SLOTS[i]; break; } }
-    if (next) return next.name + "窗口已开放，本处不接受「不饿」作为理由 😤";
-    return "办事处营业中，到点记得来打卡 🍚";
+    var open = null, coming = null;
+    for (var i = 0; i < SLOTS.length; i++) {
+      if (meals[SLOTS[i].id]) continue;
+      if (SLOTS[i].active && !open) open = SLOTS[i];
+      if (SLOTS[i].from > hourNow && !coming) coming = SLOTS[i];
+    }
+    if (open) return open.name + "窗口营业中（" + open.from + "-" + open.to + " 点），本处不接受「不饿」作为理由 😤";
+    if (coming) return "下一班：" + coming.name + " " + coming.from + " 点开门，先垫垫水 💧";
+    return "今日窗口全部打烊，明天请早 😴";
   };
   var confirmEat = function (slot) {
     var n = { date: today, meals: {}, coffee: coffee };
@@ -17010,10 +17016,9 @@ function MealCheckIn() {
     n.meals[slot.id] = true;
     save(n); setOath(null); setBurst(slot.id);
     setTimeout(function () { setBurst(null); }, 800);
-    var late = slot.id === "breakfast" && hourNow >= 14;
     var doneNow = 0;
     SLOTS.forEach(function (sl) { if (n.meals[sl.id]) doneNow++; });
-    setMsg(late ? "这个点的早饭…已标记为『早午晚饭』🤨" : doneNow === 3 ? "🐾 三餐齐了！监工好好郑重盖上爪印" : pick(slot.praise));
+    setMsg(doneNow === 3 ? "🐾 三餐齐了！监工好好郑重盖上爪印" : pick(slot.praise));
   };
   var addCoffee = function () {
     var c = coffee + 1;
@@ -17026,13 +17031,20 @@ function MealCheckIn() {
   if (oath) { for (var oi = 0; oi < SLOTS.length; oi++) { if (SLOTS[oi].id === oath) oathSlot = SLOTS[oi]; } }
   var cell = function (slot) {
     var done = !!meals[slot.id];
+    var closed = !done && hourNow >= slot.to;
     return h("div", {
       key: slot.id,
-      onClick: function () { if (!done && slot.active) setOath(slot.id); },
-      style: { flex: 1, textAlign: "center", borderRadius: 11, padding: "8px 2px", background: done ? "#D6F5E0" : slot.active ? "#FFF8F7" : "#f5f0e8", border: "1.5px solid " + (done ? "#5a9a5a" : slot.active ? "#D5C2C4" : "#e0d0b8"), cursor: done || !slot.active ? "default" : "pointer", opacity: slot.active ? 1 : 0.45, transform: burst === slot.id ? "scale(1.12)" : "scale(1)", transition: "all 0.2s" }
+      onClick: function () {
+        if (done) return;
+        if (slot.active) return setOath(slot.id);
+        if (closed) return setMsg(slot.name + "窗口已打烊（" + slot.from + "-" + slot.to + " 点），明天请早 😴");
+        setMsg(slot.name + "窗口 " + slot.from + " 点才开门，心急吃不了热豆腐 ⏳");
+      },
+      style: { flex: 1, textAlign: "center", borderRadius: 11, padding: "8px 2px", background: done ? "#D6F5E0" : slot.active ? "#FFF8F7" : "#f5f0e8", border: "1.5px solid " + (done ? "#5a9a5a" : slot.active ? "#D5C2C4" : "#e0d0b8"), cursor: done ? "default" : "pointer", opacity: slot.active || done ? 1 : 0.45, transform: burst === slot.id ? "scale(1.12)" : "scale(1)", transition: "all 0.2s" }
     },
-      h("div", { style: { fontSize: "1.2rem", marginBottom: 2 } }, done ? "✅" : slot.emoji),
-      h("div", { style: { fontSize: "0.65rem", fontWeight: 800, color: done ? "#3a7a3a" : "#514345" } }, slot.name));
+      h("div", { style: { fontSize: "1.2rem", marginBottom: 2 } }, done ? "✅" : closed ? "😴" : slot.emoji),
+      h("div", { style: { fontSize: "0.65rem", fontWeight: 800, color: done ? "#3a7a3a" : "#514345" } }, slot.name),
+      h("div", { style: { fontSize: "0.5rem", fontWeight: 700, color: "rgba(140,120,110,0.65)", marginTop: 1 } }, slot.from + "-" + slot.to + "点"));
   };
   return h("div", { style: { background: "#fff", borderRadius: 14, border: "1.5px solid #D5C2C4", boxShadow: "0px 8px 16px rgba(129,81,90,0.08)", overflow: "visible", position: "relative" } },
     // 达标爪印章
