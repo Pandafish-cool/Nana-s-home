@@ -1,4 +1,4 @@
-var CACHE = "nana-home-v2";
+var CACHE = "nana-home-v3";
 var ASSETS = ["./", "index.html", "disney_fireworks.jpg", "stella_theater.jpg", "stella_gift.jpg", "icon-192.png", "icon-512.png", "manifest.json"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
@@ -20,24 +20,38 @@ self.addEventListener("fetch", function (e) {
       /\.(mp3|m4a|aac|ogg|oga|wav|flac|mp4|webm|mov)$/i.test(url.pathname)) {
     return;
   }
+  // 跨域数据接口（Supabase 等）不走缓存，直连
+  var isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
+  if (url.origin !== self.location.origin && !isFont) return;
   var isNav = e.request.mode === "navigate" || (e.request.destination === "document");
   if (isNav) {
+    // 秒开策略：有缓存就立刻用缓存渲染，同时后台静默拉新版本（下次打开生效）
     e.respondWith(
-      fetch(e.request).then(function (res) {
-        var copy = res.clone();
-        if (res && res.status === 200) caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
-        return res;
-      }).catch(function () { return caches.match(e.request).then(function (m) { return m || caches.match("index.html"); }); })
-    );
-  } else {
-    e.respondWith(
-      caches.match(e.request).then(function (m) {
-        return m || fetch(e.request).then(function (res) {
-          var copy = res.clone();
-          if (res && res.status === 200 && res.type === "basic") caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+      caches.match("index.html").then(function (cached) {
+        var network = fetch(e.request).then(function (res) {
+          if (res && res.status === 200) {
+            var copy = res.clone();
+            caches.open(CACHE).then(function (c) { c.put("index.html", copy); });
+          }
           return res;
         });
+        if (cached) { network["catch"](function () {}); return cached; }
+        return network["catch"](function () { return caches.match("index.html"); });
       })
     );
+    return;
   }
+  // 静态资源与字体：缓存优先，miss 时联网并回填
+  e.respondWith(
+    caches.match(e.request).then(function (m) {
+      return m || fetch(e.request).then(function (res) {
+        var ok = res && (res.status === 200 || res.type === "opaque");
+        if (ok && (res.type === "basic" || isFont)) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        }
+        return res;
+      });
+    })
+  );
 });
