@@ -17046,7 +17046,7 @@ function MealCheckIn() {
       ? h("div", { style: { margin: "0 10px 10px", background: "#fffaf2", border: "1.5px dashed rgba(200,135,26,0.4)", borderRadius: 12, padding: "10px 12px" } },
           h("div", { style: { fontSize: "0.76rem", fontWeight: 800, color: "#6a5344", marginBottom: 8, textAlign: "center" } }, pick(OATH_Q).replace("这顿", oathSlot.name)),
           h("div", { style: { display: "flex", gap: 8 } },
-            h("button", { onClick: function () { confirmEat(oathSlot); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "#D6F5E0", color: "#2e7d4f" } }, "吃了，我发誓 ✋"),
+            h("button", { onClick: function () { confirmEat(oathSlot); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "#D6F5E0", color: "#2e7d4f" } }, "以好好的名义发誓，吃了 🐾"),
             h("button", { onClick: function () { setOath(null); setMsg(pick(DENY)); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "rgba(220,120,90,0.12)", color: "#b05a3a" } }, "还没…这就去 😳")))
       : h("div", { style: { display: "flex", gap: 6, padding: "0 10px 10px" } },
           SLOTS.map(cell),
