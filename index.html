@@ -16946,101 +16946,6 @@ function RewardsWallet() {
         h("button", { onClick: function () { setOpen(false); }, style: { width: "100%", marginTop: 6, background: "#81515A", color: "#fff", border: "none", borderRadius: 12, padding: "11px", fontFamily: "inherit", fontWeight: 800, cursor: "pointer" } }, "收好啦 💛")))
   );
 }
-function GameStreakEgg(_refGS) {
-  var onClose = _refGS.onClose, plays = _refGS.plays, days = _refGS.days;
-  var h = React.createElement;
-  var _p = useState("pick"); var phase = _p[0]; var setPhase = _p[1];
-  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
-  var _sr = useState(function () { return "NANA-KB-" + String(100 + Math.floor(Math.random() * 900)); }); var serial = _sr[0];
-  var _sv = useState(false); var saved = _sv[0]; var setSaved = _sv[1];
-  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80); return function () { clearInterval(id); }; }, []);
-  useEffect(function () { if (phase !== "thanks") return; var id = setTimeout(function () { onClose(); }, 3000); return function () { clearTimeout(id); }; }, [phase]);
-  var T = tick;
-  var pick = function pick(i) {
-    if (phase !== "pick") return;
-    if (!saved) { nanaAddReward({ type: "keyboard", icon: "⌨️", title: "Nana 专属键盘券", sub: "奖励 Nana 一个专属键盘，让你无缝衔接 ⌨️", serial: serial }); setSaved(true); }
-    setPhase("win");
-  };
-  var conf = [];
-  if (phase === "win") {
-    var cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
-    for (var k = 0; k < 22; k++) { var cx = (k * 4.6 + Math.sin(k) * 5) % 100, cy = ((k * 7 + T * 1.6) % 120) - 12; conf.push(h("div", { key: "cf" + k, style: { position: "absolute", left: cx.toFixed(1) + "%", top: cy.toFixed(1) + "%", width: 6, height: 10, background: cols[k % 5], opacity: 0.9, transform: "rotate(" + ((T * 7 + k * 40) % 360) + "deg)", borderRadius: 1 } })); }
-  }
-  return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(16,22,40,0.88)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 20px" } },
-    conf,
-    h("div", { style: { color: "#8fd0ff", fontWeight: 800, fontSize: "0.8rem", letterSpacing: 1, marginBottom: 8, textAlign: "center", zIndex: 2 } }, "🎪 游乐场畅玩 " + (plays || days || 0) + " 次 · 抽奖时间！"),
-    phase === "pick" && h("div", { style: { textAlign: "center", zIndex: 2 } },
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.3rem,5vw,1.8rem)", marginBottom: 6 } }, "选一个金币翻开 👇"),
-      h("div", { style: { color: "rgba(255,255,255,0.6)", fontSize: "0.72rem", marginBottom: 18 } }, "只能翻一次哦，想好再下手～"),
-      h("div", { style: { display: "flex", gap: 16, justifyContent: "center" } }, [0, 1, 2].map(function (i) {
-        return h("div", { key: "box" + i, onClick: function () { pick(i); }, style: { fontSize: "3.2rem", cursor: "pointer", transform: "translateY(" + (Math.sin(T * 0.15 + i) * 4).toFixed(1) + "px)", userSelect: "none", filter: "drop-shadow(0 4px 10px rgba(240,190,60,0.6))" } }, "🪙");
-      }))
-    ),
-    phase === "win" && h("div", { style: { textAlign: "center", animation: "bounceIn 0.6s ease", maxWidth: 300, zIndex: 2 } },
-      h("div", { style: { fontSize: "2.6rem", marginBottom: 8 } }, "⌨️✨"),
-      h("div", { style: { background: "linear-gradient(135deg,#e8f0ff,#ede0ff)", borderRadius: 16, border: "2px dashed #6a7adb", padding: "18px 16px", color: "#3a3a7a", boxShadow: "0 8px 28px rgba(0,0,0,0.4)" } },
-        h("div", { style: { fontWeight: 900, fontSize: "1.2rem", color: "#4a4ab7" } }, "⌨️ Nana 专属键盘券"),
-        h("div", { style: { fontSize: "0.84rem", margin: "8px 0", lineHeight: 1.8 } }, "奖励 Nana 一个专属键盘 ⌨️", h("br", null), "让你无缝衔接～"),
-        h("div", { style: { fontSize: "0.64rem", color: "#6a6ab0", borderTop: "1px dashed #6a7adb", paddingTop: 8, marginTop: 8 } }, "编号 " + serial + " · 永久有效 · 仅限 Nana 使用 ✨")
-      ),
-      h("button", { onClick: function () { setPhase("thanks"); }, style: { marginTop: 16, background: "#4a4ab7", color: "#fff", border: "none", borderRadius: 12, padding: "10px 28px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, "收进卡包 💛")
-    ),
-    phase === "thanks" && h("div", { onClick: onClose, style: { textAlign: "center", animation: "bounceIn 0.5s ease", maxWidth: 300, zIndex: 2, cursor: "pointer" } },
-      h("div", { style: { fontSize: "2.6rem", marginBottom: 10 } }, "💙"),
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.1rem,4.6vw,1.45rem)", lineHeight: 1.6 } }, "玩得开心最重要，Nana～"),
-      h("div", { style: { color: "#8fd0ff", fontSize: "0.92rem", marginTop: 8 } }, "奖励已放进卡包 · 还有不定期惊喜哦 ✨"),
-      h("div", { style: { color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: 14 } }, "（点一下关闭）")
-    )
-  );
-}
-function MealLotteryEgg(_refML) {
-  var onClose = _refML.onClose, days = _refML.days;
-  var h = React.createElement;
-  var _p = useState("pick"); var phase = _p[0]; var setPhase = _p[1];
-  var _pk = useState(-1); var picked = _pk[0]; var setPicked = _pk[1];
-  var _t = useState(0); var tick = _t[0]; var setTick = _t[1];
-  var _sr = useState(function () { return "NANA-" + String(100 + Math.floor(Math.random() * 900)); }); var serial = _sr[0];
-  var _sv = useState(false); var saved = _sv[0]; var setSaved = _sv[1];
-  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80); return function () { clearInterval(id); }; }, []);
-  useEffect(function () { if (phase !== "thanks") return; var id = setTimeout(function () { onClose(); }, 3000); return function () { clearTimeout(id); }; }, [phase]);
-  var T = tick;
-  var pick = function pick(i) {
-    if (phase !== "pick") return;
-    if (!saved) { nanaAddReward({ type: "meal", icon: "🍱", title: "Nana 礼品券", sub: "你猜是什么？🤫 请和商家联系～（连续 7 天午餐达成）", serial: serial }); setSaved(true); }
-    setPicked(i); setPhase("win");
-  };
-  var conf = [];
-  if (phase === "win") {
-    var cols = ["#ff6b9d", "#ffd24a", "#6cc6ff", "#9be36b", "#c79bff"];
-    for (var k = 0; k < 22; k++) { var cx = (k * 4.6 + Math.sin(k) * 5) % 100, cy = ((k * 7 + T * 1.6) % 120) - 12; conf.push(h("div", { key: "cf" + k, style: { position: "absolute", left: cx.toFixed(1) + "%", top: cy.toFixed(1) + "%", width: 6, height: 10, background: cols[k % 5], opacity: 0.9, transform: "rotate(" + ((T * 7 + k * 40) % 360) + "deg)", borderRadius: 1 } })); }
-  }
-  return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(26,16,30,0.86)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 20px" } },
-    conf,
-    h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: 1, marginBottom: 8, textAlign: "center", zIndex: 2 } }, "🎉 连续吃午饭 " + days + " 天 · 抽奖时间！"),
-    phase === "pick" && h("div", { style: { textAlign: "center", zIndex: 2 } },
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.3rem,5vw,1.8rem)", marginBottom: 6 } }, "选一个饭盒打卡 👇"),
-      h("div", { style: { color: "rgba(255,255,255,0.6)", fontSize: "0.72rem", marginBottom: 18 } }, "只能打开一个哦，想好再戳～"),
-      h("div", { style: { display: "flex", gap: 16, justifyContent: "center" } }, [0, 1, 2].map(function (i) {
-        return h("div", { key: "box" + i, onClick: function () { pick(i); }, style: { fontSize: "3.2rem", cursor: "pointer", transform: "translateY(" + (Math.sin(T * 0.15 + i) * 4).toFixed(1) + "px)", userSelect: "none", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.4))" } }, "🍱");
-      }))
-    ),
-    phase === "win" && h("div", { style: { textAlign: "center", animation: "bounceIn 0.6s ease", maxWidth: 300, zIndex: 2 } },
-      h("div", { style: { fontSize: "2.6rem", marginBottom: 8 } }, "🍱✨"),
-      h("div", { style: { background: "linear-gradient(135deg,#fff3e0,#ffe0ec)", borderRadius: 16, border: "2px dashed #d8924a", padding: "18px 16px", color: "#7a4a20", boxShadow: "0 8px 28px rgba(0,0,0,0.4)" } },
-        h("div", { style: { fontWeight: 900, fontSize: "1.2rem", color: "#c0563a" } }, "🎁 Nana 礼品券"),
-        h("div", { style: { fontSize: "0.92rem", margin: "8px 0", lineHeight: 1.8, fontWeight: 700 } }, "你猜是什么？🤫", h("br", null), "请和商家联系～ 📞"),
-        h("div", { style: { fontSize: "0.64rem", color: "#a8742a", borderTop: "1px dashed #d8924a", paddingTop: 8, marginTop: 8 } }, "编号 " + serial + " · 永久有效 · 仅限 Nana 使用 ✨")
-      ),
-      h("button", { onClick: function () { setPhase("thanks"); }, style: { marginTop: 16, background: "#c0563a", color: "#fff", border: "none", borderRadius: 12, padding: "10px 28px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" } }, "收下啦 💛")
-    ),
-    phase === "thanks" && h("div", { onClick: onClose, style: { textAlign: "center", animation: "bounceIn 0.5s ease", maxWidth: 300, zIndex: 2, cursor: "pointer" } },
-      h("div", { style: { fontSize: "2.6rem", marginBottom: 10 } }, "💛"),
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "clamp(1.1rem,4.6vw,1.45rem)", lineHeight: 1.6 } }, "请 Nana 继续保持好好吃饭～"),
-      h("div", { style: { color: "#ffd86a", fontSize: "0.92rem", marginTop: 8 } }, "有不定期的惊喜哦 ✨"),
-      h("div", { style: { color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", marginTop: 14 } }, "（点一下关闭）")
-    )
-  );
-}
 function MealCheckIn() {
   var today = new Date().toDateString();
   var _useState287 = useState(function () {
@@ -17072,10 +16977,6 @@ function MealCheckIn() {
     _useState296 = _slicedToArray(_useState295, 2),
     burst = _useState296[0],
     setBurst = _useState296[1];
-  var _useStateLot = useState(false),
-    showLottery = _useStateLot[0],
-    setShowLottery = _useStateLot[1];
-  var mealDays = function () { try { return (JSON.parse(localStorage.getItem("nana-meal-streak") || "{}").streak) || 0; } catch (_) { return 0; } }();
   var h = new Date().getHours();
   var mealSlots = [{
     id: "breakfast",
@@ -17173,18 +17074,6 @@ function MealCheckIn() {
         date: today,
         meals: nm
       }));
-      // 只算「午餐」，连续打卡满 7 天触发一次（断了就从 1 重新算）
-      if (id === "lunch") {
-        var y = (function () { var _y = new Date(); _y.setDate(_y.getDate() - 1); return _y.toDateString(); })();
-        var ms = JSON.parse(localStorage.getItem("nana-meal-streak") || '{"last":null,"streak":0,"claimed":0}');
-        if (ms.last !== today) {
-          ms.streak = (ms.last === y ? (ms.streak || 0) : 0) + 1;
-          ms.last = today;
-          if (ms.streak < (ms.claimed || 0)) ms.claimed = 0;
-          localStorage.setItem("nana-meal-streak", JSON.stringify(ms));
-        }
-        if ((ms.streak || 0) >= (ms.claimed || 0) + 7) setShowLottery(true);
-      }
     } catch (_) {}
   };
   return /*#__PURE__*/React.createElement("div", {
@@ -17196,13 +17085,7 @@ function MealCheckIn() {
       overflow: "visible",
       position: "relative"
     }
-  }, showLottery && /*#__PURE__*/React.createElement(MealLotteryEgg, {
-    days: mealDays,
-    onClose: function onClose() {
-      try { var ms = JSON.parse(localStorage.getItem("nana-meal-streak") || "{}"); ms.claimed = Math.floor((ms.streak || 0) / 7) * 7; localStorage.setItem("nana-meal-streak", JSON.stringify(ms)); } catch (_) {}
-      setShowLottery(false);
-    }
-  }), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 14px 8px",
       display: "flex",
@@ -19129,8 +19012,6 @@ function NanasHome() {
     showSplash = _useState322[0],
     setShowSplash = _useState322[1];
   var _useStateFrog = useState(true), showFrog = _useStateFrog[0], setShowFrog = _useStateFrog[1];
-  var _useFunLot = useState(false), showFunLottery = _useFunLot[0], setShowFunLottery = _useFunLot[1];
-  var _useFunPl = useState(0), funPlays = _useFunPl[0], setFunPlays = _useFunPl[1];
   var _useStateEgg = useState(false),
     showEgg = _useStateEgg[0],
     setShowEgg = _useStateEgg[1];
@@ -19211,20 +19092,6 @@ function NanasHome() {
     setActivity(a);
     addCozy(5);
     showToast("".concat(a.icon, " ").concat(a.name, "~"));
-    // 🎪 游乐场奖励：在游乐场里每玩一次（进任意一个馆）记一次，满 10 次抽键盘券
-    if (room && room.id === "gaming") {
-      try {
-        var plays = (parseInt(localStorage.getItem("nana-fun-plays") || "0", 10) || 0) + 1;
-        localStorage.setItem("nana-fun-plays", String(plays));
-        var claimed = parseInt(localStorage.getItem("nana-fun-claimed") || "0", 10) || 0;
-        // 一次性奖励：只有第一次攒满 30 次触发，领过（claimed>0）就不再弹
-        if (claimed < 1 && plays >= 30) { setFunPlays(plays); setShowFunLottery(true); }
-      } catch (_) {}
-    }
-  };
-  var closeFunLottery = function closeFunLottery() {
-    try { localStorage.setItem("nana-fun-claimed", "1"); } catch (_) {}
-    setShowFunLottery(false);
   };
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -19237,9 +19104,6 @@ function NanasHome() {
     }
   }, /*#__PURE__*/React.createElement("style", null, "\n        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap');\n        html, body { background: #FFF8F7; }\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
     onClose: function onClose() { setShowFrog(false); }
-  }), showFunLottery && /*#__PURE__*/React.createElement(GameStreakEgg, {
-    plays: funPlays,
-    onClose: closeFunLottery
   }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
       setShowSplash(false);
