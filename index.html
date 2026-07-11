@@ -7793,6 +7793,13 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
 // 云图加载失败的占位（网络抽风时不至于一片空白）
 var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
+var nanaPuList = function (pu) {
+  if (!pu) return [];
+  if (typeof pu === "string" && pu.charAt(0) === "[") {
+    try { var a = JSON.parse(pu); return Array.isArray(a) ? a : []; } catch (_) { return []; }
+  }
+  return [pu];
+};
 var nanaSharedPhotoDel = function (pu) {
   try {
     var path = (pu || "").split("/object/public/")[1];
@@ -8043,12 +8050,12 @@ function ReadingRoomActivity(_refRR) {
   var _sdd = useState(""); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
   var _spp = useState(false); var sharedPosting = _spp[0], setSharedPosting = _spp[1];
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
-  var _sup = useState(null); var sharedDraftP = _sup[0], setSharedDraftP = _sup[1];
+  var _sup = useState([]); var sharedDraftPs = _sup[0], setSharedDraftPs = _sup[1];
   var _sug = useState(false); var sharedUploading = _sug[0], setSharedUploading = _sug[1];
   var onPickSharedPhoto = function (e) {
     var f = e.target.files && e.target.files[0];
     e.target.value = "";
-    if (!f || sharedUploading) return;
+    if (!f || sharedUploading || sharedDraftPs.length >= 3) return;
     setSharedUploading(true);
     nanaPhotoCompress(f, function (err, data) {
       if (err || !data) { setSharedUploading(false); setSharedErr("照片处理失败，再试一次？"); return; }
@@ -8056,9 +8063,13 @@ function ReadingRoomActivity(_refRR) {
         setSharedUploading(false);
         if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
         setSharedErr(null);
-        setSharedDraftP(function (old) { if (old) nanaSharedPhotoDel(old); return url; });
+        setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
       });
     });
+  };
+  var removeSharedDraftP = function (url) {
+    nanaSharedPhotoDel(url);
+    setSharedDraftPs(function (old) { return old.filter(function (u) { return u !== url; }); });
   };
   // 长按住户徽章 3 秒才能换人（防手滑，也不碍眼）
   var holdRef = useRef(null);
@@ -8088,16 +8099,17 @@ function ReadingRoomActivity(_refRR) {
   useEffect(function () { if (myAuthor) loadShared(); }, [myAuthor]);
   useEffect(function () { if (tab === "shared" && myAuthor && !sharedLoading) loadShared(); }, [tab]);
   var postShared = function () {
-    var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftP) || sharedPosting) return;
+    var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftPs.length) || sharedPosting) return;
     var dt = new Date();
-    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: t, th: writeTheme, pu: sharedDraftP || null };
+    var puVal = sharedDraftPs.length === 0 ? null : sharedDraftPs.length === 1 ? sharedDraftPs[0] : JSON.stringify(sharedDraftPs);
+    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: t, th: writeTheme, pu: puVal };
     setSharedPosting(true);
     nanaSharedAdd(note, function (err) {
       setSharedPosting(false);
       if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
       setSharedErr(null);
       setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); return next; });
-      setSharedDraft(""); setSharedDraftP(null); if (onCozy) onCozy(5);
+      setSharedDraft(""); setSharedDraftPs([]); if (onCozy) onCozy(5);
     });
   };
   var delShared = function (id) {
@@ -8107,7 +8119,7 @@ function ReadingRoomActivity(_refRR) {
     for (var di = 0; di < sharedNotes.length; di++) { if (sharedNotes[di].id === id) { target = sharedNotes[di]; break; } }
     nanaSharedDel(id, function (err) {
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
-      if (target && target.pu) nanaSharedPhotoDel(target.pu);
+      if (target && target.pu) nanaPuList(target.pu).forEach(function (u) { nanaSharedPhotoDel(u); });
       setSharedNotes(function (prev) { var next = prev.filter(function (x) { return x.id !== id; }); saveSharedCache(next); return next; });
     });
   };
@@ -8237,11 +8249,16 @@ function ReadingRoomActivity(_refRR) {
             airmail(wt, "top"), airmail(wt, "bottom"), stamp(wt), watermark(wt),
             h("div", { style: { fontFamily: HAND, color: wt.header, fontSize: "0.98rem", lineHeight: "28px" } }, me.e + " " + me.label + " 的来信："),
             h("textarea", { value: sharedDraft, onChange: function (e) { setSharedDraft(e.target.value); }, placeholder: "写给 " + (other ? other.label : "TA") + " 的信 · 案情、书影、或今天的迷雾 🔍", rows: 4, style: { width: "100%", boxSizing: "border-box", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: HAND, fontSize: "0.95rem", color: wt.text, lineHeight: "28px", padding: 0, position: "relative", zIndex: 1 } }),
-            sharedDraftP && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "6px 6px 18px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(-2.2deg)", borderRadius: 3, marginTop: 4 } },
-              h("img", { src: sharedDraftP, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(sharedDraftP); }, style: { width: 118, height: 96, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
-              h("button", { onClick: function () { nanaSharedPhotoDel(sharedDraftP); setSharedDraftP(null); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕")),
+            sharedDraftPs.length > 0 && h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 } },
+              sharedDraftPs.map(function (u, pi) {
+                return h("div", { key: u, style: { position: "relative", background: "#fff", padding: "5px 5px 14px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(" + (pi % 2 ? 2 : -2.2) + "deg)", borderRadius: 3 } },
+                  h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+                  h("button", { onClick: function () { removeSharedDraftP(u); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"));
+              })),
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
-              h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftP ? "📷 换一张" : "📷 贴张照片")),
+              sharedDraftPs.length >= 3
+                ? h("span", { style: { display: "inline-flex", alignItems: "center", gap: 5, border: "1.5px dashed rgba(180,150,140,0.4)", borderRadius: 999, padding: "6px 13px", color: "rgba(150,120,110,0.7)", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, "📷 3/3 贴满啦")
+                : h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
               h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }))),
           h("button", { onClick: postShared, disabled: !((sharedDraft || "").trim()) || sharedPosting, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((sharedDraft || "").trim() && !sharedPosting) ? "pointer" : "default", background: ((sharedDraft || "").trim() && !sharedPosting) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : "📮 寄往 221B")),
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, "信没送到贝克街 😢 " + sharedErr),
@@ -8261,10 +8278,18 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
                     h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
-                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: n.pu, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
+                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuList(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                     mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
-                n.pu ? h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "6px 0 4px" } },
-                  h("img", { src: n.pu, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(n.pu); }, style: { width: 128, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
+                (function () {
+                  var pus = nanaPuList(n.pu);
+                  if (!pus.length) return null;
+                  var single = pus.length === 1;
+                  return h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, margin: "6px 0 4px" } },
+                    pus.map(function (u, pi) {
+                      return h("div", { key: u, style: { background: "#fff", padding: single ? "5px 5px 15px" : "4px 4px 12px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
+                        h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                    }));
+                })(),
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
           })));
