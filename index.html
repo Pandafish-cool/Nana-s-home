@@ -8274,8 +8274,10 @@ function ReadingRoomActivity(_refRR) {
           NANA_LETTER_THEMES.map(function (t) {
             var on = writeTheme === t.id;
             return h("button", { key: t.id, onClick: function () {
+              var tpl = "📟 滴滴～给 " + (other ? other.label : "TA") + " 的一条小呼叫，不急慢慢看\n▸ 想约的事：\n▸ 什么时候：\n▸ 在哪碰头：\n收到回封小信就好 📮";
               pickWriteTheme(t.id);
-              if (t.id === "call" && !(sharedDraft || "").trim()) setSharedDraft("📟 滴滴～给 " + (other ? other.label : "TA") + " 的一条小呼叫，不急慢慢看\n▸ 想约的事：\n▸ 什么时候：\n▸ 在哪碰头：\n收到回封小信就好 📮");
+              if (t.id === "call") { if (!(sharedDraft || "").trim()) setSharedDraft(tpl); }
+              else if ((sharedDraft || "") === tpl) setSharedDraft("");
             }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 34, height: 34, fontSize: "0.98rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.1)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
           })),
         h("div", { style: { position: "relative", transform: "rotate(-0.5deg)" } },
