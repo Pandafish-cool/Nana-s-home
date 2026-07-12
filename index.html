@@ -8307,26 +8307,29 @@ function ReadingRoomActivity(_refRR) {
             if (n.th === "call") {
               var pusC = nanaPuList(n.pu);
               return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.6 : -0.6) + "deg)", marginBottom: 24 } },
-                h("div", { style: { background: "linear-gradient(180deg,#3a3f45,#23272c)", borderRadius: 18, padding: "12px 14px 12px", border: "2px solid #14171a", boxShadow: "0 10px 26px rgba(20,25,30,0.45)" } },
+                h("div", { style: { background: "linear-gradient(180deg,#ffe9ef,#ffcfdd)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: "0 10px 26px rgba(220,130,160,0.35)", position: "relative" } },
+                  h("div", { style: { position: "absolute", right: 24, top: -16, textAlign: "center", transform: "rotate(10deg)", pointerEvents: "none" } },
+                    h("div", { style: { width: 2, height: 12, background: "rgba(220,130,160,0.7)", margin: "0 auto" } }),
+                    h("div", { style: { fontSize: "0.85rem", lineHeight: 1 } }, "🍓")),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
                     h("span", { style: { fontSize: "0.9rem" } }, "📟"),
-                    h("span", { style: { color: "#8ff0a0", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 2, whiteSpace: "nowrap" } }, "CALL · 加急呼叫"),
-                    h("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#ff5a4a", boxShadow: "0 0 7px rgba(255,90,74,0.95)", flexShrink: 0 } }),
+                    h("span", { style: { color: "#d0537a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 2, whiteSpace: "nowrap" } }, "CALL · 小呼叫"),
+                    h("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#ff8a75", boxShadow: "0 0 7px rgba(255,138,117,0.9)", flexShrink: 0 } }),
                     h("div", { style: { marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 } },
                       h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuList(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
-                      mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(255,110,100,0.25)" : "rgba(255,255,255,0.08)", color: sharedDelId === n.id ? "#ff8a7a" : "rgba(200,210,220,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下挂断" : "✕") : null)),
+                      mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.18)" : "rgba(255,255,255,0.6)", color: sharedDelId === n.id ? "#d05050" : "#c07684", fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下挂断" : "✕") : null)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "8px 0 7px" } },
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
-                    h("span", { style: { color: "rgba(160,175,185,0.75)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
-                  h("div", { style: { background: "linear-gradient(180deg,#aebfa0,#93a887)", borderRadius: 8, border: "2px solid #14171a", boxShadow: "inset 0 2px 8px rgba(20,30,20,0.5)", padding: "10px 12px" } },
-                    n.t ? h("div", { style: { fontFamily: "'Courier New',Courier,monospace", fontWeight: 700, fontSize: "0.84rem", color: "#1d3322", lineHeight: 1.75, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
-                    h("div", { style: { fontSize: "0.66rem", color: "rgba(29,51,34,0.5)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌")),
+                    h("span", { style: { color: "rgba(195,115,140,0.85)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
+                  h("div", { style: { background: "linear-gradient(180deg,#e9f8ed,#cfeeda)", borderRadius: 10, border: "2px solid #fff", boxShadow: "inset 0 2px 8px rgba(90,150,110,0.22)", padding: "10px 12px" } },
+                    n.t ? h("div", { style: { fontFamily: "'Courier New',Courier,monospace", fontWeight: 700, fontSize: "0.84rem", color: "#2f6a4a", lineHeight: 1.75, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
+                    h("div", { style: { fontSize: "0.66rem", color: "rgba(47,106,74,0.45)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌")),
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
-                      return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(0,0,0,0.45)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
+                      return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,120,150,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
                         h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
-                  h("div", { style: { textAlign: "center", color: "rgba(160,175,185,0.5)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
+                  h("div", { style: { textAlign: "center", color: "rgba(205,115,140,0.6)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
             }
             return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.8 : -0.8) + "deg)", marginBottom: 24 } },
               tape(nt, i % 2 ? 4 : -4, i % 3 === 0 ? "32%" : i % 3 === 1 ? "52%" : "70%"),
