@@ -16744,6 +16744,7 @@ function BasementScene(_refB1) {
   var _li = useState(true); var light = _li[0], setLight = _li[1];
   var _di = useState(false); var disco = _di[0], setDisco = _di[1];
   var _sy = useState(null); var say = _sy[0], setSay = _sy[1];
+  var _fo2 = useState(false); var fridgeOpen = _fo2[0], setFridgeOpen = _fo2[1];
   var _ap = useState(0); var apple = _ap[0], setApple = _ap[1];
   var _ca = useState(0); var carrot = _ca[0], setCarrot = _ca[1];
   var _gl = useState(null); var glass = _gl[0], setGlass = _gl[1];
@@ -16766,7 +16767,8 @@ function BasementScene(_refB1) {
     carrot: ["胡萝卜汁！兔子看了都眼红 🐰", "维生素 +10，眼睛更亮 ✨", "好好闻了一下，转身走了 🐈"],
     chair: ["吱呀——是椅子在打招呼", "板凳一号，随时候命", "坐下歇会儿，果汁我帮你端"],
     sofa: ["一坐就陷进去的那种 😌", "沙发已就位，就差你和一杯果汁", "好好偶尔也来这儿踩奶"],
-    strap: ["看起来很专业，其实只会打蝴蝶结 🎀", "捆纸箱、捆行李…用途自由发挥", "好好：不许捆猫！！🐈"]
+    strap: ["看起来很专业，其实只会打蝴蝶结 🎀", "捆纸箱、捆行李…用途自由发挥", "好好：不许捆猫！！🐈"],
+    fridge: ["库存播报：快乐水 ×3、冰果汁 ×2、勇气 ∞ 🧊", "冰箱灯为你亮了，这是它的仪式感 💡", "好好刚才只是闻了闻，它发誓 🐾", "冻着半个西瓜，等着一起分 🍉"]
   };
   var speak = function (src) {
     var lines = LINES[src];
@@ -16890,6 +16892,24 @@ function BasementScene(_refB1) {
             h("div", { style: { width: 26, height: 26, margin: "0 auto", borderRadius: "6px 6px 4px 4px", background: "linear-gradient(180deg,#ffc37a,#f09a4a)", border: "2px solid #cf7c2e", fontSize: "0.62rem", lineHeight: "26px" } }, "🥕")),
           h("div", { style: { position: "absolute", left: 8, right: 8, bottom: 8, height: 3, borderRadius: 2, background: "rgba(60,40,25,0.4)" } })),
         h("div", { style: { marginTop: 4, fontSize: "0.54rem", fontWeight: 800, color: "#e8d8c0" } }, "已干杯 🧃×" + apple + " ｜ 🥕×" + carrot)),
+      // 小冰箱（点击开门看库存）
+      h("div", { onClick: function () { setFridgeOpen(!fridgeOpen); speak("fridge"); }, style: { position: "absolute", left: 118, bottom: 16, width: 46, cursor: "pointer", textAlign: "center", zIndex: say && say.src === "fridge" ? 7 : 2 } },
+        bubble("fridge", { left: -34, top: -34 }),
+        h("div", { style: { position: "relative", width: 44, height: 62, margin: "0 auto", borderRadius: 8, background: fridgeOpen ? "#eaf6fb" : "linear-gradient(180deg,#e8f4f8,#c8dde8)", border: "3px solid #8fa8b8", overflow: "hidden", boxShadow: fridgeOpen ? "0 0 14px rgba(180,225,250,0.75)" : "0 3px 8px rgba(0,0,0,0.25)", transition: "all 0.3s" } },
+          fridgeOpen
+            ? h("div", null,
+                h("div", { style: { position: "absolute", left: 3, right: 3, top: 19, height: 2, background: "rgba(120,150,170,0.5)" } }),
+                h("div", { style: { position: "absolute", left: 3, right: 3, top: 40, height: 2, background: "rgba(120,150,170,0.5)" } }),
+                h("span", { style: { position: "absolute", left: 4, top: 3, fontSize: "0.58rem" } }, "🥤"),
+                h("span", { style: { position: "absolute", right: 4, top: 3, fontSize: "0.58rem" } }, "🧃"),
+                h("span", { style: { position: "absolute", left: 5, top: 23, fontSize: "0.58rem" } }, "🍮"),
+                h("span", { style: { position: "absolute", right: 5, top: 23, fontSize: "0.58rem" } }, "🍓"),
+                h("span", { style: { position: "absolute", left: "50%", top: 44, transform: "translateX(-50%)", fontSize: "0.58rem" } }, "🍉"))
+            : h("div", null,
+                h("div", { style: { position: "absolute", left: 0, right: 0, top: 19, height: 2.5, background: "#8fa8b8" } }),
+                h("div", { style: { position: "absolute", right: 5, top: 6, width: 3, height: 8, borderRadius: 2, background: "#7c95a5" } }),
+                h("div", { style: { position: "absolute", right: 5, top: 27, width: 3, height: 12, borderRadius: 2, background: "#7c95a5" } }))),
+        lbl("🧊 小冰箱")),
       // 好好的纸箱（她真正的窝）
       h("div", { onClick: function () { speak("cat"); }, style: { position: "absolute", left: 20, bottom: 16, width: 74, cursor: "pointer", textAlign: "center", zIndex: say && say.src === "cat" ? 7 : 2 } },
         bubble("cat", { left: 10, top: -44 }),
@@ -16909,7 +16929,7 @@ function BasementScene(_refB1) {
     h("div", { style: { display: "flex", gap: 8, marginBottom: 14 } },
       toggle(light, function () { setLight(!light); }, light ? "💡 灯泡开" : "💡 灯泡关"),
       toggle(disco, function () { setDisco(!disco); }, disco ? "🪩 蹦迪中！" : "🪩 迪斯科关")),
-    h("div", { style: { textAlign: "center", fontSize: "0.74rem", color: "rgba(120,95,100,0.75)", marginBottom: 4 } }, "都能戳戳看：街机 · 飞镖 · 桌游 · 果汁瓶 · 椅子沙发 · 捆捆带 · 纸箱里的好好"),
+    h("div", { style: { textAlign: "center", fontSize: "0.74rem", color: "rgba(120,95,100,0.75)", marginBottom: 4 } }, "都能戳戳看：街机 · 飞镖 · 桌游 · 果汁瓶 · 小冰箱 · 椅子沙发 · 捆捆带 · 纸箱里的好好"),
     h("button", { onClick: onBack, style: { display: "block", margin: "14px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
 }
 
