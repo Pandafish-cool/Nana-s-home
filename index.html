@@ -8324,7 +8324,18 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
                     h("span", { style: { color: "rgba(170,125,40,0.9)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
                   h("div", { style: { background: "linear-gradient(180deg,#e2f4fb,#c6e7f4)", borderRadius: 10, border: "2px solid #fff", boxShadow: "inset 0 2px 8px rgba(90,140,170,0.25)", padding: "10px 12px" } },
-                    n.t ? h("div", { style: { fontFamily: "'Courier New',Courier,monospace", fontWeight: 700, fontSize: "0.84rem", color: "#23617d", lineHeight: 1.75, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
+                    n.t ? h("div", null, String(n.t).split("\n").map(function (ln, li) {
+                      var mono = "'Courier New',Courier,monospace";
+                      var mFld = ln.match(/^(▸[^：:]*[：:])([\s\S]*)$/);
+                      if (mFld) {
+                        var ans = mFld[2].replace(/^\s+/, "");
+                        return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: "0.84rem", lineHeight: 1.9, wordBreak: "break-word" } },
+                          h("span", { style: { color: "rgba(35,97,125,0.55)", fontWeight: 700 } }, mFld[1] + " "),
+                          ans ? h("span", { style: { color: "#124b66", fontWeight: 800, background: "rgba(255,255,255,0.6)", borderRadius: 4, padding: "0 5px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" } }, ans) : null);
+                      }
+                      var isTpl = ln.indexOf("📟") === 0 || ln.indexOf("收到回封小信") >= 0;
+                      return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: isTpl ? "0.74rem" : "0.84rem", fontWeight: isTpl ? 700 : 800, color: isTpl ? "rgba(35,97,125,0.55)" : "#124b66", lineHeight: 1.9, wordBreak: "break-word" } }, ln || "\u00A0");
+                    })) : null,
                     h("div", { style: { fontSize: "0.66rem", color: "rgba(35,97,125,0.45)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌")),
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
@@ -17761,7 +17772,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.7.12-7")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.7.12-8")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
