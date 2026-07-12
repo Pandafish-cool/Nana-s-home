@@ -17071,7 +17071,7 @@ function MealCheckIn() {
       praise: ["今日饲养收尾，好好很满意 🐾", "晚饭入库，进入消化瘫模式 🛋️", "今日份 Nana 喂养完毕 🌙"] }
   ];
   SLOTS.forEach(function (sl) { sl.active = hourNow >= sl.from && hourNow < sl.to; });
-  var OATH_Q = ["办事处例行审查：这顿真的吃了吗？", "好好竖起尾巴盯着你：真吃了？", "打卡前请如实回答：吃了没有？"];
+  var OATH_Q = ["好好歪头问：这顿吃过了吗？🐈", "小声确认一下：吃了没呀？", "好好蹭了蹭你：吃好了嘛？"];
   var DENY = ["好好目送你去吃 👀 吃完回来盖章", "去去去，先吃饭，章给你留着 😤", "办事处等你，饭可不等你 🍚"];
   var COFFEE_LINES = [
     "☕ 第 1 杯：开机液已注入，Nana 正式上线",
@@ -17142,7 +17142,7 @@ function MealCheckIn() {
       ? h("div", { style: { margin: "0 10px 10px", background: "#fffaf2", border: "1.5px dashed rgba(200,135,26,0.4)", borderRadius: 12, padding: "10px 12px" } },
           h("div", { style: { fontSize: "0.76rem", fontWeight: 800, color: "#6a5344", marginBottom: 8, textAlign: "center" } }, pick(OATH_Q).replace("这顿", oathSlot.name)),
           h("div", { style: { display: "flex", gap: 8 } },
-            h("button", { onClick: function () { confirmEat(oathSlot); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "#D6F5E0", color: "#2e7d4f" } }, "以好好的名义发誓，吃了 🐾"),
+            h("button", { onClick: function () { confirmEat(oathSlot); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "#D6F5E0", color: "#2e7d4f" } }, "吃过啦～ 🐾"),
             h("button", { onClick: function () { setOath(null); setMsg(pick(DENY)); }, style: { flex: 1, border: "none", borderRadius: 10, padding: "9px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer", background: "rgba(220,120,90,0.12)", color: "#b05a3a" } }, "还没…这就去 😳")))
       : h("div", { style: { display: "flex", gap: 6, padding: "0 10px 10px" } },
           SLOTS.map(cell),
