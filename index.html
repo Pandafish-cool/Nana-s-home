@@ -8275,7 +8275,7 @@ function ReadingRoomActivity(_refRR) {
             var on = writeTheme === t.id;
             return h("button", { key: t.id, onClick: function () {
               pickWriteTheme(t.id);
-              if (t.id === "call" && !(sharedDraft || "").trim()) setSharedDraft("📟 呼叫 " + (other ? other.label : "TA") + "，听到请回答！\n▸ 事由：\n▸ 时间：\n▸ 地点：\n收到请回信 📮");
+              if (t.id === "call" && !(sharedDraft || "").trim()) setSharedDraft("📟 滴滴～轻轻呼叫 " + (other ? other.label : "TA") + "，在吗在吗？\n▸ 想约的事：\n▸ 什么时候：\n▸ 在哪碰头：\n收到回封小信就好 📮");
             }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 34, height: 34, fontSize: "0.98rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.1)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
           })),
         h("div", { style: { position: "relative", transform: "rotate(-0.5deg)" } },
@@ -8337,6 +8337,7 @@ function ReadingRoomActivity(_refRR) {
           return h("button", { key: t.id, onClick: function () { pickWriteTheme(t.id); }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 36, height: 36, fontSize: "1.02rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.12)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
         }),
         h("span", { style: { color: "rgba(150,120,95,0.6)", fontSize: "0.64rem", marginLeft: 2 } }, wt.name)),
+      writeTheme === "call" && h("div", { style: { margin: "0 2px 12px", background: "rgba(255,205,110,0.18)", border: "1px dashed rgba(220,140,60,0.45)", borderRadius: 10, padding: "8px 11px", color: "#a86a20", fontSize: "0.68rem", fontWeight: 700, lineHeight: 1.6 } }, "📟 呼叫信笺是约事专用款——去 🏠 221B 标签页选它，会自动生成「事由/时间/地点」的呼叫模板寄给对方哦"),
       // ── 信纸写作区 ──
       h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 4 } },
         tape(wt, -3),
