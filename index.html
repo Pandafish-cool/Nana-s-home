@@ -8275,7 +8275,7 @@ function ReadingRoomActivity(_refRR) {
             var on = writeTheme === t.id;
             return h("button", { key: t.id, onClick: function () {
               pickWriteTheme(t.id);
-              if (t.id === "call" && !(sharedDraft || "").trim()) setSharedDraft("📟 呼叫 " + (other ? other.label : "TA") + "，听到请回答！\n▸ 事由：\n▸ 时间：\n▸ 地点：\n收到请回电 📻");
+              if (t.id === "call" && !(sharedDraft || "").trim()) setSharedDraft("📟 呼叫 " + (other ? other.label : "TA") + "，听到请回答！\n▸ 事由：\n▸ 时间：\n▸ 地点：\n收到请回信 📮");
             }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 34, height: 34, fontSize: "0.98rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.1)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
           })),
         h("div", { style: { position: "relative", transform: "rotate(-0.5deg)" } },
