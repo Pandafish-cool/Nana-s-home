@@ -17310,7 +17310,7 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["pack", "🧳 行前"]];
+  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 收行李"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["pack", "🧳 收行李"]];
   var card = function (inner, extra) {
     var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
     for (var k in (extra || {})) st[k] = extra[k];
@@ -17346,10 +17346,6 @@ function LondonRoom(_refLD) {
       h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
       h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(78,138,130,0.95)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
     ]),
-    daysTo > 0 ? card(h("div", { style: { textAlign: "center" } },
-      h("div", { style: { fontSize: "0.72rem", color: "rgba(110,162,155,0.88)", fontWeight: 700 } }, "距离 8 月 15 日出发"),
-      h("div", { style: { fontSize: "1.6rem", fontWeight: 800, color: "#1f7a6d", margin: "4px 0" } }, "还有 " + daysTo + " 天"),
-      h("div", { style: { fontSize: "0.68rem", color: "rgba(110,162,155,0.85)" } }, "行李清单在隔壁，慢慢收 🧳"))) : null,
     card([
       h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
       h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(88,142,135,0.95)", lineHeight: 1.7 } }, season)
@@ -17371,12 +17367,13 @@ function LondonRoom(_refLD) {
   LD_PACK.forEach(function (g, gi) { g.items.forEach(function (_, ii) { allItems++; if (packed[g.k + "-" + ii]) doneItems++; }); });
   var packTab = h("div", null,
     card([
+      h("div", { key: "p0", style: { fontSize: "0.76rem", color: "rgba(100,152,145,0.95)", lineHeight: 1.8, marginBottom: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "不是在数日子，只是想陪你把东西一样样理好。收拾这件事，两个人做没那么难 🧡"),
       h("div", { key: "p1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d" } }, "🧳 行李清单"),
+        h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d" } }, "🧳 一起收行李"),
         h("div", { style: { fontSize: "0.74rem", fontWeight: 800, color: "#c8871a" } }, doneItems + " / " + allItems)),
       h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(170,222,216,0.32)", overflow: "hidden" } },
         h("div", { style: { height: "100%", width: (allItems ? Math.round(doneItems / allItems * 100) : 0) + "%", background: "linear-gradient(90deg,#ffd86a,#f4a636)", borderRadius: 99, transition: "width 0.3s" } })),
-      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "全部打包完毕，可以出发了 ✈️" : "点一下打勾，收到哪算哪，不用急")
+      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "点一下打勾，收到哪算哪，想起来再收")
     ]),
     LD_PACK.map(function (g) {
       return card([
@@ -17485,8 +17482,8 @@ function LondonRoom(_refLD) {
     h("div", { style: { background: "linear-gradient(140deg,#3fc0b0,#2e9b8a 55%,#3aa878)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(60,175,165,0.32)" } },
       h("div", { style: { position: "absolute", right: 14, top: 10, fontSize: "2.2rem", opacity: 0.25 } }, "🎡"),
       h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "LONDON BRANCH"),
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, full ? "小屋伦敦分部" : "伦敦分部 · 行李间"),
-      h("div", { style: { color: "rgba(240,255,246,0.9)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, full ? "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️" : "分部还在装修，行李间先开了 · 慢慢收，不着急 🧳")),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, full ? "小屋伦敦分部" : "一起收行李"),
+      h("div", { style: { color: "rgba(240,255,246,0.9)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, full ? "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️" : "不着急，一样一样来 · 收拾这件事有人陪着 🧳")),
     full ? h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
