@@ -17280,6 +17280,7 @@ function LondonRoom(_refLD) {
   var _px = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-extra") || "[]"); } catch (_) { return []; } }); var extras = _px[0], setExtras = _px[1];
   var _pi = useState(""); var packInp = _pi[0], setPackInp = _pi[1];
   var _pd = useState(null); var extraDel = _pd[0], setExtraDel = _pd[1];
+  var _pg = useState("care"); var packCat = _pg[0], setPackCat = _pg[1];
   var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
   var spots = _sp[0], setSpots = _sp[1];
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
@@ -17305,7 +17306,7 @@ function LondonRoom(_refLD) {
         if (r.id && r.id.indexOf("x-") === 0) {
           var o = null;
           try { o = JSON.parse(r.who); } catch (_) { o = null; }
-          ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done } : { id: r.id, t: r.who || "", done: false });
+          ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done, g: o.g || "" } : { id: r.id, t: r.who || "", done: false, g: "" });
         }
         else { m[r.id] = r.who || "nana"; }
       });
@@ -17321,17 +17322,18 @@ function LondonRoom(_refLD) {
     var t = (packInp || "").trim();
     if (!t) return;
     if (!myAuthor) { setPackErr("先在 221B 选一下你是谁 🧳"); return; }
-    var row = { id: "x-" + Date.now() + Math.floor(Math.random() * 900), who: JSON.stringify({ t: t, done: false }) };
+    var gk = packCat || "misc";
+    var row = { id: "x-" + Date.now() + Math.floor(Math.random() * 900), who: JSON.stringify({ t: t, done: false, g: gk }) };
     var prev = extras;
-    saveExtras(extras.concat([{ id: row.id, t: t, done: false }]));
+    saveExtras(extras.concat([{ id: row.id, t: t, done: false, g: gk }]));
     setPackInp(""); setPackErr("");
     nanaPackAdd(row, function (e) { if (e) { saveExtras(prev); setPackErr("没加上，再试一次"); } });
   };
   var toggleExtra = function (x) {
     var prev = extras;
-    var next = extras.map(function (o) { return o.id === x.id ? { id: o.id, t: o.t, done: !o.done } : o; });
+    var next = extras.map(function (o) { return o.id === x.id ? { id: o.id, t: o.t, done: !o.done, g: o.g } : o; });
     saveExtras(next);
-    nanaSyncReq("PATCH", "shared_pack?id=eq." + encodeURIComponent(x.id), { who: JSON.stringify({ t: x.t, done: !x.done }) }, function (e) {
+    nanaSyncReq("PATCH", "shared_pack?id=eq." + encodeURIComponent(x.id), { who: JSON.stringify({ t: x.t, done: !x.done, g: x.g || "misc" }) }, function (e) {
       if (e) { saveExtras(prev); setPackErr("没存上，再点一次"); }
     });
   };
@@ -17428,6 +17430,13 @@ function LondonRoom(_refLD) {
     ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" })
   );
   // ── 行前 ──
+  var extraRow = function (x) {
+    return h("div", { key: x.id, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", borderBottom: "1px solid rgba(170,222,216,0.26)" } },
+      h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: x.done ? "none" : "2px solid rgba(155,200,175,0.65)", background: x.done ? "#4cbf8a" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, x.done ? "✓" : ""),
+      h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flex: 1, fontSize: "0.79rem", color: x.done ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: x.done ? "line-through" : "none", lineHeight: 1.55 } }, x.t),
+      h("span", { style: { flexShrink: 0, fontSize: "0.56rem", fontWeight: 800, color: "rgba(120,180,165,0.95)", background: "rgba(140,225,200,0.18)", borderRadius: 999, padding: "2px 6px", whiteSpace: "nowrap", marginTop: 2 } }, "自己加的"),
+      h("button", { onClick: function () { delExtra(x); }, style: { flexShrink: 0, border: "none", background: extraDel === x.id ? "rgba(230,100,100,0.15)" : "transparent", color: extraDel === x.id ? "#d05050" : "rgba(150,180,170,0.75)", fontFamily: "inherit", fontWeight: 800, fontSize: extraDel === x.id ? "0.58rem" : "0.76rem", cursor: "pointer", borderRadius: 999, padding: extraDel === x.id ? "3px 8px" : "2px 6px" } }, extraDel === x.id ? "再点一下删掉" : "✕"));
+  };
   var allItems = 0, doneItems = 0;
   LD_PACK.forEach(function (g, gi) { g.items.forEach(function (_, ii) { allItems++; if (packed[g.k + "-" + ii]) doneItems++; }); });
   extras.forEach(function (x) { allItems++; if (x.done) doneItems++; });
@@ -17450,34 +17459,34 @@ function LondonRoom(_refLD) {
     LD_PACK.map(function (g) {
       var idxList = [];
       g.items.forEach(function (_, ii) { if (packView === "all" || !packed[g.k + "-" + ii]) idxList.push(ii); });
-      if (!idxList.length) return null;
+      var gExtra = extras.filter(function (x) { return (x.g || "misc") === g.k && (packView === "all" || !x.done); });
+      if (!idxList.length && !gExtra.length) return null;
       return card([
         h("div", { key: "g", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
           h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, g.g),
-          packView === "todo" ? h("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#c8871a" } }, "差 " + idxList.length + " 件") : null),
+          packView === "todo" ? h("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#c8871a" } }, "差 " + (idxList.length + gExtra.length) + " 件") : null),
         h("div", { key: "l" }, idxList.map(function (ii) {
           var it = g.items[ii];
           var id = g.k + "-" + ii, on = !!packed[id];
           return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(165,218,212,0.27)" } },
             h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(165,222,216,0.78)", background: on ? "#3bbdae" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
             h("span", { style: { flex: 1, fontSize: "0.79rem", color: on ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
-        }))
+        })),
+        h("div", { key: "gx" }, gExtra.map(function (x) { return extraRow(x); }))
       ], { key: g.k });
     }),
     card([
-      h("div", { key: "x0", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, "✏️ 自己想到的"),
-        extras.length ? h("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#c8871a" } }, extras.filter(function (x) { return x.done; }).length + " / " + extras.length) : null),
-      h("div", { key: "x1", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginBottom: 8, lineHeight: 1.6 } }, "清单里没有的自己加 · 删的话点两下 ✕"),
-      extras.length ? h("div", { key: "x2" }, extras.filter(function (x) { return packView === "all" || !x.done; }).map(function (x) {
-        return h("div", { key: x.id, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", borderBottom: "1px solid rgba(170,222,216,0.26)" } },
-          h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: x.done ? "none" : "2px solid rgba(155,200,175,0.65)", background: x.done ? "#4cbf8a" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, x.done ? "✓" : ""),
-          h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flex: 1, fontSize: "0.79rem", color: x.done ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: x.done ? "line-through" : "none", lineHeight: 1.55 } }, x.t),
-          h("button", { onClick: function () { delExtra(x); }, style: { flexShrink: 0, border: "none", background: extraDel === x.id ? "rgba(230,100,100,0.15)" : "transparent", color: extraDel === x.id ? "#d05050" : "rgba(150,180,170,0.75)", fontFamily: "inherit", fontWeight: 800, fontSize: extraDel === x.id ? "0.58rem" : "0.76rem", cursor: "pointer", borderRadius: 999, padding: extraDel === x.id ? "3px 8px" : "2px 6px" } }, extraDel === x.id ? "再点一下删掉" : "✕"));
-      })) : null,
-      h("div", { key: "x3", style: { display: "flex", gap: 8, marginTop: 10 } },
-        h("input", { value: packInp, onChange: function (e) { setPackInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addExtra(); }, placeholder: "还想带什么？敲进来～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(170,225,200,0.75)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.79rem", color: "#357f72", outline: "none", background: "#fbfffd" } }),
-        h("button", { onClick: addExtra, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.79rem", cursor: "pointer", background: "linear-gradient(135deg,#7fe0c0,#3bbdae)", color: "#0f5a52" } }, "＋ 加"))
+      h("div", { key: "x0", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 4 } }, "✏️ 还想带什么，自己加"),
+      h("div", { key: "x1", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginBottom: 9, lineHeight: 1.6 } }, "先选个类，加进去就跟在那一类下面 · 删的话点两下 ✕"),
+      h("div", { key: "x2", style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 } },
+        LD_PACK.map(function (g) {
+          var on = (packCat || "misc") === g.k;
+          var nm = g.g.replace(/^\S+\s*/, "").replace(/（[^）]*）/g, "");
+          return h("button", { key: g.k, onClick: function () { setPackCat(g.k); }, style: { border: on ? "2px solid #3bbdae" : "1.5px solid rgba(170,225,200,0.7)", background: on ? "rgba(100,215,155,0.18)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.95)", borderRadius: 999, padding: "6px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", whiteSpace: "nowrap" } }, g.g.split(" ")[0] + " " + nm);
+        })),
+      h("div", { key: "x3", style: { display: "flex", gap: 8 } },
+        h("input", { value: packInp, onChange: function (e) { setPackInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addExtra(); }, placeholder: packCat ? "加到「" + LD_PACK.filter(function (g) { return g.k === packCat; })[0].g.replace(/^\S+\s*/, "").replace(/（[^）]*）/g, "") + "」…" : "先选个类，再敲名字～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(170,225,200,0.75)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.79rem", color: "#357f72", outline: "none", background: "#fbfffd" } }),
+        h("button", { onClick: addExtra, disabled: !packCat, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.79rem", cursor: packCat ? "pointer" : "default", background: packCat ? "linear-gradient(135deg,#7fe0c0,#3bbdae)" : "rgba(170,210,200,0.4)", color: packCat ? "#0f5a52" : "rgba(90,130,120,0.7)" } }, "＋ 加"))
     ]),
     packView === "todo" && doneItems === allItems && allItems > 0
       ? card(h("div", { style: { textAlign: "center", padding: "18px 8px" } },
@@ -18361,7 +18370,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-14")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-15")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
