@@ -17060,6 +17060,7 @@ var ldFullOpen = function () { try { return new Date() >= new Date(LD_FULL + "T0
 var nanaPackList = function (cb) { nanaSyncReq("GET", "shared_pack?select=*&limit=300", null, cb); };
 var nanaPackAdd = function (row, cb) { nanaSyncReq("POST", "shared_pack", row, cb); };
 var nanaPackDel = function (id, cb) { nanaSyncReq("DELETE", "shared_pack?id=eq." + encodeURIComponent(id), null, cb); };
+var nanaPackTxt = function (id) { return id.indexOf("x-") === 0; };
 var ldReadPack = function () { try { return JSON.parse(localStorage.getItem("nana-pack-cache") || "{}"); } catch (_) { return {}; } };
 var ldSavePack = function (m) { try { localStorage.setItem("nana-pack-cache", JSON.stringify(m)); } catch (_) {} };
 var ldMap = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
@@ -17276,6 +17277,9 @@ function LondonRoom(_refLD) {
   var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
   var _pe = useState(""); var packErr = _pe[0], setPackErr = _pe[1];
   var _pv = useState("all"); var packView = _pv[0], setPackView = _pv[1];
+  var _px = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-extra") || "[]"); } catch (_) { return []; } }); var extras = _px[0], setExtras = _px[1];
+  var _pi = useState(""); var packInp = _pi[0], setPackInp = _pi[1];
+  var _pd = useState(null); var extraDel = _pd[0], setExtraDel = _pd[1];
   var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
   var spots = _sp[0], setSpots = _sp[1];
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
@@ -17296,12 +17300,48 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {};
-      (rows || []).forEach(function (r) { m[r.id] = r.who || "nana"; });
-      setPacked(m); ldSavePack(m); setPackErr("");
+      var m = {}, ex = [];
+      (rows || []).forEach(function (r) {
+        if (r.id && r.id.indexOf("x-") === 0) {
+          var o = null;
+          try { o = JSON.parse(r.who); } catch (_) { o = null; }
+          ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done } : { id: r.id, t: r.who || "", done: false });
+        }
+        else { m[r.id] = r.who || "nana"; }
+      });
+      ex.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+      setPacked(m); setExtras(ex); ldSavePack(m);
+      try { localStorage.setItem("nana-pack-extra", JSON.stringify(ex)); } catch (_) {}
+      setPackErr("");
     });
   };
   useEffect(function () { if (myAuthor) loadPack(Object.keys(ldReadPack()).length > 0); }, [myAuthor]);
+  var saveExtras = function (list) { setExtras(list); try { localStorage.setItem("nana-pack-extra", JSON.stringify(list)); } catch (_) {} };
+  var addExtra = function () {
+    var t = (packInp || "").trim();
+    if (!t) return;
+    if (!myAuthor) { setPackErr("先在 221B 选一下你是谁 🧳"); return; }
+    var row = { id: "x-" + Date.now() + Math.floor(Math.random() * 900), who: JSON.stringify({ t: t, done: false }) };
+    var prev = extras;
+    saveExtras(extras.concat([{ id: row.id, t: t, done: false }]));
+    setPackInp(""); setPackErr("");
+    nanaPackAdd(row, function (e) { if (e) { saveExtras(prev); setPackErr("没加上，再试一次"); } });
+  };
+  var toggleExtra = function (x) {
+    var prev = extras;
+    var next = extras.map(function (o) { return o.id === x.id ? { id: o.id, t: o.t, done: !o.done } : o; });
+    saveExtras(next);
+    nanaSyncReq("PATCH", "shared_pack?id=eq." + encodeURIComponent(x.id), { who: JSON.stringify({ t: x.t, done: !x.done }) }, function (e) {
+      if (e) { saveExtras(prev); setPackErr("没存上，再点一次"); }
+    });
+  };
+  var delExtra = function (x) {
+    if (extraDel !== x.id) { setExtraDel(x.id); setTimeout(function () { setExtraDel(function (c) { return c === x.id ? null : c; }); }, 2500); return; }
+    setExtraDel(null);
+    var prev = extras;
+    saveExtras(extras.filter(function (o) { return o.id !== x.id; }));
+    nanaPackDel(x.id, function (e) { if (e) { saveExtras(prev); setPackErr("没删掉，再试一次"); } });
+  };
   var togglePack = function (id) {
     if (!myAuthor) { setPackErr("先在 221B 选一下你是谁，两个人才好一起收 🧳"); return; }
     var prev = packed;
@@ -17390,6 +17430,7 @@ function LondonRoom(_refLD) {
   // ── 行前 ──
   var allItems = 0, doneItems = 0;
   LD_PACK.forEach(function (g, gi) { g.items.forEach(function (_, ii) { allItems++; if (packed[g.k + "-" + ii]) doneItems++; }); });
+  extras.forEach(function (x) { allItems++; if (x.done) doneItems++; });
   var packTab = h("div", null,
     card([
       h("div", { key: "p0", style: { fontSize: "0.76rem", color: "rgba(100,152,145,0.95)", lineHeight: 1.8, marginBottom: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "不是在数日子，就是想找个由头跟你一起翻箱倒柜。两个人收拾，比一个人有意思多了 🧡"),
@@ -17423,6 +17464,21 @@ function LondonRoom(_refLD) {
         }))
       ], { key: g.k });
     }),
+    card([
+      h("div", { key: "x0", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, "✏️ 自己想到的"),
+        extras.length ? h("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#c8871a" } }, extras.filter(function (x) { return x.done; }).length + " / " + extras.length) : null),
+      h("div", { key: "x1", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginBottom: 8, lineHeight: 1.6 } }, "清单里没有的自己加 · 删的话点两下 ✕"),
+      extras.length ? h("div", { key: "x2" }, extras.filter(function (x) { return packView === "all" || !x.done; }).map(function (x) {
+        return h("div", { key: x.id, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", borderBottom: "1px solid rgba(170,222,216,0.26)" } },
+          h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: x.done ? "none" : "2px solid rgba(155,200,175,0.65)", background: x.done ? "#4cbf8a" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, x.done ? "✓" : ""),
+          h("span", { onClick: function () { toggleExtra(x); }, style: { cursor: "pointer", flex: 1, fontSize: "0.79rem", color: x.done ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: x.done ? "line-through" : "none", lineHeight: 1.55 } }, x.t),
+          h("button", { onClick: function () { delExtra(x); }, style: { flexShrink: 0, border: "none", background: extraDel === x.id ? "rgba(230,100,100,0.15)" : "transparent", color: extraDel === x.id ? "#d05050" : "rgba(150,180,170,0.75)", fontFamily: "inherit", fontWeight: 800, fontSize: extraDel === x.id ? "0.58rem" : "0.76rem", cursor: "pointer", borderRadius: 999, padding: extraDel === x.id ? "3px 8px" : "2px 6px" } }, extraDel === x.id ? "再点一下删掉" : "✕"));
+      })) : null,
+      h("div", { key: "x3", style: { display: "flex", gap: 8, marginTop: 10 } },
+        h("input", { value: packInp, onChange: function (e) { setPackInp(e.target.value); }, onKeyDown: function (e) { if (e.key === "Enter") addExtra(); }, placeholder: "还想带什么？敲进来～", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(170,225,200,0.75)", borderRadius: 12, padding: "10px 12px", fontFamily: "inherit", fontSize: "0.79rem", color: "#357f72", outline: "none", background: "#fbfffd" } }),
+        h("button", { onClick: addExtra, style: { flexShrink: 0, border: "none", borderRadius: 12, padding: "10px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.79rem", cursor: "pointer", background: "linear-gradient(135deg,#7fe0c0,#3bbdae)", color: "#0f5a52" } }, "＋ 加"))
+    ]),
     packView === "todo" && doneItems === allItems && allItems > 0
       ? card(h("div", { style: { textAlign: "center", padding: "18px 8px" } },
           h("div", { style: { fontSize: "1.8rem", marginBottom: 6 } }, "🧳"),
@@ -18305,7 +18361,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-12")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-14")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
