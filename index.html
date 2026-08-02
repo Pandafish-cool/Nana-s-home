@@ -17275,6 +17275,7 @@ function LondonRoom(_refLD) {
   var _pk = useState(ldReadPack); var packed = _pk[0], setPacked = _pk[1];
   var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
   var _pe = useState(""); var packErr = _pe[0], setPackErr = _pe[1];
+  var _pv = useState("all"); var packView = _pv[0], setPackView = _pv[1];
   var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
   var spots = _sp[0], setSpots = _sp[1];
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
@@ -17407,13 +17408,24 @@ function LondonRoom(_refLD) {
             h("span", { key: "cp", style: { fontSize: "0.68rem", fontWeight: 800, color: pp.col, background: pp.bg, borderRadius: 999, padding: "3px 9px" } }, pp.e + " 收了 " + cp + " 件")
           ];
         })()),
-      h("div", { key: "p4", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "两个人一起勾，谁想到就点一下 · 对面立刻能看见"),
+      h("div", { key: "p4", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "已经收好的会打勾，两边都看得见 · 还差什么点右边那个看"),
+      h("div", { key: "p6", style: { display: "flex", gap: 7, marginTop: 10 } },
+        [["all", "全部 " + allItems], ["todo", "🛒 还差这些 " + (allItems - doneItems)]].map(function (v) {
+          var on = packView === v[0];
+          return h("button", { key: v[0], onClick: function () { setPackView(v[0]); }, style: { flex: 1, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(170,225,200,0.7)", background: on ? "rgba(100,215,155,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: "pointer" } }, v[1]);
+        })),
       packErr ? h("div", { key: "p5", style: { fontSize: "0.66rem", color: "#c05555", background: "rgba(230,100,100,0.08)", borderRadius: 8, padding: "7px 9px", marginTop: 8, fontWeight: 700, lineHeight: 1.6 } }, "⚠️ " + packErr) : null
     ]),
     LD_PACK.map(function (g) {
+      var idxList = [];
+      g.items.forEach(function (_, ii) { if (packView === "all" || !packed[g.k + "-" + ii]) idxList.push(ii); });
+      if (!idxList.length) return null;
       return card([
-        h("div", { key: "g", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 6 } }, g.g),
-        h("div", { key: "l" }, g.items.map(function (it, ii) {
+        h("div", { key: "g", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, g.g),
+          packView === "todo" ? h("div", { style: { fontSize: "0.64rem", fontWeight: 800, color: "#c8871a" } }, "差 " + idxList.length + " 件") : null),
+        h("div", { key: "l" }, idxList.map(function (ii) {
+          var it = g.items[ii];
           var id = g.k + "-" + ii, on = !!packed[id];
           return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(165,218,212,0.27)" } },
             h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(165,222,216,0.78)", background: on ? "#3bbdae" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
@@ -17421,7 +17433,13 @@ function LondonRoom(_refLD) {
             on ? (function () { var a = nanaAuthorById(packed[id]); return h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "2px 7px", whiteSpace: "nowrap", marginTop: 1 } }, a.e); })() : null);
         }))
       ], { key: g.k });
-    })
+    }),
+    packView === "todo" && doneItems === allItems && allItems > 0
+      ? card(h("div", { style: { textAlign: "center", padding: "18px 8px" } },
+          h("div", { style: { fontSize: "1.8rem", marginBottom: 6 } }, "🧳"),
+          h("div", { style: { fontSize: "0.86rem", fontWeight: 800, color: "#1f7a6d" } }, "一件不差，全收齐了"),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(110,162,155,0.85)", marginTop: 5 } }, "剩下的日子先好好过 🧡")))
+      : null
   );
   // ── 吃饭 ──
   var eatTab = h("div", null,
@@ -18298,7 +18316,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-10")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-11")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
