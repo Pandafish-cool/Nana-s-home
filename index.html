@@ -17055,6 +17055,8 @@ function BasementScene(_refB1) {
 // ── 🎡 伦敦分部（Canary Wharf 支店）─────────────────────
 var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
+var LD_FULL = "2026-08-14";
+var ldFullOpen = function () { try { return new Date() >= new Date(LD_FULL + "T00:00:00+08:00"); } catch (_) { return true; } };
 var ldMap = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
 var ldFmt = function (tz) {
   try { return new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }); }
@@ -17074,15 +17076,16 @@ var ldDiff = function () {
 };
 // 广州此刻在干嘛（按广州小时）
 var LD_HOME = [
-  [0, "家里都睡了，好好在打呼 🐈"],
-  [6, "广州天亮了，好好蹲在碗边催早饭 🍳"],
-  [9, "家里在忙活，沙发空着给你留位 🛋️"],
-  [12, "广州在吃午饭，你那一份先记着 🍚"],
-  [14, "下午了，好好占着沙发晒太阳 ☀️"],
-  [18, "家里在吃晚饭，多做了你爱的那道 🍲"],
-  [21, "广州要睡了，小夜灯还给你亮着 💡"],
-  [23, "夜深了，这个家在梦里跟你说晚安 🌙"]
+  [0, "屋里都睡熟了，好好在纸箱里打呼 🐈"],
+  [6, "天刚亮，好好蹲在碗边催早饭 🍳"],
+  [9, "家里在忙活，沙发空着给你留着位 🛋️"],
+  [12, "灶上正香着，你那一份先记着 🍚"],
+  [14, "午后了，好好占着沙发晒太阳 ☀️"],
+  [18, "饭点到了，多做了你爱吃的那道 🍲"],
+  [21, "小夜灯给你亮着，一直亮着 💡"],
+  [23, "灯还醒着，屋子安安静静的 🌙"]
 ];
+
 // 伦敦此刻招呼语（按伦敦小时）
 var LD_HERE = [
   [0, "伦敦深夜了，被窝比什么都重要 🌙"],
@@ -17260,7 +17263,8 @@ var LD_BEAT = [
 function LondonRoom(_refLD) {
   var onBack = _refLD.onBack;
   var h = React.createElement;
-  var _tb = useState("now"); var tab = _tb[0], setTab = _tb[1];
+  var full = ldFullOpen();
+  var _tb = useState(full ? "now" : "pack"); var tab = _tb[0], setTab = _tb[1];
   var _tk = useState(0); var setTick = _tk[1];
   var _pk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-pack") || "{}"); } catch (_) { return {}; } });
   var packed = _pk[0], setPacked = _pk[1];
@@ -17306,7 +17310,7 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]];
+  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["pack", "🧳 行前"]];
   var card = function (inner, extra) {
     var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
     for (var k in (extra || {})) st[k] = extra[k];
@@ -17335,10 +17339,10 @@ function LondonRoom(_refLD) {
           h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, lonT),
           h("div", { style: { fontSize: "0.58rem", color: "rgba(45,140,132,0.8)" } }, "Canary Wharf 🎡")),
         h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#ffeede,#ffdcc2)", borderRadius: 14, padding: "12px 6px", color: "#7a4a28" } },
-          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "GUANGZHOU"),
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "HOME"),
           h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, gzT),
           h("div", { style: { fontSize: "0.58rem", color: "rgba(150,100,60,0.8)" } }, "这个家 🏡"))),
-      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(110,162,155,0.8)", margin: "10px 0 8px", fontWeight: 700 } }, "家里比这里快 " + diff + " 小时"),
+      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(110,162,155,0.8)", margin: "10px 0 8px", fontWeight: 700 } }, "家里的钟比这里快 " + diff + " 小时"),
       h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
       h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(78,138,130,0.95)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
     ]),
@@ -17481,12 +17485,12 @@ function LondonRoom(_refLD) {
     h("div", { style: { background: "linear-gradient(140deg,#3fc0b0,#2e9b8a 55%,#3aa878)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(60,175,165,0.32)" } },
       h("div", { style: { position: "absolute", right: 14, top: 10, fontSize: "2.2rem", opacity: 0.25 } }, "🎡"),
       h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "LONDON BRANCH"),
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, "小屋伦敦分部"),
-      h("div", { style: { color: "rgba(240,255,246,0.9)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️")),
-    h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, full ? "小屋伦敦分部" : "伦敦分部 · 行李间"),
+      h("div", { style: { color: "rgba(240,255,246,0.9)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, full ? "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️" : "分部还在装修，行李间先开了 · 慢慢收，不着急 🧳")),
+    full ? h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
-    })),
+    })) : null,
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
     tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
@@ -18111,7 +18115,8 @@ function BottomNav(_ref135) {
     _useState316 = _slicedToArray(_useState315, 2),
     drawerOpen = _useState316[0],
     setDrawerOpen = _useState316[1];
-  var pinned = ["living", "bedroom", "basement", "gaming"];
+  var _ldOn = (function () { try { var t = new Date(); return t >= new Date("2026-08-15T00:00:00+01:00") && t <= new Date("2026-09-30T23:59:59+01:00"); } catch (_) { return false; } })();
+  var pinned = _ldOn ? ["living", "london", "basement", "gaming"] : ["living", "bedroom", "basement", "gaming"];
   var pinnedRooms = rooms.filter(function (r) {
     return pinned.includes(r.id);
   });
@@ -18124,6 +18129,7 @@ function BottomNav(_ref135) {
   var pinLabels = {
     living: "客厅",
     bedroom: "卧室",
+    london: "伦敦",
     basement: "地下室",
     gaming: "游乐场"
   };
@@ -18260,7 +18266,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.7.13-1")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-1")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
