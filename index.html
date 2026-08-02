@@ -8731,8 +8731,8 @@ var ROOMS = [{
   id: "london",
   emoji: "🎡",
   name: "伦敦分部",
-  color: "#DCE7F5",
-  desc: "Canary Wharf · 时钟 · 吃饭 · 去玩"
+  color: "#DCF0E2",
+  desc: "Canary Wharf · 六周 · 家跟着飞"
 }, {
   id: "garden",
   emoji: "🌿",
@@ -17054,6 +17054,7 @@ function BasementScene(_refB1) {
 
 // ── 🎡 伦敦分部（Canary Wharf 支店）─────────────────────
 var LD_DEPART = "2026-08-15";
+var LD_BACK = "2026-09-26";
 var ldMap = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
 var ldFmt = function (tz) {
   try { return new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }); }
@@ -17095,14 +17096,16 @@ var LD_HERE = [
 var ldPick = function (arr, hr) { var out = arr[0][1]; for (var i = 0; i < arr.length; i++) { if (hr >= arr[i][0]) out = arr[i][1]; } return out; };
 // 行前清单
 var LD_PACK = [
-  { g: "🛂 证件文件", k: "doc", items: ["护照 + 签证（拍照存手机和邮箱各一份）", "机票行程单 / 值机码", "Fraser 公寓入住确认单", "境外医疗保险单", "证件照数张（办月票、健身卡用）", "驾照 + 翻译件（万一租车）", "在职证明 / 邀请函（入境备查）"] },
-  { g: "🔌 电子设备", k: "tech", items: ["英标转换插头 Type G ×3（多带不亏）", "拖线板一条（一个转换头带全屋）", "充电宝（随身行李，不能托运）", "电脑 + 充电器", "耳机（长途飞行救命）", "手机支架 / 数据线备用"] },
-  { g: "💊 药品（英国买药很麻烦）", k: "med", items: ["感冒药 / 退烧药", "肠胃药、止泻药、益生菌", "止痛药 / 布洛芬", "创可贴、碘伏棉签", "维生素 D（英国冬天见不到太阳，必备）", "常用处方药 + 英文说明或处方复印件", "眼药水、隐形眼镜 + 护理液"] },
-  { g: "🧥 衣物", k: "cloth", items: ["防水外套（伦敦的雨说来就来）", "厚大衣 / 羽绒服（12-2 月湿冷入骨）", "折叠伞 ×2（会丢）", "围巾、手套、帽子", "保暖内衣 / 打底裤", "上班正装几套", "最舒服的走路鞋（伦敦全靠走）", "拖鞋（公寓通常不配）"] },
-  { g: "🍜 中国胃急救包", k: "food", items: ["老干妈 / 辣酱", "火锅底料 ×2", "螺蛳粉 / 方便面（想家时的解药）", "榨菜、腐乳", "常用调料：花椒、八角、生抽", "枸杞红枣（那边贵）", "小电饭煲（也可到了在亚超买）"] },
-  { g: "💳 钱与卡", k: "money", items: ["双币信用卡 ×2（不同银行，防止被风控）", "少量英镑现金（约 £100 应急）", "支付宝 / 微信绑好国际卡", "到英国后办 Monzo 或 Revolut（几分钟开卡）", "国内银行 App 开好境外登录"] },
-  { g: "🏠 小屋牌温柔", k: "soft", items: ["一张我们的照片（贴在公寓桌上）", "睡惯的枕套或小毯子", "熟悉味道的护手霜 / 香水", "好好的照片（想她的时候看）", "这个 App 加到手机主屏 🏡"] }
+  { g: "🫁 最重要的（先收这个）", k: "care", items: ["缓解型吸入器 ×3（万托林/沙丁胺醇，别只带一支）", "预防型吸入器 + 备用装", "英文诊断证明或处方复印件（过海关、紧急买药用）", "储雾罐（如果平时在用）", "防螨枕套 / 床罩（公寓地毯是尘螨大户）", "常备口罩（早晚凉、花粉季挡一挡）", "紧急联系卡：写清哮喘 + 用药，放钱包"] },
+  { g: "🛂 证件文件", k: "doc", items: ["护照 + 签证（拍照存手机和邮箱各一份）", "机票行程单 / 值机码", "Fraser 公寓入住确认单", "境外医疗保险单（确认含哮喘）", "证件照数张", "在职证明 / 邀请函（入境备查）"] },
+  { g: "🔌 电子设备", k: "tech", items: ["英标转换插头 Type G ×3", "拖线板一条（一个转换头带全屋）", "充电宝（随身行李，不能托运）", "电脑 + 充电器", "降噪耳机（长途飞行救命）", "数据线备用"] },
+  { g: "💊 其它药品", k: "med", items: ["感冒药 / 退烧药", "肠胃药、止泻药、益生菌", "止痛药", "创可贴、碘伏棉签", "过敏药（英国秋天花粉多）", "眼药水、隐形眼镜 + 护理液"] },
+  { g: "🧥 衣物（六周，八月到九月底）", k: "cloth", items: ["防水外套（伦敦的雨说来就来）", "薄羽绒或厚外套（九月底早晚十度出头）", "折叠伞 ×2（会丢）", "薄围巾（挡风也护嗓子）", "上班正装几套", "最舒服的走路鞋（伦敦全靠走）", "拖鞋（公寓通常不配）"] },
+  { g: "🍜 中国胃急救包", k: "food", items: ["老干妈 / 辣酱", "螺蛳粉 / 方便面（懒得动的晚上）", "榨菜、腐乳", "常用调料：花椒、八角、生抽", "枸杞红枣（那边贵）"] },
+  { g: "💳 钱与卡", k: "money", items: ["双币信用卡 ×2（不同银行，防止被风控）", "少量英镑现金（约 £100 应急）", "支付宝 / 微信绑好国际卡", "到英国后办 Monzo（几分钟开卡）", "国内银行 App 开好境外登录"] },
+  { g: "🎒 让自己舒服的小东西", k: "soft", items: ["歌单和剧提前下载好（飞机和地铁都没信号）", "眼罩 + 耳塞（倒时差第一周全靠它）", "护手霜和唇膏（伦敦比广州干）", "一本想读很久的书", "轻便保温杯", "最舒服的那套睡衣", "把这个小屋加到手机主屏 🏡"] }
 ];
+
 // 吃饭
 var LD_APPS = [
   { n: "熊猫外卖 HungryPanda", d: "华人中餐首选 · 中文界面 · 可用支付宝微信付", e: "🐼", u: "https://www.hungrypanda.co", tag: "熊猫鱼同款" },
@@ -17139,17 +17142,18 @@ var LD_LIVE = [
   { n: "理发 / 美甲", d: "Jubilee Place 商场负一层有几家", e: "💇", q: "hairdresser Canary Wharf" }
 ];
 var LD_SURVIVE = [
-  { t: "☀️ 维生素 D 要吃", b: "11-2 月伦敦几乎见不到太阳，英国医生都建议全民补 D。Boots 就有卖。" },
-  { t: "🌃 冬天下午三点半天黑", b: "12 月太阳 15:50 就下山。下班时天已全黑，别慌，这是正常的。" },
   { t: "☔ 伞随身", b: "伦敦的雨来得快去得也快，很少下大，但一天能下三回。" },
-  { t: "🛍️ 周日商店只开 11-17", b: "英国法律规定周日营业限时，别周日下午五点跑去超市。" },
-  { t: "💳 刷卡进地铁就行", b: "手机或银行卡直接刷闸机，系统每天自动封顶，不用买票。" },
-  { t: "🏥 生病先去药店", b: "轻症找 Boots 药剂师；非紧急打 111；紧急打 999。GP 要提前注册且排队久。" },
+  { t: "🌡️ 早晚温差大", b: "八九月白天二十度、傍晚十几度，出门带件外套，别让冷空气激着嗓子。" },
+  { t: "🛍️ 周日商店只开 11-17", b: "英国法律规定周日营业限时，别周日傍晚跑去超市。" },
+  { t: "💳 刷卡直接进地铁", b: "手机或银行卡刷闸机，系统每天自动封顶，不用买票。" },
+  { t: "🏥 生病先去药店", b: "轻症找 Boots 药剂师免费咨询；非紧急打 111；紧急打 999。" },
   { t: "💷 小费别重复给", b: "餐厅账单常已含 12.5% service charge，含了就不用另给。" },
-  { t: "🚇 扶梯靠右站", b: "左边是留给赶路的人的，站错会被瞪（真的）。" },
-  { t: "📱 电话卡用 GiffGaff", b: "网上订 SIM 免费寄到公寓，月租便宜可随时换套餐。" },
-  { t: "🏦 落地办 Monzo", b: "手机上几分钟开好英国银行账户，收工资、AA 都方便。" }
+  { t: "🚇 扶梯靠右站", b: "左边留给赶路的人，站错会被瞪（真的）。" },
+  { t: "📱 电话卡用 GiffGaff", b: "网上订 SIM 免费寄到公寓，月租便宜可随时换。" },
+  { t: "🏦 落地办 Monzo", b: "手机上几分钟开好英国账户，收钱 AA 都方便。" },
+  { t: "🌇 九月天黑得越来越早", b: "八月底晚上八点还亮，九月底七点就黑了，晚归走大路。" }
 ];
+
 // 去玩
 var LD_TRIPS = [
   { z: "🚶 走几步就到（30 分钟内）", list: [
@@ -17187,13 +17191,69 @@ var LD_TRIPS = [
   ] }
 ];
 var LD_SEASON = [
-  { m: 8, t: "🌤️ 八月的伦敦最舒服，20 度左右，公园里全是躺着的人" },
-  { m: 9, t: "🍂 九月开始转凉，秋色最好看的是 Richmond Park" },
-  { m: 10, t: "🎃 十月底调冬令时，天黑得早了，跟家里差 8 小时" },
-  { m: 11, t: "🎆 11 月 5 日 Bonfire Night，全城放烟火" },
-  { m: 12, t: "🎄 圣诞集市、牛津街灯饰、Winter Wonderland 开张了" },
-  { m: 1, t: "🏷️ 一月打折季，也是最冷的时候，注意保暖" },
-  { m: 2, t: "💐 春天要来了，公园的水仙先开" }
+  { m: 8, t: "🌤️ 八月的伦敦最舒服，20 度上下，晚上八点半天才黑，公园里全是躺着的人。杂草花粉这时候多，出门前看一眼花粉指数。" },
+  { m: 9, t: "🍂 九月开始转秋，白天还有 18 度，早晚凉得快。九月中有 Open House 建筑开放日，很多平时进不去的地方免费开门。" },
+  { m: 10, t: "🍁 十月的伦敦金黄一片，早晚十度出头，围巾该上岗了。" }
+];
+
+
+// 安心角落：哮喘 / 幽闭 / 一个人的夜晚
+var LD_ASTHMA = [
+  { t: "吸入器放随身包，别托运", b: "货舱低温和气压会影响药效，也怕行李延误。缓解型至少带三支，公寓、包里、办公室各放一支。" },
+  { t: "英国怎么应急买药", b: "处方药要 GP 处方，但带着旧药盒或处方复印件去 Boots，跟药剂师说 emergency supply，多数情况能拿到应急量。" },
+  { t: "花粉季在八九月", b: "英国夏末是杂草花粉季，清晨和傍晚浓度最高。出门前搜一下 pollen count london，高的日子戴口罩、回屋先洗脸换衣。" },
+  { t: "公寓地毯要防螨", b: "服务式公寓多是地毯，尘螨是诱因。带防螨枕套，让保洁多吸尘，别在房间晾湿衣服。" },
+  { t: "早晚凉，围巾护嗓子", b: "冷空气是常见诱因。九月早晚十几度，出门用薄围巾松松挡住口鼻，走到暖和了再放下。" },
+  { t: "急救说这几个字", b: "拨 999，说「asthma attack」+ 地址。非紧急打 111 免费咨询。Asthma + Lung UK 热线 0300 222 5800。" },
+  { t: "写一张卡片放钱包", b: "英文写清：哮喘、常用药名、紧急联系人。真出事时，别人能第一时间帮你说明。" }
+];
+var LD_CALMWAY = [
+  { n: "泰晤士河快船 Uber Boat", d: "Canary Wharf 码头就在楼下，全程露天甲板，看着风景到市中心 · 幽闭首选", e: "⛴️", q: "Canary Wharf Pier London", tag: "最推荐" },
+  { n: "DLR 轻轨", d: "全程高架露天，无人驾驶可以坐最前排，像自己开火车", e: "🚈", q: "West India Quay DLR Station", tag: "露天" },
+  { n: "双层巴士坐上层前排", d: "地面行驶，慢一点但一路看街景，随时能下车", e: "🚌", q: "bus stop Canary Wharf" },
+  { n: "Elizabeth line", d: "虽然在地下，但车厢是全伦敦最宽敞明亮的，有空调有屏蔽门", e: "🚆", q: "Elizabeth line Canary Wharf" },
+  { n: "Canary Wharf 地铁站本身很开阔", d: "站厅是玻璃穹顶设计，挑高很高不压抑，别被「地铁」两个字吓到", e: "🏛️", q: "Canary Wharf Jubilee Line Station" },
+  { n: "Santander 共享单车", d: "泰晤士河边一路骑，天气好的时候最舒服", e: "🚲", q: "Santander Cycles Canary Wharf" }
+];
+var LD_CALMTIP = [
+  "避开 08:00-09:30 和 17:00-18:30 的高峰，车厢会挤",
+  "不舒服就下一站下车，站台坐一会儿，每个站都有工作人员",
+  "随身带水和薄荷糖，深呼吸比硬撑管用",
+  "格林威治步行隧道是很长的水下隧道，不想进就坐 DLR 一站到 Cutty Sark，一样到"
+];
+var LD_NIGHT = [
+  { e: "⛴️", t: "坐船去看塔桥的灯", d: "晚上的泰晤士河比白天好看，露天甲板上风很舒服" },
+  { e: "🌴", t: "上屋顶花园吹会儿风", d: "Crossrail Place 顶层，免费，人少" },
+  { e: "🛁", t: "泡个澡，把歌开大声", d: "随身听里有你从广州带走的整个歌单" },
+  { e: "📮", t: "写一封信寄回 221B", d: "你写的时候广州在睡，但他一睁眼就能看见" },
+  { e: "🎬", t: "看一部电影节里标了想看的", d: "看完记得打分，等他开牌" },
+  { e: "🍮", t: "下楼买个 M&S 的甜点", d: "十分钟的路，回来心情会不一样" },
+  { e: "🐈", t: "看看好好的照片，跟她说两句", d: "她听不见，但你会好受一点" },
+  { e: "🛏️", t: "什么都不做，就躺着", d: "今天已经够努力了，躺着也是正经事" }
+];
+var LD_DRINK = [
+  "好啊，家陪你喝。杯子放稳，我们碰一个 🥂",
+  "这杯算这个家请的。喝完记得补一口水 💧",
+  "一个人喝也是喝，但别喝到忘了明天还想去哪玩 😌",
+  "红酒里的亚硫酸盐偶尔会招惹哮喘，慢点喝，不舒服就放下 🫶",
+  "喝到微醺最舒服，喝到想哭就打开 221B 写两句 📮",
+  "陪你喝这一杯，剩下的留着回来一起 🍷",
+  "好好也想凑热闹，被这个家拦住了，说猫不能喝 🐈",
+  "今晚的酒记在家的账上，明天的你不用还 ✨"
+];
+var LD_BEAT = [
+  "好好在纸箱里睡熟了，尾巴垂在外面 🐈",
+  "客厅的灯刚关，沙发上还留着凹陷 🛋️",
+  "小冰箱里那半个西瓜还冻着，等你回来分 🍉",
+  "地下室的迪斯科球没人转，落了点灰 🪩",
+  "厨房的锅刚洗完，扣在架子上滴水 🍲",
+  "好好又把捆捆带咬成了蝴蝶结 🎀",
+  "阳台的花今天浇过水了，长得还行 🌿",
+  "221B 的壁炉一直烧着，就等你的信 🕯️",
+  "街机的最高分还是你的，没人破得了 🕹️",
+  "门口的地垫每天都在等一双熟悉的鞋 🧡",
+  "小夜灯忘了关，亮了一整夜，也挺好 💡",
+  "好好今天在窗边坐了很久，不知道在看什么 🪟"
 ];
 
 function LondonRoom(_refLD) {
@@ -17208,6 +17268,9 @@ function LondonRoom(_refLD) {
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
   var _cm = useState(""); var craveMsg = _cm[0], setCraveMsg = _cm[1];
   var _cb = useState(false); var craveBusy = _cb[0], setCraveBusy = _cb[1];
+  var _dk = useState(""); var drinkLine = _dk[0], setDrinkLine = _dk[1];
+  var _bt = useState(function () { return LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]; });
+  var beat = _bt[0], setBeat = _bt[1];
   var myAuthor = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
   useEffect(function () { var id = setInterval(function () { setTick(function (n) { return n + 1; }); }, 20000); return function () { clearInterval(id); }; }, []);
   var lonT = ldFmt("Europe/London"), gzT = ldFmt("Asia/Shanghai");
@@ -17242,53 +17305,59 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = [["now", "⏰ 此刻"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]];
+  var TABS = [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]];
   var card = function (inner, extra) {
-    var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(120,130,160,0.13)", border: "1.5px solid rgba(180,195,220,0.5)", marginBottom: 12 };
+    var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(105,155,130,0.16)", border: "1.5px solid rgba(178,218,196,0.6)", marginBottom: 12 };
     for (var k in (extra || {})) st[k] = extra[k];
     return h("div", { style: st }, inner);
   };
   var linkRow = function (o, i) {
     var url = o.u ? o.u : ldMap(o.q);
-    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 4px", borderBottom: "1px solid rgba(160,175,200,0.16)", textDecoration: "none", color: "inherit" } },
+    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 4px", borderBottom: "1px solid rgba(160,200,178,0.22)", textDecoration: "none", color: "inherit" } },
       h("span", { style: { fontSize: "1.3rem", flexShrink: 0 } }, o.e),
       h("div", { style: { flex: 1, minWidth: 0 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#2f4360" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
-        h("div", { style: { fontSize: "0.68rem", color: "rgba(90,110,140,0.8)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
-      h("span", { style: { color: "rgba(120,150,190,0.7)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
+        h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#2b5544" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
+        h("div", { style: { fontSize: "0.68rem", color: "rgba(88,128,106,0.85)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
+      h("span", { style: { color: "rgba(108,168,136,0.8)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
   };
   var head = function (txt, sub) {
     return h("div", { style: { marginBottom: 8 } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360" } }, txt),
-      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(100,120,150,0.75)", marginTop: 2 } }, sub) : null);
+      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544" } }, txt),
+      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(98,138,116,0.8)", marginTop: 2 } }, sub) : null);
   };
   // ── 此刻 ──
   var nowTab = h("div", null,
     card([
       h("div", { key: "c1", style: { display: "flex", alignItems: "stretch", gap: 10 } },
-        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#2b3f63,#1b2942)", borderRadius: 14, padding: "12px 6px", color: "#fff" } },
-          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, color: "rgba(190,210,240,0.85)", fontWeight: 800 } }, "LONDON"),
+        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#2f5f47,#1b3b2d)", borderRadius: 14, padding: "12px 6px", color: "#fff" } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, color: "rgba(195,235,210,0.88)", fontWeight: 800 } }, "LONDON"),
           h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, lonT),
-          h("div", { style: { fontSize: "0.58rem", color: "rgba(190,210,240,0.7)" } }, "Canary Wharf 🎡")),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(195,235,210,0.72)" } }, "Canary Wharf 🎡")),
         h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#ffeede,#ffdcc2)", borderRadius: 14, padding: "12px 6px", color: "#7a4a28" } },
           h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "GUANGZHOU"),
           h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, gzT),
           h("div", { style: { fontSize: "0.58rem", color: "rgba(150,100,60,0.8)" } }, "这个家 🏡"))),
-      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(100,120,150,0.7)", margin: "10px 0 8px", fontWeight: 700 } }, "家里比这里快 " + diff + " 小时"),
+      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(98,138,116,0.75)", margin: "10px 0 8px", fontWeight: 700 } }, "家里比这里快 " + diff + " 小时"),
       h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
-      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(70,95,130,0.9)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
+      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(68,115,92,0.92)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
     ]),
     daysTo > 0 ? card(h("div", { style: { textAlign: "center" } },
-      h("div", { style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.8)", fontWeight: 700 } }, "距离 8 月 15 日出发"),
-      h("div", { style: { fontSize: "1.6rem", fontWeight: 800, color: "#2f4360", margin: "4px 0" } }, "还有 " + daysTo + " 天"),
-      h("div", { style: { fontSize: "0.68rem", color: "rgba(100,120,150,0.75)" } }, "行李清单在隔壁，慢慢收 🧳"))) : null,
+      h("div", { style: { fontSize: "0.72rem", color: "rgba(98,138,116,0.85)", fontWeight: 700 } }, "距离 8 月 15 日出发"),
+      h("div", { style: { fontSize: "1.6rem", fontWeight: 800, color: "#2b5544", margin: "4px 0" } }, "还有 " + daysTo + " 天"),
+      h("div", { style: { fontSize: "0.68rem", color: "rgba(98,138,116,0.8)" } }, "行李清单在隔壁，慢慢收 🧳"))) : null,
     card([
-      h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
-      h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(80,100,130,0.9)", lineHeight: 1.7 } }, season)
+      h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2b5544", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
+      h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(78,120,98,0.92)", lineHeight: 1.7 } }, season)
     ]),
     card([
-      h("div", { key: "q1", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2f4360", marginBottom: 4 } }, "🍜 今天想吃什么？"),
-      h("div", { key: "q2", style: { fontSize: "0.7rem", color: "rgba(100,120,150,0.8)", marginBottom: 10, lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟"),
+      h("div", { key: "b1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#2b5544" } }, "🏡 家里的动静"),
+        h("button", { onClick: function () { setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { border: "none", background: "none", color: "rgba(98,138,116,0.75)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", padding: 2 } }, "🔄 再看看")),
+      h("div", { key: "b2", style: { fontSize: "0.82rem", color: "rgba(78,120,98,0.94)", lineHeight: 1.7, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, beat)
+    ]),
+    card([
+      h("div", { key: "q1", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2b5544", marginBottom: 4 } }, "🍜 今天想吃什么？"),
+      h("div", { key: "q2", style: { fontSize: "0.7rem", color: "rgba(98,138,116,0.85)", marginBottom: 10, lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟"),
       h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "📮 发一份投喂申请")
     ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" })
   );
@@ -17298,20 +17367,20 @@ function LondonRoom(_refLD) {
   var packTab = h("div", null,
     card([
       h("div", { key: "p1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360" } }, "🧳 行李清单"),
+        h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544" } }, "🧳 行李清单"),
         h("div", { style: { fontSize: "0.74rem", fontWeight: 800, color: "#c8871a" } }, doneItems + " / " + allItems)),
-      h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(160,180,210,0.22)", overflow: "hidden" } },
+      h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(160,205,182,0.26)", overflow: "hidden" } },
         h("div", { style: { height: "100%", width: (allItems ? Math.round(doneItems / allItems * 100) : 0) + "%", background: "linear-gradient(90deg,#ffd86a,#f4a636)", borderRadius: 99, transition: "width 0.3s" } })),
-      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(100,120,150,0.75)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "全部打包完毕，可以出发了 ✈️" : "点一下打勾，收到哪算哪，不用急")
+      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(98,138,116,0.8)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "全部打包完毕，可以出发了 ✈️" : "点一下打勾，收到哪算哪，不用急")
     ]),
     LD_PACK.map(function (g) {
       return card([
-        h("div", { key: "g", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, g.g),
+        h("div", { key: "g", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2b5544", marginBottom: 6 } }, g.g),
         h("div", { key: "l" }, g.items.map(function (it, ii) {
           var id = g.k + "-" + ii, on = !!packed[id];
-          return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(160,175,200,0.14)" } },
-            h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(150,170,200,0.55)", background: on ? "#5aa96a" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
-            h("span", { style: { fontSize: "0.79rem", color: on ? "rgba(110,130,150,0.6)" : "#42536c", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
+          return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(160,200,178,0.2)" } },
+            h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(155,200,175,0.65)", background: on ? "#3f9f68" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
+            h("span", { style: { fontSize: "0.79rem", color: on ? "rgba(108,145,125,0.62)" : "#3b5a4a", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
         }))
       ], { key: g.k });
     })
@@ -17319,8 +17388,8 @@ function LondonRoom(_refLD) {
   // ── 吃饭 ──
   var eatTab = h("div", null,
     card([
-      h("div", { key: "e0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2f4360", marginBottom: 4 } }, "📮 远程投喂"),
-      h("div", { key: "e1", style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.85)", lineHeight: 1.7, marginBottom: 10 } }, "在伦敦点一下想吃的，申请会变成一台 BB 机寄回 221B。广州收到就用熊猫外卖下单 —— 隔着七小时也能给你送饭 🐼"),
+      h("div", { key: "e0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2b5544", marginBottom: 4 } }, "📮 远程投喂"),
+      h("div", { key: "e1", style: { fontSize: "0.72rem", color: "rgba(98,138,116,0.88)", lineHeight: 1.7, marginBottom: 10 } }, "在伦敦点一下想吃的，申请会变成一台 BB 机寄回 221B。广州收到就用熊猫外卖下单 —— 隔着七小时也能给你送饭 🐼"),
       h("button", { key: "e2", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "🍜 发一份投喂申请")
     ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" }),
     card([head("🛵 外卖 App", "华人平台可以用支付宝微信付款"), h("div", { key: "a" }, LD_APPS.map(linkRow))]),
@@ -17331,38 +17400,76 @@ function LondonRoom(_refLD) {
   var liveTab = h("div", null,
     card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))]),
     card([
-      h("div", { key: "s0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360", marginBottom: 8 } }, "☔ 伦敦生存贴士"),
+      h("div", { key: "s0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544", marginBottom: 8 } }, "☔ 伦敦生存贴士"),
       h("div", { key: "s1" }, LD_SURVIVE.map(function (x, i) {
-        return h("div", { key: "sv" + i, style: { padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px solid rgba(160,175,200,0.16)" } },
-          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#2f4360" } }, x.t),
-          h("div", { style: { fontSize: "0.72rem", color: "rgba(90,110,140,0.85)", marginTop: 3, lineHeight: 1.65 } }, x.b));
+        return h("div", { key: "sv" + i, style: { padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px solid rgba(160,200,178,0.22)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#2b5544" } }, x.t),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(88,128,106,0.88)", marginTop: 3, lineHeight: 1.65 } }, x.b));
       }))
     ])
+  );
+  // ── 安心 ──
+  var careTab = h("div", null,
+    card([
+      h("div", { key: "a0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544", marginBottom: 3 } }, "🫁 哮喘随身"),
+      h("div", { key: "a1", style: { fontSize: "0.68rem", color: "rgba(98,138,116,0.85)", marginBottom: 8, lineHeight: 1.6 } }, "出门前看一眼，比什么都重要"),
+      h("div", { key: "a2" }, LD_ASTHMA.map(function (x, i) {
+        return h("div", { key: "as" + i, style: { padding: "9px 0", borderBottom: i === LD_ASTHMA.length - 1 ? "none" : "1px solid rgba(160,200,178,0.22)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#2b5544" } }, "· " + x.t),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(88,128,106,0.9)", marginTop: 3, lineHeight: 1.68 } }, x.b));
+      }))
+    ]),
+    card([
+      h("div", { key: "c0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544", marginBottom: 3 } }, "🚈 不闷不挤的路线"),
+      h("div", { key: "c1", style: { fontSize: "0.68rem", color: "rgba(98,138,116,0.85)", marginBottom: 6, lineHeight: 1.6 } }, "伦敦不是只有地铁 · 下面这些都能到市中心"),
+      h("div", { key: "c2" }, LD_CALMWAY.map(linkRow)),
+      h("div", { key: "c3", style: { marginTop: 10, background: "rgba(140,200,170,0.14)", borderRadius: 10, padding: "9px 11px" } },
+        LD_CALMTIP.map(function (t, i) {
+          return h("div", { key: "ct" + i, style: { fontSize: "0.71rem", color: "rgba(70,110,90,0.95)", lineHeight: 1.7, padding: "2px 0" } }, "· " + t);
+        }))
+    ]),
+    card([
+      h("div", { key: "n0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544", marginBottom: 3 } }, "🌙 一个人的晚上"),
+      h("div", { key: "n1", style: { fontSize: "0.68rem", color: "rgba(98,138,116,0.85)", marginBottom: 8, lineHeight: 1.6 } }, "不想干嘛也行，这些只是摆在这儿"),
+      h("div", { key: "n2" }, LD_NIGHT.map(function (x, i) {
+        return h("div", { key: "nt" + i, style: { display: "flex", gap: 10, padding: "8px 0", borderBottom: i === LD_NIGHT.length - 1 ? "none" : "1px solid rgba(160,200,178,0.22)" } },
+          h("span", { style: { fontSize: "1.15rem", flexShrink: 0 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#2b5544" } }, x.t),
+            h("div", { style: { fontSize: "0.7rem", color: "rgba(88,128,106,0.88)", marginTop: 2, lineHeight: 1.55 } }, x.d)));
+      }))
+    ]),
+    card([
+      h("div", { key: "d0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#7a4a52", marginBottom: 4 } }, "🍷 今晚想喝一杯？"),
+      h("div", { key: "d1", style: { fontSize: "0.71rem", color: "rgba(140,100,110,0.9)", lineHeight: 1.7, marginBottom: 10 } }, "喝就喝呗，反正家陪着你。按一下，倒满 👇"),
+      drinkLine ? h("div", { key: "d2", style: { background: "rgba(255,255,255,0.75)", borderRadius: 12, padding: "12px 13px", fontSize: "0.84rem", color: "#7a4a52", lineHeight: 1.75, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", marginBottom: 10, textAlign: "center" } }, drinkLine) : null,
+      h("button", { key: "d3", onClick: function () { setDrinkLine(LD_DRINK[Math.floor(Math.random() * LD_DRINK.length)]); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "11px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.85rem", cursor: "pointer", background: "linear-gradient(135deg,#e79aa8,#c96b80)", color: "#fff", boxShadow: "0 6px 14px rgba(200,110,130,0.3)" } }, drinkLine ? "🥂 再来一句" : "🥂 家陪你喝一杯")
+    ], { background: "linear-gradient(160deg,#fff4f5,#ffe6ea)", border: "1.5px solid rgba(230,180,190,0.5)" })
   );
   // ── 去玩 ──
   var chipOf = function (st) {
     if (st === "want") return { txt: "🌟 想去", bg: "rgba(255,200,90,0.25)", col: "#c8871a" };
     if (st === "done") return { txt: "✅ 去过", bg: "rgba(110,205,150,0.25)", col: "#2ba172" };
-    return { txt: "＋ 标记", bg: "rgba(160,180,210,0.16)", col: "rgba(100,120,150,0.8)" };
+    return { txt: "＋ 标记", bg: "rgba(160,205,182,0.2)", col: "rgba(98,138,116,0.85)" };
   };
   var wantN = 0, doneN = 0;
   for (var sk in spots) { if (spots[sk] === "want") wantN++; if (spots[sk] === "done") doneN++; }
   var playTab = h("div", null,
     card(h("div", { style: { textAlign: "center" } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360", marginBottom: 4 } }, "🎡 六个月，够走很多地方"),
-      h("div", { style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.85)", lineHeight: 1.7 } }, "点一下标记 🌟想去 / ✅去过，攒一张自己的伦敦地图"),
+      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2b5544", marginBottom: 4 } }, "🎡 六个月，够走很多地方"),
+      h("div", { style: { fontSize: "0.72rem", color: "rgba(98,138,116,0.88)", lineHeight: 1.7 } }, "点一下标记 🌟想去 / ✅去过，攒一张自己的伦敦地图"),
       h("div", { style: { marginTop: 8, fontSize: "0.76rem", fontWeight: 800, color: "#c8871a" } }, "想去 " + wantN + " · 去过 " + doneN))),
     LD_TRIPS.map(function (zone, zi) {
       return card([
-        h("div", { key: "z", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, zone.z),
+        h("div", { key: "z", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2b5544", marginBottom: 6 } }, zone.z),
         h("div", { key: "zl" }, zone.list.map(function (o, oi) {
           var id = "z" + zi + "-" + oi, st = spots[id] || "", c = chipOf(st);
-          return h("div", { key: id, style: { display: "flex", alignItems: "center", gap: 10, padding: "9px 2px", borderBottom: "1px solid rgba(160,175,200,0.16)" } },
+          return h("div", { key: id, style: { display: "flex", alignItems: "center", gap: 10, padding: "9px 2px", borderBottom: "1px solid rgba(160,200,178,0.22)" } },
             h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" } },
               h("span", { style: { fontSize: "1.25rem", flexShrink: 0 } }, o.e),
               h("div", { style: { flex: 1, minWidth: 0 } },
-                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: st === "done" ? "rgba(110,130,150,0.65)" : "#2f4360" } }, o.n),
-                h("div", { style: { fontSize: "0.67rem", color: "rgba(90,110,140,0.8)", marginTop: 2, lineHeight: 1.5 } }, o.d))),
+                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: st === "done" ? "rgba(108,145,125,0.68)" : "#2b5544" } }, o.n),
+                h("div", { style: { fontSize: "0.67rem", color: "rgba(88,128,106,0.85)", marginTop: 2, lineHeight: 1.5 } }, o.d))),
             h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
         }))
       ], { key: "zone" + zi });
@@ -17370,19 +17477,19 @@ function LondonRoom(_refLD) {
   );
   var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   return h("div", null,
-    h("div", { style: { background: "linear-gradient(160deg,#3a5580,#22344f)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(30,45,70,0.35)" } },
+    h("div", { style: { background: "linear-gradient(160deg,#3d7057,#1f4133)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(25,60,42,0.35)" } },
       h("div", { style: { position: "absolute", right: 14, top: 10, fontSize: "2.2rem", opacity: 0.25 } }, "🎡"),
       h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "LONDON BRANCH"),
       h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, "小屋伦敦分部"),
-      h("div", { style: { color: "rgba(200,215,240,0.85)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️")),
+      h("div", { style: { color: "rgba(205,238,218,0.88)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️")),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
-      return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #4a6a9a" : "1.5px solid rgba(150,170,200,0.4)", background: on ? "rgba(90,130,190,0.14)" : "#fff", color: on ? "#2f4360" : "rgba(100,120,150,0.85)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
+      return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3f8f68" : "1.5px solid rgba(155,200,175,0.5)", background: on ? "rgba(90,185,135,0.15)" : "#fff", color: on ? "#2b5544" : "rgba(98,138,116,0.88)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
     })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    tab === "now" ? nowTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
-    craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(30,40,60,0.55)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
-      h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(40,50,80,0.35)" } },
+    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
+    craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,52,40,0.55)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
+      h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(28,60,45,0.35)" } },
         h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
         h("div", { style: { textAlign: "center", fontWeight: 800, fontSize: "0.98rem", color: "#8a5a52" } }, "🍜 今天想吃什么？"),
         h("div", { style: { textAlign: "center", fontSize: "0.68rem", color: "rgba(160,120,110,0.75)", margin: "3px 0 14px" } }, "选一个，申请立刻寄回 221B"),
