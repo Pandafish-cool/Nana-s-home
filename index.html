@@ -8728,6 +8728,12 @@ var ROOMS = [{
   color: "#CBBCE0",
   desc: "街机 · 飞镖 · 果汁吧"
 }, {
+  id: "london",
+  emoji: "🎡",
+  name: "伦敦分部",
+  color: "#DCE7F5",
+  desc: "Canary Wharf · 时钟 · 吃饭 · 去玩"
+}, {
   id: "garden",
   emoji: "🌿",
   name: "Garden",
@@ -17045,6 +17051,348 @@ function BasementScene(_refB1) {
     h("button", { onClick: onBack, style: { display: "block", margin: "14px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
 }
 
+
+// ── 🎡 伦敦分部（Canary Wharf 支店）─────────────────────
+var LD_DEPART = "2026-08-15";
+var ldMap = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
+var ldFmt = function (tz) {
+  try { return new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }); }
+  catch (_) { return "--:--"; }
+};
+var ldHour = function (tz) {
+  try { return parseInt(new Date().toLocaleString("en-GB", { timeZone: tz, hour: "2-digit", hour12: false }).slice(0, 2), 10) || 0; }
+  catch (_) { return 0; }
+};
+var ldDiff = function () {
+  try {
+    var n = new Date();
+    var l = new Date(n.toLocaleString("en-US", { timeZone: "Europe/London" }));
+    var g = new Date(n.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
+    return Math.round((g - l) / 3600000);
+  } catch (_) { return 7; }
+};
+// 广州此刻在干嘛（按广州小时）
+var LD_HOME = [
+  [0, "家里都睡了，好好在打呼 🐈"],
+  [6, "广州天亮了，好好蹲在碗边催早饭 🍳"],
+  [9, "家里在忙活，沙发空着给你留位 🛋️"],
+  [12, "广州在吃午饭，你那一份先记着 🍚"],
+  [14, "下午了，好好占着沙发晒太阳 ☀️"],
+  [18, "家里在吃晚饭，多做了你爱的那道 🍲"],
+  [21, "广州要睡了，小夜灯还给你亮着 💡"],
+  [23, "夜深了，这个家在梦里跟你说晚安 🌙"]
+];
+// 伦敦此刻招呼语（按伦敦小时）
+var LD_HERE = [
+  [0, "伦敦深夜了，被窝比什么都重要 🌙"],
+  [5, "伦敦天亮了，先来杯热的 ☕"],
+  [9, "上午的金丝雀码头，风有点大 🌬️"],
+  [12, "午饭时间到，别只吃三明治 🥪"],
+  [14, "下午了，抬头看看窗外的云 ☁️"],
+  [18, "下班啦，泰晤士河的风送你回家 🌆"],
+  [22, "该收工了，明天再战 🛏️"]
+];
+var ldPick = function (arr, hr) { var out = arr[0][1]; for (var i = 0; i < arr.length; i++) { if (hr >= arr[i][0]) out = arr[i][1]; } return out; };
+// 行前清单
+var LD_PACK = [
+  { g: "🛂 证件文件", k: "doc", items: ["护照 + 签证（拍照存手机和邮箱各一份）", "机票行程单 / 值机码", "Fraser 公寓入住确认单", "境外医疗保险单", "证件照数张（办月票、健身卡用）", "驾照 + 翻译件（万一租车）", "在职证明 / 邀请函（入境备查）"] },
+  { g: "🔌 电子设备", k: "tech", items: ["英标转换插头 Type G ×3（多带不亏）", "拖线板一条（一个转换头带全屋）", "充电宝（随身行李，不能托运）", "电脑 + 充电器", "耳机（长途飞行救命）", "手机支架 / 数据线备用"] },
+  { g: "💊 药品（英国买药很麻烦）", k: "med", items: ["感冒药 / 退烧药", "肠胃药、止泻药、益生菌", "止痛药 / 布洛芬", "创可贴、碘伏棉签", "维生素 D（英国冬天见不到太阳，必备）", "常用处方药 + 英文说明或处方复印件", "眼药水、隐形眼镜 + 护理液"] },
+  { g: "🧥 衣物", k: "cloth", items: ["防水外套（伦敦的雨说来就来）", "厚大衣 / 羽绒服（12-2 月湿冷入骨）", "折叠伞 ×2（会丢）", "围巾、手套、帽子", "保暖内衣 / 打底裤", "上班正装几套", "最舒服的走路鞋（伦敦全靠走）", "拖鞋（公寓通常不配）"] },
+  { g: "🍜 中国胃急救包", k: "food", items: ["老干妈 / 辣酱", "火锅底料 ×2", "螺蛳粉 / 方便面（想家时的解药）", "榨菜、腐乳", "常用调料：花椒、八角、生抽", "枸杞红枣（那边贵）", "小电饭煲（也可到了在亚超买）"] },
+  { g: "💳 钱与卡", k: "money", items: ["双币信用卡 ×2（不同银行，防止被风控）", "少量英镑现金（约 £100 应急）", "支付宝 / 微信绑好国际卡", "到英国后办 Monzo 或 Revolut（几分钟开卡）", "国内银行 App 开好境外登录"] },
+  { g: "🏠 小屋牌温柔", k: "soft", items: ["一张我们的照片（贴在公寓桌上）", "睡惯的枕套或小毯子", "熟悉味道的护手霜 / 香水", "好好的照片（想她的时候看）", "这个 App 加到手机主屏 🏡"] }
+];
+// 吃饭
+var LD_APPS = [
+  { n: "熊猫外卖 HungryPanda", d: "华人中餐首选 · 中文界面 · 可用支付宝微信付", e: "🐼", u: "https://www.hungrypanda.co", tag: "熊猫鱼同款" },
+  { n: "饭团外卖 Fantuan", d: "另一个华人平台，中餐选择多", e: "🍙", u: "https://www.fantuan.ca" },
+  { n: "Deliveroo", d: "英国主流外卖，什么都送", e: "🛵", u: "https://deliveroo.co.uk" },
+  { n: "Uber Eats", d: "常有折扣，覆盖广", e: "🚗", u: "https://www.ubereats.com/gb" },
+  { n: "Just Eat", d: "本地小馆子多", e: "🍟", u: "https://www.just-eat.co.uk" }
+];
+var LD_FOOD = [
+  { n: "Royal China 皇朝", d: "粤菜点心 · 走路可达 · 一个人也能点两笼", e: "🥟", q: "Royal China Canary Wharf London", tag: "中餐" },
+  { n: "Chinatown 唐人街", d: "Elizabeth line 到 Tottenham Court Road，一站到市中心", e: "🏮", q: "Chinatown London", tag: "中餐" },
+  { n: "Wagamama", d: "日式拉面 · 单人吧台位 · 商场里", e: "🍜", q: "Wagamama Canary Wharf" },
+  { n: "Dishoom", d: "印度菜网红店 · Canary Wharf 有分店 · 早餐也好吃", e: "🍛", q: "Dishoom Canary Wharf" },
+  { n: "Itsu", d: "寿司便当 · 快 · 打折时段超值", e: "🍱", q: "Itsu Canary Wharf" },
+  { n: "Franco Manca", d: "那不勒斯披萨 · 便宜好吃 · 一个人一张刚好", e: "🍕", q: "Franco Manca Canary Wharf" },
+  { n: "Pret A Manger", d: "早餐咖啡三明治 · 到处都是", e: "🥪", q: "Pret A Manger Canary Wharf" },
+  { n: "Crossrail Place 餐厅层", d: "屋顶花园楼下一整层吃的", e: "🌿", q: "Crossrail Place Canary Wharf" }
+];
+var LD_MART = [
+  { n: "Waitrose", d: "Canada Place 商场 · 品质高 · 熟食好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
+  { n: "Tesco / Sainsbury's", d: "日常便宜 · 到处有 Express 小店", e: "🥬", q: "Tesco Express Canary Wharf" },
+  { n: "M&S Food", d: "半成品和便当很救命", e: "🍱", q: "M&S Simply Food Canary Wharf" },
+  { n: "龙凤行 Loon Fung", d: "唐人街大中超 · 老干妈火锅料都有", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
+  { n: "Starry Mart 网购", d: "亚洲食品网上下单送到公寓", e: "📦", u: "https://starrymart.co.uk" }
+];
+// 生活
+var LD_LIVE = [
+  { n: "Boots 药店", d: "药剂师可免费咨询轻症 · 比看医生快多了", e: "💊", q: "Boots Canary Wharf" },
+  { n: "DLR West India Quay", d: "离公寓最近的站，走两分钟", e: "🚈", q: "West India Quay DLR Station" },
+  { n: "Canary Wharf 站", d: "Jubilee line / Elizabeth line / DLR 三线交汇", e: "🚇", q: "Canary Wharf Station London" },
+  { n: "Museum of London Docklands", d: "就在 West India Quay · 免费 · 下雨天好去处", e: "🏛️", q: "Museum of London Docklands" },
+  { n: "Crossrail 屋顶花园", d: "商场顶层免费花园，晴天来发呆", e: "🌴", q: "Crossrail Place Roof Garden" },
+  { n: "健身房 / 游泳", d: "Third Space、Virgin Active 都在商场里", e: "🏊", q: "gym Canary Wharf" },
+  { n: "理发 / 美甲", d: "Jubilee Place 商场负一层有几家", e: "💇", q: "hairdresser Canary Wharf" }
+];
+var LD_SURVIVE = [
+  { t: "☀️ 维生素 D 要吃", b: "11-2 月伦敦几乎见不到太阳，英国医生都建议全民补 D。Boots 就有卖。" },
+  { t: "🌃 冬天下午三点半天黑", b: "12 月太阳 15:50 就下山。下班时天已全黑，别慌，这是正常的。" },
+  { t: "☔ 伞随身", b: "伦敦的雨来得快去得也快，很少下大，但一天能下三回。" },
+  { t: "🛍️ 周日商店只开 11-17", b: "英国法律规定周日营业限时，别周日下午五点跑去超市。" },
+  { t: "💳 刷卡进地铁就行", b: "手机或银行卡直接刷闸机，系统每天自动封顶，不用买票。" },
+  { t: "🏥 生病先去药店", b: "轻症找 Boots 药剂师；非紧急打 111；紧急打 999。GP 要提前注册且排队久。" },
+  { t: "💷 小费别重复给", b: "餐厅账单常已含 12.5% service charge，含了就不用另给。" },
+  { t: "🚇 扶梯靠右站", b: "左边是留给赶路的人的，站错会被瞪（真的）。" },
+  { t: "📱 电话卡用 GiffGaff", b: "网上订 SIM 免费寄到公寓，月租便宜可随时换套餐。" },
+  { t: "🏦 落地办 Monzo", b: "手机上几分钟开好英国银行账户，收工资、AA 都方便。" }
+];
+// 去玩
+var LD_TRIPS = [
+  { z: "🚶 走几步就到（30 分钟内）", list: [
+    { n: "格林威治 Greenwich", d: "DLR 十分钟 · 天文台踩本初子午线 · 周末市集", e: "🕰️", q: "Greenwich London" },
+    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸", e: "🚇", q: "Greenwich Foot Tunnel" },
+    { n: "Mudchute 农场", d: "狗岛上的免费农场，有羊驼和小羊", e: "🐑", q: "Mudchute Park and Farm" },
+    { n: "Canary Wharf 屋顶花园", d: "商场顶层的热带植物园，免费，晴天必去", e: "🌴", q: "Crossrail Place Roof Garden" }
+  ] },
+  { z: "🚇 市区（40 分钟内）", list: [
+    { n: "Tower Bridge & 伦敦塔", d: "Jubilee 到 London Bridge，伦敦第一眼", e: "🌉", q: "Tower Bridge London" },
+    { n: "Borough Market", d: "美食市场，周六最热闹，一个人吃得很过瘾", e: "🧀", q: "Borough Market London" },
+    { n: "大英博物馆", d: "免费 · 逛三次都逛不完 · 下雨天首选", e: "🏛️", q: "British Museum" },
+    { n: "Tate Modern", d: "免费现代艺术馆，顶层看圣保罗大教堂", e: "🎨", q: "Tate Modern London" },
+    { n: "Sky Garden", d: "免费登高看全城，需提前网上预约", e: "🌇", q: "Sky Garden London" },
+    { n: "Notting Hill / Portobello", d: "周六古董市集，彩色房子拍照", e: "🏘️", q: "Portobello Road Market" },
+    { n: "Camden Market", d: "朋克、涂鸦、街头小吃", e: "🎸", q: "Camden Market London" },
+    { n: "Columbia Road 花市", d: "只有周日开，一条街全是花", e: "💐", q: "Columbia Road Flower Market" },
+    { n: "Hyde Park / 摄政公园", d: "天气好就去躺着，秋天满地金黄", e: "🌳", q: "Hyde Park London" }
+  ] },
+  { z: "🚄 一日游（周末火车）", list: [
+    { n: "牛津 Oxford", d: "Paddington 出发一小时 · 哈利波特食堂原型", e: "🎓", q: "Oxford UK" },
+    { n: "剑桥 Cambridge", d: "Liverpool St 出发 · 撑篙游康河", e: "🛶", q: "Cambridge UK" },
+    { n: "巴斯 Bath", d: "一个半小时 · 罗马浴场 · 简奥斯汀的城", e: "♨️", q: "Bath UK" },
+    { n: "布莱顿 Brighton", d: "一小时到海边 · 码头游乐场 · 吃炸鱼薯条", e: "🌊", q: "Brighton UK" },
+    { n: "温莎城堡 Windsor", d: "女王的周末别墅，半天就够", e: "🏰", q: "Windsor Castle" },
+    { n: "七姐妹白崖", d: "Brighton 再往东，白色悬崖长在海边", e: "🏳️", q: "Seven Sisters Cliffs" },
+    { n: "科茨沃尔德 Cotswolds", d: "英国最美村庄群，建议报一日团", e: "🐏", q: "Cotswolds England" },
+    { n: "巨石阵 Stonehenge", d: "常和 Bath 拼一天团", e: "🗿", q: "Stonehenge" }
+  ] },
+  { z: "✈️ 出个国（Eurostar 从 St Pancras）", list: [
+    { n: "巴黎 Paris", d: "火车 2 小时 15 分，比国内高铁还近", e: "🗼", q: "Paris France" },
+    { n: "布鲁塞尔 Brussels", d: "2 小时 · 华夫饼和薯条", e: "🧇", q: "Brussels Belgium" },
+    { n: "阿姆斯特丹", d: "4 小时 · 运河和美术馆", e: "🚲", q: "Amsterdam Netherlands" },
+    { n: "爱丁堡 Edinburgh", d: "英国境内，火车或廉航都方便", e: "🏴", q: "Edinburgh Scotland" }
+  ] }
+];
+var LD_SEASON = [
+  { m: 8, t: "🌤️ 八月的伦敦最舒服，20 度左右，公园里全是躺着的人" },
+  { m: 9, t: "🍂 九月开始转凉，秋色最好看的是 Richmond Park" },
+  { m: 10, t: "🎃 十月底调冬令时，天黑得早了，跟家里差 8 小时" },
+  { m: 11, t: "🎆 11 月 5 日 Bonfire Night，全城放烟火" },
+  { m: 12, t: "🎄 圣诞集市、牛津街灯饰、Winter Wonderland 开张了" },
+  { m: 1, t: "🏷️ 一月打折季，也是最冷的时候，注意保暖" },
+  { m: 2, t: "💐 春天要来了，公园的水仙先开" }
+];
+
+function LondonRoom(_refLD) {
+  var onBack = _refLD.onBack;
+  var h = React.createElement;
+  var _tb = useState("now"); var tab = _tb[0], setTab = _tb[1];
+  var _tk = useState(0); var setTick = _tk[1];
+  var _pk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-pack") || "{}"); } catch (_) { return {}; } });
+  var packed = _pk[0], setPacked = _pk[1];
+  var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
+  var spots = _sp[0], setSpots = _sp[1];
+  var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
+  var _cm = useState(""); var craveMsg = _cm[0], setCraveMsg = _cm[1];
+  var _cb = useState(false); var craveBusy = _cb[0], setCraveBusy = _cb[1];
+  var myAuthor = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
+  useEffect(function () { var id = setInterval(function () { setTick(function (n) { return n + 1; }); }, 20000); return function () { clearInterval(id); }; }, []);
+  var lonT = ldFmt("Europe/London"), gzT = ldFmt("Asia/Shanghai");
+  var lonH = ldHour("Europe/London"), gzH = ldHour("Asia/Shanghai");
+  var diff = ldDiff();
+  var daysTo = Math.ceil((new Date(LD_DEPART + "T00:00:00+08:00") - new Date()) / 86400000);
+  var season = (function () { var m = new Date().getMonth() + 1; for (var i = 0; i < LD_SEASON.length; i++) { if (LD_SEASON[i].m === m) return LD_SEASON[i].t; } return LD_SEASON[0].t; })();
+  var togglePack = function (id) {
+    var n = {}; for (var k in packed) { if (Object.prototype.hasOwnProperty.call(packed, k)) n[k] = packed[k]; }
+    n[id] = !n[id]; setPacked(n);
+    try { localStorage.setItem("nana-london-pack", JSON.stringify(n)); } catch (_) {}
+  };
+  var cycleSpot = function (id) {
+    var cur = spots[id] || "";
+    var nx = cur === "" ? "want" : cur === "want" ? "done" : "";
+    var n = {}; for (var k in spots) { if (Object.prototype.hasOwnProperty.call(spots, k)) n[k] = spots[k]; }
+    n[id] = nx; setSpots(n);
+    try { localStorage.setItem("nana-london-spots", JSON.stringify(n)); } catch (_) {}
+  };
+  var sendCrave = function (dish) {
+    if (craveBusy) return;
+    if (!myAuthor) { setCraveMsg("先去 221B 选一下你是谁，才能寄申请哦"); return; }
+    setCraveBusy(true); setCraveMsg("");
+    var dt = new Date();
+    var body = "📟 伦敦分部 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Suites, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
+    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "call", pu: null };
+    nanaSharedAdd(note, function (err) {
+      setCraveBusy(false);
+      if (err) { setCraveMsg("没寄出去…检查下网络再试 😢"); return; }
+      setCraveOpen(false);
+      setCraveMsg("📮 申请已寄到 221B，广州那边的 BB 机响了！");
+      setTimeout(function () { setCraveMsg(""); }, 5000);
+    });
+  };
+  var TABS = [["now", "⏰ 此刻"], ["pack", "🧳 行前"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]];
+  var card = function (inner, extra) {
+    var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(120,130,160,0.13)", border: "1.5px solid rgba(180,195,220,0.5)", marginBottom: 12 };
+    for (var k in (extra || {})) st[k] = extra[k];
+    return h("div", { style: st }, inner);
+  };
+  var linkRow = function (o, i) {
+    var url = o.u ? o.u : ldMap(o.q);
+    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 4px", borderBottom: "1px solid rgba(160,175,200,0.16)", textDecoration: "none", color: "inherit" } },
+      h("span", { style: { fontSize: "1.3rem", flexShrink: 0 } }, o.e),
+      h("div", { style: { flex: 1, minWidth: 0 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#2f4360" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
+        h("div", { style: { fontSize: "0.68rem", color: "rgba(90,110,140,0.8)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
+      h("span", { style: { color: "rgba(120,150,190,0.7)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
+  };
+  var head = function (txt, sub) {
+    return h("div", { style: { marginBottom: 8 } },
+      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360" } }, txt),
+      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(100,120,150,0.75)", marginTop: 2 } }, sub) : null);
+  };
+  // ── 此刻 ──
+  var nowTab = h("div", null,
+    card([
+      h("div", { key: "c1", style: { display: "flex", alignItems: "stretch", gap: 10 } },
+        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#2b3f63,#1b2942)", borderRadius: 14, padding: "12px 6px", color: "#fff" } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, color: "rgba(190,210,240,0.85)", fontWeight: 800 } }, "LONDON"),
+          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, lonT),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(190,210,240,0.7)" } }, "Canary Wharf 🎡")),
+        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#ffeede,#ffdcc2)", borderRadius: 14, padding: "12px 6px", color: "#7a4a28" } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "GUANGZHOU"),
+          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, gzT),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(150,100,60,0.8)" } }, "这个家 🏡"))),
+      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(100,120,150,0.7)", margin: "10px 0 8px", fontWeight: 700 } }, "家里比这里快 " + diff + " 小时"),
+      h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
+      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(70,95,130,0.9)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
+    ]),
+    daysTo > 0 ? card(h("div", { style: { textAlign: "center" } },
+      h("div", { style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.8)", fontWeight: 700 } }, "距离 8 月 15 日出发"),
+      h("div", { style: { fontSize: "1.6rem", fontWeight: 800, color: "#2f4360", margin: "4px 0" } }, "还有 " + daysTo + " 天"),
+      h("div", { style: { fontSize: "0.68rem", color: "rgba(100,120,150,0.75)" } }, "行李清单在隔壁，慢慢收 🧳"))) : null,
+    card([
+      h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
+      h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(80,100,130,0.9)", lineHeight: 1.7 } }, season)
+    ]),
+    card([
+      h("div", { key: "q1", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2f4360", marginBottom: 4 } }, "🍜 今天想吃什么？"),
+      h("div", { key: "q2", style: { fontSize: "0.7rem", color: "rgba(100,120,150,0.8)", marginBottom: 10, lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟"),
+      h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "📮 发一份投喂申请")
+    ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" })
+  );
+  // ── 行前 ──
+  var allItems = 0, doneItems = 0;
+  LD_PACK.forEach(function (g, gi) { g.items.forEach(function (_, ii) { allItems++; if (packed[g.k + "-" + ii]) doneItems++; }); });
+  var packTab = h("div", null,
+    card([
+      h("div", { key: "p1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360" } }, "🧳 行李清单"),
+        h("div", { style: { fontSize: "0.74rem", fontWeight: 800, color: "#c8871a" } }, doneItems + " / " + allItems)),
+      h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(160,180,210,0.22)", overflow: "hidden" } },
+        h("div", { style: { height: "100%", width: (allItems ? Math.round(doneItems / allItems * 100) : 0) + "%", background: "linear-gradient(90deg,#ffd86a,#f4a636)", borderRadius: 99, transition: "width 0.3s" } })),
+      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(100,120,150,0.75)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "全部打包完毕，可以出发了 ✈️" : "点一下打勾，收到哪算哪，不用急")
+    ]),
+    LD_PACK.map(function (g) {
+      return card([
+        h("div", { key: "g", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, g.g),
+        h("div", { key: "l" }, g.items.map(function (it, ii) {
+          var id = g.k + "-" + ii, on = !!packed[id];
+          return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(160,175,200,0.14)" } },
+            h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(150,170,200,0.55)", background: on ? "#5aa96a" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
+            h("span", { style: { fontSize: "0.79rem", color: on ? "rgba(110,130,150,0.6)" : "#42536c", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
+        }))
+      ], { key: g.k });
+    })
+  );
+  // ── 吃饭 ──
+  var eatTab = h("div", null,
+    card([
+      h("div", { key: "e0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#2f4360", marginBottom: 4 } }, "📮 远程投喂"),
+      h("div", { key: "e1", style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.85)", lineHeight: 1.7, marginBottom: 10 } }, "在伦敦点一下想吃的，申请会变成一台 BB 机寄回 221B。广州收到就用熊猫外卖下单 —— 隔着七小时也能给你送饭 🐼"),
+      h("button", { key: "e2", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "🍜 发一份投喂申请")
+    ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" }),
+    card([head("🛵 外卖 App", "华人平台可以用支付宝微信付款"), h("div", { key: "a" }, LD_APPS.map(linkRow))]),
+    card([head("🍽️ 一个人也自在的店", "Canary Wharf 走路可达为主"), h("div", { key: "f" }, LD_FOOD.map(linkRow))]),
+    card([head("🛒 买菜与中超", "想自己煮的时候"), h("div", { key: "m" }, LD_MART.map(linkRow))])
+  );
+  // ── 生活 ──
+  var liveTab = h("div", null,
+    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))]),
+    card([
+      h("div", { key: "s0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360", marginBottom: 8 } }, "☔ 伦敦生存贴士"),
+      h("div", { key: "s1" }, LD_SURVIVE.map(function (x, i) {
+        return h("div", { key: "sv" + i, style: { padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px solid rgba(160,175,200,0.16)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#2f4360" } }, x.t),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(90,110,140,0.85)", marginTop: 3, lineHeight: 1.65 } }, x.b));
+      }))
+    ])
+  );
+  // ── 去玩 ──
+  var chipOf = function (st) {
+    if (st === "want") return { txt: "🌟 想去", bg: "rgba(255,200,90,0.25)", col: "#c8871a" };
+    if (st === "done") return { txt: "✅ 去过", bg: "rgba(110,205,150,0.25)", col: "#2ba172" };
+    return { txt: "＋ 标记", bg: "rgba(160,180,210,0.16)", col: "rgba(100,120,150,0.8)" };
+  };
+  var wantN = 0, doneN = 0;
+  for (var sk in spots) { if (spots[sk] === "want") wantN++; if (spots[sk] === "done") doneN++; }
+  var playTab = h("div", null,
+    card(h("div", { style: { textAlign: "center" } },
+      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#2f4360", marginBottom: 4 } }, "🎡 六个月，够走很多地方"),
+      h("div", { style: { fontSize: "0.72rem", color: "rgba(100,120,150,0.85)", lineHeight: 1.7 } }, "点一下标记 🌟想去 / ✅去过，攒一张自己的伦敦地图"),
+      h("div", { style: { marginTop: 8, fontSize: "0.76rem", fontWeight: 800, color: "#c8871a" } }, "想去 " + wantN + " · 去过 " + doneN))),
+    LD_TRIPS.map(function (zone, zi) {
+      return card([
+        h("div", { key: "z", style: { fontWeight: 800, fontSize: "0.86rem", color: "#2f4360", marginBottom: 6 } }, zone.z),
+        h("div", { key: "zl" }, zone.list.map(function (o, oi) {
+          var id = "z" + zi + "-" + oi, st = spots[id] || "", c = chipOf(st);
+          return h("div", { key: id, style: { display: "flex", alignItems: "center", gap: 10, padding: "9px 2px", borderBottom: "1px solid rgba(160,175,200,0.16)" } },
+            h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" } },
+              h("span", { style: { fontSize: "1.25rem", flexShrink: 0 } }, o.e),
+              h("div", { style: { flex: 1, minWidth: 0 } },
+                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: st === "done" ? "rgba(110,130,150,0.65)" : "#2f4360" } }, o.n),
+                h("div", { style: { fontSize: "0.67rem", color: "rgba(90,110,140,0.8)", marginTop: 2, lineHeight: 1.5 } }, o.d))),
+            h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
+        }))
+      ], { key: "zone" + zi });
+    })
+  );
+  var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
+  return h("div", null,
+    h("div", { style: { background: "linear-gradient(160deg,#3a5580,#22344f)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(30,45,70,0.35)" } },
+      h("div", { style: { position: "absolute", right: 14, top: 10, fontSize: "2.2rem", opacity: 0.25 } }, "🎡"),
+      h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "LONDON BRANCH"),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, "小屋伦敦分部"),
+      h("div", { style: { color: "rgba(200,215,240,0.85)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️")),
+    h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
+      var on = tab === t[0];
+      return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #4a6a9a" : "1.5px solid rgba(150,170,200,0.4)", background: on ? "rgba(90,130,190,0.14)" : "#fff", color: on ? "#2f4360" : "rgba(100,120,150,0.85)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
+    })),
+    craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
+    tab === "now" ? nowTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
+    craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(30,40,60,0.55)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
+      h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(40,50,80,0.35)" } },
+        h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
+        h("div", { style: { textAlign: "center", fontWeight: 800, fontSize: "0.98rem", color: "#8a5a52" } }, "🍜 今天想吃什么？"),
+        h("div", { style: { textAlign: "center", fontSize: "0.68rem", color: "rgba(160,120,110,0.75)", margin: "3px 0 14px" } }, "选一个，申请立刻寄回 221B"),
+        h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, CRAVE.map(function (d) {
+          return h("button", { key: d, onClick: function () { sendCrave(d); }, disabled: craveBusy, style: { width: "calc(50% - 4px)", boxSizing: "border-box", border: "1.5px solid rgba(200,150,90,0.35)", background: "#fff", color: "#7a5a3a", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: craveBusy ? "default" : "pointer", opacity: craveBusy ? 0.6 : 1, lineHeight: 1.4 } }, d);
+        })),
+        h("button", { onClick: function () { setCraveOpen(false); }, style: { width: "100%", marginTop: 12, border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", background: "rgba(170,150,150,0.15)", color: "#8a6a72" } }, craveBusy ? "寄送中…" : "先不点了"))) : null,
+    h("button", { onClick: onBack, style: { display: "block", margin: "16px auto 0", background: "none", border: "none", color: COLORS.brown, opacity: 0.55, fontFamily: "inherit", fontWeight: 700, fontSize: "0.84rem", cursor: "pointer" } }, "← 回家"));
+}
+
 function nanaAddReward(r) {
   try {
     var a = JSON.parse(localStorage.getItem("nana-rewards") || "[]");
@@ -19433,7 +19781,7 @@ function NanasHome() {
     }
   }, !room && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
-  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
+  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setRoom(null);
     },
@@ -19568,6 +19916,10 @@ function NanasHome() {
       return setRoom(null);
     }
   }), room && !activity && room.id === "basement" && /*#__PURE__*/React.createElement(BasementScene, {
+    onBack: function onBack() {
+      return setRoom(null);
+    }
+  }), room && !activity && room.id === "london" && /*#__PURE__*/React.createElement(LondonRoom, {
     onBack: function onBack() {
       return setRoom(null);
     }
