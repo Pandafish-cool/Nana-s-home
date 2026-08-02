@@ -17057,6 +17057,11 @@ var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
 var LD_FULL = "2026-08-14";
 var ldFullOpen = function () { try { return new Date() >= new Date(LD_FULL + "T00:00:00+08:00"); } catch (_) { return true; } };
+var nanaPackList = function (cb) { nanaSyncReq("GET", "shared_pack?select=*&limit=300", null, cb); };
+var nanaPackAdd = function (row, cb) { nanaSyncReq("POST", "shared_pack", row, cb); };
+var nanaPackDel = function (id, cb) { nanaSyncReq("DELETE", "shared_pack?id=eq." + encodeURIComponent(id), null, cb); };
+var ldReadPack = function () { try { return JSON.parse(localStorage.getItem("nana-pack-cache") || "{}"); } catch (_) { return {}; } };
+var ldSavePack = function (m) { try { localStorage.setItem("nana-pack-cache", JSON.stringify(m)); } catch (_) {} };
 var ldMap = function (q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); };
 var ldFmt = function (tz) {
   try { return new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }); }
@@ -17267,8 +17272,9 @@ function LondonRoom(_refLD) {
   var full = ldFullOpen();
   var _tb = useState(full ? "now" : "pack"); var tab = _tb[0], setTab = _tb[1];
   var _tk = useState(0); var setTick = _tk[1];
-  var _pk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-pack") || "{}"); } catch (_) { return {}; } });
-  var packed = _pk[0], setPacked = _pk[1];
+  var _pk = useState(ldReadPack); var packed = _pk[0], setPacked = _pk[1];
+  var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
+  var _pe = useState(""); var packErr = _pe[0], setPackErr = _pe[1];
   var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
   var spots = _sp[0], setSpots = _sp[1];
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
@@ -17284,10 +17290,27 @@ function LondonRoom(_refLD) {
   var diff = ldDiff();
   var daysTo = Math.ceil((new Date(LD_DEPART + "T00:00:00+08:00") - new Date()) / 86400000);
   var season = (function () { var m = new Date().getMonth() + 1; for (var i = 0; i < LD_SEASON.length; i++) { if (LD_SEASON[i].m === m) return LD_SEASON[i].t; } return LD_SEASON[0].t; })();
+  var loadPack = function (silent) {
+    if (!silent) setPackSync(true);
+    nanaPackList(function (err, rows) {
+      setPackSync(false);
+      if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
+      var m = {};
+      (rows || []).forEach(function (r) { m[r.id] = r.who || "nana"; });
+      setPacked(m); ldSavePack(m); setPackErr("");
+    });
+  };
+  useEffect(function () { if (myAuthor) loadPack(Object.keys(ldReadPack()).length > 0); }, [myAuthor]);
   var togglePack = function (id) {
+    if (!myAuthor) { setPackErr("先在 221B 选一下你是谁，两个人才好一起收 🧳"); return; }
+    var prev = packed;
     var n = {}; for (var k in packed) { if (Object.prototype.hasOwnProperty.call(packed, k)) n[k] = packed[k]; }
-    n[id] = !n[id]; setPacked(n);
-    try { localStorage.setItem("nana-london-pack", JSON.stringify(n)); } catch (_) {}
+    var was = !!n[id];
+    if (was) { delete n[id]; } else { n[id] = myAuthor; }
+    setPacked(n); ldSavePack(n); setPackErr("");
+    var fail = function (err) { setPacked(prev); ldSavePack(prev); setPackErr("没存上，再点一次 · " + ((err && err.message) || "")); };
+    if (was) nanaPackDel(id, function (e) { if (e) fail(e); });
+    else nanaPackAdd({ id: id, who: myAuthor }, function (e) { if (e) fail(e); });
   };
   var cycleSpot = function (id) {
     var cur = spots[id] || "";
@@ -17374,7 +17397,18 @@ function LondonRoom(_refLD) {
         h("div", { style: { fontSize: "0.74rem", fontWeight: 800, color: "#c8871a" } }, doneItems + " / " + allItems)),
       h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(170,222,216,0.32)", overflow: "hidden" } },
         h("div", { style: { height: "100%", width: (allItems ? Math.round(doneItems / allItems * 100) : 0) + "%", background: "linear-gradient(90deg,#ffd86a,#f4a636)", borderRadius: 99, transition: "width 0.3s" } })),
-      h("div", { key: "p3", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "点一下打勾，收到哪算哪，想起来再收")
+      h("div", { key: "p3", style: { display: "flex", alignItems: "center", gap: 10, marginTop: 9, flexWrap: "wrap" } },
+        (function () {
+          var np = nanaAuthorById("nana"), pp = nanaAuthorById("panda");
+          var cn = 0, cp = 0;
+          for (var kk in packed) { if (packed[kk] === "nana") cn++; else if (packed[kk] === "panda") cp++; }
+          return [
+            h("span", { key: "cn", style: { fontSize: "0.68rem", fontWeight: 800, color: np.col, background: np.bg, borderRadius: 999, padding: "3px 9px" } }, np.e + " 收了 " + cn + " 件"),
+            h("span", { key: "cp", style: { fontSize: "0.68rem", fontWeight: 800, color: pp.col, background: pp.bg, borderRadius: 999, padding: "3px 9px" } }, pp.e + " 收了 " + cp + " 件")
+          ];
+        })()),
+      h("div", { key: "p4", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "两个人一起勾，谁想到就点一下 · 对面立刻能看见"),
+      packErr ? h("div", { key: "p5", style: { fontSize: "0.66rem", color: "#c05555", background: "rgba(230,100,100,0.08)", borderRadius: 8, padding: "7px 9px", marginTop: 8, fontWeight: 700, lineHeight: 1.6 } }, "⚠️ " + packErr) : null
     ]),
     LD_PACK.map(function (g) {
       return card([
@@ -17383,7 +17417,8 @@ function LondonRoom(_refLD) {
           var id = g.k + "-" + ii, on = !!packed[id];
           return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(165,218,212,0.27)" } },
             h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(165,222,216,0.78)", background: on ? "#3bbdae" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
-            h("span", { style: { fontSize: "0.79rem", color: on ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
+            h("span", { style: { flex: 1, fontSize: "0.79rem", color: on ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it),
+            on ? (function () { var a = nanaAuthorById(packed[id]); return h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "2px 7px", whiteSpace: "nowrap", marginTop: 1 } }, a.e); })() : null);
         }))
       ], { key: g.k });
     })
@@ -18263,7 +18298,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-9")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-10")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
