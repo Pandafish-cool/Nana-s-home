@@ -17398,17 +17398,7 @@ function LondonRoom(_refLD) {
         h("div", { style: { fontSize: "0.74rem", fontWeight: 800, color: "#c8871a" } }, doneItems + " / " + allItems)),
       h("div", { key: "p2", style: { height: 8, borderRadius: 99, background: "rgba(170,222,216,0.32)", overflow: "hidden" } },
         h("div", { style: { height: "100%", width: (allItems ? Math.round(doneItems / allItems * 100) : 0) + "%", background: "linear-gradient(90deg,#ffd86a,#f4a636)", borderRadius: 99, transition: "width 0.3s" } })),
-      h("div", { key: "p3", style: { display: "flex", alignItems: "center", gap: 10, marginTop: 9, flexWrap: "wrap" } },
-        (function () {
-          var np = nanaAuthorById("nana"), pp = nanaAuthorById("panda");
-          var cn = 0, cp = 0;
-          for (var kk in packed) { if (packed[kk] === "nana") cn++; else if (packed[kk] === "panda") cp++; }
-          return [
-            h("span", { key: "cn", style: { fontSize: "0.68rem", fontWeight: 800, color: np.col, background: np.bg, borderRadius: 999, padding: "3px 9px" } }, np.e + " 收了 " + cn + " 件"),
-            h("span", { key: "cp", style: { fontSize: "0.68rem", fontWeight: 800, color: pp.col, background: pp.bg, borderRadius: 999, padding: "3px 9px" } }, pp.e + " 收了 " + cp + " 件")
-          ];
-        })()),
-      h("div", { key: "p4", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "已经收好的会打勾，两边都看得见 · 还差什么点右边那个看"),
+      h("div", { key: "p4", style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 8, lineHeight: 1.6 } }, doneItems === allItems && allItems > 0 ? "都齐了，剩下的日子先好好过 🧡" : "收好一件点一下打勾 · 想看还缺什么，点右边那个"),
       h("div", { key: "p6", style: { display: "flex", gap: 7, marginTop: 10 } },
         [["all", "全部 " + allItems], ["todo", "🛒 还差这些 " + (allItems - doneItems)]].map(function (v) {
           var on = packView === v[0];
@@ -17429,8 +17419,7 @@ function LondonRoom(_refLD) {
           var id = g.k + "-" + ii, on = !!packed[id];
           return h("div", { key: id, onClick: function () { togglePack(id); }, style: { display: "flex", alignItems: "flex-start", gap: 9, padding: "8px 2px", cursor: "pointer", borderBottom: "1px solid rgba(165,218,212,0.27)" } },
             h("span", { style: { flexShrink: 0, width: 19, height: 19, borderRadius: 6, border: on ? "none" : "2px solid rgba(165,222,216,0.78)", background: on ? "#3bbdae" : "transparent", color: "#fff", fontSize: "0.7rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 } }, on ? "✓" : ""),
-            h("span", { style: { flex: 1, fontSize: "0.79rem", color: on ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it),
-            on ? (function () { var a = nanaAuthorById(packed[id]); return h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "2px 7px", whiteSpace: "nowrap", marginTop: 1 } }, a.e); })() : null);
+            h("span", { style: { flex: 1, fontSize: "0.79rem", color: on ? "rgba(120,168,162,0.62)" : "#357f72", textDecoration: on ? "line-through" : "none", lineHeight: 1.55 } }, it));
         }))
       ], { key: g.k });
     }),
@@ -18316,7 +18305,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-11")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-12")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
