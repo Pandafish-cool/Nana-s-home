@@ -1,4 +1,4 @@
-var CACHE = "nana-home-v3";
+var CACHE = "nana-home-v4";
 var ASSETS = ["./", "index.html", "disney_fireworks.jpg", "stella_theater.jpg", "stella_gift.jpg", "icon-192.png", "icon-512.png", "manifest.json"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
