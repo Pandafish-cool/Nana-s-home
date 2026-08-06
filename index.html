@@ -7669,19 +7669,18 @@ var nanaPhotoDB = function (cb) {
     req.onerror = function () { cb(req.error || new Error("idb")); };
   } catch (err) { cb(err); }
 };
-var nanaPhotoCompress = function (file, cb) {
+var nanaPhotoCompressTo = function (file, MAX, Q, cb) {
   var fr = new FileReader();
   fr.onload = function () {
     var img = new Image();
     img.onload = function () {
       try {
-        var MAX = 900;
         var sc = Math.min(1, MAX / Math.max(img.width, img.height));
         var cv = document.createElement("canvas");
         cv.width = Math.max(1, Math.round(img.width * sc));
         cv.height = Math.max(1, Math.round(img.height * sc));
         cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
-        cb(null, cv.toDataURL("image/jpeg", 0.82));
+        cb(null, cv.toDataURL("image/jpeg", Q));
       } catch (err) { cb(err); }
     };
     img.onerror = function () { cb(new Error("bad image")); };
@@ -7690,6 +7689,7 @@ var nanaPhotoCompress = function (file, cb) {
   fr.onerror = function () { cb(fr.error); };
   fr.readAsDataURL(file);
 };
+var nanaPhotoCompress = function (file, cb) { nanaPhotoCompressTo(file, 900, 0.82, cb); };
 var nanaPhotoSave = function (file, cb) {
   nanaPhotoCompress(file, function (err, data) {
     if (err) return cb && cb(err);
@@ -7716,6 +7716,20 @@ var nanaPhotoGet = function (id, cb) {
 var nanaPhotoDel = function (id) {
   if (!id) return;
   try { nanaPhotoDB(function (err, db) { if (err) return; db.transaction("photos", "readwrite").objectStore("photos")["delete"](id); }); } catch (_) {}
+};
+// 列表里的照片只显示到 128px，却在下整张 900px 的原图。跨境链路一抖就下不完，
+// 所以新照片会连带传一张 _t 缩略图：列表拿缩略图，点开看大图才拿原图。
+var nanaThumbUrl = function (u) {
+  if (!u || u.indexOf("/notes/") < 0 || u.slice(-4) !== ".jpg") return null;
+  if (u.slice(-6) === "_t.jpg") return null;
+  return u.slice(0, -4) + "_t.jpg";
+};
+var nanaNoThumb = function () { try { return JSON.parse(localStorage.getItem("nana-nothumb") || "[]"); } catch (_) { return []; } };
+var nanaMarkNoThumb = function (u) {
+  try {
+    var a = nanaNoThumb();
+    if (a.indexOf(u) < 0) { a.push(u); if (a.length > 400) a = a.slice(-400); localStorage.setItem("nana-nothumb", JSON.stringify(a)); }
+  } catch (_) {}
 };
 // ── 云图本机缓存：221B 的照片存在 Supabase，看过一次就存本机，之后不再走网络 ──
 var nanaCloudGet = function (u, cb) {
@@ -7750,22 +7764,34 @@ var nanaCloudGrab = function (u) {
 };
 // 云图组件：先查本机，命中就秒开且完全不联网；没有才去 Supabase 拿，拿到后存起来
 function NanaCloudImg(_refCI) {
-  var u = _refCI.u, style = _refCI.style, onClick = _refCI.onClick;
+  var u = _refCI.u, style = _refCI.style, onClick = _refCI.onClick, thumb = _refCI.thumb;
   var h = React.createElement;
+  var _w = useState(""); var want = _w[0], setWant = _w[1];
   var _s = useState(null); var src = _s[0], setSrc = _s[1];
   useEffect(function () {
+    var t = (thumb && nanaNoThumb().indexOf(u) < 0) ? nanaThumbUrl(u) : null;
+    setWant(t || u);
+  }, [u, thumb]);
+  useEffect(function () {
+    if (!want) return;
     var on = true;
     setSrc(null);
-    nanaCloudGet(u, function (data) { if (on) setSrc(data || u); });
+    nanaCloudGet(want, function (data) { if (on) setSrc(data || want); });
     return function () { on = false; };
-  }, [u]);
+  }, [want]);
+  // 缩略图拿不到（老信没传过缩略图，或者这次没下完）就退回原图，并记住别再试
+  var giveUp = function (el) {
+    if (want && want !== u) { nanaMarkNoThumb(u); setWant(u); return; }
+    nanaImgFallback({ target: el });
+  };
   if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc" }, style) });
-  var fromNet = src === u;
+  var fromNet = src === want;
   return h("img", {
     src: src, alt: "", loading: "lazy", decoding: "async",
-    ref: fromNet ? nanaImgWatch : null,
-    onLoad: fromNet ? function () { nanaCloudGrab(u); } : null,
-    onError: nanaImgFallback, onClick: onClick, style: style
+    ref: fromNet ? nanaImgWatcher(giveUp) : null,
+    onLoad: fromNet ? function () { nanaCloudGrab(want); } : null,
+    onError: function (e) { giveUp(e && e.target); },
+    onClick: onClick, style: style
   });
 }
 // 照片显示组件：从 IndexedDB 取图
@@ -7850,25 +7876,28 @@ var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
 // 云图看门狗：Supabase 那边字节流卡住时，图片会半张挂着且不触发 onerror，
 // 占位图永远出不来。这里自己盯着：8 秒没 load 完就换个地址重拉，两次还不行才认输。
-var nanaImgWatch = function (el) {
-  if (!el || el.__nw) return;
-  el.__nw = 1;
-  var base = el.src, tries = 0;
-  var stop = function () { if (el.__t) { clearTimeout(el.__t); el.__t = null; } };
-  var arm = function () {
-    stop();
-    el.__t = setTimeout(function () {
-      if (el.__ok) return;
-      if (tries >= 2) { stop(); nanaImgFallback({ target: el }); return; }
-      tries++;
-      el.src = base + (base.indexOf("?") < 0 ? "?" : "&") + "r=" + tries;
-      arm();
-    }, 8000);
+var nanaImgWatcher = function (onGiveUp) {
+  return function (el) {
+    if (!el || el.__nw) return;
+    el.__nw = 1;
+    var base = el.src, tries = 0;
+    var stop = function () { if (el.__t) { clearTimeout(el.__t); el.__t = null; } };
+    var arm = function () {
+      stop();
+      el.__t = setTimeout(function () {
+        if (el.__ok) return;
+        if (tries >= 2) { stop(); onGiveUp(el); return; }
+        tries++;
+        el.src = base + (base.indexOf("?") < 0 ? "?" : "&") + "r=" + tries;
+        arm();
+      }, 8000);
+    };
+    el.addEventListener("load", function () { el.__ok = 1; stop(); });
+    el.addEventListener("error", function () { stop(); });
+    arm();
   };
-  el.addEventListener("load", function () { el.__ok = 1; stop(); });
-  el.addEventListener("error", function () { stop(); });
-  arm();
 };
+var nanaImgWatch = nanaImgWatcher(function (el) { nanaImgFallback({ target: el }); });
 var nanaPuList = function (pu) {
   if (!pu) return [];
   if (typeof pu === "string" && pu.charAt(0) === "[") {
@@ -7878,6 +7907,8 @@ var nanaPuList = function (pu) {
 };
 var nanaSharedPhotoDel = function (pu) {
   try {
+    var t = nanaThumbUrl(pu);
+    if (t) nanaSharedPhotoDel(t);
     var path = (pu || "").split("/object/public/")[1];
     if (!path) return;
     fetch(NANA_SYNC.url + "/storage/v1/object/" + path, { method: "DELETE", headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key } })["catch"](function () {});
@@ -8197,13 +8228,19 @@ function ReadingRoomActivity(_refRR) {
     e.target.value = "";
     if (!f || sharedUploading || sharedDraftPs.length >= 3) return;
     setSharedUploading(true);
+    var pid = "sp" + Date.now() + Math.floor(Math.random() * 900);
     nanaPhotoCompress(f, function (err, data) {
       if (err || !data) { setSharedUploading(false); setSharedErr("照片处理失败，再试一次？"); return; }
-      nanaSharedUpload(data, "sp" + Date.now() + Math.floor(Math.random() * 900), function (err2, url) {
+      nanaSharedUpload(data, pid, function (err2, url) {
         setSharedUploading(false);
         if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
         setSharedErr(null);
         setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
+        // 缩略图后台补传，传不上也不影响这封信
+        nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
+          if (err3 || !tdata) return;
+          nanaSharedUpload(tdata, pid + "_t", function () {});
+        });
       });
     });
   };
@@ -8397,7 +8434,7 @@ function ReadingRoomActivity(_refRR) {
             sharedDraftPs.length > 0 && h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 } },
               sharedDraftPs.map(function (u, pi) {
                 return h("div", { key: u, style: { position: "relative", background: "#fff", padding: "5px 5px 14px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(" + (pi % 2 ? 2 : -2.2) + "deg)", borderRadius: 3 } },
-                  h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+                  h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
                   h("button", { onClick: function () { removeSharedDraftP(u); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"));
               })),
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
@@ -8448,7 +8485,7 @@ function ReadingRoomActivity(_refRR) {
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
                   h("div", { style: { textAlign: "center", color: "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
             }
@@ -8470,7 +8507,7 @@ function ReadingRoomActivity(_refRR) {
                   return h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, margin: "6px 0 4px" } },
                     pus.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: single ? "5px 5px 15px" : "4px 4px 12px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     }));
                 })(),
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
@@ -18446,7 +18483,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-21")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-22")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
