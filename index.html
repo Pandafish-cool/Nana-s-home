@@ -7774,25 +7774,77 @@ var nanaJpegOk = function (buf) {
   }
   return false;
 };
+// 4xx 是确定性的（比如老信没传过缩略图 → 404），重试没意义，直接认
+var nanaHardFail = function (err) {
+  var st = err && err.st;
+  return st >= 400 && st < 500 && st !== 408 && st !== 429;
+};
+// 一口气下 145KB 在这条链路上很容易断，改成一块一块拿（每块 64KB，单独超时、单独重试）
+var NANA_CHUNK = 65536, NANA_CHUNK_MS = 7000;
+var nanaFetchRange = function (u, start, end, cb) {
+  var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var late = false;
+  var timer = ctrl ? setTimeout(function () { late = true; try { ctrl.abort(); } catch (_) {} }, NANA_CHUNK_MS) : null;
+  try {
+    fetch(u, {
+      cache: "no-store",
+      headers: { "Range": "bytes=" + start + "-" + end },
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (!r || (r.status !== 206 && r.status !== 200)) {
+        var he = new Error("HTTP " + (r && r.status));
+        he.st = r ? r.status : 0;
+        throw he;
+      }
+      var total = -1;
+      var cr = r.headers.get("content-range");
+      if (cr) { var m = /\/(\d+)\s*$/.exec(cr); if (m) total = parseInt(m[1], 10); }
+      else if (r.status === 200) total = -2;   // 服务器不认 Range，整包回来了
+      return r.arrayBuffer().then(function (b) { cb(null, b, total); });
+    })["catch"](function (e) {
+      if (timer) clearTimeout(timer);
+      if (late) { var te = new Error("timeout"); te.to = true; return cb(te); }
+      cb(e);
+    });
+  } catch (e) { if (timer) clearTimeout(timer); cb(e); }
+};
+var nanaJoin = function (parts, len) {
+  var out = new Uint8Array(len), at = 0;
+  for (var i = 0; i < parts.length; i++) { out.set(new Uint8Array(parts[i]), at); at += parts[i].byteLength; }
+  return out.buffer;
+};
 // 自己把图下下来校验完整性，完整才显示、才存本机
 var nanaCloudFetch = function (u, cb) {
-  try {
-    fetch(u, { cache: "no-store" }).then(function (r) {
-      if (!r || !r.ok) throw new Error("HTTP " + (r && r.status));
-      return r.arrayBuffer();
-    }).then(function (buf) {
-      if (!nanaJpegOk(buf)) throw new Error("truncated");
-      var fr = new FileReader();
-      fr.onload = function () { cb(null, String(fr.result)); };
-      fr.onerror = function () { cb(fr.error || new Error("read")); };
-      fr.readAsDataURL(new Blob([buf], { type: "image/jpeg" }));
-    })["catch"](function (e) { cb(e); });
-  } catch (e) { cb(e); }
+  var parts = [], got = 0, total = -1;
+  var done = function (buf) {
+    if (!nanaJpegOk(buf)) return cb(new Error("truncated"));
+    var fr = new FileReader();
+    fr.onload = function () { cb(null, String(fr.result)); };
+    fr.onerror = function () { cb(fr.error || new Error("read")); };
+    fr.readAsDataURL(new Blob([buf], { type: "image/jpeg" }));
+  };
+  var step = function (tries) {
+    nanaFetchRange(u, got, got + NANA_CHUNK - 1, function (err, buf, tot) {
+      if (err) {
+        if (nanaHardFail(err) || tries <= 1) return cb(err);
+        return setTimeout(function () { step(tries - 1); }, 600);
+      }
+      if (tot === -2) return done(buf);                       // 不支持 Range，一次就拿全了
+      if (!buf || !buf.byteLength) return cb(new Error("empty"));
+      parts.push(buf); got += buf.byteLength;
+      if (tot >= 0) total = tot;
+      if (total < 0 || got >= total) return done(nanaJoin(parts, got));
+      if (parts.length > 200) return cb(new Error("too many chunks"));
+      step(2);
+    });
+  };
+  step(2);
 };
 var nanaCloudFetchRetry = function (u, tries, cb) {
   nanaCloudFetch(u, function (err, d) {
     if (!err && d) return cb(null, d);
-    if (tries <= 1) return cb(err || new Error("fail"));
+    if (nanaHardFail(err) || tries <= 1) return cb(err || new Error("fail"));
     setTimeout(function () { nanaCloudFetchRetry(u, tries - 1, cb); }, 1200);
   });
 };
@@ -7843,14 +7895,14 @@ function NanaCloudImg(_refCI) {
     nanaCloudGet(want, function (data) {
       if (!on) return;
       if (data) { setSrc(data); return; }
-      nanaCloudFetchRetry(want, 3, function (err, d) {
+      nanaCloudFetchRetry(want, 2, function (err, d) {
         if (!on) return;
         if (!err && d) { nanaCloudPut(want, d); setSrc(d); return; }
         if (want !== u) { nanaMarkNoThumb(u); setWant(u); return; }   // 缩略图不行就退回原图
         // 服务器答了但图是残的（或 4xx）：别再把白图放出来，直接给可点重试的占位。
         // 只有 fetch 本身用不了（CORS/环境问题）才退回让 img 标签自己试。
         var m = String((err && err.message) || "");
-        if (m === "truncated" || m.indexOf("HTTP") === 0) { setDead(true); return; }
+        if (m === "truncated" || m.indexOf("HTTP") === 0 || (err && err.to)) { setDead(true); return; }
         setSrc(want);
       });
     });
@@ -7866,7 +7918,7 @@ function NanaCloudImg(_refCI) {
     onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setNonce(nonce + 1); },
     style: Object.assign({}, style, { cursor: "pointer" })
   });
-  if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc" }, style) });
+  if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8a894", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "1px" }, style) }, "···");
   var fromNet = src === want;
   return h("img", {
     key: want + "|" + nonce, src: src, alt: "", loading: "lazy", decoding: "async",
@@ -7899,7 +7951,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-30";
+var NANA_VER = "v2026.8.2-33";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
