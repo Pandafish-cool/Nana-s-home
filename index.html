@@ -7762,6 +7762,53 @@ var nanaCloudPut = function (u, data) {
     try { db.transaction("cloud", "readwrite").objectStore("cloud").put({ u: u, data: data, ts: Date.now() }); } catch (_) {}
   });
 };
+// 跨境链路会把图片截断成"下了一半但连接正常关闭"，浏览器当它加载成功，
+// 于是画出一张白图，也不触发 onerror —— 之前所有兜底都没接住这种。
+// JPEG 必须以 FFD9 结尾，用这个判断到底下完没有。
+var nanaJpegOk = function (buf) {
+  var v = new Uint8Array(buf);
+  if (v.length < 512) return false;
+  if (!(v[0] === 0xFF && v[1] === 0xD8)) return true;   // 不是 JPEG 就不判
+  for (var i = v.length - 2; i >= v.length - 32 && i >= 0; i--) {
+    if (v[i] === 0xFF && v[i + 1] === 0xD9) return true;
+  }
+  return false;
+};
+// 自己把图下下来校验完整性，完整才显示、才存本机
+var nanaCloudFetch = function (u, cb) {
+  try {
+    fetch(u, { cache: "no-store" }).then(function (r) {
+      if (!r || !r.ok) throw new Error("HTTP " + (r && r.status));
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      if (!nanaJpegOk(buf)) throw new Error("truncated");
+      var fr = new FileReader();
+      fr.onload = function () { cb(null, String(fr.result)); };
+      fr.onerror = function () { cb(fr.error || new Error("read")); };
+      fr.readAsDataURL(new Blob([buf], { type: "image/jpeg" }));
+    })["catch"](function (e) { cb(e); });
+  } catch (e) { cb(e); }
+};
+var nanaCloudFetchRetry = function (u, tries, cb) {
+  nanaCloudFetch(u, function (err, d) {
+    if (!err && d) return cb(null, d);
+    if (tries <= 1) return cb(err || new Error("fail"));
+    setTimeout(function () { nanaCloudFetchRetry(u, tries - 1, cb); }, 1200);
+  });
+};
+// 之前存过的可能是截断的白图，清一次让它们重下
+(function () {
+  try {
+    if (localStorage.getItem("nana-cloud-purge") === "1") return;
+    nanaPhotoDB(function (err, db) {
+      if (err || !db.objectStoreNames.contains("cloud")) return;
+      try {
+        db.transaction("cloud", "readwrite").objectStore("cloud").clear();
+        localStorage.setItem("nana-cloud-purge", "1");
+      } catch (_) {}
+    });
+  } catch (_) {}
+})();
 // 图在页面上显示成功之后再存一份：这次 fetch 基本命中浏览器缓存，不会多花流量
 var nanaCloudGrab = function (u) {
   try {
@@ -7793,9 +7840,22 @@ function NanaCloudImg(_refCI) {
     if (!want) return;
     var on = true;
     setSrc(null);
-    nanaCloudGet(want, function (data) { if (on) setSrc(data || want); });
+    nanaCloudGet(want, function (data) {
+      if (!on) return;
+      if (data) { setSrc(data); return; }
+      nanaCloudFetchRetry(want, 3, function (err, d) {
+        if (!on) return;
+        if (!err && d) { nanaCloudPut(want, d); setSrc(d); return; }
+        if (want !== u) { nanaMarkNoThumb(u); setWant(u); return; }   // 缩略图不行就退回原图
+        // 服务器答了但图是残的（或 4xx）：别再把白图放出来，直接给可点重试的占位。
+        // 只有 fetch 本身用不了（CORS/环境问题）才退回让 img 标签自己试。
+        var m = String((err && err.message) || "");
+        if (m === "truncated" || m.indexOf("HTTP") === 0) { setDead(true); return; }
+        setSrc(want);
+      });
+    });
     return function () { on = false; };
-  }, [want]);
+  }, [want, nonce]);
   // 缩略图拿不到（老信没传过缩略图，或者这次没下完）就退回原图，并记住别再试
   var giveUp = function () {
     if (want && want !== u) { nanaMarkNoThumb(u); setWant(u); return; }
@@ -7811,7 +7871,6 @@ function NanaCloudImg(_refCI) {
   return h("img", {
     key: want + "|" + nonce, src: src, alt: "", loading: "lazy", decoding: "async",
     ref: fromNet ? nanaImgWatcher(giveUp) : null,
-    onLoad: fromNet ? function () { nanaCloudGrab(want); } : null,
     onError: giveUp,
     onClick: onClick, style: style
   });
@@ -7840,7 +7899,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-28";
+var NANA_VER = "v2026.8.2-30";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
