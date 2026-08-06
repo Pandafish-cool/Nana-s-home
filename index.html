@@ -7732,17 +7732,29 @@ var nanaMarkNoThumb = function (u) {
   } catch (_) {}
 };
 // ── 云图本机缓存：221B 的照片存在 Supabase，看过一次就存本机，之后不再走网络 ──
+var NANA_CLOUD_MEM = {}, NANA_CLOUD_MEMQ = [];
+var nanaCloudMemPut = function (u, data) {
+  if (!NANA_CLOUD_MEM[u]) NANA_CLOUD_MEMQ.push(u);
+  NANA_CLOUD_MEM[u] = data;
+  while (NANA_CLOUD_MEMQ.length > 40) { delete NANA_CLOUD_MEM[NANA_CLOUD_MEMQ.shift()]; }
+};
 var nanaCloudGet = function (u, cb) {
+  if (NANA_CLOUD_MEM[u]) return cb(NANA_CLOUD_MEM[u]);
   nanaPhotoDB(function (err, db) {
     if (err || !db.objectStoreNames.contains("cloud")) return cb(null);
     try {
       var rq = db.transaction("cloud").objectStore("cloud").get(u);
-      rq.onsuccess = function () { cb(rq.result && rq.result.data); };
+      rq.onsuccess = function () {
+        var d = rq.result && rq.result.data;
+        if (d) nanaCloudMemPut(u, d);
+        cb(d);
+      };
       rq.onerror = function () { cb(null); };
     } catch (_) { cb(null); }
   });
 };
 var nanaCloudPut = function (u, data) {
+  nanaCloudMemPut(u, data);
   nanaPhotoDB(function (err, db) {
     if (err || !db.objectStoreNames.contains("cloud")) return;
     try { db.transaction("cloud", "readwrite").objectStore("cloud").put({ u: u, data: data, ts: Date.now() }); } catch (_) {}
@@ -7787,7 +7799,7 @@ function NanaCloudImg(_refCI) {
   if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc" }, style) });
   var fromNet = src === want;
   return h("img", {
-    src: src, alt: "", loading: "lazy", decoding: "async",
+    key: want, src: src, alt: "", loading: "lazy", decoding: "async",
     ref: fromNet ? nanaImgWatcher(giveUp) : null,
     onLoad: fromNet ? function () { nanaCloudGrab(want); } : null,
     onError: function (e) { giveUp(e && e.target); },
@@ -8231,15 +8243,19 @@ function ReadingRoomActivity(_refRR) {
     var pid = "sp" + Date.now() + Math.floor(Math.random() * 900);
     nanaPhotoCompress(f, function (err, data) {
       if (err || !data) { setSharedUploading(false); setSharedErr("照片处理失败，再试一次？"); return; }
-      nanaSharedUpload(data, pid, function (err2, url) {
-        setSharedUploading(false);
-        if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
-        setSharedErr(null);
-        setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
-        // 缩略图后台补传，传不上也不影响这封信
-        nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
-          if (err3 || !tdata) return;
-          nanaSharedUpload(tdata, pid + "_t", function () {});
+      // 缩略图先在本地做好，等下和原图一起存进本机缓存，预览就不用联网了
+      nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
+        nanaSharedUpload(data, pid, function (err2, url) {
+          setSharedUploading(false);
+          if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
+          setSharedErr(null);
+          // 自己传的照片自己留一份，预览和之后翻这封信都不再走网络
+          nanaCloudPut(url, data);
+          var turl = nanaThumbUrl(url);
+          if (tdata && turl) nanaCloudPut(turl, tdata);
+          setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
+          // 缩略图后台补传给对方用，传不上也不影响这封信
+          if (tdata) nanaSharedUpload(tdata, pid + "_t", function () {});
         });
       });
     });
@@ -18483,7 +18499,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-22")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-23")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
