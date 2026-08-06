@@ -7793,36 +7793,12 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
 // 云图加载失败的占位（网络抽风时不至于一片空白）
 var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
-var NANA_PU_SEEN = [];
 var nanaPuList = function (pu) {
   if (!pu) return [];
-  var out;
   if (typeof pu === "string" && pu.charAt(0) === "[") {
-    try { var a = JSON.parse(pu); out = Array.isArray(a) ? a : []; } catch (_) { out = []; }
-  } else { out = [pu]; }
-  for (var _i = 0; _i < out.length; _i++) { if (NANA_PU_SEEN.indexOf(out[_i]) < 0) NANA_PU_SEEN.push(out[_i]); }
-  return out;
-};
-var nanaImgDiag = function () {
-  var box = document.getElementById("nana-img-diag");
-  if (!box) return;
-  var u = NANA_PU_SEEN[0];
-  box.style.display = "block";
-  if (!u) { box.textContent = "这些信里没有图片，没得测 🤔"; return; }
-  box.textContent = "自检中…";
-  var lines = [];
-  var show = function () { box.textContent = lines.join("　·　"); };
-  fetch(u, { cache: "no-store" }).then(function (r) {
-    lines.push("图片 " + r.status);
-    if (r.ok) return null;
-    return r.text().then(function (t) { lines.push(String(t).slice(0, 110)); });
-  })["catch"](function (e) {
-    lines.push("图片 连不上：" + (e && e.message ? e.message : String(e)));
-  }).then(function () {
-    return fetch(NANA_SYNC.url + "/rest/v1/shared_notes?select=id&limit=1", {
-      headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key }
-    }).then(function (r) { lines.push("数据库 " + r.status); })["catch"](function () { lines.push("数据库 连不上"); });
-  }).then(show, show);
+    try { var a = JSON.parse(pu); return Array.isArray(a) ? a : []; } catch (_) { return []; }
+  }
+  return [pu];
 };
 var nanaSharedPhotoDel = function (pu) {
   try {
@@ -8324,9 +8300,7 @@ function ReadingRoomActivity(_refRR) {
           h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.76rem" } }, "🏠 贝克街 221B · " + sharedNotes.length + " 封信"),
           h("div", { style: { display: "flex", gap: 6, alignItems: "center" } },
             h("button", { onClick: loadShared, style: { border: "1px solid rgba(200,135,26,0.35)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#c8871a" } }, sharedLoading ? "…" : "🔄 刷新"),
-            h("button", { onClick: nanaImgDiag, title: "图片打不开时点一下", style: { border: "1px solid rgba(160,150,200,0.4)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#7a72a8" } }, "🩺 自检"),
             h("span", { onTouchStart: startHold, onTouchEnd: cancelHold, onTouchMove: cancelHold, onTouchCancel: cancelHold, onMouseDown: startHold, onMouseUp: cancelHold, onMouseLeave: cancelHold, onContextMenu: function (e) { e.preventDefault(); }, title: "长按 3 秒换人", style: { fontSize: "0.62rem", fontWeight: 800, color: me.col, background: me.bg, borderRadius: 999, padding: "4px 10px", cursor: "pointer", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", whiteSpace: "nowrap", transform: holding ? "scale(0.92)" : "none", opacity: holding ? 0.65 : 1, transition: "transform 0.2s, opacity 0.2s" } }, holding ? "🕰️ 按住换人…" : me.e + " " + me.label))),
-        h("div", { id: "nana-img-diag", style: { display: "none", background: "rgba(122,114,168,0.09)", border: "1px solid rgba(122,114,168,0.22)", borderRadius: 10, padding: "7px 10px", fontSize: "0.66rem", color: "#5f5885", lineHeight: 1.6, marginBottom: 10, wordBreak: "break-all" } }),
         h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" } },
           h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
           NANA_LETTER_THEMES.map(function (t) {
@@ -18396,7 +18370,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-18")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-19")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
