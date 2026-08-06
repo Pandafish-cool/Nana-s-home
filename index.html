@@ -7724,6 +7724,8 @@ var nanaThumbUrl = function (u) {
   if (u.slice(-6) === "_t.jpg") return null;
   return u.slice(0, -4) + "_t.jpg";
 };
+// 写到一半的信存本机：iOS 从相册回来常把页面整个重载，草稿不能跟着丢
+var nanaReadShDraft = function () { try { return JSON.parse(localStorage.getItem("nana-shared-draft") || "{}") || {}; } catch (_) { return {}; } };
 var nanaNoThumb = function () { try { return JSON.parse(localStorage.getItem("nana-nothumb") || "[]"); } catch (_) { return []; } };
 var nanaMarkNoThumb = function (u) {
   try {
@@ -8230,11 +8232,17 @@ function ReadingRoomActivity(_refRR) {
   var _snn = useState(readSharedCache); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
   var _see = useState(null); var sharedErr = _see[0], setSharedErr = _see[1];
-  var _sdd = useState(""); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
+  var _sdd = useState(function () { var d = nanaReadShDraft(); return typeof d.t === "string" ? d.t : ""; }); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
   var _spp = useState(false); var sharedPosting = _spp[0], setSharedPosting = _spp[1];
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
-  var _sup = useState([]); var sharedDraftPs = _sup[0], setSharedDraftPs = _sup[1];
+  var _sup = useState(function () { var d = nanaReadShDraft(); return Array.isArray(d.ps) ? d.ps : []; }); var sharedDraftPs = _sup[0], setSharedDraftPs = _sup[1];
   var _sug = useState(false); var sharedUploading = _sug[0], setSharedUploading = _sug[1];
+  useEffect(function () {
+    try {
+      if (!sharedDraft && !sharedDraftPs.length) localStorage.removeItem("nana-shared-draft");
+      else localStorage.setItem("nana-shared-draft", JSON.stringify({ t: sharedDraft, ps: sharedDraftPs }));
+    } catch (_) {}
+  }, [sharedDraft, sharedDraftPs]);
   var onPickSharedPhoto = function (e) {
     var f = e.target.files && e.target.files[0];
     e.target.value = "";
@@ -18499,7 +18507,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-23")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-24")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
