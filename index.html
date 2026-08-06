@@ -7782,10 +7782,13 @@ function NanaCloudImg(_refCI) {
   var h = React.createElement;
   var _w = useState(""); var want = _w[0], setWant = _w[1];
   var _s = useState(null); var src = _s[0], setSrc = _s[1];
+  var _n = useState(0); var nonce = _n[0], setNonce = _n[1];
+  var _dd = useState(false); var dead = _dd[0], setDead = _dd[1];
   useEffect(function () {
+    setDead(false);
     var t = (thumb && nanaNoThumb().indexOf(u) < 0) ? nanaThumbUrl(u) : null;
     setWant(t || u);
-  }, [u, thumb]);
+  }, [u, thumb, nonce]);
   useEffect(function () {
     if (!want) return;
     var on = true;
@@ -7794,17 +7797,22 @@ function NanaCloudImg(_refCI) {
     return function () { on = false; };
   }, [want]);
   // 缩略图拿不到（老信没传过缩略图，或者这次没下完）就退回原图，并记住别再试
-  var giveUp = function (el) {
+  var giveUp = function () {
     if (want && want !== u) { nanaMarkNoThumb(u); setWant(u); return; }
-    nanaImgFallback({ target: el });
+    setDead(true);
   };
+  if (dead) return h("img", {
+    src: NANA_IMG_FALLBACK, alt: "", title: "点一下重新加载",
+    onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setNonce(nonce + 1); },
+    style: Object.assign({}, style, { cursor: "pointer" })
+  });
   if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc" }, style) });
   var fromNet = src === want;
   return h("img", {
-    key: want, src: src, alt: "", loading: "lazy", decoding: "async",
+    key: want + "|" + nonce, src: src, alt: "", loading: "lazy", decoding: "async",
     ref: fromNet ? nanaImgWatcher(giveUp) : null,
     onLoad: fromNet ? function () { nanaCloudGrab(want); } : null,
-    onError: function (e) { giveUp(e && e.target); },
+    onError: giveUp,
     onClick: onClick, style: style
   });
 }
@@ -7832,7 +7840,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-27";
+var NANA_VER = "v2026.8.2-28";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -7920,7 +7928,7 @@ var nanaSharedUploadRetry = function (dataUrl, id, tries, cb) {
   });
 };
 // 云图加载失败的占位（网络抽风时不至于一片空白）
-var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
+var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片没下来 · 点一下重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
 // 云图看门狗：Supabase 那边字节流卡住时，图片会半张挂着且不触发 onerror，
 // 占位图永远出不来。这里自己盯着：8 秒没 load 完就换个地址重拉，两次还不行才认输。
@@ -7934,11 +7942,11 @@ var nanaImgWatcher = function (onGiveUp) {
       stop();
       el.__t = setTimeout(function () {
         if (el.__ok) return;
-        if (tries >= 2) { stop(); onGiveUp(el); return; }
+        if (tries >= 3) { stop(); onGiveUp(el); return; }
         tries++;
         el.src = base + (base.indexOf("?") < 0 ? "?" : "&") + "r=" + tries;
         arm();
-      }, 8000);
+      }, 5000);
     };
     el.addEventListener("load", function () { el.__ok = 1; stop(); });
     el.addEventListener("error", function () { stop(); });
