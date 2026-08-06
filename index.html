@@ -7885,6 +7885,14 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
     })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
 };
+// 跨境链路一抖上传就断，多试几次再认输
+var nanaSharedUploadRetry = function (dataUrl, id, tries, cb) {
+  nanaSharedUpload(dataUrl, id, function (err, url) {
+    if (!err && url) return cb(null, url);
+    if (tries <= 1) return cb(err || new Error("上传失败"));
+    setTimeout(function () { nanaSharedUploadRetry(dataUrl, id, tries - 1, cb); }, 1500);
+  });
+};
 // 云图加载失败的占位（网络抽风时不至于一片空白）
 var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
@@ -8249,21 +8257,27 @@ function ReadingRoomActivity(_refRR) {
     if (!f || sharedUploading || sharedDraftPs.length >= 3) return;
     setSharedUploading(true);
     var pid = "sp" + Date.now() + Math.floor(Math.random() * 900);
+    // 地址是自己定的，不用等服务器回话就能先算出来
+    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
     nanaPhotoCompress(f, function (err, data) {
       if (err || !data) { setSharedUploading(false); setSharedErr("照片处理失败，再试一次？"); return; }
-      // 缩略图先在本地做好，等下和原图一起存进本机缓存，预览就不用联网了
       nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
-        nanaSharedUpload(data, pid, function (err2, url) {
-          setSharedUploading(false);
-          if (err2 || !url) { setSharedErr(String((err2 && err2.message) || err2 || "上传失败") + " · 照片没传上去"); return; }
-          setSharedErr(null);
-          // 自己传的照片自己留一份，预览和之后翻这封信都不再走网络
-          nanaCloudPut(url, data);
-          var turl = nanaThumbUrl(url);
-          if (tdata && turl) nanaCloudPut(turl, tdata);
-          setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
-          // 缩略图后台补传给对方用，传不上也不影响这封信
-          if (tdata) nanaSharedUpload(tdata, pid + "_t", function () {});
+        // 先存本机再贴上：照片立刻出现在信纸上，不用等网络
+        nanaCloudPut(url, data);
+        var turl = nanaThumbUrl(url);
+        if (tdata && turl) nanaCloudPut(turl, tdata);
+        setSharedErr(null);
+        setSharedDraftPs(function (old) { return old.length >= 3 ? old : old.concat([url]); });
+        // 传给对方那份放后台慢慢来，断了自动重试
+        nanaSharedUploadRetry(data, pid, 3, function (err2) {
+          if (err2) {
+            setSharedUploading(false);
+            setSharedErr("这张照片没传上去，Nana 那边会看不到 · 撕掉重贴一次？");
+            setSharedDraftPs(function (old) { return old.filter(function (x) { return x !== url; }); });
+            return;
+          }
+          if (!tdata) { setSharedUploading(false); return; }
+          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setSharedUploading(false); });
         });
       });
     });
@@ -8466,8 +8480,8 @@ function ReadingRoomActivity(_refRR) {
                 ? h("span", { style: { display: "inline-flex", alignItems: "center", gap: 5, border: "1.5px dashed rgba(180,150,140,0.4)", borderRadius: 999, padding: "6px 13px", color: "rgba(150,120,110,0.7)", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, "📷 3/3 贴满啦")
                 : h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
               h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }))),
-          h("button", { onClick: postShared, disabled: !((sharedDraft || "").trim()) || sharedPosting, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((sharedDraft || "").trim() && !sharedPosting) ? "pointer" : "default", background: ((sharedDraft || "").trim() && !sharedPosting) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : "📮 寄往 221B")),
-        sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, "信没送到贝克街 😢 " + sharedErr),
+          h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length) || sharedPosting || sharedUploading, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
+        sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, (String(sharedErr).indexOf("照片") >= 0 ? "" : "信没送到贝克街 😢 ") + sharedErr),
         h("div", { style: { marginTop: 32 } },
           sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
           !sharedLoading && !sharedErr && sharedNotes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.78rem", padding: "10px 0", fontFamily: HAND } }, "壁炉边还没有来信，写下第一封吧 🕯️") : null,
@@ -18507,7 +18521,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-24")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-25")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
