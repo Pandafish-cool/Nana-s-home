@@ -7832,6 +7832,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
+var NANA_VER = "v2026.8.2-27";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -7885,6 +7886,31 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
     })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
 };
+// Service Worker 是缓存优先（为了秒开），代价是永远慢一个版本。
+// 这里开门几秒后拿几个字节的 version.txt 比一下，有新版就换掉缓存里的页面再重载一次。
+(function () {
+  if (typeof caches === "undefined" || typeof fetch === "undefined") return;
+  setTimeout(function () {
+    fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
+      return r && r.ok ? r.text() : null;
+    }).then(function (t) {
+      t = t ? String(t).trim() : "";
+      if (!t || t === NANA_VER) return;
+      try {
+        if (sessionStorage.getItem("nana-upd") === t) return;   // 同一版本只重载一次，防止打转
+        sessionStorage.setItem("nana-upd", t);
+      } catch (_) {}
+      return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (res) {
+        if (!res || !res.ok) return;
+        return caches.keys().then(function (ks) {
+          return Promise.all(ks.map(function (k) {
+            return caches.open(k).then(function (c) { return c.put("index.html", res.clone()); });
+          }));
+        });
+      }).then(function () { location.reload(); });
+    })["catch"](function () {});
+  }, 3000);
+})();
 // 跨境链路一抖上传就断，多试几次再认输
 var nanaSharedUploadRetry = function (dataUrl, id, tries, cb) {
   nanaSharedUpload(dataUrl, id, function (err, url) {
@@ -18523,7 +18549,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-26")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C " + NANA_VER)), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
