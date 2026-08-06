@@ -7659,8 +7659,12 @@ function CinemaActivity(_refCN) {
 // ── 照片存取（IndexedDB，本机私密；压缩后存 dataURL）─────────
 var nanaPhotoDB = function (cb) {
   try {
-    var req = indexedDB.open("nana-photos", 1);
-    req.onupgradeneeded = function (e) { var db = e.target.result; if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" }); };
+    var req = indexedDB.open("nana-photos", 2);
+    req.onupgradeneeded = function (e) {
+      var db = e.target.result;
+      if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("cloud")) db.createObjectStore("cloud", { keyPath: "u" });
+    };
     req.onsuccess = function (e) { cb(null, e.target.result); };
     req.onerror = function () { cb(req.error || new Error("idb")); };
   } catch (err) { cb(err); }
@@ -7713,6 +7717,57 @@ var nanaPhotoDel = function (id) {
   if (!id) return;
   try { nanaPhotoDB(function (err, db) { if (err) return; db.transaction("photos", "readwrite").objectStore("photos")["delete"](id); }); } catch (_) {}
 };
+// ── 云图本机缓存：221B 的照片存在 Supabase，看过一次就存本机，之后不再走网络 ──
+var nanaCloudGet = function (u, cb) {
+  nanaPhotoDB(function (err, db) {
+    if (err || !db.objectStoreNames.contains("cloud")) return cb(null);
+    try {
+      var rq = db.transaction("cloud").objectStore("cloud").get(u);
+      rq.onsuccess = function () { cb(rq.result && rq.result.data); };
+      rq.onerror = function () { cb(null); };
+    } catch (_) { cb(null); }
+  });
+};
+var nanaCloudPut = function (u, data) {
+  nanaPhotoDB(function (err, db) {
+    if (err || !db.objectStoreNames.contains("cloud")) return;
+    try { db.transaction("cloud", "readwrite").objectStore("cloud").put({ u: u, data: data, ts: Date.now() }); } catch (_) {}
+  });
+};
+// 图在页面上显示成功之后再存一份：这次 fetch 基本命中浏览器缓存，不会多花流量
+var nanaCloudGrab = function (u) {
+  try {
+    fetch(u, { cache: "force-cache" }).then(function (r) {
+      if (!r.ok) return null;
+      return r.blob();
+    }).then(function (b) {
+      if (!b || !b.size || b.size > 1200000) return;
+      var fr = new FileReader();
+      fr.onload = function () { if (String(fr.result).indexOf("data:image") === 0) nanaCloudPut(u, fr.result); };
+      fr.readAsDataURL(b);
+    })["catch"](function () {});
+  } catch (_) {}
+};
+// 云图组件：先查本机，命中就秒开且完全不联网；没有才去 Supabase 拿，拿到后存起来
+function NanaCloudImg(_refCI) {
+  var u = _refCI.u, style = _refCI.style, onClick = _refCI.onClick;
+  var h = React.createElement;
+  var _s = useState(null); var src = _s[0], setSrc = _s[1];
+  useEffect(function () {
+    var on = true;
+    setSrc(null);
+    nanaCloudGet(u, function (data) { if (on) setSrc(data || u); });
+    return function () { on = false; };
+  }, [u]);
+  if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc" }, style) });
+  var fromNet = src === u;
+  return h("img", {
+    src: src, alt: "", loading: "lazy", decoding: "async",
+    ref: fromNet ? nanaImgWatch : null,
+    onLoad: fromNet ? function () { nanaCloudGrab(u); } : null,
+    onError: nanaImgFallback, onClick: onClick, style: style
+  });
+}
 // 照片显示组件：从 IndexedDB 取图
 function NanaPhoto(_refNP) {
   var pid = _refNP.pid; var style = _refNP.style; var onClick = _refNP.onClick;
@@ -7732,7 +7787,7 @@ function NanaLightbox(_refLB) {
   var h = React.createElement;
   var imgStyle = { maxWidth: "94%", maxHeight: "86%", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain" };
   return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(20,12,20,0.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" } },
-    src ? h("img", { src: src, alt: "", style: imgStyle }) : h(NanaPhoto, { pid: pid, style: imgStyle }),
+    src ? (String(src).indexOf("http") === 0 ? h(NanaCloudImg, { u: src, style: imgStyle }) : h("img", { src: src, alt: "", style: imgStyle })) : h(NanaPhoto, { pid: pid, style: imgStyle }),
     h("div", { style: { position: "absolute", bottom: 26, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700 } }, "点一下关闭"));
 }
 
@@ -8342,7 +8397,7 @@ function ReadingRoomActivity(_refRR) {
             sharedDraftPs.length > 0 && h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 } },
               sharedDraftPs.map(function (u, pi) {
                 return h("div", { key: u, style: { position: "relative", background: "#fff", padding: "5px 5px 14px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(" + (pi % 2 ? 2 : -2.2) + "deg)", borderRadius: 3 } },
-                  h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+                  h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
                   h("button", { onClick: function () { removeSharedDraftP(u); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"));
               })),
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
@@ -8393,7 +8448,7 @@ function ReadingRoomActivity(_refRR) {
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
                   h("div", { style: { textAlign: "center", color: "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
             }
@@ -8415,7 +8470,7 @@ function ReadingRoomActivity(_refRR) {
                   return h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, margin: "6px 0 4px" } },
                     pus.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: single ? "5px 5px 15px" : "4px 4px 12px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h(NanaCloudImg, { u: u, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     }));
                 })(),
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
@@ -18391,7 +18446,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-20")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-21")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
