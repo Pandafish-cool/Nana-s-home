@@ -8253,7 +8253,9 @@ function ReadingRoomActivity(_refRR) {
   }, [sharedDraft, sharedDraftPs]);
   var onPickSharedPhoto = function (e) {
     var f = e.target.files && e.target.files[0];
-    e.target.value = "";
+    // 不能在 change 里同步清空 value：iOS 会以为这次选择没完成，把相册再弹一次
+    var inp = e.target;
+    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
     if (!f || sharedUploading || sharedDraftPs.length >= 3) return;
     setSharedUploading(true);
     var pid = "sp" + Date.now() + Math.floor(Math.random() * 900);
@@ -8478,7 +8480,7 @@ function ReadingRoomActivity(_refRR) {
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
               sharedDraftPs.length >= 3
                 ? h("span", { style: { display: "inline-flex", alignItems: "center", gap: 5, border: "1.5px dashed rgba(180,150,140,0.4)", borderRadius: 999, padding: "6px 13px", color: "rgba(150,120,110,0.7)", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, "📷 3/3 贴满啦")
-                : h("label", { htmlFor: "sh-photo-input", style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
+                : h("span", { onClick: function () { try { var el = document.getElementById("sh-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
               h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }))),
           h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length) || sharedPosting || sharedUploading, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, (String(sharedErr).indexOf("照片") >= 0 ? "" : "信没送到贝克街 😢 ") + sharedErr),
@@ -18521,7 +18523,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-25")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-26")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
