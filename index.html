@@ -7793,6 +7793,27 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
 // 云图加载失败的占位（网络抽风时不至于一片空白）
 var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片走丢了 · 刷新重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
+// 云图看门狗：Supabase 那边字节流卡住时，图片会半张挂着且不触发 onerror，
+// 占位图永远出不来。这里自己盯着：8 秒没 load 完就换个地址重拉，两次还不行才认输。
+var nanaImgWatch = function (el) {
+  if (!el || el.__nw) return;
+  el.__nw = 1;
+  var base = el.src, tries = 0;
+  var stop = function () { if (el.__t) { clearTimeout(el.__t); el.__t = null; } };
+  var arm = function () {
+    stop();
+    el.__t = setTimeout(function () {
+      if (el.__ok) return;
+      if (tries >= 2) { stop(); nanaImgFallback({ target: el }); return; }
+      tries++;
+      el.src = base + (base.indexOf("?") < 0 ? "?" : "&") + "r=" + tries;
+      arm();
+    }, 8000);
+  };
+  el.addEventListener("load", function () { el.__ok = 1; stop(); });
+  el.addEventListener("error", function () { stop(); });
+  arm();
+};
 var nanaPuList = function (pu) {
   if (!pu) return [];
   if (typeof pu === "string" && pu.charAt(0) === "[") {
@@ -8321,7 +8342,7 @@ function ReadingRoomActivity(_refRR) {
             sharedDraftPs.length > 0 && h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, marginTop: 6 } },
               sharedDraftPs.map(function (u, pi) {
                 return h("div", { key: u, style: { position: "relative", background: "#fff", padding: "5px 5px 14px", boxShadow: "0 6px 16px rgba(60,40,50,0.35)", transform: "rotate(" + (pi % 2 ? 2 : -2.2) + "deg)", borderRadius: 3 } },
-                  h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
+                  h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 88, height: 72, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }),
                   h("button", { onClick: function () { removeSharedDraftP(u); }, style: { position: "absolute", right: -8, top: -8, width: 22, height: 22, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"));
               })),
             h("div", { style: { position: "relative", zIndex: 1, marginTop: 8 } },
@@ -8372,7 +8393,7 @@ function ReadingRoomActivity(_refRR) {
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
                   h("div", { style: { textAlign: "center", color: "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
             }
@@ -8394,7 +8415,7 @@ function ReadingRoomActivity(_refRR) {
                   return h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, margin: "6px 0 4px" } },
                     pus.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: single ? "5px 5px 15px" : "4px 4px 12px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
-                        h("img", { src: u, alt: "", onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+                        h("img", { src: u, alt: "", loading: "lazy", decoding: "async", ref: nanaImgWatch, onError: nanaImgFallback, onClick: function () { setLightbox(u); }, style: { width: single ? 128 : 92, height: single ? 100 : 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     }));
                 })(),
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
@@ -18370,7 +18391,7 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-19")), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C v2026.8.2-20")), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
