@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-37";
+var NANA_VER = "v2026.8.2-36";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17602,16 +17602,6 @@ var LD_LIVE = [
   { n: "健身房 / 游泳", d: "Third Space、Virgin Active 都在商场里", e: "🏊", q: "gym Canary Wharf" },
   { n: "理发 / 美甲", d: "Jubilee Place 商场负一层有几家", e: "💇", q: "hairdresser Canary Wharf" }
 ];
-// 按当地钟点给钟面配色，一眼看出那边是白天还是黑夜
-var ldSky = function (hh) {
-  if (hh < 5)  return { n: "\u6DF1\u591C",  bg: "linear-gradient(165deg,#243258,#131c33)", ink: "#e7edfc", sub: "rgba(206,218,244,0.72)", face: "rgba(255,255,255,0.09)", ring: "rgba(255,255,255,0.34)", hand: "#eef3ff", e: "\uD83C\uDF19" };
-  if (hh < 8)  return { n: "\u6E05\u65E9",  bg: "linear-gradient(165deg,#6d689e,#e5a98d)", ink: "#fff2e9", sub: "rgba(255,238,227,0.82)", face: "rgba(255,255,255,0.18)", ring: "rgba(255,255,255,0.5)",  hand: "#fff7f0", e: "\uD83C\uDF05" };
-  if (hh < 11) return { n: "\u4E0A\u5348",  bg: "linear-gradient(165deg,#d3eaf7,#a8d5ec)", ink: "#16465e", sub: "rgba(22,70,94,0.72)",   face: "rgba(255,255,255,0.62)", ring: "rgba(22,70,94,0.3)",     hand: "#16465e", e: "\uD83C\uDF24\uFE0F" };
-  if (hh < 15) return { n: "\u6B63\u5348",  bg: "linear-gradient(165deg,#eaf5e4,#bfe1cc)", ink: "#1e5a45", sub: "rgba(30,90,69,0.72)",   face: "rgba(255,255,255,0.66)", ring: "rgba(30,90,69,0.28)",    hand: "#1e5a45", e: "\u2600\uFE0F" };
-  if (hh < 18) return { n: "\u4E0B\u5348",  bg: "linear-gradient(165deg,#fdf0d4,#f5d9a6)", ink: "#7a5320", sub: "rgba(122,83,32,0.74)",  face: "rgba(255,255,255,0.6)",  ring: "rgba(122,83,32,0.28)",   hand: "#7a5320", e: "\uD83C\uDF3E" };
-  if (hh < 21) return { n: "\u9EC4\u660F",  bg: "linear-gradient(165deg,#f0a06e,#b5628c)", ink: "#fff0e6", sub: "rgba(255,235,224,0.85)", face: "rgba(255,255,255,0.2)", ring: "rgba(255,255,255,0.52)", hand: "#fff6ef", e: "\uD83C\uDF07" };
-  return             { n: "\u591C\u91CC",  bg: "linear-gradient(165deg,#3b3f70,#1e2544)", ink: "#e7ebfb", sub: "rgba(206,214,244,0.75)", face: "rgba(255,255,255,0.11)", ring: "rgba(255,255,255,0.36)", hand: "#eef1ff", e: "\uD83C\uDF03" };
-};
 var LD_SURVIVE = [
   { t: "☔ 伞随身", b: "伦敦的雨来得快去得也快，很少下大，但一天能下三回。" },
   { t: "🌡️ 早晚温差大", b: "八九月白天二十度、傍晚十几度，出门带件外套，别让冷空气激着嗓子。" },
@@ -17859,95 +17849,36 @@ function LondonRoom(_refLD) {
       sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 2 } }, sub) : null);
   };
   // ── 此刻 ──
-  // ── 此刻（英伦风）──────────────────────────────
-  var UK_INK = "#1c3a35", UK_RED = "#b4353a", UK_NAVY = "#1b3a6b", UK_GREEN = "#1f5f57";
-  var ukCard = function (kids, extra) {
-    return h("div", { style: Object.assign({
-      background: "#f8f3e8",
-      borderRadius: 7,
-      padding: "15px 15px 14px",
-      marginBottom: 13,
-      boxShadow: "0 7px 20px rgba(58,48,32,0.12), inset 0 0 0 4px #f8f3e8, inset 0 0 0 5px rgba(31,95,87,0.22)"
-    }, extra || {}) }, kids);
-  };
-  var ukHead = function (t, sub, node) {
-    return h("div", { key: "hd", style: { marginBottom: 11 } },
-      h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
-        node || null,
-        h("div", { style: { fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: UK_INK, letterSpacing: "0.4px" } }, t)),
-      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(92,108,102,0.9)", marginTop: 4, letterSpacing: "0.3px" } }, sub) : null,
-      h("div", { style: { height: 2, background: "linear-gradient(90deg," + UK_GREEN + ",rgba(31,95,87,0))", marginTop: 9, borderRadius: 2 } }));
-  };
-  // 伦敦地铁 roundel
-  var roundel = h("svg", { viewBox: "0 0 100 100", width: 21, height: 21, style: { flexShrink: 0 } },
-    h("circle", { cx: 50, cy: 50, r: 33, fill: "none", stroke: UK_RED, strokeWidth: 15 }),
-    h("rect", { x: 4, y: 42, width: 92, height: 16, rx: 2, fill: UK_NAVY }));
-  // 圆钟面
-  var clockFace = function (hh, mm, sk) {
-    var C = 50, ticks = [], i, a, r1;
-    for (i = 0; i < 12; i++) {
-      a = i * 30 * Math.PI / 180;
-      r1 = (i % 3 === 0) ? 33 : 37.5;
-      ticks.push(h("line", { key: "t" + i,
-        x1: C + r1 * Math.sin(a), y1: C - r1 * Math.cos(a),
-        x2: C + 42 * Math.sin(a), y2: C - 42 * Math.cos(a),
-        stroke: sk.ring, strokeWidth: (i % 3 === 0) ? 2.6 : 1.2, strokeLinecap: "round" }));
-    }
-    var ha = ((hh % 12) + mm / 60) * 30 * Math.PI / 180;
-    var ma = mm * 6 * Math.PI / 180;
-    return h("svg", { viewBox: "0 0 100 100", width: 88, height: 88, style: { display: "block", margin: "0 auto" } },
-      h("circle", { cx: C, cy: C, r: 46, fill: sk.face, stroke: sk.ring, strokeWidth: 2.2 }),
-      ticks,
-      h("text", { x: C, y: 30, textAnchor: "middle", fontSize: 13 }, sk.e),
-      h("line", { x1: C, y1: C, x2: C + 21 * Math.sin(ha), y2: C - 21 * Math.cos(ha), stroke: sk.hand, strokeWidth: 4.8, strokeLinecap: "round" }),
-      h("line", { x1: C, y1: C, x2: C + 31 * Math.sin(ma), y2: C - 31 * Math.cos(ma), stroke: sk.hand, strokeWidth: 2.7, strokeLinecap: "round" }),
-      h("circle", { cx: C, cy: C, r: 3.6, fill: sk.hand }),
-      h("circle", { cx: C, cy: C, r: 1.5, fill: sk.face }));
-  };
-  var bigClock = function (key, tz, cap, place) {
-    var txt = ldFmt(tz);
-    var hh = parseInt(txt.slice(0, 2), 10) || 0, mm = parseInt(txt.slice(3, 5), 10) || 0;
-    var sk = ldSky(hh);
-    return h("div", { key: key, style: { flex: 1, background: sk.bg, borderRadius: 10, padding: "13px 6px 11px", textAlign: "center", boxShadow: "0 6px 16px rgba(40,35,25,0.2)", transition: "background 1.2s ease" } },
-      h("div", { style: { fontSize: "0.56rem", letterSpacing: 2.4, fontWeight: 800, color: sk.sub, fontFamily: "Georgia,serif" } }, cap),
-      clockFace(hh, mm, sk),
-      h("div", { style: { fontSize: "1.32rem", fontWeight: 800, letterSpacing: 1.5, color: sk.ink, fontFamily: "Georgia,'Times New Roman',serif", marginTop: 4 } }, txt),
-      h("div", { style: { fontSize: "0.6rem", color: sk.sub, marginTop: 2 } }, sk.n + " · " + place));
-  };
   var nowTab = h("div", null,
-    ukCard([
-      h("div", { key: "cl", style: { display: "flex", gap: 11 } },
-        bigClock("l", "Europe/London", "LONDON", "Canary Wharf"),
-        bigClock("g", "Asia/Shanghai", "HOME", "这个家")),
-      h("div", { key: "gap", style: { marginTop: 12, background: UK_NAVY, borderRadius: 4, padding: "7px 10px", textAlign: "center", color: "#fdf7ea", fontSize: "0.64rem", fontWeight: 800, letterSpacing: "0.6px", fontFamily: "Georgia,serif" } },
-        "家里的钟比这里快 " + diff + " 小时"),
-      h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,95,87,0.07)", borderRadius: 6, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2c4f48", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
-      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(70,104,97,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
+    card([
+      h("div", { key: "c1", style: { display: "flex", alignItems: "stretch", gap: 10 } },
+        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#d4f4f2,#aee6e2)", borderRadius: 14, padding: "12px 6px", color: "#166b64" } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, color: "rgba(28,125,118,0.9)", fontWeight: 800 } }, "LONDON"),
+          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, lonT),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(45,140,132,0.8)" } }, "Canary Wharf 🎡")),
+        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#ffeede,#ffdcc2)", borderRadius: 14, padding: "12px 6px", color: "#7a4a28" } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "HOME"),
+          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, gzT),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(150,100,60,0.8)" } }, "这个家 🏡"))),
+      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(110,162,155,0.8)", margin: "10px 0 8px", fontWeight: 700 } }, "家里的钟比这里快 " + diff + " 小时"),
+      h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
+      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(78,138,130,0.95)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
     ]),
-    ukCard([
-      ukHead("这个季节的伦敦", "The season in London", h("span", { style: { fontSize: "1rem" } }, "🗓️")),
-      h("div", { key: "s2", style: { fontSize: "0.77rem", color: "rgba(60,86,80,0.96)", lineHeight: 1.75 } }, season)
+    card([
+      h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
+      h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(88,142,135,0.95)", lineHeight: 1.7 } }, season)
     ]),
-    ukCard([
-      h("div", { key: "b1", style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-        ukHead("家里的动静", "Back home", h("span", { style: { fontSize: "1rem" } }, "🏡")),
-        h("button", { onClick: function () { setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { border: "1px solid rgba(31,95,87,0.3)", background: "transparent", borderRadius: 999, padding: "4px 10px", color: UK_GREEN, fontFamily: "inherit", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer", flexShrink: 0, marginLeft: 8 } }, "🔄 再看看")),
-      h("div", { key: "b2", style: { fontSize: "0.83rem", color: "rgba(60,86,80,0.96)", lineHeight: 1.75, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, beat)
+    card([
+      h("div", { key: "b1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
+        h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, "🏡 家里的动静"),
+        h("button", { onClick: function () { setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { border: "none", background: "none", color: "rgba(110,162,155,0.8)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", padding: 2 } }, "🔄 再看看")),
+      h("div", { key: "b2", style: { fontSize: "0.82rem", color: "rgba(88,142,135,0.96)", lineHeight: 1.7, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, beat)
     ]),
-    ukCard([
-      ukHead("Mind the Gap", "地铁里天天听见的那句 · 伦敦的小规矩，知道了就不慌", roundel),
-      h("div", { key: "s1" }, LD_SURVIVE.map(function (x, i) {
-        return h("div", { key: "sv" + i, style: { display: "flex", gap: 9, padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px dashed rgba(31,95,87,0.22)" } },
-          h("span", { style: { color: UK_RED, fontWeight: 800, fontSize: "0.72rem", lineHeight: "1.5", flexShrink: 0 } }, "▸"),
-          h("div", null,
-            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
-            h("div", { style: { fontSize: "0.73rem", color: "rgba(78,100,94,0.94)", marginTop: 3, lineHeight: 1.68 } }, x.b)));
-      }))
-    ]),
-    ukCard([
-      ukHead("今天想吃什么？", "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟", h("span", { style: { fontSize: "1rem" } }, "🍜")),
-      h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 7, padding: "12px 8px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: UK_RED, color: "#fff6ef", boxShadow: "0 6px 16px rgba(180,53,58,0.32)", letterSpacing: "0.5px" } }, "📮 发一份投喂申请")
-    ])
+    card([
+      h("div", { key: "q1", style: { fontWeight: 800, fontSize: "0.88rem", color: "#1f7a6d", marginBottom: 4 } }, "🍜 今天想吃什么？"),
+      h("div", { key: "q2", style: { fontSize: "0.7rem", color: "rgba(110,162,155,0.88)", marginBottom: 10, lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟"),
+      h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "📮 发一份投喂申请")
+    ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" })
   );
   // ── 行前 ──
   var extraRow = function (x) {
@@ -18028,7 +17959,15 @@ function LondonRoom(_refLD) {
   );
   // ── 生活 ──
   var liveTab = h("div", null,
-    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))])
+    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))]),
+    card([
+      h("div", { key: "s0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 8 } }, "☔ 伦敦生存贴士"),
+      h("div", { key: "s1" }, LD_SURVIVE.map(function (x, i) {
+        return h("div", { key: "sv" + i, style: { padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px solid rgba(165,218,212,0.3)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#1f7a6d" } }, x.t),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(100,152,145,0.92)", marginTop: 3, lineHeight: 1.65 } }, x.b));
+      }))
+    ])
   );
   // ── 安心 ──
   var careTab = h("div", null,
