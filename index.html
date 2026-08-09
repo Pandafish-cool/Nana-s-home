@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-70";
+var NANA_VER = "v2026.8.2-72";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17721,18 +17721,22 @@ var LD_ARR_STEP = [
     "接机订单截图存到相册，别只留在 App 里。",
     "司机的电话和微信存进通讯录，别临时翻。",
     "备忘录里写好地址：Fraser Place Canary Wharf, London E14。给司机看这一行就够。",
-    "充电宝充满。飞十几个小时，落地手机基本没电了。"
+    "充电宝充满。飞十几个小时，落地手机基本没电了。",
+    "订接机时把航站楼写成 South Terminal（南楼），别让司机跑去北楼。"
   ] },
   { e: "🛂", n: "下飞机到出关", items: [
     "跟着 Arrivals / Baggage reclaim 的牌子走，一路都有指示，不用问人。",
     "中国护照带签证的走人工柜台（All Passports），排队二十分钟到一小时都有可能，别慌。",
     "看屏幕找自己航班号对应的行李转盘。行李推车在提取处能免费拿，一路推到停车场都行。",
-    "出关走绿色通道 Nothing to Declare。"
+    "出关走绿色通道 Nothing to Declare，出来就是到达大厅。",
+    "盖特威克分南北两楼，你落在 South（南楼），接机和出租都在这栋，不用坐摆渡车。"
   ] },
   { e: "🚕", n: "找到车", items: [
-    "预约的中文接机：司机在到达大厅出口举牌，牌上写你的名字。多数会提前给你发消息。",
-    "Uber：不在到达大厅门口上车。要按 App 指示走到短期停车场（Short Stay），App 会给楼层和区号。",
-    "在大厅里主动上来问「要不要车」的一律不要理，那种基本都是没牌照的。正规车要么举牌，要么在 Taxi Rank 排队。"
+    "中文接机：司机在南楼到达大厅、出关口正对面的接机区举牌，牌上写你的名字。多数会提前发消息给你。",
+    "出租车：跟着大厅里 Taxis 的指示牌走，车站就在楼外的车道边，有工作人员排队引导。",
+    "Uber：不在大厅门口上车。要按 App 指示走到南楼的短期停车场（Short Stay），App 会给具体楼层，走过去大约五分钟，有电梯。",
+    "万一司机说他在 North（北楼），别慌 —— 两楼之间有免费摆渡车，三分钟一趟，跟着 Terminal Transfer 的牌子走。",
+    "在大厅里主动上来问「要不要车」的一律不理，那种基本都是没牌照的。正规车要么举牌，要么在 Taxi Rank 排队。"
   ] },
   { e: "🏠", n: "路上和到家", items: [
     "车程通常一小时到一个半小时，赶上早晚高峰可能两小时。上车先跟家里说一声，然后就睡吧。",
@@ -17741,19 +17745,19 @@ var LD_ARR_STEP = [
   ] }
 ];
 var LD_ARR_WAY = [
-  { e: "🇨🇳", n: "中文接机", tag: "最推荐", col: "#b4353a", cost: "约 £70 - 110", time: "60 - 90 分钟",
-    how: "出发前在携程、皇包车这类 App 上订「接机」，车型一定要选 SUV 或商务车 —— 两个大箱加一个大包，轿车塞不下。人民币提前付掉，落地一分钱不用掏。",
-    why: "一个人带三件行李、刚下十几个小时的飞机，这个最省事。司机举牌等你、行李他搬、全程说中文，出什么岔子都能讲清楚。" },
-  { e: "📲", n: "Uber XL", tag: "备用", col: "#a1542a", cost: "约 £90 - 130", time: "60 - 90 分钟",
-    how: "落地连上网再叫。务必选 XL 或更大车型，普通 UberX 装不下两个大箱，司机有权拒载。付款走 App 里绑的卡，不用现金。",
-    why: "没提前订也能用。代价是要自己拖着三件行李走到停车场那段路，高峰期还会涨价。" },
-  { e: "🚖", n: "Taxi Rank 机场出租", tag: "兜底", col: "#2b3446", cost: "约 £130 - 170", time: "60 - 90 分钟",
-    how: "不用订、不用网、不用装 App。出关后跟着 Taxi 的牌子走，车站就在到达大厅门口，有工作人员排队引导。上车把地址给司机看，行李他搬。到了刷卡付，英国出租车都能刷。",
-    why: "最贵，但也最不会出错 —— 什么都不用提前准备，走出门就有车。接机没接上、手机没网、实在累得不想动，这条永远走得通。" }
+  { e: "🇨🇳", n: "中文接机", tag: "要提前订", col: "#b4353a", cost: "约 £70 - 110", time: "60 - 90 分钟",
+    how: "出发前在携程、皇包车这类 App 上订「接机」，航站楼填 Gatwick South（南楼），车型一定要选 SUV 或商务车 —— 两个大箱加一个大包，轿车塞不下。人民币提前付掉，落地一分钱不用掏。",
+    why: "好处：司机举牌等你、行李他搬、全程说中文，钱也提前付掉了。代价：得提前订好，航班延误要自己联系改时间。" },
+  { e: "📲", n: "Uber XL", tag: "落地用 App 叫", col: "#a1542a", cost: "约 £90 - 130", time: "60 - 90 分钟",
+    how: "落地连上网再叫，上车点在南楼的短期停车场（Short Stay），App 会指路。务必选 XL 或更大车型，普通 UberX 装不下两个大箱，司机有权拒载。付款走 App 里绑的卡，不用现金。",
+    why: "好处：不用提前订，落地想起来再叫也行，价格居中。代价：要先有网，还要自己拖着三件行李走到停车场那段路，高峰期会涨价。" },
+  { e: "🚖", n: "Taxi Rank 机场出租", tag: "出门就有", col: "#2b3446", cost: "约 £130 - 170", time: "60 - 90 分钟",
+    how: "不用订、不用网、不用装 App。出关后在南楼到达大厅跟着 Taxis 的牌子走，车站就在楼外的车道边，有工作人员排队引导。上车把地址给司机看，行李他搬。到了刷卡付，英国出租车都能刷。",
+    why: "好处：零准备 —— 不用订、不用网、走出门就有，行李司机搬。代价：三条里最贵。" }
 ];
 var LD_ARR_SOS = [
   { t: "司机没出现", b: "先看 App 里的消息和订单页，十有八九是他在停车场等你。打订单上的电话，或者发 WhatsApp。实在联系不上，就走到 Taxi Rank 打一辆正规出租 —— 能刷卡，贵一点但一定走得了。" },
-  { t: "落地没网", b: "Gatwick 全航站楼有免费 WiFi，连上就能用 App。所以哪怕漫游没开也不至于失联，先别急。" },
+  { t: "落地没网", b: "南楼全楼有免费 WiFi（选 Gatwick Free WiFi），连上就能用 App。所以哪怕漫游没开也不至于失联，先别急。" },
   { t: "行李没出来", b: "别出关。先去转盘旁边的 Baggage Enquiry 柜台报失，填单子留公寓地址，航司会直接送到住处。" },
   { t: "太累了不想折腾", b: "那就什么都别想，直接走到 Taxi Rank 打车。一百多镑，今天这一趟你值得。" }
 ];
@@ -18519,16 +18523,16 @@ function LondonRoom(_refLD) {
           h("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
             h("span", { style: { fontSize: "1.25rem" } }, "🛬"),
             h("div", { style: { flex: 1, minWidth: 0 } },
-              h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 700, fontSize: "1.02rem", color: "#7d1c22", letterSpacing: "0.4px" } }, "落地那天怎么回家"),
-              h("div", { style: { fontSize: "0.62rem", color: "rgba(130,90,60,0.95)", marginTop: 3, fontWeight: 700, letterSpacing: "0.5px" } }, "LGW  ✈  E14 · 盖特威克 → Fraser Place")),
+              h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 700, fontSize: "1.02rem", color: "#7d1c22", letterSpacing: "0.4px" } }, "接你回家"),
+              h("div", { style: { fontSize: "0.62rem", color: "rgba(130,90,60,0.95)", marginTop: 3, fontWeight: 700, letterSpacing: "0.5px" } }, "LGW SOUTH  ✈  E14 · 盖特威克南楼 → Fraser Place")),
             h("span", { style: { fontSize: "0.72rem", color: "#a1542a", fontWeight: 800, flexShrink: 0 } }, open ? "收起 ▲" : "展开 ▼")),
-          open ? null : h("div", { style: { fontSize: "0.72rem", color: "rgba(100,76,54,0.95)", marginTop: 8, lineHeight: 1.7 } }, "一句话：出发前订好中文接机，落地跟着举牌的司机走就行 🚕")),
+          open ? null : h("div", { style: { fontSize: "0.72rem", color: "rgba(100,76,54,0.95)", marginTop: 8, lineHeight: 1.7 } }, "三条路可以走：提前订车 / 落地叫 Uber / 直接去出租车站 🚕")),
         open ? h("div", { style: { padding: "0 15px 15px 20px" } },
           h("div", { key: "sum", style: { background: "rgba(180,53,58,0.09)", borderRadius: 9, padding: "11px 12px", fontSize: "0.78rem", color: "#7d1c22", lineHeight: 1.8, fontWeight: 700, marginBottom: 13 } },
-            "一句话：出发前就在国内 App 上订好中文接机，选 SUV 或商务车。落地开机连网，跟着举牌的司机走，行李他搬，钱早付过了。"),
+            "三条路都到得了，看你落地那会儿的状态挑一条：想省心就出发前订好车，想省钱就落地用 App 叫，什么都不想弄就直接走去出租车站。怎么选都不会错。"),
           // 三种走法
           h("div", { key: "ways" }, LD_ARR_WAY.map(function (w, i) {
-            var hot = i === 0;
+            var hot = false;
             return h("div", { key: "aw" + i, style: { borderLeft: "4px solid " + w.col, background: hot ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.62)", borderRadius: "0 9px 9px 0", padding: "11px 12px", marginBottom: 9 } },
               h("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 3 } },
                 h("span", { style: { fontSize: "1.02rem", marginRight: 5 } }, w.e),
