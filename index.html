@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-60";
+var NANA_VER = "v2026.8.2-67";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17937,6 +17937,120 @@ var LD_BEAT = [
   "好好今天在窗边坐了很久，不知道在看什么 🪟"
 ];
 
+// ── 🔍 伦敦开屏：贝克街 221B ─────────────────────────────
+var LD_SH_LINES = [
+  "你来了，Nana，让我们开始解密。",
+  "别急着破案，先把伞带上。",
+  "华生说今天雨不大，我信他一次。",
+  "线索都在楼下，跟我来。",
+  "这座城我熟。你只管住得舒服。",
+  "推理讲证据 —— 证据是，有人把这儿收拾好了等你。"
+];
+function LondonOpening(_refSO) {
+  var h = React.createElement;
+  var onDone = _refSO.onDone;
+  var _ln = useState(function () { return LD_SH_LINES[Math.floor(Math.random() * LD_SH_LINES.length)]; });
+  var line = _ln[0];
+  var _go = useState(false); var gone = _go[0], setGone = _go[1];
+  // 点导航栏进来那一下会顺着落到刚出现的开屏上，头 400 毫秒先不接受点击
+  var _rd = useState(false); var ready = _rd[0], setReady = _rd[1];
+  var done = function () { if (!ready || gone) return; setGone(true); setTimeout(onDone, 460); };
+  useEffect(function () {
+    var t0 = setTimeout(function () { setReady(true); }, 400);
+    var t1 = setTimeout(function () { setGone(true); }, 2400);
+    var t2 = setTimeout(onDone, 2880);
+    return function () { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  // 卡通福尔摩斯
+  var sherlock = h("svg", { viewBox: "0 0 130 170", width: 132, height: 172, style: { display: "block", overflow: "visible" } },
+    h("ellipse", { cx: 65, cy: 166, rx: 30, ry: 5, fill: "rgba(0,0,0,0.35)" }),
+    // 大衣
+    h("path", { d: "M40 84 q-14 6 -17 26 l-4 52 h92 l-4 -52 q-3 -20 -17 -26 Z", fill: "#3a3f52" }),
+    h("path", { d: "M40 84 q-16 8 -18 30 q10 6 20 4 Z", fill: "#4a5068" }),
+    h("path", { d: "M90 84 q16 8 18 30 q-10 6 -20 4 Z", fill: "#4a5068" }),
+    // 披肩
+    h("path", { d: "M65 80 q-30 2 -34 26 q34 10 68 0 q-4 -24 -34 -26 Z", fill: "#4c5369" }),
+    h("path", { d: "M65 80 v56", stroke: "#2e3346", strokeWidth: 2 }),
+    // 围巾
+    h("path", { d: "M48 82 q17 10 34 0 q2 8 -2 11 q-15 8 -30 0 q-4 -3 -2 -11 Z", fill: "#8e3b3b" }),
+    // 脸
+    h("circle", { cx: 65, cy: 55, r: 27, fill: "#f6d9bd" }),
+    // 帽子
+    h("path", { d: "M28 40 q37 -10 74 0 q4 4 -2 7 q-35 8 -70 0 q-6 -3 -2 -7 Z", fill: "#8a6f4e" }),
+    h("path", { d: "M36 40 q29 -30 58 0 Z", fill: "#9c7f5a" }),
+    h("path", { d: "M36 40 q29 -30 58 0", fill: "none", stroke: "#7a6142", strokeWidth: 1.5 }),
+    [[48, 30], [62, 24], [76, 28], [55, 36], [70, 35]].map(function (p, i) {
+      return h("rect", { key: "ck" + i, x: p[0], y: p[1], width: 5, height: 4, rx: 1, fill: "#7a6142", opacity: 0.6 }); }),
+    h("circle", { cx: 65, cy: 20, r: 3.4, fill: "#7a6142" }),
+    h("path", { d: "M30 44 q-6 8 -1 15 q6 2 8 -4 Z", fill: "#8a6f4e" }),
+    h("path", { d: "M100 44 q6 8 1 15 q-6 2 -8 -4 Z", fill: "#8a6f4e" }),
+    // 五官
+    h("circle", { cx: 55, cy: 55, r: 3.1, fill: "#2c2c34" }),
+    h("circle", { cx: 76, cy: 55, r: 3.1, fill: "#2c2c34" }),
+    h("circle", { cx: 56.2, cy: 53.8, r: 1.1, fill: "#fff" }),
+    h("circle", { cx: 77.2, cy: 53.8, r: 1.1, fill: "#fff" }),
+    h("path", { d: "M49 47 q6 -3 11 -1 M71 46 q5 -2 11 1", fill: "none", stroke: "#6b533a", strokeWidth: 2, strokeLinecap: "round" }),
+    h("path", { d: "M60 68 q5 4 10 0", fill: "none", stroke: "#b06a5a", strokeWidth: 2, strokeLinecap: "round" }),
+    // 烟斗
+    h("path", { d: "M70 70 q12 2 14 8", fill: "none", stroke: "#6b4a2e", strokeWidth: 3, strokeLinecap: "round" }),
+    h("path", { d: "M83 76 q9 0 9 8 q0 6 -6 6 q-7 0 -7 -7 Z", fill: "#7d5836" }),
+    h("g", { style: { animation: "shSmoke 2.6s ease-out infinite" } },
+      h("circle", { cx: 90, cy: 70, r: 3.2, fill: "rgba(255,255,255,0.55)" }),
+      h("circle", { cx: 95, cy: 61, r: 2.4, fill: "rgba(255,255,255,0.4)" }),
+      h("circle", { cx: 99, cy: 53, r: 1.8, fill: "rgba(255,255,255,0.28)" })),
+    // 放大镜
+    h("g", { style: { transformOrigin: "34px 118px", animation: "shGlass 2.4s ease-in-out infinite" } },
+      h("path", { d: "M30 132 l10 -12", stroke: "#8a6f4e", strokeWidth: 4, strokeLinecap: "round" }),
+      h("circle", { cx: 45, cy: 113, r: 12, fill: "rgba(190,225,240,0.4)", stroke: "#c9a252", strokeWidth: 3.4 }),
+      h("path", { d: "M39 108 q5 -4 10 -1", fill: "none", stroke: "#fff", strokeWidth: 2, strokeLinecap: "round", opacity: 0.85 })));
+  return h("div", { onClick: done, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9997, background: "linear-gradient(180deg,#0d1626,#16233a 55%,#1d2b3f)", overflow: "hidden", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.45s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } },
+    h("style", null,
+      "@keyframes shWalk{0%{transform:translateX(-42vw) }70%{transform:translateX(0)}100%{transform:translateX(0)}}" +
+      "@keyframes shBob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}" +
+      "@keyframes shFog{from{transform:translateX(-12%)}to{transform:translateX(12%)}}" +
+      "@keyframes shFlick{0%,100%{opacity:.85}45%{opacity:.55}70%{opacity:1}}" +
+      "@keyframes shSmoke{0%{opacity:0;transform:translateY(6px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translateY(-16px) scale(1.3)}}" +
+      "@keyframes shGlass{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}" +
+      "@keyframes shRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}" +
+      "@keyframes shDoorGlow{0%{opacity:0}100%{opacity:1}}"),
+    // 雾
+    [[52, 18, 34, 0.16], [70, 9, 26, 0.12], [86, 26, 40, 0.1]].map(function (f, i) {
+      return h("div", { key: "fg" + i, style: { position: "absolute", left: "-15%", right: "-15%", top: f[0] + "%", height: f[1] + "%", background: "radial-gradient(ellipse at center,rgba(210,225,240," + f[3] + "),transparent 70%)", filter: "blur(" + f[2] / 3 + "px)", animation: "shFog " + (14 + i * 5) + "s ease-in-out infinite alternate", pointerEvents: "none" } }); }),
+    // 煤气路灯
+    h("div", { style: { position: "absolute", left: "10%", bottom: "26%", width: 70, marginLeft: -35 } },
+      h("svg", { viewBox: "0 0 70 210", style: { width: "100%", display: "block", overflow: "visible" } },
+        h("circle", { cx: 35, cy: 34, r: 42, fill: "rgba(255,208,120,0.16)", style: { animation: "shFlick 3.4s ease-in-out infinite" } }),
+        h("rect", { x: 31, y: 52, width: 8, height: 158, fill: "#2a3346" }),
+        h("rect", { x: 22, y: 200, width: 26, height: 10, rx: 2, fill: "#2a3346" }),
+        h("path", { d: "M22 52 h26 l-5 -22 h-16 Z", fill: "#39435a" }),
+        h("path", { d: "M27 30 h16 l-8 -12 Z", fill: "#39435a" }),
+        h("rect", { x: 27, y: 32, width: 16, height: 18, rx: 2, fill: "#ffd884", style: { animation: "shFlick 3.4s ease-in-out infinite" } }))),
+    // 221B 大门
+    h("div", { style: { position: "absolute", right: "8%", bottom: "22%", width: 108 } },
+      h("svg", { viewBox: "0 0 108 180", style: { width: "100%", display: "block" } },
+        h("rect", { x: 0, y: 8, width: 108, height: 172, rx: 4, fill: "#2b3446" }),
+        h("path", { d: "M12 40 q42 -34 84 0 Z", fill: "#1e2636" }),
+        h("rect", { x: 14, y: 40, width: 80, height: 140, rx: 3, fill: "#16452f" }),
+        h("rect", { x: 20, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
+        h("rect", { x: 58, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
+        h("rect", { x: 20, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
+        h("rect", { x: 58, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
+        h("circle", { cx: 84, cy: 122, r: 4.4, fill: "#d9b45f" }),
+        h("rect", { x: 30, y: 22, width: 48, height: 15, rx: 2, fill: "#d9b45f", style: { animation: "shDoorGlow 1.2s ease 0.6s both" } }),
+        h("text", { x: 54, y: 34, textAnchor: "middle", fontSize: 12, fontWeight: "bold", fill: "#2b3446", fontFamily: "Georgia,serif" }, "221B"))),
+    // 地面
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", background: "linear-gradient(180deg,#1a2436,#0d1420)" } }),
+    // 福尔摩斯
+    h("div", { style: { position: "absolute", left: "50%", bottom: "20%", marginLeft: -66, animation: "shWalk 0.8s cubic-bezier(.25,.8,.35,1) both" } },
+      h("div", { style: { animation: "shBob 0.27s ease-in-out 3" } }, sherlock)),
+    // 台词
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: "13%", textAlign: "center", padding: "0 26px", animation: "shRise 0.45s ease 0.8s both" } },
+      h("div", { style: { color: "#d9b45f", fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
+      h("div", { style: { display: "inline-block", marginTop: 12, background: "rgba(253,246,232,0.96)", color: "#22303f", borderRadius: 16, padding: "13px 18px", fontSize: "0.92rem", fontWeight: 700, lineHeight: 1.7, boxShadow: "0 10px 28px rgba(0,0,0,0.45)", maxWidth: 300, position: "relative" } },
+        line,
+        h("div", { style: { position: "absolute", left: "50%", bottom: -9, marginLeft: -9, width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderTop: "10px solid rgba(253,246,232,0.96)" } }))),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(6% + env(safe-area-inset-bottom,0px))", textAlign: "center", color: "rgba(230,240,255,0.5)", fontSize: "0.7rem", fontWeight: 700, animation: "shRise 0.45s ease 1.25s both" } }, "（点一下进门）"));
+}
 // ── 🧭 港口全景：天色跟着伦敦当地时间走，伦敦眼在转，船在开 ──
 function LondonHarbour(_refHB) {
   var h = React.createElement;
@@ -18054,6 +18168,16 @@ function LondonRoom(_refLD) {
   var h = React.createElement;
   var full = ldFullOpen();
   var _tb = useState("now"); var tab = _tb[0], setTab = _tb[1];
+  var _op = useState(function () {
+    try {
+      var k = "nana-london-open";
+      var d = new Date().toDateString();
+      if (localStorage.getItem(k) === d) return false;
+      localStorage.setItem(k, d);
+      return true;
+    } catch (_) { return false; }
+  });
+  var opening = _op[0], setOpening = _op[1];
   var _tk = useState(0); var setTick = _tk[1];
   var _pk = useState(ldReadPack); var packed = _pk[0], setPacked = _pk[1];
   var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
@@ -18847,6 +18971,7 @@ function LondonRoom(_refLD) {
   );
   var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   return h("div", null,
+    opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
       "@keyframes ldWave{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
       "@keyframes ldBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}" +
