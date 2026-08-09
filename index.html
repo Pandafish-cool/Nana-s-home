@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-35";
+var NANA_VER = "v2026.8.2-36";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17503,7 +17503,11 @@ function BasementScene(_refB1) {
 var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
 var LD_FULL = "2026-08-14";
-var ldFullOpen = function () { try { return new Date() >= new Date(LD_FULL + "T00:00:00+08:00"); } catch (_) { return true; } };
+var ldFullOpen = function () {
+  // 熊猫鱼提前把全部标签页打开，方便先过一遍内容；nana 那边还是 8/14 才解锁
+  try { if (localStorage.getItem("nana-author") === "panda") return true; } catch (_) {}
+  try { return new Date() >= new Date(LD_FULL + "T00:00:00+08:00"); } catch (_) { return true; }
+};
 var nanaPackList = function (cb) { nanaSyncReq("GET", "shared_pack?select=*&limit=300", null, cb); };
 var nanaPackAdd = function (row, cb) { nanaSyncReq("POST", "shared_pack", row, cb); };
 var nanaPackDel = function (id, cb) { nanaSyncReq("DELETE", "shared_pack?id=eq." + encodeURIComponent(id), null, cb); };
