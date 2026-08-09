@@ -7944,14 +7944,105 @@ function NanaPhoto(_refNP) {
 function NanaLightbox(_refLB) {
   var pid = _refLB.pid; var src = _refLB.src; var onClose = _refLB.onClose;
   var h = React.createElement;
-  var imgStyle = { maxWidth: "94%", maxHeight: "86%", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain" };
-  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(20,12,20,0.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" } },
-    src ? (String(src).indexOf("http") === 0 ? h(NanaCloudImg, { u: src, style: imgStyle }) : h("img", { src: src, alt: "", style: imgStyle })) : h(NanaPhoto, { pid: pid, style: imgStyle }),
-    h("div", { style: { position: "absolute", bottom: 26, left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700 } }, "点一下关闭"));
+  var _z = useState(1); var z = _z[0], setZ = _z[1];
+  var _p = useState({ x: 0, y: 0 }); var pos = _p[0], setPos = _p[1];
+  var g = useRef({});
+  var MAXZ = 6;
+  var clamp = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
+  var vw = function () { return (typeof window !== "undefined" ? window.innerWidth : 390); };
+  var vh = function () { return (typeof window !== "undefined" ? window.innerHeight : 800); };
+  // 放大之后能拖的范围
+  var clampPos = function (p, zz) {
+    var mx = Math.max(0, (zz - 1) * vw() / 2), my = Math.max(0, (zz - 1) * vh() / 2);
+    return { x: clamp(p.x, -mx, mx), y: clamp(p.y, -my, my) };
+  };
+  var reset = function () { setZ(1); setPos({ x: 0, y: 0 }); };
+  var zoomTo = function (nz, fx, fy) {
+    // 以手指(或双击)那一点为中心缩放，那一点在屏幕上不动
+    var st = g.current;
+    var f = { x: fx - vw() / 2, y: fy - vh() / 2 };
+    var np = { x: f.x - (f.x - pos.x) * (nz / z), y: f.y - (f.y - pos.y) * (nz / z) };
+    st.tapT = 0;
+    setZ(nz);
+    setPos(nz <= 1.001 ? { x: 0, y: 0 } : clampPos(np, nz));
+  };
+  var dist = function (a, b) { var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY; return Math.sqrt(dx * dx + dy * dy); };
+  var mid = function (a, b) { return { x: (a.clientX + b.clientX) / 2 - vw() / 2, y: (a.clientY + b.clientY) / 2 - vh() / 2 }; };
+  var onTS = function (e) {
+    var t = e.touches, st = g.current;
+    st.moved = false;
+    if (t.length === 2) {
+      st.pinch = true;
+      st.d0 = dist(t[0], t[1]);
+      st.m0 = mid(t[0], t[1]);
+      st.z0 = z; st.p0 = pos;
+    } else if (t.length === 1) {
+      st.pinch = false;
+      st.sx = t[0].clientX; st.sy = t[0].clientY;
+      st.p0 = pos;
+    }
+  };
+  var onTM = function (e) {
+    var t = e.touches, st = g.current;
+    if (st.pinch && t.length === 2) {
+      if (e.cancelable) e.preventDefault();
+      st.moved = true;
+      var nz = clamp(st.z0 * (dist(t[0], t[1]) / (st.d0 || 1)), 1, MAXZ);
+      var m1 = mid(t[0], t[1]);
+      var np = { x: m1.x - (st.m0.x - st.p0.x) * (nz / st.z0), y: m1.y - (st.m0.y - st.p0.y) * (nz / st.z0) };
+      setZ(nz);
+      setPos(clampPos(np, nz));
+    } else if (t.length === 1 && z > 1.001) {
+      if (e.cancelable) e.preventDefault();
+      var dx = t[0].clientX - st.sx, dy = t[0].clientY - st.sy;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) st.moved = true;
+      setPos(clampPos({ x: st.p0.x + dx, y: st.p0.y + dy }, z));
+    } else if (t.length === 1) {
+      var ax = Math.abs(t[0].clientX - st.sx), ay = Math.abs(t[0].clientY - st.sy);
+      if (ax > 6 || ay > 6) st.moved = true;
+    }
+  };
+  var onTE = function (e) {
+    var st = g.current;
+    if (st.pinch) {
+      st.pinch = false;
+      if (z < 1.06) reset();
+      return;
+    }
+    if (st.moved) return;
+    var now = Date.now();
+    var x = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : vw() / 2;
+    var y = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : vh() / 2;
+    if (st.tapT && now - st.tapT < 300) {           // 双击：放大 / 还原
+      if (z > 1.001) reset(); else zoomTo(2.6, x, y);
+      st.tapT = 0;
+      return;
+    }
+    st.tapT = now;
+    setTimeout(function () {                         // 单击：没放大时才关掉
+      if (g.current.tapT !== now) return;
+      g.current.tapT = 0;
+      if (z <= 1.001) onClose();
+    }, 310);
+  };
+  var imgStyle = { maxWidth: "94vw", maxHeight: "84vh", borderRadius: 10, boxShadow: "0 20px 60px rgba(0,0,0,0.6)", objectFit: "contain", display: "block", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" };
+  var zoomed = z > 1.001;
+  return h("div", {
+    onTouchStart: onTS, onTouchMove: onTM, onTouchEnd: onTE, onTouchCancel: onTE,
+    onDoubleClick: function (e) { if (zoomed) reset(); else zoomTo(2.6, e.clientX, e.clientY); },
+    onClick: function () { if (!zoomed && !("ontouchstart" in window)) onClose(); },
+    style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(20,12,20,0.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", touchAction: "none", overflow: "hidden", overscrollBehavior: "contain" }
+  },
+    h("div", { style: { transform: "translate(" + pos.x + "px," + pos.y + "px) scale(" + z + ")", transformOrigin: "center center", transition: g.current.pinch ? "none" : "transform 0.18s ease-out", willChange: "transform" } },
+      src ? (String(src).indexOf("http") === 0 ? h(NanaCloudImg, { u: src, style: imgStyle }) : h("img", { src: src, alt: "", style: imgStyle })) : h(NanaPhoto, { pid: pid, style: imgStyle })),
+    h("button", { onClick: function (e) { e.stopPropagation(); onClose(); }, style: { position: "absolute", right: 16, top: "calc(16px + env(safe-area-inset-top,0px))", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", fontSize: "1rem", fontWeight: 800, cursor: "pointer", lineHeight: 1 } }, "\u2715"),
+    zoomed && h("button", { onClick: function (e) { e.stopPropagation(); reset(); }, style: { position: "absolute", left: 16, top: "calc(16px + env(safe-area-inset-top,0px))", borderRadius: 999, border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", fontSize: "0.7rem", fontWeight: 800, padding: "8px 13px", cursor: "pointer" } }, "\u21BA \u539F\u5927\u5C0F " + z.toFixed(1) + "x"),
+    h("div", { style: { position: "absolute", bottom: "calc(26px + env(safe-area-inset-bottom,0px))", left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700, pointerEvents: "none" } },
+      zoomed ? "\u62D6\u52A8\u770B\u7EC6\u8282 \u00B7 \u53CC\u51FB\u8FD8\u539F" : "\u53CC\u6307\u6216\u53CC\u51FB\u653E\u5927 \u00B7 \u70B9\u4E00\u4E0B\u5173\u95ED"));
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-33";
+var NANA_VER = "v2026.8.2-34";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
