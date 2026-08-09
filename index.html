@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-69";
+var NANA_VER = "v2026.8.2-70";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17741,15 +17741,15 @@ var LD_ARR_STEP = [
   ] }
 ];
 var LD_ARR_WAY = [
-  { e: "🇨🇳", n: "中文接机", tag: "最推荐", cost: "约 £70 - 110", time: "60 - 90 分钟",
+  { e: "🇨🇳", n: "中文接机", tag: "最推荐", col: "#b4353a", cost: "约 £70 - 110", time: "60 - 90 分钟",
     how: "出发前在携程、皇包车这类 App 上订「接机」，车型一定要选 SUV 或商务车 —— 两个大箱加一个大包，轿车塞不下。人民币提前付掉，落地一分钱不用掏。",
     why: "一个人带三件行李、刚下十几个小时的飞机，这个最省事。司机举牌等你、行李他搬、全程说中文，出什么岔子都能讲清楚。" },
-  { e: "📲", n: "Uber XL", tag: "备用", cost: "约 £90 - 130", time: "60 - 90 分钟",
+  { e: "📲", n: "Uber XL", tag: "备用", col: "#a1542a", cost: "约 £90 - 130", time: "60 - 90 分钟",
     how: "落地连上网再叫。务必选 XL 或更大车型，普通 UberX 装不下两个大箱，司机有权拒载。付款走 App 里绑的卡，不用现金。",
     why: "没提前订也能用。代价是要自己拖着三件行李走到停车场那段路，高峰期还会涨价。" },
-  { e: "🚆", n: "火车换地铁", tag: "这次别选", cost: "约 £15 - 20", time: "约 70 分钟 + 走路",
-    how: "Thameslink 到 London Bridge，换 Jubilee 线两站到 Canary Wharf。全程只换一次，两头都有电梯。",
-    why: "便宜，而且路线其实很顺。但两个大箱一个大包要自己上上下下，落地那天真的别。等以后轻装出门再坐。" }
+  { e: "🚖", n: "Taxi Rank 机场出租", tag: "兜底", col: "#2b3446", cost: "约 £130 - 170", time: "60 - 90 分钟",
+    how: "不用订、不用网、不用装 App。出关后跟着 Taxi 的牌子走，车站就在到达大厅门口，有工作人员排队引导。上车把地址给司机看，行李他搬。到了刷卡付，英国出租车都能刷。",
+    why: "最贵，但也最不会出错 —— 什么都不用提前准备，走出门就有车。接机没接上、手机没网、实在累得不想动，这条永远走得通。" }
 ];
 var LD_ARR_SOS = [
   { t: "司机没出现", b: "先看 App 里的消息和订单页，十有八九是他在停车场等你。打订单上的电话，或者发 WhatsApp。实在联系不上，就走到 Taxi Rank 打一辆正规出租 —— 能刷卡，贵一点但一定走得了。" },
@@ -18529,11 +18529,11 @@ function LondonRoom(_refLD) {
           // 三种走法
           h("div", { key: "ways" }, LD_ARR_WAY.map(function (w, i) {
             var hot = i === 0;
-            return h("div", { key: "aw" + i, style: { borderLeft: "4px solid " + (hot ? "#b4353a" : (i === 1 ? "#a1542a" : "rgba(150,140,120,0.6)")), background: hot ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.5)", borderRadius: "0 9px 9px 0", padding: "11px 12px", marginBottom: 9 } },
+            return h("div", { key: "aw" + i, style: { borderLeft: "4px solid " + w.col, background: hot ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.62)", borderRadius: "0 9px 9px 0", padding: "11px 12px", marginBottom: 9 } },
               h("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 3 } },
                 h("span", { style: { fontSize: "1.02rem", marginRight: 5 } }, w.e),
                 h("span", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#3a3226", fontFamily: "Georgia,'PingFang SC',serif" } }, w.n),
-                pill(w.tag, hot ? "rgba(180,53,58,0.14)" : "rgba(150,140,120,0.18)", hot ? "#b4353a" : "#6b6355")),
+                pill(w.tag, hot ? "rgba(180,53,58,0.14)" : "rgba(120,110,95,0.16)", w.col)),
               h("div", { style: { fontSize: "0.64rem", color: "#a1542a", fontWeight: 800, marginTop: 4 } }, "💷 " + w.cost + "　⏱ " + w.time),
               h("div", { style: { fontSize: "0.74rem", color: "rgba(85,75,60,0.96)", marginTop: 5, lineHeight: 1.75 } }, w.how),
               h("div", { style: { fontSize: "0.73rem", color: "rgba(120,95,60,0.95)", marginTop: 5, lineHeight: 1.75, fontStyle: "italic" } }, w.why));
