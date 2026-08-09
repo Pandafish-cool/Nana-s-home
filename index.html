@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-36";
+var NANA_VER = "v2026.8.2-44";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9176,10 +9176,10 @@ var ROOMS = [{
   desc: "街机 · 飞镖 · 果汁吧"
 }, {
   id: "london",
-  emoji: "🎡",
-  name: "伦敦分部",
+  emoji: "🧭",
+  name: "伦敦航海家",
   color: "#DCF0E2",
-  desc: "Canary Wharf · 六周 · 家跟着飞"
+  desc: "Canary Wharf 港 · 从 0° 到 113°E"
 }, {
   id: "garden",
   emoji: "🌿",
@@ -17499,7 +17499,7 @@ function BasementScene(_refB1) {
 }
 
 
-// ── 🎡 伦敦分部（Canary Wharf 支店）─────────────────────
+// ── 🧭 伦敦航海家（Canary Wharf 港）─────────────────────
 var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
 var LD_FULL = "2026-08-14";
@@ -17602,6 +17602,16 @@ var LD_LIVE = [
   { n: "健身房 / 游泳", d: "Third Space、Virgin Active 都在商场里", e: "🏊", q: "gym Canary Wharf" },
   { n: "理发 / 美甲", d: "Jubilee Place 商场负一层有几家", e: "💇", q: "hairdresser Canary Wharf" }
 ];
+// 按当地钟点给钟面配色，一眼看出那边是白天还是黑夜
+var ldSky = function (hh) {
+  if (hh < 5)  return { n: "\u6DF1\u591C",  bg: "linear-gradient(165deg,#243258,#131c33)", ink: "#e7edfc", sub: "rgba(206,218,244,0.72)", face: "rgba(255,255,255,0.09)", ring: "rgba(255,255,255,0.34)", hand: "#eef3ff", e: "\uD83C\uDF19" };
+  if (hh < 8)  return { n: "\u6E05\u65E9",  bg: "linear-gradient(165deg,#6d689e,#e5a98d)", ink: "#fff2e9", sub: "rgba(255,238,227,0.82)", face: "rgba(255,255,255,0.18)", ring: "rgba(255,255,255,0.5)",  hand: "#fff7f0", e: "\uD83C\uDF05" };
+  if (hh < 11) return { n: "\u4E0A\u5348",  bg: "linear-gradient(165deg,#d3eaf7,#a8d5ec)", ink: "#16465e", sub: "rgba(22,70,94,0.72)",   face: "rgba(255,255,255,0.62)", ring: "rgba(22,70,94,0.3)",     hand: "#16465e", e: "\uD83C\uDF24\uFE0F" };
+  if (hh < 15) return { n: "\u6B63\u5348",  bg: "linear-gradient(165deg,#eaf5e4,#bfe1cc)", ink: "#1e5a45", sub: "rgba(30,90,69,0.72)",   face: "rgba(255,255,255,0.66)", ring: "rgba(30,90,69,0.28)",    hand: "#1e5a45", e: "\u2600\uFE0F" };
+  if (hh < 18) return { n: "\u4E0B\u5348",  bg: "linear-gradient(165deg,#fdf0d4,#f5d9a6)", ink: "#7a5320", sub: "rgba(122,83,32,0.74)",  face: "rgba(255,255,255,0.6)",  ring: "rgba(122,83,32,0.28)",   hand: "#7a5320", e: "\uD83C\uDF3E" };
+  if (hh < 21) return { n: "\u9EC4\u660F",  bg: "linear-gradient(165deg,#f0a06e,#b5628c)", ink: "#fff0e6", sub: "rgba(255,235,224,0.85)", face: "rgba(255,255,255,0.2)", ring: "rgba(255,255,255,0.52)", hand: "#fff6ef", e: "\uD83C\uDF07" };
+  return             { n: "\u591C\u91CC",  bg: "linear-gradient(165deg,#3b3f70,#1e2544)", ink: "#e7ebfb", sub: "rgba(206,214,244,0.75)", face: "rgba(255,255,255,0.11)", ring: "rgba(255,255,255,0.36)", hand: "#eef1ff", e: "\uD83C\uDF03" };
+};
 var LD_SURVIVE = [
   { t: "☔ 伞随身", b: "伦敦的雨来得快去得也快，很少下大，但一天能下三回。" },
   { t: "🌡️ 早晚温差大", b: "八九月白天二十度、傍晚十几度，出门带件外套，别让冷空气激着嗓子。" },
@@ -17651,10 +17661,34 @@ var LD_TRIPS = [
     { n: "爱丁堡 Edinburgh", d: "英国境内，火车或廉航都方便", e: "🏴", q: "Edinburgh Scotland" }
   ] }
 ];
+// 天文台小知识：格林威治就在隔壁，这些都跟脚下这条 0° 线有关
+var LD_ASTRO = [
+  "格林威治天文台那条铜线就是本初子午线，跨一步，你的左右脚分属地球的东西两半。",
+  "本初子午线是 1884 年投票定在格林威治的 —— 因为当年全世界七成的航海图都用它做基准。",
+  "水手要算经度，得随身带一只走家乡时间的钟。你手机里这两个钟，就是当年航海家的活法。",
+  "哈里森花了四十年做出航海钟 H4，人类才第一次能在海上知道自己在哪。它现在就摆在格林威治。",
+  "伦敦在北纬 51.5°，比漠河还靠北。所以这里夏天天黑得离谱地晚，冬天又黑得离谱地早。",
+  "GMT 的 G 就是格林威治。全世界的时间，都是从你旁边这个小山坡上开始数的。",
+  "英国夏令时在十月最后一个周日结束，那天凌晨钟往回拨一小时 —— 你会凭空多睡一小时。",
+  "八月中旬是英仙座流星雨的极大期，伦敦光污染重，但去 Greenwich Park 山顶还能碰运气。",
+  "九月二十二三号是秋分，那一天全球昼夜等长，之后北半球的夜就一天比一天长了。",
+  "格林威治天文台顶上那颗红球，每天下午一点整落下 —— 一百八十年来给泰晤士河上的船对表用的。",
+  "伦敦的月亮和广州的是同一个，只是她那边先看见 —— 家里比这儿早七个小时。",
+  "北斗七星在英国叫「犁」(the Plough)，一年四季都在北天挂着，不会落下去。"
+];
 var LD_SEASON = [
-  { m: 8, t: "🌤️ 八月的伦敦最舒服，20 度上下，晚上八点半天才黑，公园里全是躺着的人。杂草花粉这时候多，出门前看一眼花粉指数。" },
-  { m: 9, t: "🍂 九月开始转秋，白天还有 18 度，早晚凉得快。九月中有 Open House 建筑开放日，很多平时进不去的地方免费开门。" },
-  { m: 10, t: "🍁 十月的伦敦金黄一片，早晚十度出头，围巾该上岗了。" }
+  { m: 1,  e: "\uD83C\uDF27\uFE0F", hi: 8,  lo: 3,  sr: "08:00", ss: "16:10", rain: 11, w: "羊毛大衣 + 厚打底，围巾手套别省", wn: "风钻领口，回家先喝口热的", note: "湿冷比干冷难熬，鞋要防水", t: "一月阴湿，天黑得早，靠室内展馆和热红酒过日子。" },
+  { m: 2,  e: "\uD83C\uDF27\uFE0F", hi: 9,  lo: 3,  sr: "07:15", ss: "17:15", rain: 9,  w: "大衣还不能收，里面加件毛衣", wn: "天黑得早，出门带个小灯或亮色外套", note: "路面结霜，走路慢一点", t: "二月还是冷，但天开始变长，公园里冒出第一批雪花莲。" },
+  { m: 3,  e: "\uD83C\uDF31", hi: 12, lo: 4,  sr: "06:15", ss: "18:10", rain: 9,  w: "风衣 + 薄毛衣，早晚还得围巾", wn: "太阳一下山就凉，外套别脱", note: "三月底调夏令时，天突然长一小时", t: "三月转春，水仙花开满公园，月底调夏令时天一下子长了。" },
+  { m: 4,  e: "\uD83C\uDF38", hi: 15, lo: 6,  sr: "06:00", ss: "20:05", rain: 9,  w: "薄毛衣 + 防水风衣，伞是标配", wn: "傍晚起风，加件开衫刚好", note: "四月雨最没道理，说下就下", t: "四月樱花和魔法一样，但雨说来就来，伞别离身。" },
+  { m: 5,  e: "\uD83C\uDF3C", hi: 18, lo: 9,  sr: "05:10", ss: "20:55", rain: 8,  w: "单件长袖就够，外套备着", wn: "晚上八九点还亮，薄外套足够", note: "花粉季开始，鼻子敏感先备药", t: "五月是伦敦最好看的月份，公园全绿，天黑得很晚。" },
+  { m: 6,  e: "\u2600\uFE0F", hi: 21, lo: 12, sr: "04:45", ss: "21:20", rain: 8,  w: "短袖 + 薄外套，防晒别忘", wn: "九点半才黑，晚归也不黑", note: "地铁里最闷，随身带水", t: "六月白昼最长，晚上九点半还亮着，草地上全是野餐的人。" },
+  { m: 7,  e: "\u2600\uFE0F", hi: 23, lo: 14, sr: "05:05", ss: "21:10", rain: 7,  w: "短袖短裤都行，公寓可能没空调", wn: "半夜才凉下来，睡前开窗透气", note: "高温天地铁像蒸笼，避开正午", t: "七月最热，偶尔冲到三十度，地铁里闷，随身带水。" },
+  { m: 8,  e: "\uD83C\uDF24\uFE0F", hi: 22, lo: 14, sr: "05:55", ss: "20:20", rain: 8, w: "白天短袖足够，包里塞件薄外套", wn: "河边风大，晚上一定要有外套", note: "杂草花粉高峰，出门看一眼指数", t: "八月的伦敦最舒服，晚上八点多天才黑，公园里全是躺着的人。杂草花粉这时候多，出门前看一眼花粉指数。" },
+  { m: 9,  e: "\uD83C\uDF42", hi: 19, lo: 12, sr: "06:45", ss: "19:15", rain: 8, w: "长袖 + 薄外套，早晚要加一层", wn: "九点前就黑了，夜里挺凉", note: "秋雨开始密，防水外套上岗", t: "九月开始转秋，白天还有十八九度，早晚凉得快。月中有 Open House 建筑开放日，很多平时进不去的地方免费开门。" },
+  { m: 10, e: "\uD83C\uDF41", hi: 15, lo: 9,  sr: "07:35", ss: "18:10", rain: 10, w: "毛衣 + 风衣，围巾可以出场了", wn: "十月底调冬令时，天黑得更早", note: "落叶湿滑，鞋底别太平", t: "十月金黄一片，早晚十度出头，围巾该上岗了。月底调回冬令时，天黑得更早。" },
+  { m: 11, e: "\uD83C\uDF2B\uFE0F", hi: 11, lo: 6, sr: "07:30", ss: "16:20", rain: 10, w: "厚外套 + 打底，帽子围巾一起", wn: "四点多就黑，回家路挑亮的走", note: "雾天多，出门早点动身", t: "十一月雾蒙蒙，四点多就黑，圣诞灯饰开始亮起来。" },
+  { m: 12, e: "\u2744\uFE0F", hi: 9,  lo: 4,  sr: "08:00", ss: "15:55", rain: 11, w: "羽绒或厚呢大衣，里面加绒", wn: "最冷的时候在夜里，别硬扛", note: "圣诞灯亮起来，夜里反而好看", t: "十二月天最短，但整座城都在发光，圣诞市集一个接一个。" }
 ];
 
 
@@ -17718,11 +17752,123 @@ var LD_BEAT = [
   "好好今天在窗边坐了很久，不知道在看什么 🪟"
 ];
 
+// ── 🧭 港口全景：天色跟着伦敦当地时间走，伦敦眼在转，船在开 ──
+function LondonHarbour(_refHB) {
+  var h = React.createElement;
+  var sk = _refHB.sk, frac = _refHB.frac, isDay = _refHB.isDay, title = _refHB.title, sub = _refHB.sub, foot = _refHB.foot, eyebrow = _refHB.eyebrow;
+  var _ec = useState(0); var eyeBoost = _ec[0], setEyeBoost = _ec[1];
+  var _tt = useState(""); var toot = _tt[0], setToot = _tt[1];
+  var say = function (s) { setToot(s); setTimeout(function () { setToot(""); }, 2400); };
+  var lit = !isDay;
+  // 楼里的灯：夜里才亮，随机闪
+  var win = function (x, y, w, hh, i) {
+    return h("rect", { key: "w" + i, x: x, y: y, width: w, height: hh, rx: 0.6,
+      fill: lit ? "#ffe6a3" : "rgba(255,255,255,0.16)",
+      opacity: lit ? 0.9 : 0.5,
+      style: lit ? { animation: "ldWin " + (2.4 + (i % 5) * 0.7) + "s ease-in-out infinite", animationDelay: (i % 7) * 0.4 + "s" } : null });
+  };
+  var wins = [], wi = 0, r, c;
+  // 金丝雀码头楼群的窗
+  for (r = 0; r < 9; r++) for (c = 0; c < 3; c++) { wins.push(win(304 + c * 8, 40 + r * 9, 4, 5, wi++)); }
+  for (r = 0; r < 6; r++) for (c = 0; c < 2; c++) { wins.push(win(268 + c * 9, 70 + r * 9, 4, 5, wi++)); }
+  for (r = 0; r < 7; r++) for (c = 0; c < 2; c++) { wins.push(win(344 + c * 9, 58 + r * 9, 4, 5, wi++)); }
+  // 伦敦眼
+  var spokes = [], cab = [], i, a;
+  for (i = 0; i < 16; i++) {
+    a = i * 22.5 * Math.PI / 180;
+    spokes.push(h("line", { key: "sp" + i, x1: 0, y1: 0, x2: 27 * Math.cos(a), y2: 27 * Math.sin(a), stroke: "rgba(255,255,255,0.5)", strokeWidth: 0.8 }));
+    cab.push(h("circle", { key: "cb" + i, cx: 29 * Math.cos(a), cy: 29 * Math.sin(a), r: 2.1, fill: lit ? "#ffd98a" : "rgba(255,255,255,0.85)" }));
+  }
+  var eyeDur = eyeBoost ? 3 : 26;
+  return h("div", { style: { position: "relative", borderRadius: 20, overflow: "hidden", marginBottom: 14, background: sk.bg, boxShadow: "0 12px 30px rgba(10,40,58,0.4)", transition: "background 1.4s ease" } },
+    // 星星
+    lit ? [[10, 22, 2.2], [22, 12, 1.6], [37, 26, 1.5], [52, 14, 2], [66, 24, 1.5], [80, 12, 1.9], [92, 26, 1.5], [45, 34, 1.3]].map(function (p, si) {
+      return h("div", { key: "st" + si, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: p[2], height: p[2], borderRadius: "50%", background: "#ffe9b0", animation: "ldTwinkle " + (2 + si * 0.4) + "s ease-in-out infinite" } });
+    }) : null,
+    // 日/月
+    h("div", { style: { position: "absolute", left: (7 + frac * 82) + "%", top: (52 - 34 * Math.sin(Math.PI * frac)) + "%", width: 26, height: 26, marginLeft: -13, borderRadius: "50%", background: isDay ? "radial-gradient(circle at 38% 34%,#fff3c4,#f6c24a)" : "radial-gradient(circle at 38% 34%,#ffffff,#d9e2fb)", boxShadow: isDay ? "0 0 22px rgba(246,194,74,0.6)" : "0 0 18px rgba(217,226,251,0.45)" } }),
+    // 云
+    [[0, 34, 46, 0.22], [1, 18, 62, 0.16]].map(function (cl) {
+      return h("svg", { key: "cl" + cl[0], viewBox: "0 0 100 40", width: cl[2], style: { position: "absolute", top: cl[1] + "%", left: 0, opacity: cl[3], animation: "ldCloud " + (46 + cl[0] * 22) + "s linear infinite", animationDelay: (cl[0] * -16) + "s" } },
+        h("path", { d: "M18 30 Q10 30 10 23 Q10 16 19 17 Q22 8 32 9 Q41 6 46 14 Q56 12 58 20 Q66 20 66 26 Q66 30 58 30 Z", fill: "#ffffff" }));
+    }),
+    // 万国旗
+    h("svg", { viewBox: "0 0 400 26", preserveAspectRatio: "none", style: { position: "absolute", left: 0, right: 0, top: 0, width: "100%", height: 26 } },
+      h("path", { d: "M0 4 Q100 20 200 8 T400 6", fill: "none", stroke: "rgba(255,255,255,0.45)", strokeWidth: 1.2 }),
+      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (fi) {
+        var cols = ["#E32017", "#FFD300", "#0098D4", "#00782A", "#F3A9BB", "#B36305"];
+        var x = 14 + fi * 33;
+        var y = 4 + Math.sin(fi / 11 * Math.PI * 2) * 5 + (fi < 6 ? fi * 1.6 : (11 - fi) * 1.6);
+        return h("polygon", { key: "fl" + fi, points: x + "," + y + " " + (x + 11) + "," + y + " " + (x + 5.5) + "," + (y + 13), fill: cols[fi % 6], opacity: 0.92 });
+      })),
+    // 文字（下面垫一层压暗，白天浅色天空也看得清）
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: "62%", background: "linear-gradient(180deg,rgba(8,26,40,0.5),rgba(8,26,40,0.2) 55%,rgba(8,26,40,0))", zIndex: 2, pointerEvents: "none" } }),
+    h("div", { style: { position: "relative", zIndex: 3, padding: "30px 16px 0" } },
+      h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.58rem", letterSpacing: 3, fontFamily: "Georgia,serif", textShadow: "0 1px 6px rgba(0,0,0,0.5)" } }, eyebrow),
+      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.2rem", marginTop: 3, letterSpacing: "1px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title),
+      h("div", { style: { color: "rgba(240,250,252,0.95)", fontSize: "0.68rem", marginTop: 5, lineHeight: 1.65, textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, sub),
+      foot ? h("div", { style: { color: "rgba(255,216,138,0.9)", fontSize: "0.62rem", marginTop: 4, fontFamily: "Georgia,serif", letterSpacing: "0.3px", textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, foot) : null),
+    // 天际线
+    h("svg", { viewBox: "0 0 400 130", preserveAspectRatio: "xMidYMax slice", style: { display: "block", width: "100%", height: 128, marginTop: 6, position: "relative", zIndex: 2 } },
+      // 塔桥
+      h("g", { fill: lit ? "#0d1c33" : "rgba(16,38,58,0.82)" },
+        h("path", { d: "M22 130 V72 L30 58 L38 72 V130 Z" }),
+        h("path", { d: "M62 130 V72 L70 58 L78 72 V130 Z" }),
+        h("rect", { x: 22, y: 96, width: 56, height: 6 }),
+        h("rect", { x: 22, y: 76, width: 56, height: 4 })),
+      h("path", { d: "M0 106 Q22 92 38 100 M38 100 Q50 88 62 100 M78 100 Q92 92 110 106", fill: "none", stroke: lit ? "#0d1c33" : "rgba(16,38,58,0.82)", strokeWidth: 2 }),
+      // 大本钟
+      h("g", { fill: lit ? "#0d1c33" : "rgba(16,38,58,0.82)" },
+        h("path", { d: "M112 130 V60 L118 44 L124 60 V130 Z" }),
+        h("circle", { cx: 118, cy: 66, r: 4.6, fill: lit ? "#ffe6a3" : "rgba(255,255,255,0.75)" })),
+      // 碎片大厦
+      h("path", { d: "M150 130 L166 42 L182 130 Z", fill: lit ? "#0d1c33" : "rgba(16,38,58,0.82)" }),
+      // 圣保罗
+      h("g", { fill: lit ? "#0d1c33" : "rgba(16,38,58,0.82)" },
+        h("rect", { x: 196, y: 104, width: 30, height: 26 }),
+        h("path", { d: "M198 104 Q211 84 224 104 Z" }),
+        h("rect", { x: 209, y: 76, width: 4, height: 10 })),
+      // 伦敦眼
+      h("g", { transform: "translate(258,82)", onClick: function () { setEyeBoost(1); say("🎡 转快点！"); setTimeout(function () { setEyeBoost(0); }, 6000); }, style: { cursor: "pointer" } },
+        h("circle", { cx: 0, cy: 0, r: 34, fill: "transparent" }),
+        h("path", { d: "M-14 48 L0 0 L14 48", stroke: lit ? "#0d1c33" : "rgba(16,38,58,0.82)", strokeWidth: 3.4, fill: "none" }),
+        h("g", { style: { transformOrigin: "0px 0px", animation: "ldSpinSlow " + eyeDur + "s linear infinite" } },
+          h("circle", { cx: 0, cy: 0, r: 27, fill: "none", stroke: "rgba(255,255,255,0.6)", strokeWidth: 1.6 }),
+          spokes, cab),
+        h("circle", { cx: 0, cy: 0, r: 3.4, fill: lit ? "#ffd98a" : "#ffffff" })),
+      // 金丝雀码头
+      h("g", { fill: lit ? "#0b1728" : "rgba(13,32,50,0.88)" },
+        h("rect", { x: 264, y: 62, width: 26, height: 68 }),
+        h("path", { d: "M298 34 H336 V130 H298 Z" }),
+        h("path", { d: "M298 34 L317 18 L336 34 Z" }),
+        h("rect", { x: 340, y: 50, width: 24, height: 80 }),
+        h("rect", { x: 368, y: 78, width: 20, height: 52 })),
+      wins,
+      h("rect", { x: 316, y: 12, width: 2, height: 8, fill: "#e35b5b" }),
+      h("circle", { cx: 317, cy: 12, r: 2.4, fill: "#ff6b6b", style: { animation: "ldTwinkle 1.6s ease-in-out infinite" } })),
+    // 河
+    h("div", { style: { position: "relative", zIndex: 2, height: 46, marginTop: -6, background: lit ? "linear-gradient(180deg,#12314a,#0b1f31)" : "linear-gradient(180deg,#2e7f86,#1c5a63)", overflow: "hidden" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 22, overflow: "hidden" } },
+        h("div", { style: { width: "200%", height: "100%", animation: "ldWave 9s linear infinite" } },
+          h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
+            h("path", { d: "M0 26 Q75 8 150 26 T300 26 T450 26 T600 26 T750 26 T900 26 T1050 26 T1200 26 V50 H0 Z", fill: "rgba(255,255,255,0.14)" })))),
+      h("div", { onClick: function () { say("🚢 呜——！"); }, style: { position: "absolute", top: 6, fontSize: "1.15rem", animation: "ldSail 24s linear infinite", cursor: "pointer" } }, "🚢"),
+      h("div", { onClick: function () { say("⛵ 顺风！"); }, style: { position: "absolute", top: 16, fontSize: "0.95rem", animation: "ldSail 15s linear infinite", animationDelay: "-7s", cursor: "pointer" } }, "⛵"),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 14, overflow: "hidden" } },
+        h("div", { style: { width: "200%", height: "100%", animation: "ldWave 6s linear infinite" } },
+          h("svg", { viewBox: "0 0 1200 30", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
+            h("path", { d: "M0 16 Q60 4 120 16 T240 16 T360 16 T480 16 T600 16 T720 16 T840 16 T960 16 T1080 16 T1200 16 V30 H0 Z", fill: "rgba(255,255,255,0.2)" }))))),
+    // 海鸥
+    h("div", { style: { position: "absolute", left: 0, top: "36%", fontSize: "0.72rem", opacity: 0.75, animation: "ldGull 19s linear infinite", pointerEvents: "none", zIndex: 3 } }, "🕊️"),
+    h("div", { style: { position: "absolute", left: 0, top: "26%", fontSize: "0.6rem", opacity: 0.55, animation: "ldGull 27s linear infinite", animationDelay: "-11s", pointerEvents: "none", zIndex: 3 } }, "🕊️"),
+    toot ? h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 8, textAlign: "center", zIndex: 5, pointerEvents: "none" } },
+      h("span", { style: { background: "rgba(255,255,255,0.92)", color: "#14453f", borderRadius: 999, padding: "5px 13px", fontSize: "0.72rem", fontWeight: 800, boxShadow: "0 5px 14px rgba(0,0,0,0.28)" } }, toot)) : null);
+}
 function LondonRoom(_refLD) {
   var onBack = _refLD.onBack;
   var h = React.createElement;
   var full = ldFullOpen();
-  var _tb = useState(full ? "now" : "pack"); var tab = _tb[0], setTab = _tb[1];
+  var _tb = useState("now"); var tab = _tb[0], setTab = _tb[1];
   var _tk = useState(0); var setTick = _tk[1];
   var _pk = useState(ldReadPack); var packed = _pk[0], setPacked = _pk[1];
   var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
@@ -17740,13 +17886,29 @@ function LondonRoom(_refLD) {
   var _dk = useState(""); var drinkLine = _dk[0], setDrinkLine = _dk[1];
   var _bt = useState(function () { return LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]; });
   var beat = _bt[0], setBeat = _bt[1];
+  var _at = useState(function () { return LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]; });
+  var astro = _at[0], setAstro = _at[1];
   var myAuthor = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
   useEffect(function () { var id = setInterval(function () { setTick(function (n) { return n + 1; }); }, 20000); return function () { clearInterval(id); }; }, []);
   var lonT = ldFmt("Europe/London"), gzT = ldFmt("Asia/Shanghai");
   var lonH = ldHour("Europe/London"), gzH = ldHour("Asia/Shanghai");
   var diff = ldDiff();
   var daysTo = Math.ceil((new Date(LD_DEPART + "T00:00:00+08:00") - new Date()) / 86400000);
-  var season = (function () { var m = new Date().getMonth() + 1; for (var i = 0; i < LD_SEASON.length; i++) { if (LD_SEASON[i].m === m) return LD_SEASON[i].t; } return LD_SEASON[0].t; })();
+  var season = (function () { var m = new Date().getMonth() + 1; for (var i = 0; i < LD_SEASON.length; i++) { if (LD_SEASON[i].m === m) return LD_SEASON[i]; } return LD_SEASON[7]; })();
+  var hbSky = ldSky(lonH);
+  var hbFrac = (function () {
+    var sr = season.sr.split(":"), ss = season.ss.split(":");
+    var a = (+sr[0]) * 60 + (+sr[1]), b = (+ss[0]) * 60 + (+ss[1]);
+    var n = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
+    var f = (n - a) / (b - a);
+    return f < 0 ? 0 : (f > 1 ? 1 : f);
+  })();
+  var hbDay = (function () {
+    var sr = season.sr.split(":"), ss = season.ss.split(":");
+    var a = (+sr[0]) * 60 + (+sr[1]), b = (+ss[0]) * 60 + (+ss[1]);
+    var n = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
+    return n >= a && n <= b;
+  })();
   var loadPack = function (silent) {
     if (!silent) setPackSync(true);
     nanaPackList(function (err, rows) {
@@ -17818,7 +17980,7 @@ function LondonRoom(_refLD) {
     if (!myAuthor) { setCraveMsg("先去 221B 选一下你是谁，才能寄申请哦"); return; }
     setCraveBusy(true); setCraveMsg("");
     var dt = new Date();
-    var body = "📟 伦敦分部 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Suites, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
+    var body = "📟 伦敦航海家 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Suites, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
     var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "call", pu: null };
     nanaSharedAdd(note, function (err) {
       setCraveBusy(false);
@@ -17828,7 +17990,7 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 装箱"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["pack", "🧳 装箱"]];
+  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 装箱"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["pack", "🧳 装箱"]];
   var card = function (inner, extra) {
     var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
     for (var k in (extra || {})) st[k] = extra[k];
@@ -17849,36 +18011,196 @@ function LondonRoom(_refLD) {
       sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 2 } }, sub) : null);
   };
   // ── 此刻 ──
+  // ── 此刻（伦敦航海家）────────────────────────────
+  var UK_INK = "#20393f", UK_RED = "#b4353a", UK_NAVY = "#123a52", UK_BRASS = "#a97f2e", UK_SEA = "#1f6f68";
+  var ukCard = function (kids, extra) {
+    return h("div", { style: Object.assign({
+      background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)",
+      borderRadius: 11,
+      padding: "15px 15px 14px",
+      marginBottom: 13,
+      position: "relative",
+      boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)"
+    }, extra || {}) }, kids);
+  };
+  // 四角铜螺丝
+  var screws = [["left", "top"], ["right", "top"], ["left", "bottom"], ["right", "bottom"]].map(function (c, i) {
+    var st = { position: "absolute", width: 6, height: 6, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f2dfa8,#8a6a2a)", opacity: 0.75 };
+    st[c[0]] = 9; st[c[1]] = 9;
+    return h("div", { key: "sc" + i, style: st });
+  });
+  var pennant = function (col) {
+    return h("svg", { viewBox: "0 0 24 24", width: 15, height: 15, style: { flexShrink: 0 } },
+      h("path", { d: "M5 2 L5 22", stroke: "#8a6a2a", strokeWidth: 2, strokeLinecap: "round" }),
+      h("path", { d: "M6 3 L20 7 L6 11 Z", fill: col || UK_RED }));
+  };
+  var ukHead = function (t, sub, node) {
+    return h("div", { key: "hd", style: { marginBottom: 11 } },
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+        node || pennant(UK_SEA),
+        h("div", { style: { fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: UK_INK, letterSpacing: "0.4px" } }, t)),
+      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", marginTop: 4, letterSpacing: "0.3px" } }, sub) : null,
+      h("div", { style: { marginTop: 9, borderTop: "2px dotted rgba(169,127,46,0.5)" } }));
+  };
+  var roundel = h("svg", { viewBox: "0 0 100 100", width: 21, height: 21, style: { flexShrink: 0 } },
+    h("circle", { cx: 50, cy: 50, r: 33, fill: "none", stroke: UK_RED, strokeWidth: 15 }),
+    h("rect", { x: 4, y: 42, width: 92, height: 16, rx: 2, fill: UK_NAVY }));
+  // 黄铜航海钟
+  var clockFace = function (hh, mm, sk, gid) {
+    var C = 50, ticks = [], i, a, r1;
+    for (i = 0; i < 12; i++) {
+      a = i * 30 * Math.PI / 180;
+      r1 = (i % 3 === 0) ? 30 : 34;
+      ticks.push(h("line", { key: "t" + i,
+        x1: C + r1 * Math.sin(a), y1: C - r1 * Math.cos(a),
+        x2: C + 38 * Math.sin(a), y2: C - 38 * Math.cos(a),
+        stroke: sk.ring, strokeWidth: (i % 3 === 0) ? 2.6 : 1.2, strokeLinecap: "round" }));
+    }
+    var ha = ((hh % 12) + mm / 60) * 30 * Math.PI / 180;
+    var ma = mm * 6 * Math.PI / 180;
+    return h("svg", { viewBox: "0 0 100 100", width: 92, height: 92, style: { display: "block", margin: "0 auto" } },
+      h("defs", null,
+        h("linearGradient", { id: gid, x1: "0", y1: "0", x2: "1", y2: "1" },
+          h("stop", { offset: "0%", stopColor: "#f9e3ab" }),
+          h("stop", { offset: "38%", stopColor: "#c9a252" }),
+          h("stop", { offset: "62%", stopColor: "#8a6a2a" }),
+          h("stop", { offset: "100%", stopColor: "#eed49b" }))),
+      h("circle", { cx: C, cy: C, r: 45, fill: "none", stroke: "url(#" + gid + ")", strokeWidth: 7 }),
+      h("circle", { cx: C, cy: C, r: 41, fill: sk.face, stroke: "rgba(0,0,0,0.12)", strokeWidth: 1 }),
+      ticks,
+      h("text", { x: C, y: 28, textAnchor: "middle", fontSize: 12 }, sk.e),
+      h("line", { x1: C, y1: C, x2: C + 19 * Math.sin(ha), y2: C - 19 * Math.cos(ha), stroke: sk.hand, strokeWidth: 4.8, strokeLinecap: "round" }),
+      h("line", { x1: C, y1: C, x2: C + 28 * Math.sin(ma), y2: C - 28 * Math.cos(ma), stroke: sk.hand, strokeWidth: 2.6, strokeLinecap: "round" }),
+      h("circle", { cx: C, cy: C, r: 3.6, fill: "#c9a252" }),
+      h("circle", { cx: C, cy: C, r: 1.4, fill: sk.face }));
+  };
+  var bigClock = function (key, tz, cap, place, gid) {
+    var txt = ldFmt(tz);
+    var hh = parseInt(txt.slice(0, 2), 10) || 0, mm = parseInt(txt.slice(3, 5), 10) || 0;
+    var sk = ldSky(hh);
+    return h("div", { key: key, style: { flex: 1, background: sk.bg, borderRadius: 12, padding: "12px 6px 11px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 7px 18px rgba(35,32,22,0.26), inset 0 0 0 2px rgba(201,162,82,0.55)", transition: "background 1.2s ease" } },
+      h("div", { style: { fontSize: "0.55rem", letterSpacing: 2.4, fontWeight: 800, color: sk.sub, fontFamily: "Georgia,serif" } }, cap),
+      clockFace(hh, mm, sk, gid),
+      h("div", { style: { fontSize: "1.3rem", fontWeight: 800, letterSpacing: 1.5, color: sk.ink, fontFamily: "Georgia,'Times New Roman',serif", marginTop: 3 } }, txt),
+      h("div", { style: { fontSize: "0.6rem", color: sk.sub, marginTop: 2 } }, sk.n + " · " + place));
+  };
   var nowTab = h("div", null,
-    card([
-      h("div", { key: "c1", style: { display: "flex", alignItems: "stretch", gap: 10 } },
-        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#d4f4f2,#aee6e2)", borderRadius: 14, padding: "12px 6px", color: "#166b64" } },
-          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, color: "rgba(28,125,118,0.9)", fontWeight: 800 } }, "LONDON"),
-          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, lonT),
-          h("div", { style: { fontSize: "0.58rem", color: "rgba(45,140,132,0.8)" } }, "Canary Wharf 🎡")),
-        h("div", { style: { flex: 1, textAlign: "center", background: "linear-gradient(160deg,#ffeede,#ffdcc2)", borderRadius: 14, padding: "12px 6px", color: "#7a4a28" } },
-          h("div", { style: { fontSize: "0.6rem", letterSpacing: 2, fontWeight: 800, color: "#a8703a" } }, "HOME"),
-          h("div", { style: { fontSize: "1.9rem", fontWeight: 800, letterSpacing: 1, margin: "2px 0", fontFamily: "'Courier New',monospace" } }, gzT),
-          h("div", { style: { fontSize: "0.58rem", color: "rgba(150,100,60,0.8)" } }, "这个家 🏡"))),
-      h("div", { key: "c2", style: { textAlign: "center", fontSize: "0.62rem", color: "rgba(110,162,155,0.8)", margin: "10px 0 8px", fontWeight: 700 } }, "家里的钟比这里快 " + diff + " 小时"),
-      h("div", { key: "c3", style: { background: "rgba(255,235,215,0.55)", borderRadius: 12, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#8a5a34", lineHeight: 1.6, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
-      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.76rem", color: "rgba(78,138,130,0.95)", marginTop: 10, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH))
+    ukCard([
+      screws,
+      h("div", { key: "cl", style: { display: "flex", gap: 11 } },
+        bigClock("l", "Europe/London", "LONDON", "Canary Wharf", "brassL"),
+        bigClock("g", "Asia/Shanghai", "HOME", "这个家", "brassG")),
+      h("div", { key: "gap", style: { marginTop: 12, background: UK_NAVY, borderRadius: 5, padding: "8px 10px", textAlign: "center", color: "#fdf0d2", fontSize: "0.64rem", fontWeight: 800, letterSpacing: "0.6px", fontFamily: "Georgia,serif", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.5)" } },
+        "⚓ 航海日志 · 家里的钟比这里快 " + diff + " 小时"),
+      h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 7, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2a4f4a", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
+      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(80,105,98,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
+      h("div", { key: "boat", style: { position: "relative", height: 30, marginTop: 6, overflow: "hidden" } },
+        h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 22, overflow: "hidden" } },
+          h("div", { style: { width: "200%", height: "100%", animation: "ldWave 11s linear infinite" } },
+            h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
+              h("path", { d: "M0 28 Q75 8 150 28 T300 28 T450 28 T600 28 T750 28 T900 28 T1050 28 T1200 28 V50 H0 Z", fill: "rgba(31,111,104,0.18)" }),
+              h("path", { d: "M0 36 Q75 18 150 36 T300 36 T450 36 T600 36 T750 36 T900 36 T1050 36 T1200 36 V50 H0 Z", fill: "rgba(31,111,104,0.3)" })))),
+        h("div", { style: { position: "absolute", left: "50%", bottom: 10, marginLeft: -10, fontSize: "1.05rem", animation: "ldBob 3.4s ease-in-out infinite" } }, "⛵"))
     ]),
-    card([
-      h("div", { key: "s1", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 6 } }, "🗓️ 这个季节的伦敦"),
-      h("div", { key: "s2", style: { fontSize: "0.76rem", color: "rgba(88,142,135,0.95)", lineHeight: 1.7 } }, season)
+    // ── 今日海况：日照弧线 + 穿衣 + 天文台 ──
+    (function () {
+      var sr = season.sr.split(":"), ss = season.ss.split(":");
+      var srM = (+sr[0]) * 60 + (+sr[1]), ssM = (+ss[0]) * 60 + (+ss[1]);
+      var nowM = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
+      var span = ssM - srM;
+      var f = (nowM - srM) / span;
+      var isDay = f >= 0 && f <= 1;
+      var fc = f < 0 ? 0 : (f > 1 ? 1 : f);
+      var ang = Math.PI * fc;
+      var sx = 20 + 160 * (1 - Math.cos(ang)) / 2, sy = 74 - 56 * Math.sin(ang);
+      var arc = [];
+      for (var i = 0; i <= 40; i++) {
+        var t = i / 40, aa = Math.PI * t;
+        arc.push((i ? "L" : "M") + (20 + 160 * (1 - Math.cos(aa)) / 2).toFixed(1) + " " + (74 - 56 * Math.sin(aa)).toFixed(1));
+      }
+      var chip = function (k, e, txt, bg, col) {
+        return h("div", { key: k, style: { flex: 1, background: bg, borderRadius: 8, padding: "7px 4px", textAlign: "center", color: col, fontSize: "0.63rem", fontWeight: 800, lineHeight: 1.5 } }, e + " " + txt);
+      };
+      var wear = isDay ? season.w : season.wn;
+      return ukCard([
+        screws,
+        ukHead("今日海况", "Weather aboard · " + season.m + " 月的伦敦", pennant("#3a8fbf")),
+        h("div", { key: "sun", style: { background: isDay ? "linear-gradient(180deg,#dbeefb,#f6f0dc)" : "linear-gradient(180deg,#23345c,#3c4a70)", borderRadius: 9, padding: "6px 4px 2px", marginBottom: 9, position: "relative", overflow: "hidden" } },
+          h("svg", { viewBox: "0 4 200 78", style: { width: "100%", display: "block" } },
+            h("path", { d: arc.join(" "), fill: "none", stroke: isDay ? "rgba(200,150,40,0.45)" : "rgba(255,255,255,0.3)", strokeWidth: 1.6, strokeDasharray: "4 4" }),
+            h("line", { x1: 8, y1: 74, x2: 192, y2: 74, stroke: isDay ? "rgba(140,120,70,0.5)" : "rgba(255,255,255,0.35)", strokeWidth: 1.4 }),
+            isDay ? null : [[34, 24], [62, 16], [150, 22], [176, 34], [110, 12]].map(function (p, si) {
+              return h("circle", { key: "sst" + si, cx: p[0], cy: p[1], r: 1.3, fill: "#fff0c0", opacity: 0.85 });
+            }),
+            h("circle", { cx: sx, cy: sy, r: 7.5, fill: isDay ? "#f6c24a" : "#dfe6fb" }),
+            h("circle", { cx: sx, cy: sy, r: 11.5, fill: "none", stroke: isDay ? "rgba(246,194,74,0.45)" : "rgba(223,230,251,0.35)", strokeWidth: 2 }),
+            h("text", { x: 12, y: 70, fontSize: 10, fill: isDay ? "rgba(140,120,70,0.75)" : "rgba(232,238,255,0.7)" }, "☀"),
+            h("text", { x: 188, y: 70, fontSize: 10, textAnchor: "end", fill: isDay ? "rgba(140,120,70,0.75)" : "rgba(232,238,255,0.7)" }, "☽"),
+            null)),
+        h("div", { key: "chips", style: { display: "flex", gap: 7, marginBottom: 10 } }, [
+          chip("c1", "🌡️", "白天 " + season.hi + "°", "rgba(220,120,60,0.13)", "#a1542a"),
+          chip("c2", "🌙", "夜里 " + season.lo + "°", "rgba(60,90,160,0.13)", "#3a5a9b"),
+          chip("c3", "☔", "月均 " + season.rain + " 天雨", "rgba(60,140,150,0.13)", "#1f6f68")
+        ]),
+        h("div", { key: "wear", style: { display: "flex", gap: 9, alignItems: "flex-start", background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "10px 11px", marginBottom: 8 } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.2 } }, isDay ? "👕" : "🧥"),
+          h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.72rem", color: "#1f6f68", marginBottom: 2 } }, isDay ? "今天这么穿" : "这个点出门这么穿"),
+            h("div", { style: { fontSize: "0.76rem", color: "rgba(66,84,78,0.96)", lineHeight: 1.7 } }, wear))),
+        h("div", { key: "note", style: { display: "flex", gap: 9, alignItems: "flex-start", background: "rgba(200,120,50,0.1)", borderRadius: 8, padding: "10px 11px", marginBottom: 9 } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.2 } }, "⚠️"),
+          h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.72rem", color: "#a1542a", marginBottom: 2 } }, "这个月要留意"),
+            h("div", { style: { fontSize: "0.76rem", color: "rgba(100,76,54,0.96)", lineHeight: 1.7 } }, season.note))),
+        h("div", { key: "txt", style: { background: "rgba(255,255,255,0.55)", borderLeft: "3px solid rgba(169,127,46,0.55)", borderRadius: "0 7px 7px 0", padding: "9px 11px", fontSize: "0.77rem", color: "rgba(72,84,72,0.96)", lineHeight: 1.75, marginBottom: 10 } }, season.e + " " + season.t),
+        h("div", { key: "astro", style: { background: "linear-gradient(160deg,#1b2a48,#26375c)", borderRadius: 9, padding: "12px 12px 10px", position: "relative", overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.45)" } },
+          [[12, 22, 1.5], [40, 14, 1.2], [72, 30, 1.1], [88, 18, 1.4]].map(function (p, si) {
+            return h("div", { key: "as" + si, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: p[2], height: p[2], borderRadius: "50%", background: "#ffe9b0", animation: "ldTwinkle " + (2 + si * 0.6) + "s ease-in-out infinite" } });
+          }),
+          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, position: "relative" } },
+            h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 1.6, color: "#ffd98a" } }, "🔭 今日天文台 · GREENWICH"),
+            h("button", { onClick: function () { setAstro(LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]); }, style: { border: "1px solid rgba(255,217,138,0.45)", background: "transparent", borderRadius: 999, padding: "3px 9px", color: "#ffd98a", fontFamily: "inherit", fontWeight: 800, fontSize: "0.58rem", cursor: "pointer", flexShrink: 0 } }, "换一条")),
+          h("div", { style: { fontSize: "0.76rem", color: "rgba(232,238,255,0.95)", lineHeight: 1.8, position: "relative" } }, astro))
+      ]);
+    })(),
+    // ── Mind the Gap：做成一条地铁线 ──
+    ukCard([
+      screws,
+      ukHead("Mind the Gap", "地铁里天天听见的那句 · 这座城市的小规矩", roundel),
+      h("div", { key: "line", style: { position: "relative", paddingLeft: 26, marginTop: 2 } },
+        h("div", { style: { position: "absolute", left: 8, top: 12, bottom: 14, width: 4, borderRadius: 2, background: "linear-gradient(180deg,#E32017,#B36305,#FFD300,#00782A,#0098D4,#003688,#9B0056,#A0A5A9)" } }),
+        LD_SURVIVE.map(function (x, i) {
+          var col = ["#E32017", "#B36305", "#FFD300", "#00782A", "#0098D4", "#003688", "#9B0056", "#00A4A7", "#EE7C0E", "#A0A5A9"][i % 10];
+          return h("div", { key: "sv" + i, style: { position: "relative", paddingBottom: i === LD_SURVIVE.length - 1 ? 2 : 13 } },
+            h("div", { style: { position: "absolute", left: -24, top: 3, width: 13, height: 13, borderRadius: "50%", background: "#fdf5e3", border: "3.5px solid " + col, boxSizing: "border-box" } }),
+            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.68 } }, x.b));
+        }),
+        h("div", { style: { position: "absolute", left: 1, bottom: 0, fontSize: "0.72rem" } }, "🏡"))
     ]),
-    card([
-      h("div", { key: "b1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d" } }, "🏡 家里的动静"),
-        h("button", { onClick: function () { setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { border: "none", background: "none", color: "rgba(110,162,155,0.8)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer", padding: 2 } }, "🔄 再看看")),
-      h("div", { key: "b2", style: { fontSize: "0.82rem", color: "rgba(88,142,135,0.96)", lineHeight: 1.7, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, beat)
-    ]),
-    card([
-      h("div", { key: "q1", style: { fontWeight: 800, fontSize: "0.88rem", color: "#1f7a6d", marginBottom: 4 } }, "🍜 今天想吃什么？"),
-      h("div", { key: "q2", style: { fontSize: "0.7rem", color: "rgba(110,162,155,0.88)", marginBottom: 10, lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟"),
-      h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "📮 发一份投喂申请")
-    ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" })
+    // ── 家港来信：电报纸 ──
+    ukCard([
+      h("div", { key: "perf", style: { position: "absolute", left: 0, right: 0, top: 4, height: 7, backgroundImage: "radial-gradient(circle at 5px 3px, rgba(169,127,46,0.28) 2.4px, transparent 2.6px)", backgroundSize: "13px 7px", opacity: 0.9 } }),
+      h("div", { key: "perf2", style: { position: "absolute", left: 0, right: 0, bottom: 4, height: 7, backgroundImage: "radial-gradient(circle at 5px 3px, rgba(169,127,46,0.28) 2.4px, transparent 2.6px)", backgroundSize: "13px 7px", opacity: 0.9 } }),
+      h("div", { key: "tg1", style: { display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "2px solid rgba(18,58,82,0.7)", paddingBottom: 6, marginTop: 4, marginBottom: 9 } },
+        h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 800, fontSize: "0.62rem", letterSpacing: 1.6, color: UK_NAVY } }, "⚓ TELEGRAM · 家港来信"),
+        h("div", { style: { fontFamily: "'Courier New',monospace", fontSize: "0.6rem", color: "rgba(120,105,78,0.95)", fontWeight: 700 } }, "GZ " + gzT)),
+      h("div", { key: "tg2", style: { fontFamily: "'Courier New','PingFang SC',monospace", fontSize: "0.84rem", color: "#2c3d33", lineHeight: 1.9, letterSpacing: "0.5px", minHeight: 44 } }, beat),
+      h("div", { key: "tg3", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 } },
+        h("div", { style: { fontFamily: "Georgia,serif", fontSize: "0.58rem", color: "rgba(140,120,80,0.9)", letterSpacing: 1 } }, "— END OF MESSAGE —"),
+        h("button", { onClick: function () { setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { border: "1px solid rgba(169,127,46,0.5)", background: "rgba(255,255,255,0.6)", borderRadius: 999, padding: "4px 11px", color: UK_BRASS, fontFamily: "inherit", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "📡 再收一封"))
+    ], { background: "linear-gradient(158deg,#fffaf0,#f7efd9)" }),
+    // ── 今天想吃什么：菜单牌 ──
+    ukCard([
+      screws,
+      h("div", { key: "m0", style: { textAlign: "center", marginBottom: 10 } },
+        h("div", { style: { fontFamily: "Georgia,serif", fontSize: "0.58rem", letterSpacing: 3, color: "rgba(140,110,60,0.95)", fontWeight: 800 } }, "BILL OF FARE"),
+        h("div", { style: { borderTop: "1px solid rgba(169,127,46,0.55)", borderBottom: "3px double rgba(169,127,46,0.55)", padding: "6px 0", margin: "5px 0 7px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "1.05rem", color: UK_INK } }, "🍜 今天想吃什么？"),
+        h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟")),
+      h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { position: "relative", width: "100%", border: "none", borderRadius: 8, padding: "13px 8px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#c74a4f,#a02b31)", color: "#fff6ef", boxShadow: "0 6px 16px rgba(160,43,49,0.34)", letterSpacing: "0.5px", overflow: "hidden" } },
+        h("span", { style: { position: "absolute", left: 12, top: "50%", marginTop: -13, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f0a8a0,#7d1c22)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem" } }, "⚓"),
+        "发一份投喂申请")
+    ])
   );
   // ── 行前 ──
   var extraRow = function (x) {
@@ -17959,15 +18281,7 @@ function LondonRoom(_refLD) {
   );
   // ── 生活 ──
   var liveTab = h("div", null,
-    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))]),
-    card([
-      h("div", { key: "s0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 8 } }, "☔ 伦敦生存贴士"),
-      h("div", { key: "s1" }, LD_SURVIVE.map(function (x, i) {
-        return h("div", { key: "sv" + i, style: { padding: "9px 0", borderBottom: i === LD_SURVIVE.length - 1 ? "none" : "1px solid rgba(165,218,212,0.3)" } },
-          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#1f7a6d" } }, x.t),
-          h("div", { style: { fontSize: "0.72rem", color: "rgba(100,152,145,0.92)", marginTop: 3, lineHeight: 1.65 } }, x.b));
-      }))
-    ])
+    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))])
   );
   // ── 安心 ──
   var careTab = h("div", null,
@@ -18038,15 +18352,27 @@ function LondonRoom(_refLD) {
   );
   var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   return h("div", null,
-    h("div", { style: { background: "linear-gradient(140deg,#3fc0b0,#2e9b8a 55%,#3aa878)", borderRadius: 20, padding: "16px 16px 14px", marginBottom: 14, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(60,175,165,0.32)" } },
-      h("div", { style: { position: "absolute", right: 14, top: 10, fontSize: "2.2rem", opacity: 0.25 } }, "🎡"),
-      h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 3 } }, "LONDON BRANCH"),
-      h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.15rem", marginTop: 3 } }, full ? "小屋伦敦分部" : "装箱小分队"),
-      h("div", { style: { color: "rgba(240,255,246,0.9)", fontSize: "0.68rem", marginTop: 4, lineHeight: 1.6 } }, full ? "Canary Wharf · Fraser Suites · 家跟着你飞了一趟 ✈️" : "箱子一打开，好好就先坐进去了 · 一件一件慢慢塞 🐾")),
-    full ? h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
+    h("style", null,
+      "@keyframes ldWave{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
+      "@keyframes ldBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}" +
+      "@keyframes ldTwinkle{0%,100%{opacity:.2}50%{opacity:1}}" +
+      "@keyframes ldNeedle{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}" +
+      "@keyframes ldGull{0%{transform:translateX(-8%) translateY(0)}50%{transform:translateX(50%) translateY(-7px)}100%{transform:translateX(108%) translateY(0)}}" +
+      "@keyframes ldSpinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}" +
+      "@keyframes ldCloud{from{transform:translateX(-30%)}to{transform:translateX(430%)}}" +
+      "@keyframes ldSail{from{transform:translateX(-14%)}to{transform:translateX(420%)}}" +
+      "@keyframes ldWin{0%,100%{opacity:.35}50%{opacity:1}}"),
+    h(LondonHarbour, {
+      sk: hbSky, frac: hbFrac, isDay: hbDay,
+      eyebrow: "LONDON VOYAGER",
+      title: "\uD83E\uDDED 伦敦航海家",
+      sub: "Canary Wharf 港 · Fraser Suites 号船舱 \u2693",
+      foot: "从本初子午线 0° 到家里 113°E"
+    }),
+    h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
-    })) : null,
+    })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
     tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
