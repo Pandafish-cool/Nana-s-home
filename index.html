@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-72";
+var NANA_VER = "v2026.8.2-73";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18012,7 +18012,9 @@ function LondonOpening(_refSO) {
   };
   useEffect(function () {
     var t0 = setTimeout(function () { setReady(true); }, 400);
-    return function () { clearTimeout(t0); };
+    // 兜底：万一点不动，十五秒后自己进屋，不能把人困在门外
+    var t9 = setTimeout(function () { setGone(true); setTimeout(onDone, 460); }, 15000);
+    return function () { clearTimeout(t0); clearTimeout(t9); };
   }, []);
   // 卡通福尔摩斯
   var sherlock = h("svg", { viewBox: "0 0 130 170", width: 132, height: 172, style: { display: "block", overflow: "visible" } },
@@ -18056,7 +18058,7 @@ function LondonOpening(_refSO) {
       h("path", { d: "M30 132 l10 -12", stroke: "#8a6f4e", strokeWidth: 4, strokeLinecap: "round" }),
       h("circle", { cx: 45, cy: 113, r: 12, fill: "rgba(190,225,240,0.4)", stroke: "#c9a252", strokeWidth: 3.4 }),
       h("path", { d: "M39 108 q5 -4 10 -1", fill: "none", stroke: "#fff", strokeWidth: 2, strokeLinecap: "round", opacity: 0.85 })));
-  return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9997, background: "linear-gradient(180deg,#0d1626,#16233a 55%,#1d2b3f)", overflow: "hidden", opacity: gone ? 0 : 1, transition: "opacity 0.45s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } },
+  return h("div", { onClick: openDoor, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9997, background: "linear-gradient(180deg,#0d1626,#16233a 55%,#1d2b3f)", overflow: "hidden", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.45s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } },
     h("style", null,
       "@keyframes shWalk{0%{transform:translateX(-42vw) }70%{transform:translateX(0)}100%{transform:translateX(0)}}" +
       "@keyframes shBob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}" +
