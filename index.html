@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-67";
+var NANA_VER = "v2026.8.2-68";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17954,12 +17954,18 @@ function LondonOpening(_refSO) {
   var _go = useState(false); var gone = _go[0], setGone = _go[1];
   // 点导航栏进来那一下会顺着落到刚出现的开屏上，头 400 毫秒先不接受点击
   var _rd = useState(false); var ready = _rd[0], setReady = _rd[1];
-  var done = function () { if (!ready || gone) return; setGone(true); setTimeout(onDone, 460); };
+  var _dr = useState(false); var opened = _dr[0], setOpened = _dr[1];
+  // 只有推开那扇绿门才进屋，不会自己走
+  var openDoor = function (e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!ready || opened) return;
+    setOpened(true);
+    setTimeout(function () { setGone(true); }, 640);
+    setTimeout(onDone, 1120);
+  };
   useEffect(function () {
     var t0 = setTimeout(function () { setReady(true); }, 400);
-    var t1 = setTimeout(function () { setGone(true); }, 2400);
-    var t2 = setTimeout(onDone, 2880);
-    return function () { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); };
+    return function () { clearTimeout(t0); };
   }, []);
   // 卡通福尔摩斯
   var sherlock = h("svg", { viewBox: "0 0 130 170", width: 132, height: 172, style: { display: "block", overflow: "visible" } },
@@ -18003,7 +18009,7 @@ function LondonOpening(_refSO) {
       h("path", { d: "M30 132 l10 -12", stroke: "#8a6f4e", strokeWidth: 4, strokeLinecap: "round" }),
       h("circle", { cx: 45, cy: 113, r: 12, fill: "rgba(190,225,240,0.4)", stroke: "#c9a252", strokeWidth: 3.4 }),
       h("path", { d: "M39 108 q5 -4 10 -1", fill: "none", stroke: "#fff", strokeWidth: 2, strokeLinecap: "round", opacity: 0.85 })));
-  return h("div", { onClick: done, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9997, background: "linear-gradient(180deg,#0d1626,#16233a 55%,#1d2b3f)", overflow: "hidden", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.45s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } },
+  return h("div", { style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9997, background: "linear-gradient(180deg,#0d1626,#16233a 55%,#1d2b3f)", overflow: "hidden", opacity: gone ? 0 : 1, transition: "opacity 0.45s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } },
     h("style", null,
       "@keyframes shWalk{0%{transform:translateX(-42vw) }70%{transform:translateX(0)}100%{transform:translateX(0)}}" +
       "@keyframes shBob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}" +
@@ -18012,7 +18018,11 @@ function LondonOpening(_refSO) {
       "@keyframes shSmoke{0%{opacity:0;transform:translateY(6px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translateY(-16px) scale(1.3)}}" +
       "@keyframes shGlass{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}" +
       "@keyframes shRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}" +
-      "@keyframes shDoorGlow{0%{opacity:0}100%{opacity:1}}"),
+      "@keyframes shDoorGlow{0%{opacity:0}100%{opacity:1}}" +
+      "@keyframes shKnock{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.14);opacity:.95}}" +
+      "@keyframes shSwing{from{transform:scaleX(1)}to{transform:scaleX(.14)}}" +
+      "@keyframes shSpill{from{opacity:0}to{opacity:1}}" +
+      "@keyframes shHint{0%,100%{transform:translateY(0);opacity:.75}50%{transform:translateY(5px);opacity:1}}"),
     // 雾
     [[52, 18, 34, 0.16], [70, 9, 26, 0.12], [86, 26, 40, 0.1]].map(function (f, i) {
       return h("div", { key: "fg" + i, style: { position: "absolute", left: "-15%", right: "-15%", top: f[0] + "%", height: f[1] + "%", background: "radial-gradient(ellipse at center,rgba(210,225,240," + f[3] + "),transparent 70%)", filter: "blur(" + f[2] / 3 + "px)", animation: "shFog " + (14 + i * 5) + "s ease-in-out infinite alternate", pointerEvents: "none" } }); }),
@@ -18026,16 +18036,23 @@ function LondonOpening(_refSO) {
         h("path", { d: "M27 30 h16 l-8 -12 Z", fill: "#39435a" }),
         h("rect", { x: 27, y: 32, width: 16, height: 18, rx: 2, fill: "#ffd884", style: { animation: "shFlick 3.4s ease-in-out infinite" } }))),
     // 221B 大门
-    h("div", { style: { position: "absolute", right: "8%", bottom: "22%", width: 108 } },
-      h("svg", { viewBox: "0 0 108 180", style: { width: "100%", display: "block" } },
+    h("div", { onClick: openDoor, style: { position: "absolute", right: "8%", bottom: "22%", width: 108, cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
+      h("svg", { viewBox: "0 0 108 180", style: { width: "100%", display: "block", overflow: "visible" } },
+        opened ? null : h("rect", { x: 8, y: 34, width: 92, height: 152, rx: 6, fill: "none", stroke: "rgba(255,216,138,0.75)", strokeWidth: 2.5, style: { transformOrigin: "54px 110px", animation: "shKnock 1.5s ease-in-out infinite" } }),
         h("rect", { x: 0, y: 8, width: 108, height: 172, rx: 4, fill: "#2b3446" }),
         h("path", { d: "M12 40 q42 -34 84 0 Z", fill: "#1e2636" }),
-        h("rect", { x: 14, y: 40, width: 80, height: 140, rx: 3, fill: "#16452f" }),
-        h("rect", { x: 20, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
-        h("rect", { x: 58, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
-        h("rect", { x: 20, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
-        h("rect", { x: 58, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
-        h("circle", { cx: 84, cy: 122, r: 4.4, fill: "#d9b45f" }),
+        // 门内透出来的光
+        h("rect", { x: 14, y: 40, width: 80, height: 140, rx: 3, fill: "url(#shWarm)", style: opened ? { animation: "shSpill 0.5s ease both" } : { opacity: 0 } }),
+        h("defs", null, h("linearGradient", { id: "shWarm", x1: "0", y1: "0", x2: "0", y2: "1" },
+          h("stop", { offset: "0%", stopColor: "#ffe6ac" }), h("stop", { offset: "100%", stopColor: "#f0b45e" }))),
+        // 门扇
+        h("g", { style: { transformOrigin: "14px 110px", animation: opened ? "shSwing 0.62s cubic-bezier(.4,0,.2,1) both" : "none" } },
+          h("rect", { x: 14, y: 40, width: 80, height: 140, rx: 3, fill: "#16452f" }),
+          h("rect", { x: 20, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
+          h("rect", { x: 58, y: 48, width: 30, height: 42, rx: 2, fill: "#1c5238" }),
+          h("rect", { x: 20, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
+          h("rect", { x: 58, y: 100, width: 30, height: 52, rx: 2, fill: "#1c5238" }),
+          h("circle", { cx: 84, cy: 122, r: 4.4, fill: "#d9b45f" })),
         h("rect", { x: 30, y: 22, width: 48, height: 15, rx: 2, fill: "#d9b45f", style: { animation: "shDoorGlow 1.2s ease 0.6s both" } }),
         h("text", { x: 54, y: 34, textAnchor: "middle", fontSize: 12, fontWeight: "bold", fill: "#2b3446", fontFamily: "Georgia,serif" }, "221B"))),
     // 地面
@@ -18049,7 +18066,7 @@ function LondonOpening(_refSO) {
       h("div", { style: { display: "inline-block", marginTop: 12, background: "rgba(253,246,232,0.96)", color: "#22303f", borderRadius: 16, padding: "13px 18px", fontSize: "0.92rem", fontWeight: 700, lineHeight: 1.7, boxShadow: "0 10px 28px rgba(0,0,0,0.45)", maxWidth: 300, position: "relative" } },
         line,
         h("div", { style: { position: "absolute", left: "50%", bottom: -9, marginLeft: -9, width: 0, height: 0, borderLeft: "9px solid transparent", borderRight: "9px solid transparent", borderTop: "10px solid rgba(253,246,232,0.96)" } }))),
-    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(6% + env(safe-area-inset-bottom,0px))", textAlign: "center", color: "rgba(230,240,255,0.5)", fontSize: "0.7rem", fontWeight: 700, animation: "shRise 0.45s ease 1.25s both" } }, "（点一下进门）"));
+    opened ? null : h("div", { style: { position: "absolute", right: "8%", bottom: "13%", width: 108, textAlign: "center", color: "rgba(255,224,160,0.9)", fontSize: "0.68rem", fontWeight: 800, animation: "shRise 0.45s ease 1.25s both" } }, h("div", { style: { animation: "shHint 1.6s ease-in-out infinite" } }, "👆 推开这扇门")));
 }
 // ── 🧭 港口全景：天色跟着伦敦当地时间走，伦敦眼在转，船在开 ──
 function LondonHarbour(_refHB) {
