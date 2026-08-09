@@ -7940,10 +7940,65 @@ function NanaPhoto(_refNP) {
     ? React.createElement("img", { src: src, onClick: onClick, alt: "", style: style })
     : React.createElement("div", { onClick: onClick, style: Object.assign({ display: "flex", alignItems: "center", justifyContent: "center", background: "#efe6dc", color: "#b8a894", fontSize: "0.72rem" }, style) }, "🌸");
 }
+var nanaDataUrlToBlob = function (d) {
+  var parts = String(d).split(",");
+  var m = /:(.*?);/.exec(parts[0]);
+  var bin = atob(parts[1]);
+  var arr = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: m ? m[1] : "image/jpeg" });
+};
+// 存图：iOS 上走系统分享面板（里面的「存储图像」会直接存进相册），其它平台退回下载
+var nanaSaveImage = function (dataUrl, name, cb) {
+  try {
+    var blob = nanaDataUrlToBlob(dataUrl);
+    var file = null;
+    try { file = new File([blob], name, { type: blob.type }); } catch (_) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      navigator.share({ files: [file] }).then(function () { cb(null); }, function () { cb(null); });
+      return;
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { try { document.body.removeChild(a); URL.revokeObjectURL(a.href); } catch (_) {} }, 900);
+    cb(null);
+  } catch (e) { cb(e); }
+};
 // 全屏看图
 function NanaLightbox(_refLB) {
   var pid = _refLB.pid; var src = _refLB.src; var onClose = _refLB.onClose;
   var h = React.createElement;
+  var _dt = useState(null); var data = _dt[0], setData = _dt[1];
+  var _sv = useState(""); var saveMsg = _sv[0], setSaveMsg = _sv[1];
+  useEffect(function () {
+    var on = true;
+    setData(null);
+    var take = function (d) { if (on && d) setData(d); };
+    if (src && String(src).indexOf("data:") === 0) return take(src);
+    if (src && String(src).indexOf("http") === 0) {
+      nanaCloudGet(src, function (d) {
+        if (!on) return;
+        if (d) return take(d);
+        nanaCloudFetchRetry(src, 2, function (err, d2) {
+          if (!on || err || !d2) return;
+          nanaCloudPut(src, d2); take(d2);
+        });
+      });
+      return;
+    }
+    if (pid) nanaPhotoGet(pid, function (err, d) { if (!err) take(d); });
+    return function () { on = false; };
+  }, [src, pid]);
+  var doSave = function (e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!data) return;
+    setSaveMsg("...");
+    nanaSaveImage(data, "nana-" + Date.now() + ".jpg", function (err) {
+      setSaveMsg(err ? "\u6CA1\u5B58\u6210\uFF0C\u518D\u8BD5\u4E00\u6B21\uFF1F" : "\u5B58\u597D\u5566 \u2705");
+      setTimeout(function () { setSaveMsg(""); }, 1800);
+    });
+  };
   var _z = useState(1); var z = _z[0], setZ = _z[1];
   var _p = useState({ x: 0, y: 0 }); var pos = _p[0], setPos = _p[1];
   var g = useRef({});
@@ -8037,12 +8092,15 @@ function NanaLightbox(_refLB) {
       src ? (String(src).indexOf("http") === 0 ? h(NanaCloudImg, { u: src, style: imgStyle }) : h("img", { src: src, alt: "", style: imgStyle })) : h(NanaPhoto, { pid: pid, style: imgStyle })),
     h("button", { onClick: function (e) { e.stopPropagation(); onClose(); }, style: { position: "absolute", right: 16, top: "calc(16px + env(safe-area-inset-top,0px))", width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", fontSize: "1rem", fontWeight: 800, cursor: "pointer", lineHeight: 1 } }, "\u2715"),
     zoomed && h("button", { onClick: function (e) { e.stopPropagation(); reset(); }, style: { position: "absolute", left: 16, top: "calc(16px + env(safe-area-inset-top,0px))", borderRadius: 999, border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", fontSize: "0.7rem", fontWeight: 800, padding: "8px 13px", cursor: "pointer" } }, "\u21BA \u539F\u5927\u5C0F " + z.toFixed(1) + "x"),
+    h("div", { style: { position: "absolute", bottom: "calc(62px + env(safe-area-inset-bottom,0px))", left: 0, right: 0, display: "flex", justifyContent: "center" } },
+      h("button", { onClick: doSave, disabled: !data, style: { border: "none", borderRadius: 999, padding: "9px 18px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: data ? "pointer" : "default", background: data ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.07)", color: data ? "#fff" : "rgba(255,255,255,0.4)", backdropFilter: "blur(6px)" } },
+        saveMsg === "..." ? "\u5B58\u50A8\u4E2D\u2026" : (saveMsg || (data ? "\u2B07\uFE0E \u4FDD\u5B58\u5230\u624B\u673A" : "\u56FE\u7247\u8FD8\u5728\u52A0\u8F7D\u2026")))),
     h("div", { style: { position: "absolute", bottom: "calc(26px + env(safe-area-inset-bottom,0px))", left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700, pointerEvents: "none" } },
       zoomed ? "\u62D6\u52A8\u770B\u7EC6\u8282 \u00B7 \u53CC\u51FB\u8FD8\u539F" : "\u53CC\u6307\u6216\u53CC\u51FB\u653E\u5927 \u00B7 \u70B9\u4E00\u4E0B\u5173\u95ED"));
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-34";
+var NANA_VER = "v2026.8.2-35";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
