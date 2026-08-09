@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
  * @license React
  * react.production.min.js
  *
@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-44";
+var NANA_VER = "v2026.8.2-59";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17586,21 +17586,49 @@ var LD_FOOD = [
   { n: "Crossrail Place 餐厅层", d: "屋顶花园楼下一整层吃的", e: "🌿", q: "Crossrail Place Canary Wharf" }
 ];
 var LD_MART = [
-  { n: "Waitrose", d: "Canada Place 商场 · 品质高 · 熟食好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
+  { dist: "走 13 分钟 · 1.0km", n: "Waitrose", d: "Canada Place 商场 · 品质高 · 熟食好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
   { n: "Tesco / Sainsbury's", d: "日常便宜 · 到处有 Express 小店", e: "🥬", q: "Tesco Express Canary Wharf" },
-  { n: "M&S Food", d: "半成品和便当很救命", e: "🍱", q: "M&S Simply Food Canary Wharf" },
-  { n: "龙凤行 Loon Fung", d: "唐人街大中超 · 老干妈火锅料都有", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
-  { n: "Starry Mart 网购", d: "亚洲食品网上下单送到公寓", e: "📦", u: "https://starrymart.co.uk" }
+  { dist: "走 13 分钟 · 1.0km", n: "M&S Food", d: "半成品和便当很救命", e: "🍱", q: "M&S Simply Food Canary Wharf" },
+  { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街大中超 · 老干妈火锅料都有", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
+  { dist: "送到楼下", n: "Starry Mart 网购", d: "亚洲食品网上下单送到公寓", e: "📦", u: "https://starrymart.co.uk" }
 ];
-// 生活
-var LD_LIVE = [
-  { n: "Boots 药店", d: "药剂师可免费咨询轻症 · 比看医生快多了", e: "💊", q: "Boots Canary Wharf" },
-  { n: "DLR West India Quay", d: "离公寓最近的站，走两分钟", e: "🚈", q: "West India Quay DLR Station" },
-  { n: "Canary Wharf 站", d: "Jubilee line / Elizabeth line / DLR 三线交汇", e: "🚇", q: "Canary Wharf Station London" },
-  { n: "Museum of London Docklands", d: "就在 West India Quay · 免费 · 下雨天好去处", e: "🏛️", q: "Museum of London Docklands" },
-  { n: "Crossrail 屋顶花园", d: "商场顶层免费花园，晴天来发呆", e: "🌴", q: "Crossrail Place Roof Garden" },
-  { n: "健身房 / 游泳", d: "Third Space、Virgin Active 都在商场里", e: "🏊", q: "gym Canary Wharf" },
-  { n: "理发 / 美甲", d: "Jubilee Place 商场负一层有几家", e: "💇", q: "hairdresser Canary Wharf" }
+// 楼下：以 Fraser Place（Pan Peninsula / South Quay 一带）为原点
+var LD_NEAR = [
+  { dist: "走 3 分钟 · 250m", n: "South Quay DLR", d: "最近的站，走三四分钟 · 露天高架 · 无人驾驶，坐第一排像自己开火车", e: "🚈", q: "South Quay DLR Station London", open: 1 },
+  { dist: "走 8 分钟 · 600m", n: "Heron Quays DLR", d: "另一个方向，也是几分钟 · 去银行区方便", e: "🚉", q: "Heron Quays DLR Station", open: 1 },
+  { dist: "出门就是", n: "Marsh Wall 一条街", d: "楼下这条路上有便利店、咖啡和几家小馆子，懒得走远就在这解决", e: "🏪", q: "Marsh Wall London E14" },
+  { dist: "走 2 分钟 · 100m", n: "Millwall Inner Dock 水边", d: "出门就是水，绕内港走一圈大约二十分钟，晚上路灯很亮", e: "🌊", q: "Millwall Inner Dock London", open: 1 },
+  { dist: "走 12 分钟 · 900m", n: "Canary Wharf 商场群", d: "走过桥十分钟 · Canada Place / Jubilee Place / Crossrail Place 连在一起，下雨天能一路不淋雨", e: "🛍️", q: "Canada Place Canary Wharf" }
+];
+var LD_SHOP = [
+  { dist: "走 13 分钟 · 1.0km", n: "Waitrose", d: "Canada Place 商场里 · 走十分钟 · 熟食和半成品好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
+  { dist: "走 13 分钟 · 1.0km", n: "M&S Food", d: "便当和半成品最救命 · 商场里", e: "🍱", q: "M&S Simply Food Canary Wharf" },
+  { dist: "走 16 分钟，或 DLR 两站 5 分钟", n: "Asda Isle of Dogs", d: "DLR 往南一两站 · 大超市，同样的东西便宜一截 · 周日受六小时限制", e: "🏬", q: "Asda Isle of Dogs London" },
+  { dist: "走 4 分钟 · 300m", n: "Tesco / Sainsbury's 小店", d: "Marsh Wall 和商场里都有 Express、Local · 不受周日限制，开得晚", e: "🥬", q: "Tesco Express Marsh Wall London" },
+  { dist: "走 13 分钟 · 1.0km", n: "Boots 药店", d: "商场里 · 药剂师免费问诊 · 备用吸入器、口罩、维生素都在这买", e: "💊", q: "Boots Canary Wharf" },
+  { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街的大中超 · Elizabeth line 一站到 Tottenham Court Road，八分钟", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
+  { dist: "送到楼下", n: "Starry Mart 网购", d: "亚洲食品网上下单送到楼下，不用扛", e: "📦", u: "https://starrymart.co.uk" }
+];
+var LD_AIR = [
+  { dist: "走 14 分钟 · 1.1km", n: "Crossrail Place 屋顶花园", d: "商场顶层的热带植物园 · 免费 · 半露天，一点不闷", e: "🌴", q: "Crossrail Place Roof Garden", open: 1 },
+  { dist: "走 12 分钟 · 950m", n: "Jubilee Park", d: "Canary Wharf 中间那块草地 · 天气好全是躺着的人", e: "🌳", q: "Jubilee Park Canary Wharf", open: 1 },
+  { dist: "走 18 分钟，或 DLR 三站", n: "Mudchute 农场", d: "往南走十五分钟 · 免费 · 有羊驼和小羊，城里最不像城里的地方", e: "🐑", q: "Mudchute Park and Farm", open: 1 },
+  { dist: "走 27 分钟，或 DLR 四站 8 分钟", n: "Island Gardens", d: "岛最南端 · 隔着河正对格林威治，日落很好看", e: "🌅", q: "Island Gardens London", open: 1 },
+  { dist: "走 14 分钟 · 1.1km", n: "Canary Wharf Pier", d: "坐船的码头 · 走十分钟 · 光是坐在那看河也行", e: "⛴️", q: "Canary Wharf Pier London", open: 1 }
+];
+var LD_GO = [
+  { dist: "到站走 3 分钟", n: "DLR（South Quay / Heron Quays）", d: "全程高架露天，不闷。往北去银行区和塔桥，往南去格林威治十分钟", e: "🚈", q: "South Quay DLR Station London", open: 1 },
+  { dist: "到站走 13 分钟", n: "Elizabeth line（Canary Wharf 站）", d: "新线，车厢宽敞明亮有空调 · 到市中心 Tottenham Court Road 只要八分钟", e: "🚆", q: "Canary Wharf Elizabeth Line Station", open: 0 },
+  { dist: "到码头走 14 分钟", n: "Uber Boat（Canary Wharf Pier）", d: "最推荐 · 全程露天甲板，看着河进城 · 刷交通卡，比地铁贵一点但值", e: "⛴️", q: "Canary Wharf Pier London", open: 1 },
+  { dist: "到站走 12 分钟", n: "Jubilee line（Canary Wharf 站）", d: "最快但是深隧道 · 赶时间才坐，不舒服就换上面三种", e: "🚇", q: "Canary Wharf Station London", open: 0 },
+  { dist: "Marsh Wall 站牌走 3 分钟", n: "双层巴士上层前排", d: "慢，但一路看街景，随时能下车 · 刷卡，要按铃", e: "🚌", q: "Canary Wharf bus station", open: 0 }
+];
+var LD_MED = [
+  { dist: "走 13 分钟 · 1.0km", n: "先找 Boots 的药剂师", d: "轻症免费咨询，不用预约。柜台后面的药也是问他们拿", e: "💊", q: "Boots Canary Wharf" },
+  { dist: "打电话，免费", n: "NHS 111", d: "拿不准要不要去医院就打，免费，24 小时有护士", e: "☎️", u: "https://111.nhs.uk" },
+  { dist: "打电话", n: "999", d: "呼吸困难、说不出整句话 —— 直接打，说 asthma attack 加地址", e: "🚑", u: "tel:999" },
+  { dist: "DLR 转地铁约 20-25 分钟", n: "Royal London Hospital 急诊", d: "最近的大医院急诊，在 Whitechapel · DLR 转地铁大约十五分钟", e: "🏥", q: "Royal London Hospital Whitechapel London" },
+  { dist: "打电话", n: "Asthma + Lung UK 热线", d: "0300 222 5800 · 工作日有护士，可以英文咨询哮喘的事", e: "🫁", u: "https://www.asthmaandlung.org.uk" }
 ];
 // 按当地钟点给钟面配色，一眼看出那边是白天还是黑夜
 var ldSky = function (hh) {
@@ -17613,16 +17641,21 @@ var ldSky = function (hh) {
   return             { n: "\u591C\u91CC",  bg: "linear-gradient(165deg,#3b3f70,#1e2544)", ink: "#e7ebfb", sub: "rgba(206,214,244,0.75)", face: "rgba(255,255,255,0.11)", ring: "rgba(255,255,255,0.36)", hand: "#eef1ff", e: "\uD83C\uDF03" };
 };
 var LD_SURVIVE = [
-  { t: "☔ 伞随身", b: "伦敦的雨来得快去得也快，很少下大，但一天能下三回。" },
-  { t: "🌡️ 早晚温差大", b: "八九月白天二十度、傍晚十几度，出门带件外套，别让冷空气激着嗓子。" },
-  { t: "🛍️ 周日商店只开 11-17", b: "英国法律规定周日营业限时，别周日傍晚跑去超市。" },
-  { t: "💳 刷卡直接进地铁", b: "手机或银行卡刷闸机，系统每天自动封顶，不用买票。" },
-  { t: "🏥 生病先去药店", b: "轻症找 Boots 药剂师免费咨询；非紧急打 111；紧急打 999。" },
-  { t: "💷 小费别重复给", b: "餐厅账单常已含 12.5% service charge，含了就不用另给。" },
-  { t: "🚇 扶梯靠右站", b: "左边留给赶路的人，站错会被瞪（真的）。" },
-  { t: "📱 电话卡用 GiffGaff", b: "网上订 SIM 免费寄到公寓，月租便宜可随时换。" },
-  { t: "🏦 落地办 Monzo", b: "手机上几分钟开好英国账户，收钱 AA 都方便。" },
-  { t: "🌇 九月天黑得越来越早", b: "八月底晚上八点还亮，九月底七点就黑了，晚归走大路。" }
+  { t: "🛒 大超市周日只开六小时", b: "英国法律规定的，大店周日一般只开 11:00-17:00 —— Waitrose、Asda 都算。楼下 Marsh Wall 那种 Tesco Express、Sainsbury's Local 不受限，照常开到很晚。周日想大采购就赶在下午五点前。" },
+  { t: "🏦 银行假日很多店缩时间", b: "Bank Holiday 不受周日那条六小时限制，但商店大多自己缩短营业、有的干脆不开。八月三十一号就是一个，出门前查一下那家当天几点开。" },
+  { t: "🍽️ 厨房九点就打烊", b: "不少餐厅 21:00 前后停止点餐，超市热食柜也是。Canary Wharf 商场里的店多半跟着商场关，周末收得更早。想吃口热的别拖太晚，这边不是宵夜城市。" },
+  { t: "🍺 酒吧各家关门时间不一样", b: "老说法是十一点喊 last orders，那是二〇〇五年以前的规矩。现在市中心不少店开到午夜甚至更晚，社区小酒馆倒常常十一点就收。想去哪家先看门口贴的时间。" },
+  { t: "🚇 周末地铁通宵跑", b: "周五周六晚上 Jubilee 线整夜运行 —— 正好是回 Canary Wharf 那条，周末从市中心回来不用赶末班车。平日末班大约半夜十二点半，看站台屏幕上的 last train。DLR 不通宵，晚了就换 Jubilee。" },
+  { t: "🚌 公交只能刷卡，还得按铃", b: "伦敦公交 2014 年起完全不收现金，刷卡或手机都行。到站前要按红色按钮，不按不停。" },
+  { t: "💳 认准一张卡刷到底", b: "地铁、DLR、公交、泰晤士河的船都是同一套系统。但一会儿手机一会儿实体卡，系统会当成两个人算，每日封顶就白瞎了。选一张，全程都用它。" },
+  { t: "📵 地铁信号时有时无", b: "这几年 TfL 一直在铺网，不少站台和区段已经有信号，但深隧道里还是会断。DLR 全程在地面上跑，信号最稳。要听要看的上车前先下好。" },
+  { t: "💊 药店的药分两层", b: "很多国内随便买的药在这边要药剂师从柜台后面拿。走到商场里的 Boots，直接找 pharmacist 说症状就行，咨询免费，不用挂号。" },
+  { t: "🚑 999 是急救，111 是拿不准", b: "NHS 111 免费，半夜不舒服又不确定要不要去医院，先打这个，有护士在线判断。" },
+  { t: "📦 快递怎么收，入住时问一句", b: "Fraser Place 这类服务式公寓多半是前台代收，但快递员也有按自己规矩放的。入住时问清楚放哪儿、取件要不要带证件，比事后满楼找强。" },
+  { t: "🚰 老房子两个水龙头", b: "住新公寓碰不上，但老酒店、老餐厅的洗手间还留着 —— 冷热分开是这边的老传统，热水那边是真的烫。" },
+  { t: "👀 过马路先看右边", b: "车靠左行驶，方向和国内反着。伦敦路口地上都写着 LOOK RIGHT，照着做就不会错。" },
+  { t: "🧾 账单常含服务费", b: "餐厅账单里多数已经含了 12.5% service charge，含了就不用再另给小费。看一眼小票再决定。" },
+  { t: "🚶 扶梯靠右站", b: "左边留给赶路的人，站错会被瞪（真的）。这条是伦敦最不能破的规矩。" }
 ];
 
 // 去玩
@@ -17660,6 +17693,158 @@ var LD_TRIPS = [
     { n: "阿姆斯特丹", d: "4 小时 · 运河和美术馆", e: "🚲", q: "Amsterdam Netherlands" },
     { n: "爱丁堡 Edinburgh", d: "英国境内，火车或廉航都方便", e: "🏴", q: "Edinburgh Scotland" }
   ] }
+];
+var LD_WD = ["日", "一", "二", "三", "四", "五", "六"];
+var ldDate = function (str) { try { return new Date(str + "T12:00:00+01:00"); } catch (_) { return null; } };
+var ldMD = function (str) {
+  var d = ldDate(str); if (!d) return str;
+  return (d.getMonth() + 1) + "月" + d.getDate() + "日 周" + LD_WD[d.getDay()];
+};
+var ldToday = function () {
+  var d = new Date();
+  var p = new Date(d.toLocaleString("en-US", { timeZone: "Europe/London" }));
+  return new Date(p.getFullYear(), p.getMonth(), p.getDate());
+};
+// 最近的那个周末（周六、周日）
+var ldWeekend = function () {
+  var t = ldToday(), dow = t.getDay();
+  var toSat = (6 - dow + 7) % 7;
+  var sat = new Date(t.getTime()); sat.setDate(t.getDate() + toSat);
+  var sun = new Date(sat.getTime()); sun.setDate(sat.getDate() + 1);
+  var f = function (d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+  return { sat: f(sat), sun: f(sun), satD: sat, sunD: sun };
+};
+// ── 📅 活动日历：伦敦六周（8/15 - 9/26）──────────────────
+// 有些是每年固定推算得出的（银行假日、逍遥音乐节最后一夜），
+// 有些按往年惯例给的大致档期，界面上会标「档期待确认」。
+var LD_KCOL = { "节庆": "#E32017", "音乐": "#9B0056", "戏剧": "#B36305", "展览": "#003688", "河上": "#0098D4", "市集": "#00782A", "夜场": "#6950a1", "天文": "#c9a252", "自己加的": "#EE7C0E" };
+// 单日活动 —— 日历上会点亮那一天
+var LD_EVENTS = [
+  { d: "2026-08-22", e: "🕯️", n: "悲惨世界 Les Misérables", k: "戏剧", open: 0, booked: 1,
+    tm: "14:30 开演 · 提前二十分钟到，剧院开演前半小时开门", pl: "Sondheim Theatre · 45 Shaftesbury Avenue, W1D 6LR", tk: "票已经买好了，熊猫鱼订的 🎟️",
+    tp: "不想坐地铁的话：从 Canary Wharf 码头坐船到 Embankment，上岸走十分钟就到，全程露天不闷。中场休息二十分钟，散场大概五点半，出门就是唐人街，顺路吃个饭再回。",
+    q: "Sondheim Theatre London" },
+  { d: "2026-08-30", e: "🎉", n: "诺丁山狂欢节 · 家庭日", k: "节庆", open: 1,
+    tm: "10:00 - 19:00，中午到下午最热闹", pl: "Notting Hill / Ladbroke Grove 一带街区", tk: "免费，不用买票",
+    tp: "周日是家庭日，人比周一少一大截，气氛一样好。当天很多地铁站只出不进，跟着人流走就行。摊位多数只收现金，带点零钱。穿最好走路的鞋。",
+    q: "Notting Hill Carnival London" },
+  { d: "2026-08-31", e: "🥁", n: "诺丁山狂欢节 · 大游行", k: "节庆", open: 1,
+    tm: "10:00 起，15:00 前后最盛", pl: "同上，主游行路线绕 Ladbroke Grove", tk: "免费",
+    tp: "主游行日，也是英国夏季银行假日，全城放假、地铁班次反而少。人非常多非常挤 —— 怕挤就挑周日去，或者早上十点前到。",
+    q: "Notting Hill Carnival London" },
+  { d: "2026-09-05", e: "🚣", n: "大河赛 Great River Race", k: "河上", open: 1, soon: 1,
+    tm: "下午起航，船队约两三小时后经过金丝雀码头", pl: "泰晤士河沿岸 · Canary Wharf Pier 走五分钟就到", tk: "免费，站河边看",
+    tp: "三百多条传统木船从伦敦塔一路划到里士满。全程露天，站自家码头就能看完，是最不费劲的一场热闹。",
+    q: "Canary Wharf Pier London" },
+  { d: "2026-09-12", e: "🎤", n: "Hamilton", k: "戏剧", open: 0, booked: 1,
+    tm: "14:30 开演 · 提前二十分钟到", pl: "Victoria Palace Theatre · Victoria Street, SW1E 5EA", tk: "票已经买好了，熊猫鱼订的 🎟️",
+    tp: "散场约五点半。这天晚上正好是逍遥音乐节最后一夜，海德公园那场七点开始，从剧院走过去二十分钟 —— 想连着看就直接过去，觉得累就回家，一天一场已经很好了。",
+    q: "Victoria Palace Theatre London" },
+  { d: "2026-09-12", e: "🎆", n: "逍遥音乐节最后一夜", k: "音乐", open: 1,
+    tm: "19:00 开演，唱到深夜", pl: "皇家阿尔伯特音乐厅 / 海德公园同步直播", tk: "音乐厅要抽签；海德公园 Proms in the Park 另售票；在家看 BBC 直播也行",
+    tp: "全英国一起唱歌的那一晚。海德公园版是露天大屏幕，带块野餐布、一瓶气泡水就够，气氛比在厅里还热。",
+    q: "Hyde Park London" },
+  { d: "2026-09-22", e: "🍂", n: "秋分", k: "天文", open: 1,
+    tm: "全天 · 那天日落约 19:00", pl: "格林威治公园山顶", tk: "免费",
+    tp: "这一天全球昼夜等长，之后伦敦的夜一天比一天长。挑个晴天上格林威治山顶，天文台在背后，整座城在脚下。",
+    q: "Greenwich Park London" },
+  { d: "2026-09-26", e: "🧳", n: "最后一个周六", k: "节庆", open: 1,
+    tm: "看心情", pl: "哪儿都行", tk: "—",
+    tp: "设计节还没结束，想再逛的挑一个。或者哪儿都不去，在公寓里慢慢收东西、把这六周过一遍，也很好。",
+    q: "Canary Wharf London" }
+];
+// 一段时间一直有 —— 不点亮某一天，但点开那天会写在下面
+var LD_RUNS = [
+  { a: "2026-08-15", b: "2026-09-12", e: "🎻", n: "BBC 逍遥音乐节 Proms", k: "音乐", open: 0,
+    tm: "多数场次 19:30", pl: "皇家阿尔伯特音乐厅", tk: "当天现场排队买 £8 站票",
+    tp: "全世界最便宜的顶级古典现场，七月中演到九月中，几乎天天有。站票不用提前订，当天去就行。", q: "Royal Albert Hall London" },
+  { a: "2026-08-15", b: "2026-10-04", e: "🎭", n: "莎士比亚环球剧场", k: "戏剧", open: 1,
+    tm: "多数 19:30，周末有下午场", pl: "Bankside，泰晤士河南岸", tk: "站票 £5，官网直接买",
+    tp: "露天剧场，天顶是敞开的，一点不闷。下雨照演但不让撑伞，带件雨衣。站在池子里离演员最近。", q: "Shakespeare's Globe London" },
+  { a: "2026-08-15", b: "2026-09-28", e: "👑", n: "白金汉宫夏季开放", k: "展览", open: 1,
+    tm: "9:30 - 18:30，末场 17:15", pl: "白金汉宫", tk: "官网提前预约，约 £30",
+    tp: "一年只开这两个多月，国事厅和花园都能进。票含一年内无限次再访。", q: "Buckingham Palace London" },
+  { a: "2026-08-28", b: "2026-09-06", e: "🎪", n: "格林威治 + 道克兰国际艺术节", k: "节庆", open: 1, soon: 1,
+    tm: "多在傍晚", pl: "格林威治、道克兰一带的广场和街头", tk: "绝大多数免费",
+    tp: "就在你隔壁，全是户外街头演出、马戏和装置。往年在八月底到九月初，是最不用花钱又最热闹的一周。", q: "Greenwich London" },
+  { a: "2026-09-01", b: "2026-09-30", e: "🌊", n: "泰晤士河月 Totally Thames", k: "河上", open: 1,
+    tm: "整个九月，各活动时间不同", pl: "泰晤士河沿岸", tk: "多数免费",
+    tp: "船展、灯光、河滩考古散步串成一个月。你就住在河边，随便挑几场走走。", q: "Totally Thames London" },
+  { a: "2026-09-12", b: "2026-09-20", e: "🏛️", n: "Open House 建筑开放日", k: "展览", open: 0, soon: 1,
+    tm: "各楼开放时间不同，多在白天", pl: "全伦敦几百个点", tk: "免费，热门的要提前抽签",
+    tp: "一年一次，平时进不去的政府大楼、教堂塔顶、私人宅邸统统开门。八月底官网放名单，看到想去的赶紧登记。", q: "Open House Festival London" },
+  { a: "2026-09-18", b: "2026-09-22", e: "👗", n: "伦敦时装周", k: "展览", open: 0, soon: 1,
+    tm: "全天", pl: "Soho、东区一带", tk: "秀场进不去，街上的免费",
+    tp: "秀看不到，但整周城里到处是快闪店、展览和橱窗，Soho 和 Shoreditch 最好逛。", q: "Soho London" },
+  { a: "2026-09-19", b: "2026-09-27", e: "🪑", n: "伦敦设计节", k: "展览", open: 0, soon: 1,
+    tm: "各展馆开放时间", pl: "全城散点，V&A 是主场", tk: "免费",
+    tp: "V&A 里的大型装置每年都很值得看，免费。一直开到你回家那几天。", q: "Victoria and Albert Museum London" }
+];
+// 每周固定 —— w 是星期几（0=周日），last 表示每月最后一个
+var LD_WEEKLY = [
+  { w: 0, e: "💐", n: "Columbia Road 花市", k: "市集", open: 1, dot: 1,
+    tm: "8:00 - 15:00", pl: "Columbia Road, 东区", tk: "免费进",
+    tp: "一整条街全是花，越晚越便宜，收摊前老板会喊清仓价。旁边小巷子里的咖啡店和陶器铺也好逛。", q: "Columbia Road Flower Market" },
+  { w: 6, e: "🏺", n: "Portobello 古董市集", k: "市集", open: 1, dot: 1,
+    tm: "9:00 - 19:00", pl: "Portobello Road, 诺丁山", tk: "免费进",
+    tp: "彩色房子那条街，古董银器和旧书最好逛。周六是全开的日子，其他天只有一小段。", q: "Portobello Road Market" },
+  { w: 6, e: "🥐", n: "Broadway Market", k: "市集", open: 1,
+    tm: "9:00 - 17:00", pl: "Broadway Market, 东区", tk: "免费进",
+    tp: "东区文青市集，吃的比古董多。买了坐到旁边 London Fields 草地上吃，天气好的话很舒服。", q: "Broadway Market London" },
+  { w: 5, e: "🌆", n: "大英 / 国家美术馆 周五延长开放", k: "夜场", open: 0, dot: 1,
+    tm: "大英到 20:30，国家美术馆到 21:00", pl: "布卢姆斯伯里 / 特拉法加广场", tk: "免费",
+    tp: "每周五都晚关门，人比白天少一半。下班过去还能逛两个小时，罗塞塔石碑前终于不用挤。", q: "British Museum London" },
+  { w: 5, last: 1, e: "🌃", n: "V&A / 自然史 / 泰特 夜场", k: "夜场", open: 0, dot: 1,
+    tm: "18:00 - 22:00", pl: "南肯辛顿 / 河南岸", tk: "免费，个别活动要登记",
+    tp: "每月最后一个周五，博物馆开到晚上十点，有 DJ、酒水和特别导览，气氛跟白天完全不一样。一个人去也不奇怪，去的人大半是一个人。", q: "Victoria and Albert Museum London" },
+  { w: 3, last: 1, e: "🔬", n: "科学博物馆 Lates", k: "夜场", open: 0, dot: 1,
+    tm: "18:45 - 22:00", pl: "南肯辛顿", tk: "免费，不用预约",
+    tp: "每月最后一个周三，只对成年人开放的夜场。所有互动装置随便玩，没有小孩排队。", q: "Science Museum London" }
+];
+// 下班之后 —— 工作日晚上一个人能去的地方
+var LD_WEEKNIGHT = [
+  { e: "🎭", n: "看一场西区的戏", tm: "周一至周六 19:30", pl: "西区各剧院", tk: "TodayTix 抽 rush 票，或 TKTS 当天半价", open: 0,
+    tp: "下班直接过去来得及。一个人看戏在伦敦太常见了，旁边座位多半也是一个人来的。", q: "Leicester Square London" },
+  { e: "🎨", n: "泰特现代周五周六开到 22:00", tm: "周五、周六 至 22:00", pl: "泰晤士河南岸", tk: "常设免费", open: 0,
+    tp: "顶层的落地窗看对岸圣保罗的夜景，有位子就坐一会儿，不用非得看展。", q: "Tate Modern London" },
+  { e: "🎷", n: "Ronnie Scott's 爵士俱乐部", tm: "每晚两场，18:30 / 22:30", pl: "Soho", tk: "£20 起，官网订", open: 0,
+    tp: "世界级的爵士俱乐部，六十多年了。一个人坐吧台听完全不奇怪，反而是常态。", q: "Ronnie Scott's Jazz Club London" },
+  { e: "🎬", n: "Prince Charles Cinema", tm: "每天，含午夜场", pl: "唐人街旁边", tk: "£7 起，便宜到离谱", open: 0,
+    tp: "专放老片、经典重映和马拉松场。看完出门就是唐人街，顺便吃个宵夜。", q: "Prince Charles Cinema London" },
+  { e: "😂", n: "Top Secret Comedy Club", tm: "每晚", pl: "考文特花园", tk: "很便宜，有时甚至免费", open: 0,
+    tp: "英式脱口秀，听不懂全部也能笑出来。小场子，气氛很热。", q: "Top Secret Comedy Club London" },
+  { e: "⛴️", n: "坐一趟船回家", tm: "傍晚每十几分钟一班", pl: "市中心码头 → Canary Wharf Pier", tk: "刷交通卡，比地铁贵一点", open: 1,
+    tp: "全程露天甲板，不闷不挤。下班那趟正好赶上夕阳，比地铁值太多了。", q: "Canary Wharf Pier London" },
+  { e: "🌇", n: "Sky Garden 傍晚场", tm: "预约日落前半小时那档", pl: "20 Fenchurch Street", tk: "免费，官网提前几天订", open: 0,
+    tp: "全城最好的免费观景台。挑日落前进去，看整座城一盏一盏亮起来。", q: "Sky Garden London" },
+  { e: "🌴", n: "Crossrail 屋顶花园", tm: "开到晚上", pl: "就在楼下商场顶层", tk: "免费", open: 1,
+    tp: "不想走远的时候，下楼十分钟就能换个空气。热带植物，晚上很安静。", q: "Crossrail Place Roof Garden" },
+  { e: "🚶", n: "绕码头走一圈", tm: "随时", pl: "金丝雀码头水边", tk: "免费", open: 1,
+    tp: "绕水一圈大约二十分钟，路灯很亮，晚上散步跑步的人不少。心里闷的时候走一圈比坐着强。", q: "Canary Wharf London" }
+];
+// 天天/多数天都开，不占日历格子
+var LD_ALWAYS = [
+  { e: "🧀", n: "Borough Market", d: "周一至周六 10:00-17:00", w: "全伦敦最好逛的美食市场，一个人也吃得很过瘾。", q: "Borough Market London" },
+  { e: "🕰️", n: "Greenwich Market + 皇家天文台", d: "周三至周日", w: "DLR 十分钟就到。市集吃一圈，再上山踩本初子午线。", q: "Greenwich Market London" },
+  { e: "🌴", n: "Crossrail 屋顶花园", d: "天天，免费", w: "就在商场顶层，热带植物园，晴天来发呆最好。", q: "Crossrail Place Roof Garden" },
+  { e: "🌇", n: "Sky Garden", d: "天天，免费但要预约", w: "全城最好的免费观景台，提前几天官网订。", q: "Sky Garden London" },
+  { e: "🏛️", n: "大英 / 国家美术馆 / 泰特 / V&A", d: "天天，常设免费", w: "下雨天的万能答案，逛三次都逛不完。", q: "British Museum London" }
+];
+var LD_STAGE = [
+  { e: "🐭", n: "捕鼠器 The Mousetrap", w: "1952 年演到今天，世界上演最久的戏。St Martin's Theatre。", q: "St Martin's Theatre London" },
+  { e: "🦁", n: "狮子王 The Lion King", w: "Lyceum Theatre，开场那几分钟值回票价。", q: "Lyceum Theatre London" },
+  { e: "🕯️", n: "悲惨世界 Les Misérables", w: "Sondheim Theatre，一个人看也不会尴尬的那种戏。", q: "Sondheim Theatre London" },
+  { e: "🧙", n: "Wicked", w: "Apollo Victoria，明年就要停演了，趁在。", q: "Apollo Victoria Theatre" },
+  { e: "👑", n: "SIX", w: "八十分钟，六个王后开演唱会，短平快很适合下班后去。", q: "Vaudeville Theatre London" },
+  { e: "🥫", n: "Operation Mincemeat", w: "四个人演二战间谍喜剧，全场笑到不行，票价也友好。", q: "Fortune Theatre London" },
+  { e: "⚡", n: "哈利波特与被诅咒的孩子", w: "Palace Theatre，舞台魔术做到极致。", q: "Palace Theatre London" }
+];
+var LD_TIX = [
+  { e: "🎟️", t: "TKTS · 莱斯特广场", b: "官方折扣亭，当天的西区票经常半价。早上开门那阵最好的位子还在。" },
+  { e: "💷", t: "Proms 站票 £8", b: "皇家阿尔伯特音乐厅当天现场排队买，全世界最划算的顶级现场。" },
+  { e: "🎭", t: "环球剧场站票 £5", b: "露天，站在池子里看，不闷不挤，下雨也照演（带雨衣，伞不让撑）。" },
+  { e: "📱", t: "TodayTix 抽 Rush 票", b: "很多剧每天放一批低价票，App 上抽，中了立刻能去。" },
+  { e: "🆓", t: "大馆全都免费", b: "大英、国家美术馆、泰特、V&A、自然史、科学博物馆 —— 常设展一分钱不要，只有特展收费。" }
 ];
 // 天文台小知识：格林威治就在隔壁，这些都跟脚下这条 0° 线有关
 var LD_ASTRO = [
@@ -17888,6 +18073,15 @@ function LondonRoom(_refLD) {
   var beat = _bt[0], setBeat = _bt[1];
   var _at = useState(function () { return LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]; });
   var astro = _at[0], setAstro = _at[1];
+  var _ce = useState([]); var calExtra = _ce[0], setCalExtra = _ce[1];
+  var _cn = useState(""); var evName = _cn[0], setEvName = _cn[1];
+  var _cd = useState(""); var evDate = _cd[0], setEvDate = _cd[1];
+  var _cno = useState(""); var evNote = _cno[0], setEvNote = _cno[1];
+  var _cer = useState(""); var evErr = _cer[0], setEvErr = _cer[1];
+  var _cdl = useState(null); var evDel = _cdl[0], setEvDel = _cdl[1];
+  var _cm2 = useState(function () { try { return new Date().getMonth() >= 8 ? 1 : 0; } catch (_) { return 0; } });
+  var calMon = _cm2[0], setCalMon = _cm2[1];
+  var _cs2 = useState(null); var calSel = _cs2[0], setCalSel = _cs2[1];
   var myAuthor = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
   useEffect(function () { var id = setInterval(function () { setTick(function (n) { return n + 1; }); }, 20000); return function () { clearInterval(id); }; }, []);
   var lonT = ldFmt("Europe/London"), gzT = ldFmt("Asia/Shanghai");
@@ -17914,15 +18108,22 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {}, ex = [];
+      var m = {}, ex = [], evs = [];
       (rows || []).forEach(function (r) {
         if (r.id && r.id.indexOf("x-") === 0) {
           var o = null;
           try { o = JSON.parse(r.who); } catch (_) { o = null; }
           ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done, g: o.g || "" } : { id: r.id, t: r.who || "", done: false, g: "" });
         }
+        else if (r.id && r.id.indexOf("ev-") === 0) {
+          var eo = null;
+          try { eo = JSON.parse(r.who); } catch (_) { eo = null; }
+          if (eo && eo.ev) evs.push({ id: r.id, d: eo.d || "", n: eo.n || "", tp: eo.w || "", e: "📌", k: "自己加的", q: (eo.n || "") + " London", open: 0, own: 1 });
+        }
         else { m[r.id] = r.who || "nana"; }
       });
+      evs.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+      setCalExtra(evs);
       ex.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setPacked(m); setExtras(ex); ldSavePack(m);
       try { localStorage.setItem("nana-pack-extra", JSON.stringify(ex)); } catch (_) {}
@@ -17980,7 +18181,7 @@ function LondonRoom(_refLD) {
     if (!myAuthor) { setCraveMsg("先去 221B 选一下你是谁，才能寄申请哦"); return; }
     setCraveBusy(true); setCraveMsg("");
     var dt = new Date();
-    var body = "📟 伦敦航海家 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Suites, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
+    var body = "📟 伦敦航海家 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Place, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
     var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "call", pu: null };
     nanaSharedAdd(note, function (err) {
       setCraveBusy(false);
@@ -17990,7 +18191,7 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = full ? [["now", "⏰ 此刻"], ["care", "🫂 安心"], ["pack", "🧳 装箱"], ["eat", "🍜 吃饭"], ["live", "🗺️ 生活"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["pack", "🧳 装箱"]];
+  var TABS = full ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]];
   var card = function (inner, extra) {
     var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
     for (var k in (extra || {})) st[k] = extra[k];
@@ -18002,6 +18203,7 @@ function LondonRoom(_refLD) {
       h("span", { style: { fontSize: "1.3rem", flexShrink: 0 } }, o.e),
       h("div", { style: { flex: 1, minWidth: 0 } },
         h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#1f7a6d" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
+        o.dist ? h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#c8871a", marginTop: 2 } }, "🚶 " + o.dist) : null,
         h("div", { style: { fontSize: "0.68rem", color: "rgba(100,152,145,0.9)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
       h("span", { style: { color: "rgba(105,195,188,0.85)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
   };
@@ -18058,7 +18260,7 @@ function LondonRoom(_refLD) {
     }
     var ha = ((hh % 12) + mm / 60) * 30 * Math.PI / 180;
     var ma = mm * 6 * Math.PI / 180;
-    return h("svg", { viewBox: "0 0 100 100", width: 92, height: 92, style: { display: "block", margin: "0 auto" } },
+    return h("svg", { viewBox: "0 0 100 100", width: 44, height: 44, style: { display: "block", margin: "0 auto" } },
       h("defs", null,
         h("linearGradient", { id: gid, x1: "0", y1: "0", x2: "1", y2: "1" },
           h("stop", { offset: "0%", stopColor: "#f9e3ab" }),
@@ -18078,20 +18280,34 @@ function LondonRoom(_refLD) {
     var txt = ldFmt(tz);
     var hh = parseInt(txt.slice(0, 2), 10) || 0, mm = parseInt(txt.slice(3, 5), 10) || 0;
     var sk = ldSky(hh);
-    return h("div", { key: key, style: { flex: 1, background: sk.bg, borderRadius: 12, padding: "12px 6px 11px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 7px 18px rgba(35,32,22,0.26), inset 0 0 0 2px rgba(201,162,82,0.55)", transition: "background 1.2s ease" } },
-      h("div", { style: { fontSize: "0.55rem", letterSpacing: 2.4, fontWeight: 800, color: sk.sub, fontFamily: "Georgia,serif" } }, cap),
+    return h("div", { key: key, style: { flex: 1, background: sk.bg, borderRadius: 9, padding: "7px 5px 6px", textAlign: "center", position: "relative", overflow: "hidden", boxShadow: "0 4px 10px rgba(35,32,22,0.18), inset 0 0 0 1.5px rgba(201,162,82,0.5)", transition: "background 1.2s ease" } },
+      h("div", { style: { fontSize: "0.44rem", letterSpacing: 1.8, fontWeight: 800, color: sk.sub, fontFamily: "Georgia,serif" } }, cap),
       clockFace(hh, mm, sk, gid),
-      h("div", { style: { fontSize: "1.3rem", fontWeight: 800, letterSpacing: 1.5, color: sk.ink, fontFamily: "Georgia,'Times New Roman',serif", marginTop: 3 } }, txt),
-      h("div", { style: { fontSize: "0.6rem", color: sk.sub, marginTop: 2 } }, sk.n + " · " + place));
+      h("div", { style: { fontSize: "0.86rem", fontWeight: 800, letterSpacing: 1, color: sk.ink, fontFamily: "Georgia,'Times New Roman',serif", marginTop: 1 } }, txt),
+      h("div", { style: { fontSize: "0.5rem", color: sk.sub, marginTop: 0 } }, place));
+  };
+  var addEvent = function (theDay) {
+    var t = evName.trim(); if (!t || !theDay) return;
+    var id = "ev-" + Date.now() + Math.floor(Math.random() * 90);
+    var row = { id: id, d: theDay, n: t, tp: evNote.trim() || "自己写进来的", e: "📌", k: "自己加的", q: t + " London", open: 0, own: 1 };
+    setCalExtra(function (o) { return o.concat([row]); });
+    setEvName(""); setEvNote(""); setEvErr("");
+    nanaPackAdd({ id: id, who: JSON.stringify({ ev: 1, d: row.d, n: row.n, w: row.tp }) }, function (err) {
+      if (err) { setEvErr("没存上，等会儿再试"); setCalExtra(function (o) { return o.filter(function (x) { return x.id !== id; }); }); }
+    });
+  };
+  var delEvent = function (x) {
+    if (evDel !== x.id) { setEvDel(x.id); setTimeout(function () { setEvDel(null); }, 2600); return; }
+    setEvDel(null);
+    setCalExtra(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaPackDel(x.id, function () {});
   };
   var nowTab = h("div", null,
     ukCard([
       screws,
-      h("div", { key: "cl", style: { display: "flex", gap: 11 } },
+      h("div", { key: "cl", style: { display: "flex", gap: 9 } },
         bigClock("l", "Europe/London", "LONDON", "Canary Wharf", "brassL"),
         bigClock("g", "Asia/Shanghai", "HOME", "这个家", "brassG")),
-      h("div", { key: "gap", style: { marginTop: 12, background: UK_NAVY, borderRadius: 5, padding: "8px 10px", textAlign: "center", color: "#fdf0d2", fontSize: "0.64rem", fontWeight: 800, letterSpacing: "0.6px", fontFamily: "Georgia,serif", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.5)" } },
-        "⚓ 航海日志 · 家里的钟比这里快 " + diff + " 小时"),
       h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 7, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2a4f4a", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
       h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(80,105,98,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
       h("div", { key: "boat", style: { position: "relative", height: 30, marginTop: 6, overflow: "hidden" } },
@@ -18102,6 +18318,18 @@ function LondonRoom(_refLD) {
               h("path", { d: "M0 36 Q75 18 150 36 T300 36 T450 36 T600 36 T750 36 T900 36 T1050 36 T1200 36 V50 H0 Z", fill: "rgba(31,111,104,0.3)" })))),
         h("div", { style: { position: "absolute", left: "50%", bottom: 10, marginLeft: -10, fontSize: "1.05rem", animation: "ldBob 3.4s ease-in-out infinite" } }, "⛵"))
     ]),
+    ukCard([
+      screws,
+    h("div", { key: "astro", style: { background: "linear-gradient(160deg,#1b2a48,#26375c)", borderRadius: 9, padding: "12px 12px 10px", position: "relative", overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.45)" } },
+      [[12, 22, 1.5], [40, 14, 1.2], [72, 30, 1.1], [88, 18, 1.4]].map(function (p, si) {
+        return h("div", { key: "as" + si, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: p[2], height: p[2], borderRadius: "50%", background: "#ffe9b0", animation: "ldTwinkle " + (2 + si * 0.6) + "s ease-in-out infinite" } });
+      }),
+      h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, position: "relative" } },
+        h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 1.6, color: "#ffd98a" } }, "🔭 今日天文台 · GREENWICH"),
+        h("button", { onClick: function () { setAstro(LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]); }, style: { border: "1px solid rgba(255,217,138,0.45)", background: "transparent", borderRadius: 999, padding: "3px 9px", color: "#ffd98a", fontFamily: "inherit", fontWeight: 800, fontSize: "0.58rem", cursor: "pointer", flexShrink: 0 } }, "换一条")),
+      h("div", { style: { fontSize: "0.76rem", color: "rgba(232,238,255,0.95)", lineHeight: 1.8, position: "relative" } }, astro))
+
+    ], { padding: "13px 13px 12px" }),
     // ── 今日海况：日照弧线 + 穿衣 + 天文台 ──
     (function () {
       var sr = season.sr.split(":"), ss = season.ss.split(":");
@@ -18152,16 +18380,7 @@ function LondonRoom(_refLD) {
           h("div", null,
             h("div", { style: { fontWeight: 800, fontSize: "0.72rem", color: "#a1542a", marginBottom: 2 } }, "这个月要留意"),
             h("div", { style: { fontSize: "0.76rem", color: "rgba(100,76,54,0.96)", lineHeight: 1.7 } }, season.note))),
-        h("div", { key: "txt", style: { background: "rgba(255,255,255,0.55)", borderLeft: "3px solid rgba(169,127,46,0.55)", borderRadius: "0 7px 7px 0", padding: "9px 11px", fontSize: "0.77rem", color: "rgba(72,84,72,0.96)", lineHeight: 1.75, marginBottom: 10 } }, season.e + " " + season.t),
-        h("div", { key: "astro", style: { background: "linear-gradient(160deg,#1b2a48,#26375c)", borderRadius: 9, padding: "12px 12px 10px", position: "relative", overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.45)" } },
-          [[12, 22, 1.5], [40, 14, 1.2], [72, 30, 1.1], [88, 18, 1.4]].map(function (p, si) {
-            return h("div", { key: "as" + si, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: p[2], height: p[2], borderRadius: "50%", background: "#ffe9b0", animation: "ldTwinkle " + (2 + si * 0.6) + "s ease-in-out infinite" } });
-          }),
-          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, position: "relative" } },
-            h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 1.6, color: "#ffd98a" } }, "🔭 今日天文台 · GREENWICH"),
-            h("button", { onClick: function () { setAstro(LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]); }, style: { border: "1px solid rgba(255,217,138,0.45)", background: "transparent", borderRadius: 999, padding: "3px 9px", color: "#ffd98a", fontFamily: "inherit", fontWeight: 800, fontSize: "0.58rem", cursor: "pointer", flexShrink: 0 } }, "换一条")),
-          h("div", { style: { fontSize: "0.76rem", color: "rgba(232,238,255,0.95)", lineHeight: 1.8, position: "relative" } }, astro))
-      ]);
+        h("div", { key: "txt", style: { background: "rgba(255,255,255,0.55)", borderLeft: "3px solid rgba(169,127,46,0.55)", borderRadius: "0 7px 7px 0", padding: "9px 11px", fontSize: "0.77rem", color: "rgba(72,84,72,0.96)", lineHeight: 1.75 } }, season.e + " " + season.t)      ]);
     })(),
     // ── Mind the Gap：做成一条地铁线 ──
     ukCard([
@@ -18200,6 +18419,272 @@ function LondonRoom(_refLD) {
       h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { position: "relative", width: "100%", border: "none", borderRadius: 8, padding: "13px 8px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#c74a4f,#a02b31)", color: "#fff6ef", boxShadow: "0 6px 16px rgba(160,43,49,0.34)", letterSpacing: "0.5px", overflow: "hidden" } },
         h("span", { style: { position: "absolute", left: 12, top: "50%", marginTop: -13, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f0a8a0,#7d1c22)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem" } }, "⚓"),
         "发一份投喂申请")
+    ])
+  );
+  // ── 📅 日历（手绘风）────────────────────────────────
+  // 格子里的数字要看得清，用 Patrick Hand；标题要随手写的劲，用 Caveat
+  var LDHAND = "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive";
+  var LDSCRAWL = "'Caveat','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive";
+  // 手画方框：四个角圆得不一样，看起来像笔描的
+  var LD_WOB = [
+    "255px 15px 225px 15px/15px 225px 15px 255px",
+    "15px 225px 15px 255px/255px 15px 225px 15px",
+    "225px 15px 255px 15px/15px 255px 15px 225px",
+    "15px 255px 15px 225px/225px 15px 255px 15px"
+  ];
+  var wob = function (i) { return LD_WOB[i % 4]; };
+  // 每个月一张小插画
+  var monthArt = function (mi) {
+    if (mi === 0) {
+      return h("svg", { viewBox: "0 0 300 72", style: { width: "100%", display: "block", borderRadius: 10 } },
+        h("defs", null, h("linearGradient", { id: "augSky", x1: "0", y1: "0", x2: "0", y2: "1" },
+          h("stop", { offset: "0%", stopColor: "#d9eefb" }), h("stop", { offset: "100%", stopColor: "#f3f7e4" }))),
+        h("rect", { x: 0, y: 0, width: 300, height: 72, rx: 10, fill: "url(#augSky)" }),
+        h("g", { opacity: 0.95 },
+          h("circle", { cx: 254, cy: 19, r: 10, fill: "#ffd45e" }),
+          [0, 45, 90, 135, 180, 225, 270, 315].map(function (a, i) {
+            var r = a * Math.PI / 180;
+            return h("line", { key: "ry" + i, x1: 254 + 14 * Math.cos(r), y1: 19 + 14 * Math.sin(r), x2: 254 + 18 * Math.cos(r), y2: 19 + 18 * Math.sin(r), stroke: "#ffd45e", strokeWidth: 2, strokeLinecap: "round" }); })),
+        h("path", { d: "M40 22 q-9 0 -9 -7 q0 -7 9 -6 q3 -8 12 -6 q9 -3 12 6 q9 0 9 7 q0 6 -9 6 Z", fill: "#fff", opacity: 0.85 }),
+        h("path", { d: "M150 16 q-7 0 -7 -5 q0 -5 7 -5 q2 -6 9 -4 q7 -2 9 4 q7 0 7 5 q0 5 -7 5 Z", fill: "#fff", opacity: 0.7 }),
+        h("path", { d: "M0 50 Q60 43 120 50 T300 48 V72 H0 Z", fill: "#a9d79f" }),
+        h("path", { d: "M0 58 Q80 52 160 58 T300 56 V72 H0 Z", fill: "#8cc684", opacity: 0.75 }),
+        h("g", { transform: "translate(28,46)" },
+          h("rect", { x: 0, y: 0, width: 15, height: 4, rx: 1, fill: "#7a5a3a" }),
+          h("circle", { cx: 7.5, cy: -8, r: 10, fill: "#5fa864" }),
+          h("circle", { cx: 1, cy: -3, r: 6.5, fill: "#6fb873" })),
+        h("g", { transform: "translate(96,52) rotate(-4)" },
+          h("rect", { x: 0, y: 0, width: 54, height: 15, rx: 2, fill: "#e88b8b" }),
+          [0, 1, 2, 3, 4].map(function (i) { return h("rect", { key: "st" + i, x: i * 11 + 3, y: 0, width: 4, height: 15, fill: "#fff", opacity: 0.75 }); })),
+        h("g", { transform: "translate(160,44)" },
+          h("path", { d: "M0 6 h18 l-2 12 h-14 Z", fill: "#d9a441" }),
+          h("path", { d: "M2 6 q7 -8 14 0", fill: "none", stroke: "#b8862c", strokeWidth: 2 })),
+        h("path", { d: "M196 20 q5 -5 10 0 M206 20 q5 -5 10 0", fill: "none", stroke: "#7f8fa0", strokeWidth: 1.8, strokeLinecap: "round" }),
+        h("text", { x: 224, y: 64, fontSize: 13 }, "🐦"));
+    }
+    return h("svg", { viewBox: "0 0 300 72", style: { width: "100%", display: "block", borderRadius: 10 } },
+      h("defs", null, h("linearGradient", { id: "sepSky", x1: "0", y1: "0", x2: "0", y2: "1" },
+        h("stop", { offset: "0%", stopColor: "#fdeecd" }), h("stop", { offset: "100%", stopColor: "#f7e3cd" }))),
+      h("rect", { x: 0, y: 0, width: 300, height: 72, rx: 10, fill: "url(#sepSky)" }),
+      h("circle", { cx: 250, cy: 20, r: 9, fill: "#f3b95f", opacity: 0.9 }),
+      h("path", { d: "M0 52 Q70 46 140 52 T300 50 V72 H0 Z", fill: "#c9b183" }),
+      h("path", { d: "M0 60 Q80 55 160 60 T300 58 V72 H0 Z", fill: "#b39c6f", opacity: 0.7 }),
+      h("g", { transform: "translate(46,48)" },
+        h("rect", { x: 0, y: 0, width: 6, height: 6, fill: "#7a5a3a" }),
+        h("circle", { cx: 3, cy: -12, r: 13, fill: "#e08b45" }),
+        h("circle", { cx: -7, cy: -6, r: 8, fill: "#d8703f" }),
+        h("circle", { cx: 12, cy: -6, r: 8.5, fill: "#e6a24a" })),
+      h("g", { transform: "translate(112,40)" },
+        h("rect", { x: 0, y: 10, width: 46, height: 4, rx: 1.5, fill: "#8a6a4a" }),
+        h("rect", { x: 0, y: 2, width: 46, height: 4, rx: 1.5, fill: "#a07f5c" }),
+        h("rect", { x: 3, y: 13, width: 3, height: 10, fill: "#7a5a3a" }),
+        h("rect", { x: 40, y: 13, width: 3, height: 10, fill: "#7a5a3a" })),
+      [[96, 22, -20], [140, 14, 30], [176, 30, -10], [210, 18, 45]].map(function (p, i) {
+        return h("g", { key: "lf" + i, transform: "translate(" + p[0] + "," + p[1] + ") rotate(" + p[2] + ")" },
+          h("path", { d: "M0 0 q5 -5 10 0 q-5 5 -10 0 Z", fill: ["#d8703f", "#e0a03f", "#c85f35", "#eab54f"][i] }));
+      }),
+      h("text", { x: 232, y: 62, fontSize: 13 }, "☕"));
+  };
+  // 和纸胶带
+  var washi = function (key, col, left, rot) {
+    return h("div", { key: key, style: { position: "absolute", left: left, top: -9, width: 62, height: 20, transform: "rotate(" + rot + "deg)", background: "repeating-linear-gradient(45deg," + col + "," + col + " 6px,rgba(255,255,255,0.75) 6px,rgba(255,255,255,0.75) 12px)", opacity: 0.85, borderRadius: 2, boxShadow: "0 2px 5px rgba(90,70,40,0.18)", zIndex: 4 } });
+  };
+
+  var ldFmtD = function (dt) { return dt.getFullYear() + "-" + ("0" + (dt.getMonth() + 1)).slice(-2) + "-" + ("0" + dt.getDate()).slice(-2); };
+  var todayStr = ldFmtD(ldToday());
+  // 某天有哪些事
+  var dayEvents = function (ds) {
+    var dt = ldDate(ds); if (!dt) return [];
+    var out = [];
+    LD_EVENTS.forEach(function (x) { if (x.d === ds) out.push(x); });
+    calExtra.forEach(function (x) { if (x.d === ds) out.push(x); });
+    LD_WEEKLY.forEach(function (x) {
+      if (dt.getDay() !== x.w) return;
+      if (x.last) {                       // 每月最后一个
+        var nx = new Date(dt.getTime()); nx.setDate(dt.getDate() + 7);
+        if (nx.getMonth() === dt.getMonth()) return;
+      }
+      out.push(x);
+    });
+    return out;
+  };
+  var dayRuns = function (ds) {
+    return LD_RUNS.filter(function (x) { return ds >= x.a && ds <= x.b; });
+  };
+  // 格子上贴的小贴纸（emoji），买好票的排最前
+  var dayMarks = function (ds) {
+    var dt = ldDate(ds); if (!dt) return [];
+    var hot = [], rest = [];
+    LD_EVENTS.forEach(function (x) { if (x.d === ds) (x.booked ? hot : rest).push(x.booked ? "🎟️" : x.e); });
+    calExtra.forEach(function (x) { if (x.d === ds) rest.push("📌"); });
+    LD_WEEKLY.forEach(function (x) {
+      if (!x.dot || dt.getDay() !== x.w) return;
+      if (x.last) { var nx = new Date(dt.getTime()); nx.setDate(dt.getDate() + 7); if (nx.getMonth() === dt.getMonth()) return; }
+      rest.push(x.e);
+    });
+    return hot.concat(rest).slice(0, 2);
+  };
+  var MONTHS = [{ y: 2026, m: 7, n: "8 月" }, { y: 2026, m: 8, n: "9 月" }];
+  var mo = MONTHS[calMon];
+  // 排格子（周一开头）
+  var first = new Date(mo.y, mo.m, 1);
+  var lead = (first.getDay() + 6) % 7;
+  var dim = new Date(mo.y, mo.m + 1, 0).getDate();
+  var cells = [], ci;
+  for (ci = 0; ci < lead; ci++) cells.push(null);
+  for (ci = 1; ci <= dim; ci++) cells.push(ldFmtD(new Date(mo.y, mo.m, ci)));
+  while (cells.length % 7) cells.push(null);
+  var inStay = function (ds) { return ds >= LD_DEPART && ds <= LD_BACK; };
+  var selEv = calSel ? dayEvents(calSel) : [];
+  var selRun = calSel ? dayRuns(calSel) : [];
+  var infoRow = function (ic, txt) {
+    if (!txt) return null;
+    return h("div", { style: { display: "flex", gap: 7, marginTop: 4 } },
+      h("span", { style: { flexShrink: 0, fontSize: "0.68rem", width: 15, textAlign: "center", lineHeight: 1.75 } }, ic),
+      h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.75 } }, txt));
+  };
+  var detailCard = function (x, i, isRun) {
+    var col = LD_KCOL[x.k] || "#888";
+    var tl = ((String(x.n || "").length * 3) % 5) - 2;
+    return h("div", { key: "dc" + i + (x.n || ""), style: { borderLeft: "5px solid " + col, background: "linear-gradient(160deg,#fffdf5,#fdf6e4)", borderRadius: wob(i.length ? i.length : i), padding: "12px 13px", marginBottom: 11, transform: "rotate(" + (tl * 0.22) + "deg)", boxShadow: "0 4px 12px rgba(90,70,40,0.14)" } },
+      h("div", { style: { display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" } },
+        h("span", { style: { fontSize: "1.15rem" } }, x.e || "📌"),
+        h("span", { style: { fontSize: "1.16rem", fontWeight: 700, color: UK_INK, fontFamily: LDSCRAWL, letterSpacing: "0.4px" } }, x.n),
+        x.booked ? h("span", { style: { background: "linear-gradient(135deg,#f2d79a,#c9a252)", color: "#4a3510", borderRadius: 999, padding: "1px 8px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 1px 4px rgba(140,105,40,0.35)" } }, "🎟️ 票已买好") : null,
+        x.open ? h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800 } }, "🌬️ 露天") : null,
+        isRun ? h("span", { style: { background: "rgba(169,127,46,0.16)", color: "#8a6a2a", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800 } }, "这段时间一直有") : null,
+        x.soon ? h("span", { style: { background: "rgba(200,90,60,0.13)", color: "#a1542a", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800 } }, "档期待确认") : null),
+      infoRow("⏰", x.tm),
+      infoRow("📍", x.pl),
+      infoRow("🎟", x.tk),
+      infoRow("💡", x.tp || x.w),
+      h("div", { style: { marginTop: 7, display: "flex", gap: 7, alignItems: "center" } },
+        x.q ? h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 10px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 打开地图") : null,
+        x.own ? h("button", { onClick: function () { delEvent(x); }, style: { border: "none", background: "none", color: evDel === x.id ? "#c0392b" : "rgba(150,120,90,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.6rem", cursor: "pointer", padding: 0 } }, evDel === x.id ? "再点一下删掉" : "删掉") : null));
+  };
+  var calTab = h("div", null,
+    ukCard([
+      washi("t1", "rgba(120,190,180,0.85)", "13%", -7),
+      washi("t2", "rgba(240,190,120,0.85)", "63%", 6),
+      h("div", { key: "nav", style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
+        h("button", { onClick: function () { if (calMon > 0) { setCalMon(calMon - 1); setCalSel(null); } }, disabled: calMon === 0, style: { border: "none", background: "transparent", color: calMon === 0 ? "rgba(160,150,130,0.4)" : UK_NAVY, fontSize: "1.1rem", fontWeight: 800, cursor: calMon === 0 ? "default" : "pointer", padding: "2px 10px" } }, "‹"),
+        h("div", { style: { textAlign: "center" } },
+          h("div", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.52rem", color: UK_INK, letterSpacing: "1px" } }, mo.y + " 年 " + mo.n),
+          h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.9)", marginTop: 1, fontFamily: LDSCRAWL } }, "点一天，看那天有什么 ✏️")),
+        h("button", { onClick: function () { if (calMon < MONTHS.length - 1) { setCalMon(calMon + 1); setCalSel(null); } }, disabled: calMon >= MONTHS.length - 1, style: { border: "none", background: "transparent", color: calMon >= MONTHS.length - 1 ? "rgba(160,150,130,0.4)" : UK_NAVY, fontSize: "1.1rem", fontWeight: 800, cursor: calMon >= MONTHS.length - 1 ? "default" : "pointer", padding: "2px 10px" } }, "›")),
+      h("div", { key: "art", style: { marginBottom: 9 } }, monthArt(calMon)),
+      h("div", { key: "wd", style: { display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 3, marginBottom: 4 } },
+        ["一", "二", "三", "四", "五", "六", "日"].map(function (w, i) {
+          return h("div", { key: "wd" + i, style: { textAlign: "center", fontSize: "0.72rem", fontWeight: 700, color: i > 4 ? "#c25b3a" : "rgba(120,105,72,0.9)", padding: "3px 0", fontFamily: LDHAND } }, w);
+        })),
+      h("div", { key: "grid", style: { display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 3 } },
+        cells.map(function (ds, i) {
+          if (!ds) return h("div", { key: "c" + i });
+          var dnum = parseInt(ds.slice(8), 10);
+          var stay = inStay(ds);
+          var isToday = ds === todayStr;
+          var isSel = ds === calSel;
+          var marks = stay ? dayMarks(ds) : [];
+          var wd0 = ldDate(ds).getDay();
+          var isWk = wd0 === 0 || wd0 === 6;
+          var tilt = ((dnum * 7) % 5) - 2;
+          return h("div", { key: "c" + i, onClick: function () { setCalSel(isSel ? null : ds); },
+            style: { cursor: "pointer", position: "relative", borderRadius: wob(i), padding: "5px 0 4px", textAlign: "center", minHeight: 44,
+              background: isSel ? "#2f5d55" : (stay ? (isWk ? "rgba(255,236,203,0.92)" : "rgba(255,255,255,0.75)") : "transparent"),
+              border: stay ? (isSel ? "2px solid #24443f" : "1.6px solid rgba(140,105,55,0.42)") : "1.6px dashed rgba(170,158,132,0.3)",
+              transform: "rotate(" + (stay ? tilt * 0.35 : 0) + "deg)",
+              transition: "background 0.18s" } },
+            isToday ? h("div", { style: { position: "absolute", right: 2, top: 1, fontSize: "0.55rem" } }, "📍") : null,
+            h("div", { style: { fontSize: "0.96rem", fontWeight: 700, color: isSel ? "#fff4d8" : (stay ? UK_INK : "rgba(150,142,124,0.45)"), fontFamily: LDHAND, lineHeight: 1.15 } }, dnum),
+            h("div", { style: { display: "flex", justifyContent: "center", gap: 1, minHeight: 13, fontSize: "0.62rem", lineHeight: 1.1 } },
+              marks.length ? marks.map(function (mk, di) { return h("span", { key: "m" + di }, mk); })
+                           : (stay ? h("span", { style: { opacity: 0 } }, "·") : null)));
+        })),
+      h("div", { key: "lg", style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 11, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)" } },
+        [["🎟️", "票买好了"], ["🎉", "节庆"], ["🎭", "看戏"], ["💐", "市集"], ["🌆", "博物馆夜场"], ["📌", "自己加的"], ["📍", "今天"]].map(function (kv, i) {
+          return h("div", { key: "lg" + i, style: { display: "flex", alignItems: "center", gap: 3, fontSize: "0.62rem", color: "rgba(110,100,78,0.92)", fontFamily: LDHAND } },
+            h("span", { style: { fontSize: "0.72rem" } }, kv[0]), h("span", { style: { fontFamily: LDSCRAWL, fontSize: "0.86rem" } }, kv[1]));
+        }))
+    ]),
+    // 选中那天的详情
+    calSel ? ukCard([
+      screws,
+      h("div", { key: "selh", style: { marginBottom: 12 } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+          h("span", { style: { fontSize: "1.15rem" } }, "📖"),
+          h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.42rem", color: UK_INK, background: "linear-gradient(180deg,transparent 64%,rgba(255,214,120,0.75) 64%)", padding: "0 4px" } }, ldMD(calSel))),
+        h("div", { style: { fontSize: "0.78rem", color: "rgba(110,100,78,0.9)", marginTop: 4, fontFamily: LDSCRAWL } }, (selEv.length || selRun.length) ? "这天能做的事 ✏️" : "日历上没写死的活动"),
+        h("div", { style: { marginTop: 8, borderTop: "2px dotted rgba(169,127,46,0.5)" } })),
+      selEv.length ? h("div", { key: "de" }, selEv.map(function (x, i) { return detailCard(x, i, 0); })) : null,
+      selRun.length ? h("div", { key: "dr" }, selRun.map(function (x, i) { return detailCard(x, "r" + i, 1); })) : null,
+      (function () {
+        var dt = ldDate(calSel); if (!dt) return null;
+        var dw = dt.getDay(); if (dw === 0 || dw === 6) return null;   // 只在工作日出现
+        var seed = parseInt(calSel.slice(5, 7) + calSel.slice(8), 10) || 0;
+        var picks = [LD_WEEKNIGHT[seed % LD_WEEKNIGHT.length], LD_WEEKNIGHT[(seed * 3 + 4) % LD_WEEKNIGHT.length]];
+        if (picks[1] === picks[0]) picks[1] = LD_WEEKNIGHT[(seed + 1) % LD_WEEKNIGHT.length];
+        return h("div", { key: "wn" },
+          h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 800, fontSize: "0.62rem", letterSpacing: 1.4, color: "#8a6a2a", margin: "4px 0 8px" } }, "🌆 下班之后"),
+          picks.map(function (x, i) { return detailCard(x, "n" + i, 0); }));
+      })(),
+      (!selEv.length && !selRun.length) ? h("div", { key: "d0", style: { fontSize: "0.76rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.8 } }, "日历上这天没写死的安排 —— 下面有几个下班后能去的地方，或者自己写一条进来。") : null,
+      h("div", { key: "add", style: { marginTop: 4, borderTop: "2px dotted rgba(169,127,46,0.5)", paddingTop: 11 } },
+        h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", marginBottom: 7, fontWeight: 700 } }, "往 " + ldMD(calSel) + " 加一条（两个人都看得到）"),
+        h("div", { style: { display: "flex", gap: 6 } },
+          h("input", { value: evName, onChange: function (e) { setEvName(e.target.value); }, placeholder: "去哪 / 看什么", style: { flex: 1, minWidth: 0, border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "7px 9px", fontFamily: "inherit", fontSize: "0.75rem", background: "rgba(255,255,255,0.75)", color: UK_INK, outline: "none" } }),
+          h("button", { onClick: function () { addEvent(calSel); }, disabled: !evName.trim(), style: { flexShrink: 0, border: "none", borderRadius: 7, padding: "7px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: evName.trim() ? "pointer" : "default", background: evName.trim() ? UK_SEA : "rgba(170,160,140,0.35)", color: "#fff" } }, "写上")),
+        h("input", { value: evNote, onChange: function (e) { setEvNote(e.target.value); }, placeholder: "备注：几点、在哪、要不要买票", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "7px 9px", fontFamily: "inherit", fontSize: "0.75rem", background: "rgba(255,255,255,0.75)", color: UK_INK, outline: "none" } }),
+        evErr ? h("div", { style: { marginTop: 6, fontSize: "0.66rem", color: "#c0392b", fontWeight: 700 } }, evErr) : null)
+    ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }) : null,
+    ukCard([
+      screws,
+      ukHead("天天都在", "不用挑日子，想去就去", h("span", { style: { fontSize: "1rem" } }, "🔁")),
+      h("div", { key: "aw" }, LD_ALWAYS.map(function (x, i) {
+        return h("div", { key: "aw" + i, style: { display: "flex", gap: 10, padding: "9px 0", borderBottom: i === LD_ALWAYS.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n),
+            h("div", { style: { fontSize: "0.62rem", color: "#a1542a", fontWeight: 800, marginTop: 2 } }, x.d),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.w),
+            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 5, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")));
+      }))
+    ]),
+    ukCard([
+      screws,
+      ukHead("工作日的晚上", "下班之后，一个人也能去的地方", h("span", { style: { fontSize: "1rem" } }, "🌆")),
+      h("div", { key: "wn2" }, LD_WEEKNIGHT.map(function (x, i) {
+        return h("div", { key: "wn2" + i, style: { display: "flex", gap: 10, padding: "10px 0", borderBottom: i === LD_WEEKNIGHT.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n,
+              x.open ? h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, marginLeft: 6 } }, "🌬️ 露天") : null),
+            h("div", { style: { fontSize: "0.62rem", color: "#a1542a", fontWeight: 800, marginTop: 2 } }, x.tm + " · " + x.tk),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.tp),
+            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 5, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")));
+      }))
+    ]),
+    ukCard([
+      screws,
+      ukHead("想看戏的时候", "西区常驻，哪天想去哪天买", h("span", { style: { fontSize: "1rem" } }, "🎭")),
+      h("div", { key: "sg" }, LD_STAGE.map(function (x, i) {
+        return h("div", { key: "sg" + i, style: { display: "flex", gap: 10, padding: "9px 0", borderBottom: i === LD_STAGE.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.w),
+            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 5, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")));
+      }))
+    ]),
+    ukCard([
+      screws,
+      ukHead("买票小抄", "别买贵了", h("span", { style: { fontSize: "1rem" } }, "🎟️")),
+      h("div", { key: "tx" }, LD_TIX.map(function (x, i) {
+        return h("div", { key: "tx" + i, style: { display: "flex", gap: 9, padding: "9px 0", borderBottom: i === LD_TIX.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b)));
+      }))
     ])
   );
   // ── 行前 ──
@@ -18281,7 +18766,17 @@ function LondonRoom(_refLD) {
   );
   // ── 生活 ──
   var liveTab = h("div", null,
-    card([head("🏠 金丝雀码头生存包", "点开直接跳地图"), h("div", { key: "l" }, LD_LIVE.map(linkRow))])
+    ukCard([
+      screws,
+      ukHead("楼下", "Fraser Place · Pan Peninsula 一带 · 走路能到的都在这", h("span", { style: { fontSize: "1rem" } }, "🏠")),
+      h("div", { key: "n0", style: { fontSize: "0.68rem", color: "rgba(120,105,78,0.9)", lineHeight: 1.7, marginBottom: 9, background: "rgba(169,127,46,0.1)", borderRadius: 7, padding: "8px 10px" } },
+        "距离和步行时间是按公寓那一带估的，实际走可能差个两三分钟。走过一遍觉得不对，跟熊猫鱼说，我改。"),
+      h("div", { key: "n" }, LD_NEAR.map(linkRow))
+    ]),
+    card([head("🛒 买东西", "超市、药店、中超"), h("div", { key: "s" }, LD_SHOP.map(linkRow))]),
+    card([head("🌬️ 想透口气", "全是露天或半露天的地方"), h("div", { key: "a" }, LD_AIR.map(linkRow))]),
+    card([head("🚇 怎么出门", "按闷不闷排的，最上面最开阔"), h("div", { key: "g" }, LD_GO.map(linkRow))]),
+    card([head("🏥 不舒服的时候", "从轻到重，照着往下走"), h("div", { key: "m" }, LD_MED.map(linkRow))])
   );
   // ── 安心 ──
   var careTab = h("div", null,
@@ -18366,7 +18861,7 @@ function LondonRoom(_refLD) {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
       title: "\uD83E\uDDED 伦敦航海家",
-      sub: "Canary Wharf 港 · Fraser Suites 号船舱 \u2693",
+      sub: "Canary Wharf 港 · Fraser Place 号船舱 \u2693",
       foot: "从本初子午线 0° 到家里 113°E"
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
@@ -18374,7 +18869,7 @@ function LondonRoom(_refLD) {
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
     })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
+    tab === "now" ? nowTab : tab === "cal" ? calTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(48,140,132,0.3)" } },
         h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
