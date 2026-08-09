@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-73";
+var NANA_VER = "v2026.8.2-75";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17722,7 +17722,8 @@ var LD_ARR_STEP = [
     "司机的电话和微信存进通讯录，别临时翻。",
     "备忘录里写好地址：Fraser Place Canary Wharf, London E14。给司机看这一行就够。",
     "充电宝充满。飞十几个小时，落地手机基本没电了。",
-    "订接机时把航站楼写成 South Terminal（南楼），别让司机跑去北楼。"
+    "订接机时把航站楼写成 South Terminal（南楼），别让司机跑去北楼，并且把航班号给司机 —— 让他跟着航班走，延误了也不会白等。",
+    "房间从落地前一晚就订好了，落地直接上楼，这件事不用再操心。"
   ] },
   { e: "🛂", n: "下飞机到出关", items: [
     "跟着 Arrivals / Baggage reclaim 的牌子走，一路都有指示，不用问人。",
@@ -17741,7 +17742,8 @@ var LD_ARR_STEP = [
   { e: "🏠", n: "路上和到家", items: [
     "车程通常一小时到一个半小时，赶上早晚高峰可能两小时。上车先跟家里说一声，然后就睡吧。",
     "到 Fraser Place 前台报名字办入住，行李让门童帮着搬，不用逞强。",
-    "进屋第一件事：把吸入器拿出来放床头。别等收拾完再找。"
+    "进屋第一件事：把吸入器拿出来放床头。别等收拾完再找。",
+    "第一天别倒头睡到天黑。眯一会儿可以，最多九十分钟，然后撑到当地晚上九十点再睡 —— 这样时差两天就倒过来了。"
   ] }
 ];
 var LD_ARR_WAY = [
@@ -17754,6 +17756,14 @@ var LD_ARR_WAY = [
   { e: "🚖", n: "Taxi Rank 机场出租", tag: "出门就有", col: "#2b3446", cost: "约 £130 - 170", time: "60 - 90 分钟",
     how: "不用订、不用网、不用装 App。出关后在南楼到达大厅跟着 Taxis 的牌子走，车站就在楼外的车道边，有工作人员排队引导。上车把地址给司机看，行李他搬。到了刷卡付，英国出租车都能刷。",
     why: "好处：零准备 —— 不用订、不用网、走出门就有，行李司机搬。代价：三条里最贵。" }
+];
+// 06:30 落地那天的实际节奏
+var LD_ARR_CLOCK = [
+  { t: "06:30", n: "落地", b: "八月中旬伦敦五点四十几就天亮了，出来是大白天。广州那边这会儿是下午一点半。" },
+  { t: "07:00 - 08:00", n: "过关 + 取行李", b: "清晨是长途航班扎堆到的时段，边检可能排半小时到一个半小时。取行李再算二三十分钟。" },
+  { t: "约 08:00", n: "出到达大厅", b: "接机司机会跟着航班号等，正常都含落地后六十分钟免费等待。" },
+  { t: "08:00 - 10:00", n: "在路上", b: "正赶上早高峰，平时一小时的路可能要跑两小时。上车就睡，到了司机会叫你。" },
+  { t: "约 10:00", n: "到公寓", b: "房间从前一晚就订下了，不用等下午入住 —— 前台报个名字直接上楼。先洗个澡，把吸入器放床头，然后眯一会儿。" }
 ];
 var LD_ARR_SOS = [
   { t: "司机没出现", b: "先看 App 里的消息和订单页，十有八九是他在停车场等你。打订单上的电话，或者发 WhatsApp。实在联系不上，就走到 Taxi Rank 打一辆正规出租 —— 能刷卡，贵一点但一定走得了。" },
@@ -18532,6 +18542,17 @@ function LondonRoom(_refLD) {
         open ? h("div", { style: { padding: "0 15px 15px 20px" } },
           h("div", { key: "sum", style: { background: "rgba(180,53,58,0.09)", borderRadius: 9, padding: "11px 12px", fontSize: "0.78rem", color: "#7d1c22", lineHeight: 1.8, fontWeight: 700, marginBottom: 13 } },
             "三条路都到得了，看你落地那会儿的状态挑一条：想省心就出发前订好车，想省钱就落地用 App 叫，什么都不想弄就直接走去出租车站。怎么选都不会错。"),
+          // 那天的钟点
+          h("div", { key: "clk", style: { background: "rgba(32,48,58,0.06)", borderRadius: 9, padding: "12px 13px", marginBottom: 13 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#20303a", marginBottom: 9, fontFamily: "Georgia,'PingFang SC',serif" } }, "🕕 06:30 落地，那天大概是这样"),
+            LD_ARR_CLOCK.map(function (c, i) {
+              return h("div", { key: "ck" + i, style: { display: "flex", gap: 10, paddingBottom: i === LD_ARR_CLOCK.length - 1 ? 0 : 10 } },
+                h("div", { style: { flexShrink: 0, width: 78, textAlign: "right" } },
+                  h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 700, fontSize: "0.72rem", color: "#b4353a" } }, c.t)),
+                h("div", { style: { flex: 1, minWidth: 0, borderLeft: "2px solid rgba(180,53,58,0.3)", paddingLeft: 10 } },
+                  h("div", { style: { fontWeight: 800, fontSize: "0.76rem", color: "#3a3226" } }, c.n),
+                  h("div", { style: { fontSize: "0.72rem", color: "rgba(85,75,60,0.95)", marginTop: 2, lineHeight: 1.7 } }, c.b)));
+            })),
           // 三种走法
           h("div", { key: "ways" }, LD_ARR_WAY.map(function (w, i) {
             var hot = false;
