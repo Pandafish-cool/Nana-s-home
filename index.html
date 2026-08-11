@@ -7883,6 +7883,7 @@ function NanaCloudImg(_refCI) {
   var _s = useState(null); var src = _s[0], setSrc = _s[1];
   var _n = useState(0); var nonce = _n[0], setNonce = _n[1];
   var _dd = useState(false); var dead = _dd[0], setDead = _dd[1];
+  var _ot = useState(false); var onlyThumb = _ot[0], setOnlyThumb = _ot[1];
   useEffect(function () {
     setDead(false);
     var t = (thumb && nanaNoThumb().indexOf(u) < 0) ? nanaThumbUrl(u) : null;
@@ -7890,24 +7891,32 @@ function NanaCloudImg(_refCI) {
   }, [u, thumb, nonce]);
   useEffect(function () {
     if (!want) return;
-    var on = true;
-    setSrc(null);
+    var on = true, shown = false;
+    setSrc(null); setOnlyThumb(false);
+    // 看大图时，先把本机已经存着的缩略图顶上去，不让画面空着
+    if (want === u && !thumb) {
+      var tu = nanaThumbUrl(u);
+      if (tu) nanaCloudGet(tu, function (td) {
+        if (!on || !td || shown) return;
+        shown = true; setSrc(td); setOnlyThumb(true);
+      });
+    }
     nanaCloudGet(want, function (data) {
       if (!on) return;
-      if (data) { setSrc(data); return; }
+      if (data) { shown = true; setSrc(data); setOnlyThumb(false); return; }
       nanaCloudFetchRetry(want, 2, function (err, d) {
         if (!on) return;
-        if (!err && d) { nanaCloudPut(want, d); setSrc(d); return; }
+        if (!err && d) { nanaCloudPut(want, d); shown = true; setSrc(d); setOnlyThumb(false); return; }
         if (want !== u) { nanaMarkNoThumb(u); setWant(u); return; }   // 缩略图不行就退回原图
-        // 服务器答了但图是残的（或 4xx）：别再把白图放出来，直接给可点重试的占位。
-        // 只有 fetch 本身用不了（CORS/环境问题）才退回让 img 标签自己试。
+        if (shown) return;                // 缩略图已经撑着，别动它
+        // 服务器答了但图是残的（或 4xx）：别再把白图放出来，给可点重试的占位。
         var m = String((err && err.message) || "");
         if (m === "truncated" || m.indexOf("HTTP") === 0 || (err && err.to)) { setDead(true); return; }
-        setSrc(want);
+        setSrc(want);                     // fetch 本身用不了，交给 img 标签试
       });
     });
     return function () { on = false; };
-  }, [want, nonce]);
+  }, [want, nonce, thumb, u]);
   // 缩略图拿不到（老信没传过缩略图，或者这次没下完）就退回原图，并记住别再试
   var giveUp = function () {
     if (want && want !== u) { nanaMarkNoThumb(u); setWant(u); return; }
@@ -7919,6 +7928,13 @@ function NanaCloudImg(_refCI) {
     style: Object.assign({}, style, { cursor: "pointer" })
   });
   if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8a894", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "1px" }, style) }, "···");
+  if (onlyThumb && !thumb) {
+    return h("div", { style: { position: "relative", display: "inline-block", lineHeight: 0 } },
+      h("img", { key: want + "|" + nonce, src: src, alt: "", decoding: "async", onClick: onClick, style: style }),
+      h("div", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setNonce(nonce + 1); },
+        style: { position: "absolute", left: 0, right: 0, bottom: 0, background: "rgba(20,26,32,0.72)", color: "#ffe6b0", fontSize: "0.66rem", fontWeight: 800, textAlign: "center", padding: "6px 8px", cursor: "pointer", borderRadius: "0 0 8px 8px" } },
+        "只有缩略图 · 点一下重试原图"));
+  }
   var fromNet = src === want;
   return h("img", {
     key: want + "|" + nonce, src: src, alt: "", loading: "lazy", decoding: "async",
@@ -7971,18 +7987,22 @@ function NanaLightbox(_refLB) {
   var h = React.createElement;
   var _dt = useState(null); var data = _dt[0], setData = _dt[1];
   var _sv = useState(""); var saveMsg = _sv[0], setSaveMsg = _sv[1];
+  var _to = useState(false); var thumbOnly = _to[0], setThumbOnly = _to[1];
   useEffect(function () {
     var on = true;
     setData(null);
     var take = function (d) { if (on && d) setData(d); };
     if (src && String(src).indexOf("data:") === 0) return take(src);
     if (src && String(src).indexOf("http") === 0) {
+      var tu = nanaThumbUrl(src);
+      // 原图拿不到时，至少让「保存」有缩略图可存
+      if (tu) nanaCloudGet(tu, function (td) { if (on && td && !data) { setData(td); setThumbOnly(true); } });
       nanaCloudGet(src, function (d) {
         if (!on) return;
-        if (d) return take(d);
+        if (d) { setThumbOnly(false); return take(d); }
         nanaCloudFetchRetry(src, 2, function (err, d2) {
           if (!on || err || !d2) return;
-          nanaCloudPut(src, d2); take(d2);
+          nanaCloudPut(src, d2); setThumbOnly(false); take(d2);
         });
       });
       return;
@@ -8094,13 +8114,13 @@ function NanaLightbox(_refLB) {
     zoomed && h("button", { onClick: function (e) { e.stopPropagation(); reset(); }, style: { position: "absolute", left: 16, top: "calc(16px + env(safe-area-inset-top,0px))", borderRadius: 999, border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", fontSize: "0.7rem", fontWeight: 800, padding: "8px 13px", cursor: "pointer" } }, "\u21BA \u539F\u5927\u5C0F " + z.toFixed(1) + "x"),
     h("div", { style: { position: "absolute", bottom: "calc(62px + env(safe-area-inset-bottom,0px))", left: 0, right: 0, display: "flex", justifyContent: "center" } },
       h("button", { onClick: doSave, disabled: !data, style: { border: "none", borderRadius: 999, padding: "9px 18px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: data ? "pointer" : "default", background: data ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.07)", color: data ? "#fff" : "rgba(255,255,255,0.4)", backdropFilter: "blur(6px)" } },
-        saveMsg === "..." ? "\u5B58\u50A8\u4E2D\u2026" : (saveMsg || (data ? "\u2B07\uFE0E \u4FDD\u5B58\u5230\u624B\u673A" : "\u56FE\u7247\u8FD8\u5728\u52A0\u8F7D\u2026")))),
+        saveMsg === "..." ? "\u5B58\u50A8\u4E2D\u2026" : (saveMsg || (data ? (thumbOnly ? "\u2B07\uFE0E \u4FDD\u5B58\uFF08\u53EA\u6709\u7F29\u7565\u56FE\uFF09" : "\u2B07\uFE0E \u4FDD\u5B58\u5230\u624B\u673A") : "\u56FE\u7247\u8FD8\u5728\u52A0\u8F7D\u2026")))),
     h("div", { style: { position: "absolute", bottom: "calc(26px + env(safe-area-inset-bottom,0px))", left: 0, right: 0, textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", fontWeight: 700, pointerEvents: "none" } },
       zoomed ? "\u62D6\u52A8\u770B\u7EC6\u8282 \u00B7 \u53CC\u51FB\u8FD8\u539F" : "\u53CC\u6307\u6216\u53CC\u51FB\u653E\u5927 \u00B7 \u70B9\u4E00\u4E0B\u5173\u95ED"));
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-75";
+var NANA_VER = "v2026.8.2-80";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17714,6 +17734,33 @@ var ldWeekend = function () {
   var f = function (d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
   return { sat: f(sat), sun: f(sun), satD: sat, sunD: sun };
 };
+// ── 🖼️ 熊猫鱼的伦敦照片墙 ──────────────────────────────
+// f 是仓库根目录里的文件名；没有照片时显示占位格子。
+// must = 1 表示「一定要去」，0 表示「推荐」。
+// la / lo 是经纬度，用来在小屋自己的伦敦地图上落点
+var LD_WALL = [
+  { f: "", n: "塔桥", q: "Tower Bridge London", la: 51.5055, lo: -0.0754, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明：这里写这个地方有什么特别、几点去最好、怎么玩。" },
+  { f: "", n: "格林威治", q: "Greenwich London", la: 51.4769, lo: -0.0005, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "大英博物馆", q: "British Museum", la: 51.5194, lo: -0.1270, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "诺丁山", q: "Notting Hill London", la: 51.5160, lo: -0.2059, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "Sky Garden", q: "Sky Garden London", la: 51.5113, lo: -0.0836, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "Borough Market", q: "Borough Market London", la: 51.5055, lo: -0.0910, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" }
+];
+// 家：Fraser Place, Pan Peninsula
+var LD_HOME_PT = { la: 51.4990, lo: -0.0203 };
+// 泰晤士河中心线，西到东，绕道格斯岛那个大弯
+var LD_THAMES = [
+  [-0.232, 51.487], [-0.206, 51.472], [-0.181, 51.484], [-0.152, 51.485],
+  [-0.126, 51.487], [-0.118, 51.501], [-0.101, 51.507], [-0.079, 51.508],
+  [-0.061, 51.505], [-0.046, 51.509], [-0.033, 51.507], [-0.024, 51.500],
+  [-0.016, 51.490], [-0.008, 51.484], [0.002, 51.485], [0.009, 51.494],
+  [0.014, 51.503], [0.022, 51.508]
+];
+var LD_MAP_BOX = { l0: -0.238, l1: 0.030, t0: 51.455, t1: 51.545, w: 320, h: 174 };
+var ldXY = function (la, lo) {
+  var B = LD_MAP_BOX;
+  return [((lo - B.l0) / (B.l1 - B.l0)) * B.w, ((B.t1 - la) / (B.t1 - B.t0)) * B.h];
+};
 // ── 🛬 落地那天：盖特威克 → Fraser Place ──────────────────
 var LD_ARR_STEP = [
   { e: "📱", n: "出发前就办好", items: [
@@ -18274,6 +18321,16 @@ function LondonRoom(_refLD) {
   var _at = useState(function () { return LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]; });
   var astro = _at[0], setAstro = _at[1];
   var _ar = useState(null); var arrOpen = _ar[0], setArrOpen = _ar[1];
+  var _wp = useState(null); var wallPick = _wp[0], setWallPick = _wp[1];
+  var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
+  var wallSeen = _ws[0], setWallSeen = _ws[1];
+  var revealWall = function (i, name) {
+    setWallPick(i);
+    if (wallSeen.indexOf(name) >= 0) return;
+    var nx = wallSeen.concat([name]);
+    setWallSeen(nx);
+    try { localStorage.setItem("nana-wall-seen", JSON.stringify(nx)); } catch (_) {}
+  };
   var _ce = useState([]); var calExtra = _ce[0], setCalExtra = _ce[1];
   var _cn = useState(""); var evName = _cn[0], setEvName = _cn[1];
   var _cd = useState(""); var evDate = _cd[0], setEvDate = _cd[1];
@@ -19099,26 +19156,121 @@ function LondonRoom(_refLD) {
   };
   var wantN = 0, doneN = 0;
   for (var sk in spots) { if (spots[sk] === "want") wantN++; if (spots[sk] === "done") doneN++; }
+  var wallShown = LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; });
+  var wallSel = wallPick === null ? null : wallShown[wallPick];
   var playTab = h("div", null,
-    card(h("div", { style: { textAlign: "center" } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 4 } }, "🎡 六个月，够走很多地方"),
-      h("div", { style: { fontSize: "0.72rem", color: "rgba(110,162,155,0.9)", lineHeight: 1.7 } }, "点一下标记 🌟想去 / ✅去过，攒一张自己的伦敦地图"),
-      h("div", { style: { marginTop: 8, fontSize: "0.76rem", fontWeight: 800, color: "#c8871a" } }, "想去 " + wantN + " · 去过 " + doneN))),
-    LD_TRIPS.map(function (zone, zi) {
-      return card([
-        h("div", { key: "z", style: { fontWeight: 800, fontSize: "0.86rem", color: "#1f7a6d", marginBottom: 6 } }, zone.z),
-        h("div", { key: "zl" }, zone.list.map(function (o, oi) {
-          var id = "z" + zi + "-" + oi, st = spots[id] || "", c = chipOf(st);
-          return h("div", { key: id, style: { display: "flex", alignItems: "center", gap: 10, padding: "9px 2px", borderBottom: "1px solid rgba(165,218,212,0.3)" } },
-            h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0, textDecoration: "none", color: "inherit" } },
-              h("span", { style: { fontSize: "1.25rem", flexShrink: 0 } }, o.e),
+    ukCard([
+      screws,
+      ukHead("熊猫鱼的伦敦", "他去的时候拍的 · 猜猜每张是哪儿，点开揭晓", h("span", { style: { fontSize: "1rem" } }, "🖼️")),
+      wallShown.length
+        ? h("div", { key: "wl", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+            wallShown.map(function (x, i) {
+              var tl = (i % 2 ? 1.8 : -1.8);
+              var seen = wallSeen.indexOf(x.n) >= 0;
+              return h("div", { key: "w" + i, onClick: function () { revealWall(i, x.n); },
+                style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + tl + "deg)", cursor: "pointer", position: "relative" } },
+                x.f
+                  ? h("img", { src: x.f, alt: "", loading: "lazy", style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } })
+                  : h("div", { style: { width: "100%", height: 112, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", color: "rgba(120,105,80,0.6)" } }, "📷"),
+                seen ? null : h("div", { style: { position: "absolute", left: 6, right: 6, top: 6, height: 112, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" } },
+                  h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "2.6rem", color: "rgba(255,255,255,0.85)", textShadow: "0 2px 10px rgba(0,0,0,0.45)" } }, "?")),
+                h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: seen ? LDHAND : LDSCRAWL, fontSize: seen ? "0.88rem" : "0.82rem", color: seen ? "#3a3226" : "rgba(120,105,85,0.85)" } }, seen ? x.n : "这是哪儿？"),
+                null);
+            }))
+        : h("div", { key: "w0", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "16px 14px", textAlign: "center", fontSize: "0.76rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8 } },
+            "照片还在路上 📷"),
+      h("div", { key: "cnt", style: { marginTop: 12, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
+        "揭晓了 " + wallShown.filter(function (x) { return wallSeen.indexOf(x.n) >= 0; }).length + " / " + wallShown.length + " · 其中 " + wallShown.filter(function (x) { return x.must; }).length + " 个是他点名要你去的")
+    ]),
+    // 打开的那张
+    wallSel ? h("div", { onClick: function () { setWallPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
+        h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
+          h("div", { style: { padding: 9 } },
+            wallSel.f
+              ? h("img", { src: wallSel.f, alt: "", style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
+              : h("div", { style: { width: "100%", height: 190, borderRadius: 6, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" } }, "📷")),
+          h("div", { style: { padding: "4px 16px 18px" } },
+            h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+              h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, wallSel.n),
+              wallSel.must ? h("span", { style: { background: "linear-gradient(135deg,#e0645f,#b4353a)", color: "#fff6ef", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "一定要去") : h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "推荐")),
+            wallSel.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #b4353a", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, wallSel.say) : null,
+            wallSel.tip ? h("div", { style: { marginTop: 10, fontSize: "0.76rem", color: "rgba(85,75,60,0.96)", lineHeight: 1.8 } }, wallSel.tip) : null,
+            h("div", { style: { marginTop: 13, display: "flex", gap: 8 } },
+              h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
+              h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
+      : null,
+    // ── 她的伦敦地图 ──
+    ukCard([
+      screws,
+      ukHead("她的伦敦地图", "揭晓一个亮一个 · 点针脚也能看", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
+      h("div", { key: "mp", style: { background: "linear-gradient(165deg,#eef3e6,#e2ead9)", borderRadius: 9, padding: "8px 6px 6px", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.28)" } },
+        h("svg", { viewBox: "0 0 320 174", style: { width: "100%", display: "block", overflow: "visible" } },
+          // 河
+          h("path", { d: (function () {
+              var d = "", i, p;
+              for (i = 0; i < LD_THAMES.length; i++) {
+                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
+                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+              }
+              return d;
+            })(), fill: "none", stroke: "#8fc4d8", strokeWidth: 11, strokeLinecap: "round", strokeLinejoin: "round", opacity: 0.85 }),
+          h("path", { d: (function () {
+              var d = "", i, p;
+              for (i = 0; i < LD_THAMES.length; i++) {
+                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
+                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+              }
+              return d;
+            })(), fill: "none", stroke: "#b9dced", strokeWidth: 5, strokeLinecap: "round", strokeLinejoin: "round" }),
+          // 家
+          (function () {
+            var p = ldXY(LD_HOME_PT.la, LD_HOME_PT.lo);
+            return h("g", null,
+              h("circle", { cx: p[0], cy: p[1], r: 13, fill: "rgba(180,53,58,0.14)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 2.4s ease-in-out infinite" } }),
+              h("circle", { cx: p[0], cy: p[1], r: 6, fill: "#b4353a", stroke: "#fff", strokeWidth: 2 }),
+              h("text", { x: p[0], y: p[1] + 19, textAnchor: "middle", fontSize: 8.5, fill: "#8a3a3d", fontWeight: "bold" }, "家"));
+          })(),
+          // 照片点
+          wallShown.map(function (x, i) {
+            if (!x.la) return null;
+            var p = ldXY(x.la, x.lo);
+            var seen = wallSeen.indexOf(x.n) >= 0;
+            return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
+              h("circle", { cx: p[0], cy: p[1], r: 11, fill: "transparent" }),
+              seen
+                ? h("g", null,
+                    h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " l-5 -8 a5.8 5.8 0 1 1 10 0 Z", fill: "#1f6f68" }),
+                    h("circle", { cx: p[0], cy: p[1] - 6.5, r: 2.1, fill: "#eaf6f2" }),
+                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.6, fill: "#1a5c56", fontWeight: "bold" }, x.n))
+                : h("g", null,
+                    h("circle", { cx: p[0], cy: p[1], r: 5.4, fill: "rgba(150,140,120,0.32)", stroke: "rgba(120,110,90,0.55)", strokeWidth: 1.4, strokeDasharray: "2.5 2" }),
+                    h("text", { x: p[0], y: p[1] + 2.6, textAnchor: "middle", fontSize: 7, fill: "#6b6355", fontWeight: "bold" }, "?")));
+          }),
+          h("text", { x: 6, y: 168, fontSize: 7, fill: "rgba(110,100,78,0.7)", fontFamily: "Georgia,serif" }, "R. THAMES"))),
+      h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
+        "灰点是还没猜的 · 绿针是已经揭晓的")
+    ]),
+    ukCard([
+      screws,
+      ukHead("其它可以去的地方", "点一下标记 🌟想去 / ✅去过 · 想去 " + wantN + " · 去过 " + doneN, pennant("#3a8fbf")),
+      h("div", { key: "zs" }, LD_TRIPS.map(function (zone, zi) {
+        return h("div", { key: "z" + zi, style: { marginTop: zi ? 14 : 2 } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.78rem", color: UK_SEA, marginBottom: 4 } }, zone.z),
+          zone.list.map(function (o, oi) {
+            var id = zone.z + "|" + o.n;
+            var st = spots[id] || 0;
+            var c = [{ txt: "标记", bg: "rgba(150,140,120,0.16)", col: "#7a7060" },
+                     { txt: "🌟 想去", bg: "rgba(240,180,60,0.2)", col: "#a97b12" },
+                     { txt: "✅ 去过", bg: "rgba(60,170,120,0.18)", col: "#1f7a55" }][st];
+            return h("div", { key: "t" + oi, style: { display: "flex", alignItems: "center", gap: 9, padding: "9px 0", borderBottom: "1px dashed rgba(169,127,46,0.26)" } },
+              h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, o.e),
               h("div", { style: { flex: 1, minWidth: 0 } },
-                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: st === "done" ? "rgba(120,168,162,0.68)" : "#1f7a6d" } }, o.n),
-                h("div", { style: { fontSize: "0.67rem", color: "rgba(100,152,145,0.9)", marginTop: 2, lineHeight: 1.5 } }, o.d))),
-            h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
-        }))
-      ], { key: "zone" + zi });
-    })
+                h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, o.n, " 📍"),
+                h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.6 } }, o.d)),
+              h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
+          }));
+      }))
+    ])
   );
   var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   return h("div", null,
