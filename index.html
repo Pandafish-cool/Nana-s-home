@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-85";
+var NANA_VER = "v2026.8.2-86";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21918,4 +21918,30 @@ function NanasHome() {
     }
   }, toast)));
 }
-</script><script>ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(NanasHome));</script></body></html>
+</script><script>
+// 渲染出错时别给一片白：显示出错内容 + 一个能自己清缓存重来的按钮
+function NanaBoundary(props) { React.Component.call(this, props); this.state = { err: null }; }
+NanaBoundary.prototype = Object.create(React.Component.prototype);
+NanaBoundary.prototype.constructor = NanaBoundary;
+NanaBoundary.getDerivedStateFromError = function (e) { return { err: e }; };
+NanaBoundary.prototype.componentDidCatch = function (e) { try { window.__nanaErr = String((e && e.stack) || e); } catch (_) {} };
+NanaBoundary.prototype.render = function () {
+  var h = React.createElement;
+  if (!this.state.err) return this.props.children;
+  var msg = String((this.state.err && this.state.err.message) || this.state.err || "");
+  var wipe = function () {
+    var p = [];
+    try { if (window.caches) p.push(caches.keys().then(function (k) { return Promise.all(k.map(function (x) { return caches["delete"](x); })); })); } catch (_) {}
+    try { if (navigator.serviceWorker) p.push(navigator.serviceWorker.getRegistrations().then(function (r) { return Promise.all(r.map(function (x) { return x.unregister(); })); })); } catch (_) {}
+    Promise.all(p)["catch"](function () {}).then(function () { setTimeout(function () { location.replace("./?fix=" + Date.now()); }, 400); });
+  };
+  return h("div", { style: { minHeight: "100vh", background: "#FFF8F7", color: "#5a4340", display: "flex", alignItems: "center", justifyContent: "center", padding: 28, fontFamily: "'Nunito','PingFang SC',system-ui" } },
+    h("div", { style: { maxWidth: 340, textAlign: "center" } },
+      h("div", { style: { fontSize: "2.6rem" } }, "\uD83C\uDFE1"),
+      h("div", { style: { fontWeight: 800, fontSize: "1.1rem", margin: "12px 0 8px" } }, "\u5C0F\u5C4B\u5361\u4F4F\u4E86"),
+      h("div", { style: { fontSize: "0.84rem", lineHeight: 1.8, color: "#8a6a64", marginBottom: 16 } }, "\u4F60\u5199\u7684\u4FE1\u548C\u6E05\u5355\u90FD\u5728\u4E91\u4E0A\uFF0C\u4E0D\u4F1A\u4E22\u3002\u70B9\u4E00\u4E0B\u91CD\u6765\u5C31\u597D\u3002"),
+      h("button", { onClick: wipe, style: { border: "none", borderRadius: 999, padding: "13px 26px", fontFamily: "inherit", fontSize: "0.92rem", fontWeight: 800, background: "linear-gradient(135deg,#f27a9a,#d9537a)", color: "#fff", cursor: "pointer" } }, "\u4FEE\u4E00\u4E0B\uFF0C\u91CD\u65B0\u8FDB\u5C4B"),
+      h("div", { style: { marginTop: 16, fontSize: "0.62rem", color: "#b09a95", wordBreak: "break-all", lineHeight: 1.6 } }, "\u628A\u8FD9\u884C\u53D1\u7ED9\u718A\u732B\u9C7C\uFF1A" + msg.slice(0, 160))));
+};
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(NanaBoundary, null, React.createElement(NanasHome)));
+</script></body></html>
