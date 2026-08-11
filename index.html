@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-86";
+var NANA_VER = "v2026.8.2-87";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19264,10 +19264,13 @@ function LondonRoom(_refLD) {
           h("div", { style: { fontWeight: 800, fontSize: "0.78rem", color: UK_SEA, marginBottom: 4 } }, zone.z),
           zone.list.map(function (o, oi) {
             var id = zone.z + "|" + o.n;
-            var st = spots[id] || 0;
-            var c = [{ txt: "标记", bg: "rgba(150,140,120,0.16)", col: "#7a7060" },
+            // cycleSpot 存的是字符串 "want" / "done"，别拿它当数组下标用
+            var raw = spots[id];
+            var st = raw === "want" ? 1 : (raw === "done" ? 2 : 0);
+            var SPOT_C = [{ txt: "标记", bg: "rgba(150,140,120,0.16)", col: "#7a7060" },
                      { txt: "🌟 想去", bg: "rgba(240,180,60,0.2)", col: "#a97b12" },
-                     { txt: "✅ 去过", bg: "rgba(60,170,120,0.18)", col: "#1f7a55" }][st];
+                     { txt: "✅ 去过", bg: "rgba(60,170,120,0.18)", col: "#1f7a55" }];
+            var c = SPOT_C[st] || SPOT_C[0];
             return h("div", { key: "t" + oi, style: { display: "flex", alignItems: "center", gap: 9, padding: "9px 0", borderBottom: "1px dashed rgba(169,127,46,0.26)" } },
               h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, o.e),
               h("div", { style: { flex: 1, minWidth: 0 } },
