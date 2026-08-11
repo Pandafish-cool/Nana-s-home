@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-81";
+var NANA_VER = "v2026.8.2-82";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19255,14 +19255,41 @@ function LondonRoom(_refLD) {
             return h("g", { key: "pk" + i },
               h("path", { d: ldBlob(p[0], p[1], pk.r, i + 2), fill: "#cfe3bd", opacity: 0.9 }),
               h("path", { d: ldBlob(p[0], p[1], pk.r, i + 2), fill: "none", stroke: "#9dc283", strokeWidth: 1.3, strokeLinejoin: "round" }),
+              [0, 1, 2].map(function (t) {
+                var ang = t * 2.1 + i, tx = p[0] + Math.cos(ang) * pk.r * 0.62, ty = p[1] + Math.sin(ang) * pk.r * 0.5;
+                return h("g", { key: "tr" + t },
+                  h("rect", { x: tx - 0.5, y: ty, width: 1, height: 2.4, fill: "#7d6a45" }),
+                  h("circle", { cx: tx, cy: ty - 1.4, r: 2.2, fill: "#8fbc74" }));
+              }),
               h("text", { x: p[0], y: p[1] - pk.r * 0.72, textAnchor: "middle", fontSize: 5.8, fill: "#5f7f4c", fontFamily: "'Patrick Hand',cursive" }, pk.n));
           }),
-          // 河：两笔叠出手绘的毛边
+          // 河：三笔叠出手绘的毛边
           h("path", { d: ldRiverPath(1.6, 3), fill: "none", stroke: "#a9d6e8", strokeWidth: 12, strokeLinecap: "round", strokeLinejoin: "round", opacity: 0.75 }),
           h("path", { d: ldRiverPath(1.1, 11), fill: "none", stroke: "#c9e8f5", strokeWidth: 7, strokeLinecap: "round", strokeLinejoin: "round" }),
           h("path", { d: ldRiverPath(2.2, 21), fill: "none", stroke: "rgba(110,170,195,0.5)", strokeWidth: 1, strokeLinecap: "round" }),
-          // 小船
-          (function () { var p = ldXY(51.507, -0.09); return h("text", { x: p[0], y: p[1] + 2, textAnchor: "middle", fontSize: 8 }, "⛵"); })(),
+          // 小船顺着河开
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 9, y: 3 }, "⛵"),
+            h("animateMotion", { dur: "34s", repeatCount: "indefinite", path: ldRiverPath(1.1, 11), rotate: "0" })),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 7, y: 3 }, "🛥️"),
+            h("animateMotion", { dur: "52s", begin: "-20s", repeatCount: "indefinite", path: ldRiverPath(1.1, 11), rotate: "0" })),
+          // 马路 + 双层巴士
+          h("path", { d: ldSmooth([[6, 40], [70, 34], [140, 38], [210, 31], [290, 36], [324, 32]]), fill: "none", stroke: "rgba(190,170,140,0.55)", strokeWidth: 3, strokeDasharray: "6 5", strokeLinecap: "round" }),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 9, y: 3 }, "🚌"),
+            h("animateMotion", { dur: "26s", repeatCount: "indefinite", path: ldSmooth([[6, 40], [70, 34], [140, 38], [210, 31], [290, 36], [324, 32]]), rotate: "0" })),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 7, y: 3 }, "🚕"),
+            h("animateMotion", { dur: "38s", begin: "-14s", repeatCount: "indefinite", path: ldSmooth([[324, 44], [250, 50], [170, 45], [90, 52], [6, 47]]), rotate: "0" })),
+          // 云和鸟
+          [[14, 3.4, 22], [96, 2.6, 31], [150, 3.0, 26]].map(function (c, i) {
+            return h("g", { key: "cl" + i, style: { animation: "mpDrift " + c[2] + "s linear infinite", animationDelay: (-i * 9) + "s" } },
+              h("path", { d: "M" + (-20 + i * 40) + " " + c[0] + " q-5 0 -5 -4 q0 -4 5 -3.6 q1.6 -4.6 6.4 -3.6 q4.8 -2 6.4 3 q4.8 0 4.8 4.2 q0 4 -4.8 4 Z", fill: "#ffffff", opacity: 0.85 }));
+          }),
+          h("g", { style: { animation: "mpDrift 30s linear infinite" } },
+            h("g", { style: { transformOrigin: "center", animation: "mpFlap 0.5s ease-in-out infinite" } },
+              h("path", { d: "M40 16 q3 -3 6 0 M46 16 q3 -3 6 0", fill: "none", stroke: "rgba(120,110,95,0.65)", strokeWidth: 1.1, strokeLinecap: "round" }))),
           // 地标涂鸦
           (function () {
             var ink = "rgba(120,95,60,0.75)";
@@ -19287,6 +19314,11 @@ function LondonRoom(_refLD) {
               h("circle", { cx: p[0], cy: p[1], r: 14, fill: "rgba(180,53,58,0.13)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 2.4s ease-in-out infinite" } }),
               h("path", { d: "M" + (p[0] - 5.5) + " " + (p[1] + 5) + " L" + (p[0] - 5.5) + " " + (p[1] - 1) + " L" + p[0] + " " + (p[1] - 6.5) + " L" + (p[0] + 5.5) + " " + (p[1] - 1) + " L" + (p[0] + 5.5) + " " + (p[1] + 5) + " Z", fill: "#e8746e", stroke: "#8a3a3d", strokeWidth: 1.3, strokeLinejoin: "round" }),
               h("rect", { x: p[0] - 1.6, y: p[1] + 0.6, width: 3.2, height: 4.4, fill: "#7d2d30" }),
+              h("rect", { x: p[0] + 2.4, y: p[1] - 7.6, width: 1.8, height: 3.4, fill: "#c05a55", stroke: "#8a3a3d", strokeWidth: 0.7 }),
+              [0, 1, 2].map(function (k) {
+                return h("circle", { key: "sm" + k, cx: p[0] + 3.3, cy: p[1] - 9.5 - k * 2, r: 1 - k * 0.15, fill: "rgba(255,255,255,0.85)",
+                  style: { animation: "mpSmoke 2.6s ease-out infinite", animationDelay: (k * 0.55) + "s" } });
+              }),
               h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive" }, "家"));
           })(),
           // 照片点
@@ -19297,7 +19329,7 @@ function LondonRoom(_refLD) {
             return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
               h("circle", { cx: p[0], cy: p[1], r: 12, fill: "transparent" }),
               seen
-                ? h("g", null,
+                ? h("g", { style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.2 + (i % 4) * 0.35) + "s ease-in-out infinite" } },
                     h("ellipse", { cx: p[0], cy: p[1] + 2.4, rx: 3.6, ry: 1.3, fill: "rgba(0,0,0,0.16)" }),
                     h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#3f9b8e", stroke: "#1a5c56", strokeWidth: 1.2, strokeLinejoin: "round" }),
                     h("circle", { cx: p[0], cy: p[1] - 7.4, r: 2.2, fill: "#f2fbf8" }),
@@ -19350,7 +19382,11 @@ function LondonRoom(_refLD) {
       "@keyframes ldSpinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}" +
       "@keyframes ldCloud{from{transform:translateX(-30%)}to{transform:translateX(430%)}}" +
       "@keyframes ldSail{from{transform:translateX(-14%)}to{transform:translateX(420%)}}" +
-      "@keyframes ldWin{0%,100%{opacity:.35}50%{opacity:1}}"),
+      "@keyframes ldWin{0%,100%{opacity:.35}50%{opacity:1}}" +
+      "@keyframes mpDrift{from{transform:translateX(-14px)}to{transform:translateX(340px)}}" +
+      "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}" +
+      "@keyframes mpSmoke{0%{opacity:0;transform:translateY(2px) scale(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-9px) scale(1.25)}}" +
+      "@keyframes mpFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}}"),
     h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
