@@ -8100,7 +8100,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-78";
+var NANA_VER = "v2026.8.2-79";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17717,14 +17717,30 @@ var ldWeekend = function () {
 // ── 🖼️ 熊猫鱼的伦敦照片墙 ──────────────────────────────
 // f 是仓库根目录里的文件名；没有照片时显示占位格子。
 // must = 1 表示「一定要去」，0 表示「推荐」。
+// la / lo 是经纬度，用来在小屋自己的伦敦地图上落点
 var LD_WALL = [
-  { f: "", n: "塔桥", q: "Tower Bridge London", must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明：这里写这个地方有什么特别、几点去最好、怎么玩。" },
-  { f: "", n: "格林威治", q: "Greenwich London", must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "大英博物馆", q: "British Museum", must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "诺丁山", q: "Notting Hill London", must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Sky Garden", q: "Sky Garden London", must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Borough Market", q: "Borough Market London", must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" }
+  { f: "", n: "塔桥", q: "Tower Bridge London", la: 51.5055, lo: -0.0754, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明：这里写这个地方有什么特别、几点去最好、怎么玩。" },
+  { f: "", n: "格林威治", q: "Greenwich London", la: 51.4769, lo: -0.0005, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "大英博物馆", q: "British Museum", la: 51.5194, lo: -0.1270, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "诺丁山", q: "Notting Hill London", la: 51.5160, lo: -0.2059, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "Sky Garden", q: "Sky Garden London", la: 51.5113, lo: -0.0836, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
+  { f: "", n: "Borough Market", q: "Borough Market London", la: 51.5055, lo: -0.0910, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" }
 ];
+// 家：Fraser Place, Pan Peninsula
+var LD_HOME_PT = { la: 51.4990, lo: -0.0203 };
+// 泰晤士河中心线，西到东，绕道格斯岛那个大弯
+var LD_THAMES = [
+  [-0.232, 51.487], [-0.206, 51.472], [-0.181, 51.484], [-0.152, 51.485],
+  [-0.126, 51.487], [-0.118, 51.501], [-0.101, 51.507], [-0.079, 51.508],
+  [-0.061, 51.505], [-0.046, 51.509], [-0.033, 51.507], [-0.024, 51.500],
+  [-0.016, 51.490], [-0.008, 51.484], [0.002, 51.485], [0.009, 51.494],
+  [0.014, 51.503], [0.022, 51.508]
+];
+var LD_MAP_BOX = { l0: -0.238, l1: 0.030, t0: 51.455, t1: 51.545, w: 320, h: 174 };
+var ldXY = function (la, lo) {
+  var B = LD_MAP_BOX;
+  return [((lo - B.l0) / (B.l1 - B.l0)) * B.w, ((B.t1 - la) / (B.t1 - B.t0)) * B.h];
+};
 // ── 🛬 落地那天：盖特威克 → Fraser Place ──────────────────
 var LD_ARR_STEP = [
   { e: "📱", n: "出发前就办好", items: [
@@ -19163,6 +19179,57 @@ function LondonRoom(_refLD) {
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
+    // ── 她的伦敦地图 ──
+    ukCard([
+      screws,
+      ukHead("她的伦敦地图", "揭晓一个亮一个 · 点针脚也能看", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
+      h("div", { key: "mp", style: { background: "linear-gradient(165deg,#eef3e6,#e2ead9)", borderRadius: 9, padding: "8px 6px 6px", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.28)" } },
+        h("svg", { viewBox: "0 0 320 174", style: { width: "100%", display: "block", overflow: "visible" } },
+          // 河
+          h("path", { d: (function () {
+              var d = "", i, p;
+              for (i = 0; i < LD_THAMES.length; i++) {
+                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
+                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+              }
+              return d;
+            })(), fill: "none", stroke: "#8fc4d8", strokeWidth: 11, strokeLinecap: "round", strokeLinejoin: "round", opacity: 0.85 }),
+          h("path", { d: (function () {
+              var d = "", i, p;
+              for (i = 0; i < LD_THAMES.length; i++) {
+                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
+                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
+              }
+              return d;
+            })(), fill: "none", stroke: "#b9dced", strokeWidth: 5, strokeLinecap: "round", strokeLinejoin: "round" }),
+          // 家
+          (function () {
+            var p = ldXY(LD_HOME_PT.la, LD_HOME_PT.lo);
+            return h("g", null,
+              h("circle", { cx: p[0], cy: p[1], r: 13, fill: "rgba(180,53,58,0.14)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 2.4s ease-in-out infinite" } }),
+              h("circle", { cx: p[0], cy: p[1], r: 6, fill: "#b4353a", stroke: "#fff", strokeWidth: 2 }),
+              h("text", { x: p[0], y: p[1] + 19, textAnchor: "middle", fontSize: 8.5, fill: "#8a3a3d", fontWeight: "bold" }, "家"));
+          })(),
+          // 照片点
+          wallShown.map(function (x, i) {
+            if (!x.la) return null;
+            var p = ldXY(x.la, x.lo);
+            var seen = wallSeen.indexOf(x.n) >= 0;
+            return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
+              h("circle", { cx: p[0], cy: p[1], r: 11, fill: "transparent" }),
+              seen
+                ? h("g", null,
+                    h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " l-5 -8 a5.8 5.8 0 1 1 10 0 Z", fill: "#1f6f68" }),
+                    h("circle", { cx: p[0], cy: p[1] - 6.5, r: 2.1, fill: "#eaf6f2" }),
+                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.6, fill: "#1a5c56", fontWeight: "bold" }, x.n))
+                : h("g", null,
+                    h("circle", { cx: p[0], cy: p[1], r: 5.4, fill: "rgba(150,140,120,0.32)", stroke: "rgba(120,110,90,0.55)", strokeWidth: 1.4, strokeDasharray: "2.5 2" }),
+                    h("text", { x: p[0], y: p[1] + 2.6, textAnchor: "middle", fontSize: 7, fill: "#6b6355", fontWeight: "bold" }, "?")));
+          }),
+          h("text", { x: 6, y: 168, fontSize: 7, fill: "rgba(110,100,78,0.7)", fontFamily: "Georgia,serif" }, "R. THAMES"))),
+      h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
+        "灰点是还没猜的 · 绿针是已经揭晓的")
+    ]),
     ukCard([
       screws,
       ukHead("其它可以去的地方", "点一下标记 🌟想去 / ✅去过 · 想去 " + wantN + " · 去过 " + doneN, pennant("#3a8fbf")),
