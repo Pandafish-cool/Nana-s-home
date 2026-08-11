@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-80";
+var NANA_VER = "v2026.8.2-85";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8189,13 +8189,19 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
         sessionStorage.setItem("nana-upd", t);
       } catch (_) {}
       return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (res) {
-        if (!res || !res.ok) return;
+        if (!res || !res.ok) return null;
+        return res.text();
+      }).then(function (t) {
+        // 跨境链路会把大文件截断。残的 HTML 存进缓存 = 下次打开白屏，宁可不更新。
+        if (!t || t.length < 400000 || t.lastIndexOf("</html>") < t.length - 400) return null;
         return caches.keys().then(function (ks) {
           return Promise.all(ks.map(function (k) {
-            return caches.open(k).then(function (c) { return c.put("index.html", res.clone()); });
+            return caches.open(k).then(function (c) {
+              return c.put("index.html", new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }));
+            });
           }));
-        });
-      }).then(function () { location.reload(); });
+        }).then(function () { return 1; });
+      }).then(function (ok) { if (ok) location.reload(); });
     })["catch"](function () {});
   }, 3000);
 })();
