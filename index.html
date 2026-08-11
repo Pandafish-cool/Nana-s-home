@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-84";
+var NANA_VER = "v2026.8.2-88";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8189,13 +8189,19 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
         sessionStorage.setItem("nana-upd", t);
       } catch (_) {}
       return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (res) {
-        if (!res || !res.ok) return;
+        if (!res || !res.ok) return null;
+        return res.text();
+      }).then(function (t) {
+        // 跨境链路会把大文件截断。残的 HTML 存进缓存 = 下次打开白屏，宁可不更新。
+        if (!t || t.length < 400000 || t.lastIndexOf("</html>") < t.length - 400) return null;
         return caches.keys().then(function (ks) {
           return Promise.all(ks.map(function (k) {
-            return caches.open(k).then(function (c) { return c.put("index.html", res.clone()); });
+            return caches.open(k).then(function (c) {
+              return c.put("index.html", new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }));
+            });
           }));
-        });
-      }).then(function () { location.reload(); });
+        }).then(function () { return 1; });
+      }).then(function (ok) { if (ok) location.reload(); });
     })["catch"](function () {});
   }, 3000);
 })();
@@ -19452,10 +19458,13 @@ function LondonRoom(_refLD) {
           h("div", { style: { fontWeight: 800, fontSize: "0.78rem", color: UK_SEA, marginBottom: 4 } }, zone.z),
           zone.list.map(function (o, oi) {
             var id = zone.z + "|" + o.n;
-            var st = spots[id] || 0;
-            var c = [{ txt: "标记", bg: "rgba(150,140,120,0.16)", col: "#7a7060" },
+            // cycleSpot 存的是字符串 "want" / "done"，别拿它当数组下标用
+            var raw = spots[id];
+            var st = raw === "want" ? 1 : (raw === "done" ? 2 : 0);
+            var SPOT_C = [{ txt: "标记", bg: "rgba(150,140,120,0.16)", col: "#7a7060" },
                      { txt: "🌟 想去", bg: "rgba(240,180,60,0.2)", col: "#a97b12" },
-                     { txt: "✅ 去过", bg: "rgba(60,170,120,0.18)", col: "#1f7a55" }][st];
+                     { txt: "✅ 去过", bg: "rgba(60,170,120,0.18)", col: "#1f7a55" }];
+            var c = SPOT_C[st] || SPOT_C[0];
             return h("div", { key: "t" + oi, style: { display: "flex", alignItems: "center", gap: 9, padding: "9px 0", borderBottom: "1px dashed rgba(169,127,46,0.26)" } },
               h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, o.e),
               h("div", { style: { flex: 1, minWidth: 0 } },
@@ -22110,4 +22119,30 @@ function NanasHome() {
     }
   }, toast)));
 }
-</script><script>ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(NanasHome));</script></body></html>
+</script><script>
+// 渲染出错时别给一片白：显示出错内容 + 一个能自己清缓存重来的按钮
+function NanaBoundary(props) { React.Component.call(this, props); this.state = { err: null }; }
+NanaBoundary.prototype = Object.create(React.Component.prototype);
+NanaBoundary.prototype.constructor = NanaBoundary;
+NanaBoundary.getDerivedStateFromError = function (e) { return { err: e }; };
+NanaBoundary.prototype.componentDidCatch = function (e) { try { window.__nanaErr = String((e && e.stack) || e); } catch (_) {} };
+NanaBoundary.prototype.render = function () {
+  var h = React.createElement;
+  if (!this.state.err) return this.props.children;
+  var msg = String((this.state.err && this.state.err.message) || this.state.err || "");
+  var wipe = function () {
+    var p = [];
+    try { if (window.caches) p.push(caches.keys().then(function (k) { return Promise.all(k.map(function (x) { return caches["delete"](x); })); })); } catch (_) {}
+    try { if (navigator.serviceWorker) p.push(navigator.serviceWorker.getRegistrations().then(function (r) { return Promise.all(r.map(function (x) { return x.unregister(); })); })); } catch (_) {}
+    Promise.all(p)["catch"](function () {}).then(function () { setTimeout(function () { location.replace("./?fix=" + Date.now()); }, 400); });
+  };
+  return h("div", { style: { minHeight: "100vh", background: "#FFF8F7", color: "#5a4340", display: "flex", alignItems: "center", justifyContent: "center", padding: 28, fontFamily: "'Nunito','PingFang SC',system-ui" } },
+    h("div", { style: { maxWidth: 340, textAlign: "center" } },
+      h("div", { style: { fontSize: "2.6rem" } }, "\uD83C\uDFE1"),
+      h("div", { style: { fontWeight: 800, fontSize: "1.1rem", margin: "12px 0 8px" } }, "\u5C0F\u5C4B\u5361\u4F4F\u4E86"),
+      h("div", { style: { fontSize: "0.84rem", lineHeight: 1.8, color: "#8a6a64", marginBottom: 16 } }, "\u4F60\u5199\u7684\u4FE1\u548C\u6E05\u5355\u90FD\u5728\u4E91\u4E0A\uFF0C\u4E0D\u4F1A\u4E22\u3002\u70B9\u4E00\u4E0B\u91CD\u6765\u5C31\u597D\u3002"),
+      h("button", { onClick: wipe, style: { border: "none", borderRadius: 999, padding: "13px 26px", fontFamily: "inherit", fontSize: "0.92rem", fontWeight: 800, background: "linear-gradient(135deg,#f27a9a,#d9537a)", color: "#fff", cursor: "pointer" } }, "\u4FEE\u4E00\u4E0B\uFF0C\u91CD\u65B0\u8FDB\u5C4B"),
+      h("div", { style: { marginTop: 16, fontSize: "0.62rem", color: "#b09a95", wordBreak: "break-all", lineHeight: 1.6 } }, "\u628A\u8FD9\u884C\u53D1\u7ED9\u718A\u732B\u9C7C\uFF1A" + msg.slice(0, 160))));
+};
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(NanaBoundary, null, React.createElement(NanasHome)));
+</script></body></html>
