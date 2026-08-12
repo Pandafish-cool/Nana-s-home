@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-108";
+var NANA_VER = "v2026.8.2-109";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18611,15 +18611,41 @@ function LondonRoom(_refLD) {
   var _dct = useState(""); var dcText = _dct[0], setDcText = _dct[1];
   var _dcb = useState(false); var dcBusy = _dcb[0], setDcBusy = _dcb[1];
   var _dcd = useState(null); var dcDel = _dcd[0], setDcDel = _dcd[1];
+  var _dcp = useState(""); var dcPhoto = _dcp[0], setDcPhoto = _dcp[1];
+  var _dcu = useState(false); var dcUp = _dcu[0], setDcUp = _dcu[1];
+  var _dce = useState(""); var dcErr = _dce[0], setDcErr = _dce[1];
+  var onPickDuckPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    var inp = e.target;
+    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
+    if (!f || dcUp) return;
+    setDcUp(true); setDcErr("");
+    var pid = "dp" + Date.now() + Math.floor(Math.random() * 900);
+    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
+    nanaPhotoCompress(f, function (err, data) {
+      if (err || !data) { setDcUp(false); setDcErr("这张读不出来，换一张"); return; }
+      nanaPhotoCompressTo(f, 360, 0.7, function (e3, tdata) {
+        nanaCloudPut(url, data);
+        var turl = nanaThumbUrl(url);
+        if (tdata && turl) nanaCloudPut(turl, tdata);
+        setDcPhoto(url);
+        nanaSharedUploadRetry(data, pid, 3, function (e2) {
+          if (e2) { setDcUp(false); setDcPhoto(""); setDcErr("没传上去，再试一次？"); return; }
+          if (!tdata) { setDcUp(false); return; }
+          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setDcUp(false); });
+        });
+      });
+    });
+  };
   var addDuck = function (k) {
     var t = dcText.trim();
-    if (!t || dcBusy) return;
+    if ((!t && !dcPhoto) || dcBusy || dcUp) return;
     setDcBusy(true);
     var id = "dc-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, k: k, a: myAuthor || "nana", t: t };
+    var row = { id: id, k: k, a: myAuthor || "nana", t: t, u: dcPhoto };
     setDucks(function (o) { return o.concat([row]); });
-    setDcText(""); setDcOpen("");
-    nanaPackAdd({ id: id, who: JSON.stringify({ dc: 1, k: k, a: row.a, t: t }) }, function (e) {
+    setDcText(""); setDcPhoto(""); setDcErr(""); setDcOpen("");
+    nanaPackAdd({ id: id, who: JSON.stringify({ dc: 1, k: k, a: row.a, t: t, u: row.u }) }, function (e) {
       setDcBusy(false);
       if (e) setDucks(function (o) { return o.filter(function (y) { return y.id !== id; }); });
     });
@@ -18627,6 +18653,7 @@ function LondonRoom(_refLD) {
   var delDuck = function (x) {
     if (dcDel !== x.id) { setDcDel(x.id); setTimeout(function () { setDcDel(null); }, 2600); return; }
     setDcDel(null);
+    if (x.u) nanaSharedPhotoDel(x.u);
     setDucks(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
@@ -18750,7 +18777,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("dc-") === 0) {
           var co = null;
           try { co = JSON.parse(r.who); } catch (_) { co = null; }
-          if (co && co.dc) dcs.push({ id: r.id, k: co.k || "", a: co.a || "nana", t: co.t || "" });
+          if (co && co.dc) dcs.push({ id: r.id, k: co.k || "", a: co.a || "nana", t: co.t || "", u: co.u || "" });
         }
         else if (r.id && r.id.indexOf("mp-") === 0) {
           var mo = null;
@@ -19682,6 +19709,22 @@ function LondonRoom(_refLD) {
   var wantN = 0, doneN = 0;
   for (var sk in spots) { if (spots[sk] === "want") wantN++; if (spots[sk] === "done") doneN++; }
   var wallShown = LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; });
+  // 她拍的照片有两个来源：自己在地图上加的针，和任务里传的
+  var herShots = (function () {
+    var out = [], i, j, c, w;
+    for (i = 0; i < myPins.length; i++) { if (myPins[i].u) out.push({ kind: "pin", id: myPins[i].id, n: myPins[i].n, say: myPins[i].say, u: myPins[i].u, la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" }); }
+    for (j = 0; j < ducks.length; j++) {
+      c = ducks[j];
+      if (!c.u || c.a !== "nana") continue;
+      w = null;
+      for (i = 0; i < wallShown.length; i++) { if (wallShown[i].n === c.k) w = wallShown[i]; }
+      out.push({ kind: "duck", id: c.id, n: c.k, say: c.t, u: c.u, la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
+    }
+    return out;
+  })();
+  // 哪些案卷地点她已经传过照片了
+  var shotAt = {};
+  (function () { for (var i = 0; i < herShots.length; i++) { shotAt[herShots[i].n] = 1; } })();
   var wallSel = wallPick === null ? null : wallShown[wallPick];
   var wallSection = h("div", null,
     ukCard([
@@ -19761,14 +19804,16 @@ function LondonRoom(_refLD) {
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
     wallBig ? h("div", { onClick: function () { setWallBig(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(12,16,20,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: 14, cursor: "pointer" } },
-        h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })) : null,
+        (String(wallBig).indexOf("http") === 0
+          ? h(NanaCloudImg, { u: wallBig, style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })
+          : h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } }))) : null,
     // ── Nana 自己拍的 ──
     (function () {
-      var withP = myPins.filter(function (x) { return x.u; });
+      var withP = herShots;
       if (!withP.length) return null;
       return ukCard([
         screws,
-        ukHead("Nana 的伦敦", "你自己拍的 · 一张照片就是一枚金针", h("span", { style: { fontSize: "1rem" } }, "🌸")),
+        ukHead("Nana 的伦敦", "你自己拍的 · 任务里传的也会收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); },
@@ -19781,7 +19826,7 @@ function LondonRoom(_refLD) {
     (function () {
       if (!myPick) return null;
       var x = null, i;
-      for (i = 0; i < myPins.length; i++) { if (myPins[i].id === myPick) x = myPins[i]; }
+      for (i = 0; i < herShots.length; i++) { if (herShots[i].id === myPick) x = herShots[i]; }
       if (!x) return null;
       return h("div", { onClick: function () { setMyPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
         h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
@@ -19793,10 +19838,12 @@ function LondonRoom(_refLD) {
               h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
             x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
             h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
-              h("a", { href: ldMap(x.n + " London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
+              h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
-            h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
-              pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
+            x.kind === "duck"
+              ? h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } }, "这张是在「你的任务」里传的，要撤到那边去撤")
+              : h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
     })(),
     // ── 她的伦敦地图（手绘）──
     ukCard([
@@ -19896,6 +19943,7 @@ function LondonRoom(_refLD) {
                     been
                       ? h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" })
                       : h("circle", { cx: p[0], cy: p[1] - 7.4, r: 2.2, fill: "#f2fbf8" }),
+                    shotAt[x.n] ? h("text", { x: p[0] + 6.8, y: p[1] - 9.2, textAnchor: "middle", fontSize: 5.6 }, "📷") : null,
                     been ? h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, x.sn || x.n) : null)
                 : h("g", null,
                     h("circle", { cx: p[0], cy: p[1], r: 5.8, fill: "rgba(240,232,214,0.9)", stroke: "rgba(150,130,100,0.7)", strokeWidth: 1.3, strokeDasharray: "3 2.2" }),
@@ -19949,7 +19997,7 @@ function LondonRoom(_refLD) {
             h("button", { onClick: clearPinDraft, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
         : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）"),
       myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
-        h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己走到的 " + myPins.length + " 个地方"),
+        h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己加的 " + myPins.length + " 个地方"),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
           myPins.map(function (mp, i) {
             return h("span", { key: "ml" + i, onClick: function () { delPin(mp); }, style: { cursor: "pointer", background: pinDel === mp.id ? "rgba(200,60,60,0.16)" : "rgba(230,180,60,0.18)", color: pinDel === mp.id ? "#c0392b" : "#a3701a", borderRadius: 999, padding: "4px 11px", fontSize: "0.68rem", fontWeight: 800 } },
@@ -19994,21 +20042,21 @@ function LondonRoom(_refLD) {
       for (wj = 0; wj < wallShown.length; wj++) { if (wallShown[wj].n === x.n) no = wj + 1; }
       var mine = ducks.filter(function (c) { return c.k === x.n; });
       var one = (x.tip || "").split("。")[0] + "。";
-      return h("div", { key: "d" + i, style: { display: "flex", gap: 10, padding: "12px 0", borderBottom: i === duties.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.3)", opacity: been ? 0.72 : 1 } },
+      return h("div", { key: "d" + i, style: { display: "flex", gap: 10, padding: "12px 0", borderBottom: i === duties.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.3)", background: been ? "rgba(240,196,106,0.11)" : "transparent", borderRadius: been ? 8 : 0, padding: been ? "12px 8px" : "12px 0" } },
         h("div", { style: { flexShrink: 0, width: 54 } },
           (fl && x.f)
             ? h("img", { src: "ld/" + x.f + "_t.jpg", alt: "", loading: "lazy", style: { width: 54, height: 44, objectFit: "cover", borderRadius: 3, display: "block", boxShadow: "0 3px 8px rgba(60,45,30,0.25)" } })
             : h("div", { style: { width: 54, height: 44, borderRadius: 3, background: "linear-gradient(158deg,#f6ecd2,#e6d5ae)", border: "1px dashed rgba(150,115,60,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "0.95rem", color: "#8a6a2a" } }, "No." + (no < 10 ? "0" : "") + no)),
         h("div", { style: { flex: 1, minWidth: 0 } },
           h("div", { style: { display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" } },
-            h("span", { style: { fontWeight: 800, fontSize: "0.86rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif", textDecoration: been ? "line-through" : "none" } }, x.n),
-            been ? h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.55rem", fontWeight: 800 } }, "已办结") : null),
+            h("span", { style: { fontWeight: 800, fontSize: "0.86rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n),
+            been ? h("span", { style: { display: "inline-block", border: "1.6px solid rgba(180,53,58,0.6)", boxShadow: "inset 0 0 0 1px rgba(180,53,58,0.28)", color: "rgba(180,53,58,0.85)", background: "rgba(180,53,58,0.06)", borderRadius: 4, padding: "1px 7px", fontSize: "0.56rem", fontWeight: 800, letterSpacing: "0.16em", fontFamily: "Georgia,'PingFang SC',serif", transform: "rotate(-7deg)", transformOrigin: "left center" } }, "已办结") : null),
           h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.65 } }, one),
           h("div", { style: { display: "flex", gap: 8, marginTop: 7, flexWrap: "wrap" } },
             h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", background: "rgba(31,111,104,0.12)", color: "#1f6f68", borderRadius: 999, padding: "4px 11px", fontSize: "0.64rem", fontWeight: 800 } }, "📍 地图"),
             h("button", { onClick: function () { toggleBeen(x.n); }, style: { border: "none", borderRadius: 999, padding: "4px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: been ? "rgba(150,140,120,0.18)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: been ? "#7a7060" : "#4a3510" } }, been ? "撤销" : "✓ 盖章"),
             h("button", { onClick: function () { setDcOpen(dcOpen === x.n ? "" : x.n); setDcText(""); }, style: { border: "1px dashed rgba(169,127,46,0.55)", background: "transparent", borderRadius: 999, padding: "4px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", color: "#a97f2e" } },
-              mine.length ? "💬 " + mine.length : "💬 写两句")),
+              mine.length ? ((mine.filter(function (c) { return c.u; }).length ? "📷 " : "💬 ") + mine.length) : "💬 写两句 / 传照片")),
           // 办案手记：两个人都能写
           mine.length ? h("div", { style: { marginTop: 8, display: "flex", flexDirection: "column", gap: 6 } },
             mine.map(function (c) {
@@ -20018,14 +20066,23 @@ function LondonRoom(_refLD) {
                 h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
                   h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: au.col } }, au.e + " " + au.label),
                   own ? h("span", { onClick: function () { delDuck(c); }, style: { marginLeft: "auto", fontSize: "0.58rem", fontWeight: 800, color: dcDel === c.id ? "#c0392b" : "rgba(140,120,95,0.7)", cursor: "pointer" } }, dcDel === c.id ? "再点一下删掉" : "删") : null),
-                h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t));
+                c.u ? h("div", { style: { marginTop: 5, background: "#fff", padding: "4px 4px 4px", borderRadius: 4, display: "inline-block", boxShadow: "0 4px 11px rgba(60,45,30,0.22)" } },
+                  h(NanaCloudImg, { u: c.u, thumb: true, onClick: function () { setWallBig(c.u); }, style: { width: 132, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
+                c.t ? h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: c.u ? 5 : 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t) : null);
             })) : null,
           dcOpen === x.n ? h("div", { style: { marginTop: 8 } },
-            h("textarea", { value: dcText, onChange: function (e) { setDcText(e.target.value); }, rows: 2, placeholder: "去过之后想说什么都行 · 熊猫鱼也看得见",
+            h("textarea", { value: dcText, onChange: function (e) { setDcText(e.target.value); }, rows: 2, placeholder: "想说什么都行，也可以只传一张照片 · 熊猫鱼也看得见",
               style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.45)", borderRadius: 8, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none", resize: "vertical", lineHeight: 1.7 } }),
-            h("div", { style: { display: "flex", gap: 8, marginTop: 6 } },
-              h("button", { onClick: function () { addDuck(x.n); }, disabled: !dcText.trim() || dcBusy, style: { border: "none", borderRadius: 999, padding: "6px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: (dcText.trim() && !dcBusy) ? "pointer" : "default", background: (dcText.trim() && !dcBusy) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: (dcText.trim() && !dcBusy) ? "#4a3510" : "#fff" } }, dcBusy ? "贴上去…" : "贴上去"),
-              h("button", { onClick: function () { setDcOpen(""); setDcText(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了"))) : null));
+            h("div", { style: { display: "flex", gap: 8, marginTop: 7, alignItems: "center", flexWrap: "wrap" } },
+              dcPhoto
+                ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 10px", boxShadow: "0 4px 11px rgba(60,45,30,0.25)", borderRadius: 3, transform: "rotate(-2deg)" } },
+                    h(NanaCloudImg, { u: dcPhoto, thumb: true, style: { width: 66, height: 52, objectFit: "cover", display: "block", borderRadius: 2 } }),
+                    h("button", { onClick: function () { nanaSharedPhotoDel(dcPhoto); setDcPhoto(""); }, style: { position: "absolute", right: -7, top: -7, width: 20, height: 20, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "✕"))
+                : h("span", { onClick: function () { if (dcUp) return; try { var el = document.getElementById("dc-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", cursor: dcUp ? "default" : "pointer", border: "1.5px dashed rgba(169,127,46,0.6)", borderRadius: 999, padding: "6px 12px", color: "#a97f2e", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.7)" } }, dcUp ? "⏫ 传着…" : "📷 传张照片"),
+              h("input", { id: "dc-photo-input", type: "file", accept: "image/*", onChange: onPickDuckPhoto, style: { display: "none" } }),
+              h("button", { onClick: function () { addDuck(x.n); }, disabled: (!dcText.trim() && !dcPhoto) || dcBusy || dcUp, style: { marginLeft: "auto", border: "none", borderRadius: 999, padding: "6px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "pointer" : "default", background: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "#4a3510" : "#fff" } }, dcBusy ? "贴上去…" : "贴上去"),
+              h("button", { onClick: function () { setDcOpen(""); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")),
+            dcErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, dcErr) : null) : null));
     })),
     h("div", { key: "dft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
       "这几件不着急，六个星期够办完了。办不完也没关系，案子不会过期。手记两个人都能写，也都看得见。")
