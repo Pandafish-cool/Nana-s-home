@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-102";
+var NANA_VER = "v2026.8.2-103";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17745,12 +17745,86 @@ var ldWeekend = function () {
 // must = 1 表示「一定要去」，0 表示「推荐」。
 // la / lo 是经纬度，用来在小屋自己的伦敦地图上落点
 var LD_WALL = [
-  { f: "", n: "塔桥", q: "Tower Bridge London", la: 51.5055, lo: -0.0754, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明：这里写这个地方有什么特别、几点去最好、怎么玩。" },
-  { f: "", n: "格林威治", q: "Greenwich London", la: 51.4769, lo: -0.0005, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "大英博物馆", q: "British Museum", la: 51.5194, lo: -0.1270, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "诺丁山", q: "Notting Hill London", la: 51.5160, lo: -0.2059, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Sky Garden", q: "Sky Garden London", la: 51.5113, lo: -0.0836, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Borough Market", q: "Borough Market London", la: 51.5055, lo: -0.0910, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" }
+  { f: "221b-room", sn: "221B", n: "贝克街 221B", q: "Sherlock Holmes Museum London", la: 51.5242, lo: -0.1585, must: 1,
+    more: ["221b-door", "221b-basin", "221b-loo"],
+    say: "",
+    tip: "福尔摩斯博物馆，就是小屋信箱那个 221B。里面按小说布置成 1890 年代的样子：起居室、维多利亚洗手台、连厕所都还原了。门口永远站着一个穿制服的「警察」，可以合影。屋子很小很窄，一次只放一小批人进去，楼梯陡。Jubilee 线 Canary Wharf 直达 Baker Street，20 分钟。" },
+  { f: "greenwich-clock", sn: "天文台", n: "格林威治天文台", q: "Royal Observatory Greenwich", la: 51.4780, lo: -0.0013, must: 1,
+    more: ["greenwich-ave"],
+    say: "",
+    tip: "门口墙上那个 24 小时的 Shepherd 门钟，全世界的时间从这儿开始算。下面嵌着英制标准长度尺。本初子午线 0° 就在院子里 —— 从这儿到家里正好 113°E。DLR 从 Canary Wharf 到 Cutty Sark 只要 10 分钟，是所有地方里离你最近的一个。上山有一段坡。" },
+  { f: "waterloo-sunset", sn: "滑铁卢桥", n: "滑铁卢桥", q: "Waterloo Bridge London", la: 51.5085, lo: -0.1166, must: 1,
+    more: [],
+    say: "",
+    tip: "伦敦看日落最好的一座桥，站在桥中间往东，圣保罗、碎片大厦、对讲机楼一整排都在河湾里。桥上风大，走过去五分钟就到南岸。Jubilee 线到 Waterloo，出站往北走。" },
+  { f: "tate-manray", sn: "泰特", n: "泰特现代美术馆", q: "Tate Modern London", la: 51.5075, lo: -0.0993, must: 1,
+    more: ["tate-prints", "tate-ghost"],
+    say: "",
+    tip: "发电厂改的美术馆，常设展免费。这个夹着眼睛的节拍器是曼·雷的《不可摧毁之物》。顶楼观景台看得到圣保罗和千禧桥。楼下书店和明信片墙很好逛，坐着歇脚也不会有人赶。Jubilee 线到 London Bridge，走 12 分钟。" },
+  { f: "bm-moai", sn: "大英", n: "大英博物馆", q: "British Museum London", la: 51.5195, lo: -0.1270, must: 1,
+    more: ["bm-chess", "bm-chess2", "bm-coins", "bm-cameo"],
+    say: "",
+    tip: "免费，不用买票。复活节岛的 Hoa Hakananai'a 在 24 号厅，路易斯棋子在 40 号厅 —— 那个抱着盾牌一脸生无可恋的国王就是它。馆特别大，别想一天看完，挑两三个厅就够。Elizabeth 线 Canary Wharf 到 Tottenham Court Road 15 分钟。" },
+  { f: "nottinghill", sn: "诺丁山", n: "诺丁山", q: "Notting Hill London", la: 51.5183, lo: -0.2062, must: 1,
+    more: [],
+    say: "",
+    tip: "彩色房子集中在 Portobello Road 往北那几条小街，Lancaster Road 一段最齐。周六是古董市集，人最多也最热闹；平日很安静，拍照反而好拍。Jubilee 到 Bond Street 换 Central 线到 Notting Hill Gate。" },
+  { f: "serpentine-me", sn: "九曲湖", n: "海德公园 · 九曲湖", q: "Serpentine Hyde Park London", la: 51.5055, lo: -0.1614, must: 0,
+    more: ["serpentine-swan"],
+    say: "给你看看我的优雅背影",
+    tip: "湖边有天鹅有野雁，蓝色的脚踏船天气好就开。绕湖走一圈大概四十分钟，长椅很多，坐下来能待一下午。北边就是肯辛顿花园。Jubilee 到 Bond Street 或 Green Park，走进去十分钟。" },
+  { f: "courtauld-me", sn: "考陶德", n: "考陶德美术馆", q: "Courtauld Gallery Somerset House London", la: 51.5117, lo: -0.1178, must: 0,
+    more: [],
+    say: "天啊，优雅背影又来了",
+    tip: "在萨默塞特宫里，不大，一两个小时能看完，人比大馆少很多。看累了院子里有喷泉广场，冬天会变成溜冰场。出门往南走上滑铁卢桥就是那个日落。" },
+  { f: "trafalgar", sn: "特拉法加", n: "特拉法加广场", q: "Trafalgar Square London", la: 51.5083, lo: -0.1279, must: 0,
+    more: [],
+    say: "",
+    tip: "纳尔逊柱底下四只铜狮子，往南望过去那条路直通大本钟。十二月广场上会立挪威送的圣诞树，旁边就是市集摊子。北边台阶上去是国家美术馆，也是免费的。" },
+  { f: "npg-busts", sn: "肖像馆", n: "国家肖像馆", q: "National Portrait Gallery London", la: 51.5095, lo: -0.1288, must: 0,
+    more: [],
+    say: "",
+    tip: "紧挨着特拉法加广场，常设展免费。整馆都是人像 —— 从都铎王朝的油画一路排到当代摄影。这一堆白大理石胸像是十九世纪那批。顶楼有家餐厅，窗外正对特拉法加广场。" },
+  { f: "lesmis", sn: "剧院", n: "桑德海姆剧院", q: "Sondheim Theatre London", la: 51.5119, lo: -0.1324, must: 0,
+    more: ["lesmis-wide"],
+    say: "",
+    tip: "《悲惨世界》常驻的剧院，在 Shaftesbury Avenue 上 —— 你 8 月 22 号那张票就是这儿。提前二十分钟到，门口那面灯牌晚上最好看。散场出来整条街都是剧院灯，往东走十分钟到唐人街。" },
+  { f: "bigben-blue", sn: "大本钟", n: "威斯敏斯特 · 蓝调时刻", q: "Westminster Bridge London", la: 51.5015, lo: -0.1197, must: 0,
+    more: [],
+    say: "",
+    tip: "南岸这一侧，伦敦眼脚下往回看，大本钟和议会大厦整个亮起来。日落后那二十分钟天是深蓝的，比全黑好看得多 —— 手机也拍得出来。Jubilee 线 Westminster 站出来过桥就是。" },
+  { f: "towerbridge", sn: "塔桥", n: "塔桥", q: "Tower Bridge London", la: 51.5048, lo: -0.0784, must: 0,
+    more: ["gull"],
+    say: "",
+    tip: "从南岸 More London 那片台阶看过去最完整。桥边停着的灰色军舰是贝尔法斯特号。海鸥胆子极大，手里拿吃的它真的会过来。Jubilee 线到 London Bridge，沿河往东走十分钟。" },
+  { f: "canarywharf", sn: "Canary", n: "Canary Wharf", q: "Canary Wharf London", la: 51.5070, lo: -0.0204, must: 0,
+    more: [],
+    say: "",
+    tip: "这张不用猜 —— 你一出门就是这个。左边那栋顶上写 HSBC，前面那个像船的木头屋顶是 Crossrail Place，里面有个屋顶花园，免费，冬天也开。从住的地方走过去五分钟。" },
+  { f: "greenwich-path", sn: "格林威治", n: "格林威治公园", q: "Greenwich Park London", la: 51.4798, lo: -0.0041, must: 0,
+    more: ["greenwich-dogs"],
+    say: "",
+    tip: "伦敦最老的皇家公园之一，坡上坡下全是遛狗的人和松鼠。天文台在山顶，站在那儿整个 Canary Wharf 在河对岸铺开。DLR 到 Cutty Sark 走进去，十分钟车程，是离家最近的一片大绿地。" },
+  { f: "blackheath", sn: "布莱克希思", n: "布莱克希思", q: "Blackheath London", la: 51.4715, lo: 0.0047, must: 0,
+    more: [],
+    say: "",
+    tip: "格林威治公园南门出去就是，一整片平坦的草地，天特别大。走到边上那排小房子是 Blackheath 村，咖啡馆和小店都在那儿。傍晚过来看天色最值。" },
+  { f: "breakfastclub", sn: "早餐店", n: "The Breakfast Club", q: "The Breakfast Club Spitalfields London", la: 51.5186, lo: -0.0789, must: 0,
+    more: [],
+    say: "",
+    tip: "那扇黄门在 Spitalfields，早午餐店。周末要排队，工作日早上人少。旁边就是 Old Spitalfields Market 和砖巷。Elizabeth 线 Canary Wharf 到 Liverpool Street 只要 8 分钟，是最好到的一片。" },
+  { f: "platform934", sn: "9¾", n: "国王十字 · 九又四分之三站台", q: "Platform 9 3/4 Kings Cross London", la: 51.5321, lo: -0.1242, must: 0,
+    more: [],
+    say: "",
+    tip: "车站西侧大厅里，推车嵌在墙上那个。工作人员会帮忙甩围巾、递魔杖、按快门，全套免费，只是队有时候排得长。旁边是官方周边店。不想排队的话，隔壁圣潘克拉斯车站本身就很好看。" },
+  { f: "regent-window", sn: "摄政街", n: "摄政街", q: "Regent Street London", la: 51.5103, lo: -0.1380, must: 0,
+    more: [],
+    say: "",
+    tip: "整条街是一个弧线，两边楼是同一套石头立面。橱窗做得比店里还认真，光看不买也值。往南接皮卡迪利广场，往北到牛津圆环。圣诞灯一般十一月初就挂上了。" },
+  { f: "lego-tube", sn: "乐高店", n: "莱斯特广场 · 乐高店", q: "LEGO Store Leicester Square London", la: 51.5105, lo: -0.1310, must: 0,
+    more: [],
+    say: "",
+    tip: "全球最大的乐高店，进门就是这幅用积木拼的地铁线路图，上面那个 UNDERGROUND 圆牌也是积木。不买东西也能逛，二楼有真人大小的地铁车厢。就在剧院区里，看戏前后顺路。" }
 ];
 // 家：Fraser Place, Pan Peninsula
 var LD_HOME_PT = { la: 51.4990, lo: -0.0203 };
@@ -18457,6 +18531,7 @@ function LondonRoom(_refLD) {
   var _mub = useState(false); var pinUp = _mub[0], setPinUp = _mub[1];
   var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
   var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
+  var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
   var tapMap = function (e) {
     if (!addMode) return;
     var svg = e.currentTarget;
@@ -19508,7 +19583,7 @@ function LondonRoom(_refLD) {
               return h("div", { key: "w" + i, onClick: function () { revealWall(i, x.n); },
                 style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + tl + "deg)", cursor: "pointer", position: "relative" } },
                 x.f
-                  ? h("img", { src: x.f, alt: "", loading: "lazy", style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } })
+                  ? h("img", { src: "ld/" + x.f + "_t.jpg", alt: "", loading: "lazy", style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } })
                   : h("div", { style: { width: "100%", height: 112, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", color: "rgba(120,105,80,0.6)" } }, "📷"),
                 (wallBeen.indexOf(x.n) >= 0) ? h("div", { style: { position: "absolute", right: 2, top: 2, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(150,110,30,0.45)", transform: "rotate(9deg)" } }, "✓") : null,
                 seen ? null : h("div", { style: { position: "absolute", left: 6, right: 6, top: 6, height: 112, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" } },
@@ -19526,7 +19601,7 @@ function LondonRoom(_refLD) {
         h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
           h("div", { style: { padding: 9 } },
             wallSel.f
-              ? h("img", { src: wallSel.f, alt: "", style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
+              ? h("img", { src: "ld/" + wallSel.f + ".jpg", alt: "", style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
               : h("div", { style: { width: "100%", height: 190, borderRadius: 6, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" } }, "📷")),
           h("div", { style: { padding: "4px 16px 18px" } },
             h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
@@ -19534,6 +19609,16 @@ function LondonRoom(_refLD) {
               wallSel.must ? h("span", { style: { background: "linear-gradient(135deg,#e0645f,#b4353a)", color: "#fff6ef", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "一定要去") : h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "推荐")),
             wallSel.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #b4353a", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, wallSel.say) : null,
             wallSel.tip ? h("div", { style: { marginTop: 10, fontSize: "0.76rem", color: "rgba(85,75,60,0.96)", lineHeight: 1.8 } }, wallSel.tip) : null,
+            (wallSel.more && wallSel.more.length)
+              ? h("div", { style: { marginTop: 12 } },
+                  h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "同一天他还拍了"),
+                  h("div", { style: { display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 } },
+                    wallSel.more.map(function (mf) {
+                      return h("img", { key: mf, src: "ld/" + mf + "_t.jpg", alt: "", loading: "lazy",
+                        onClick: function () { setWallBig("ld/" + mf + ".jpg"); },
+                        style: { flexShrink: 0, width: 96, height: 74, objectFit: "cover", borderRadius: 5, cursor: "pointer", boxShadow: "0 3px 9px rgba(60,45,30,0.25)" } });
+                    })))
+              : null,
             (function () {
               var been = wallBeen.indexOf(wallSel.n) >= 0;
               return h("button", { onClick: function () { toggleBeen(wallSel.n); }, style: { width: "100%", marginTop: 13, border: been ? "none" : "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 8, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: been ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(255,255,255,0.6)", color: been ? "#4a3510" : "#b4353a" } },
@@ -19543,6 +19628,8 @@ function LondonRoom(_refLD) {
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
+    wallBig ? h("div", { onClick: function () { setWallBig(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(12,16,20,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: 14, cursor: "pointer" } },
+        h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })) : null,
     // ── Nana 自己拍的 ──
     (function () {
       var withP = myPins.filter(function (x) { return x.u; });
@@ -19658,14 +19745,15 @@ function LondonRoom(_refLD) {
                 return h("circle", { key: "sm" + k, cx: p[0] + 3.3, cy: p[1] - 9.5 - k * 2, r: 1 - k * 0.15, fill: "rgba(255,255,255,0.85)",
                   style: { animation: "mpSmoke 2.6s ease-out infinite", animationDelay: (k * 0.55) + "s" } });
               }),
-              h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive" }, "家"));
+              h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, "家"));
           })(),
-          // 照片点
-          wallShown.map(function (x, i) {
+          // 照片点：没揭晓的先画，揭晓的后画，免得虚线圈盖住名字
+          [0, 1].map(function (pass) { return h("g", { key: "pp" + pass }, wallShown.map(function (x, i) {
             if (!x.la) return null;
             var p = ldXY(x.la, x.lo);
             var seen = wallSeen.indexOf(x.n) >= 0;
             var been = wallBeen.indexOf(x.n) >= 0;
+            if ((seen ? 1 : 0) !== pass) return null;
             return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
               h("circle", { cx: p[0], cy: p[1], r: 12, fill: "transparent" }),
               seen
@@ -19676,11 +19764,11 @@ function LondonRoom(_refLD) {
                     been
                       ? h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" })
                       : h("circle", { cx: p[0], cy: p[1] - 7.4, r: 2.2, fill: "#f2fbf8" }),
-                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: been ? "#a3701a" : "#1a5c56", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, x.n))
+                    been ? h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, x.sn || x.n) : null)
                 : h("g", null,
                     h("circle", { cx: p[0], cy: p[1], r: 5.8, fill: "rgba(240,232,214,0.9)", stroke: "rgba(150,130,100,0.7)", strokeWidth: 1.3, strokeDasharray: "3 2.2" }),
                     h("text", { x: p[0], y: p[1] + 2.8, textAnchor: "middle", fontSize: 7.4, fill: "#8a7a5c", fontFamily: "'Caveat',cursive", fontWeight: "bold" }, "?")));
-          }),
+          })); }),
           // 自己加的针脚
           myPins.map(function (mp, i) {
             if (!mp.la) return null;
@@ -19691,7 +19779,7 @@ function LondonRoom(_refLD) {
               h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#e8a33a", stroke: "#a3701a", strokeWidth: 1.2, strokeLinejoin: "round" }),
               h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
               mp.u ? h("text", { x: p[0] + 6.6, y: p[1] - 9.4, textAnchor: "middle", fontSize: 5.6 }, "📷") : null,
-              h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, mp.n));
+              h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, mp.n));
           }),
           // 刚点下去还没起名的
           pendPin ? (function () {
@@ -19709,7 +19797,7 @@ function LondonRoom(_refLD) {
           // 河名
           (function () { var p = ldXY(51.4805, -0.185); return h("text", { x: p[0], y: p[1], fontSize: 8, fill: "rgba(90,140,165,0.9)", fontFamily: "'Caveat',cursive", fontWeight: "bold", transform: "rotate(-14 " + p[0] + " " + p[1] + ")" }, "River Thames"); })())),
       h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
-        "虚线圈还没猜 · 绿针已揭晓 · 金针是真的去过了"),
+        "虚线圈还没猜 · 绿针已揭晓 · 金针是真的去过了，会写上名字"),
       addMode
         ? h("div", { key: "add1", style: { marginTop: 10, background: "rgba(180,53,58,0.08)", borderRadius: 9, padding: "11px 12px" } },
             h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 8 } },
