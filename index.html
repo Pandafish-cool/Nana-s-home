@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-107";
+var NANA_VER = "v2026.8.2-108";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17606,7 +17606,7 @@ var LD_FOOD = [
   { n: "Chinatown 唐人街", d: "Elizabeth line 到 Tottenham Court Road，一站到市中心", e: "🏮", q: "Chinatown London", tag: "中餐" },
   { n: "Wagamama", d: "日式拉面 · 单人吧台位 · 商场里", e: "🍜", q: "Wagamama Canary Wharf" },
   { n: "Dishoom", d: "印度菜网红店 · Canary Wharf 有分店 · 早餐也好吃", e: "🍛", q: "Dishoom Canary Wharf" },
-  { n: "Itsu", d: "寿司便当 · 快 · 打折时段超值", e: "🍱", q: "Itsu Canary Wharf" },
+  { n: "Itsu", d: "热汤面、饺子、照烧饭 · 快 · 打折时段超值（寿司那一柜跳过）", e: "🍱", q: "Itsu Canary Wharf" },
   { n: "Franco Manca", d: "那不勒斯披萨 · 便宜好吃 · 一个人一张刚好", e: "🍕", q: "Franco Manca Canary Wharf" },
   { n: "Pret A Manger", d: "早餐咖啡三明治 · 到处都是", e: "🥪", q: "Pret A Manger Canary Wharf" },
   { n: "Crossrail Place 餐厅层", d: "屋顶花园楼下一整层吃的", e: "🌿", q: "Crossrail Place Canary Wharf" }
@@ -17703,21 +17703,26 @@ var LD_TRIPS = [
     { n: "Columbia Road 花市", d: "只有周日开，一条街全是花", e: "💐", q: "Columbia Road Flower Market" },
     { n: "Hyde Park / 摄政公园", d: "天气好就去躺着，秋天满地金黄", e: "🌳", q: "Hyde Park London" }
   ] },
-  { z: "🚄 一日游（周末火车）", list: [
-    { n: "牛津 Oxford", d: "Paddington 出发一小时 · 哈利波特食堂原型", e: "🎓", q: "Oxford UK" },
-    { n: "剑桥 Cambridge", d: "Liverpool St 出发 · 撑篙游康河", e: "🛶", q: "Cambridge UK" },
-    { n: "巴斯 Bath", d: "一个半小时 · 罗马浴场 · 简奥斯汀的城", e: "♨️", q: "Bath UK" },
-    { n: "布莱顿 Brighton", d: "一小时到海边 · 码头游乐场 · 吃炸鱼薯条", e: "🌊", q: "Brighton UK" },
-    { n: "温莎城堡 Windsor", d: "女王的周末别墅，半天就够", e: "🏰", q: "Windsor Castle" },
-    { n: "七姐妹白崖", d: "Brighton 再往东，白色悬崖长在海边", e: "🏳️", q: "Seven Sisters Cliffs" },
-    { n: "科茨沃尔德 Cotswolds", d: "英国最美村庄群，建议报一日团", e: "🐏", q: "Cotswolds England" },
-    { n: "巨石阵 Stonehenge", d: "常和 Bath 拼一天团", e: "🗿", q: "Stonehenge" }
+  { z: "🚄 一小时之内（当天来回很轻松）", list: [
+    { n: "牛津 Oxford", d: "Paddington 出发 1 小时 · 基督堂学院是哈利波特食堂的原型", e: "🎓", q: "Oxford UK" },
+    { n: "剑桥 Cambridge", d: "King's Cross 最快 50 分钟 · 撑篙游康河", e: "🛶", q: "Cambridge UK" },
+    { n: "布莱顿 Brighton", d: "Victoria 出发 1 小时 · 码头游乐场 · 炸鱼薯条", e: "🌊", q: "Brighton UK" },
+    { n: "温莎城堡 Windsor", d: "Paddington 换 Slough 约 40 分钟 · 半天就够", e: "🏰", q: "Windsor Castle" },
+    { n: "汉普顿宫 Hampton Court", d: "Waterloo 直达 35 分钟 · 亨利八世的宫殿 + 树篱迷宫", e: "👑", q: "Hampton Court Palace" },
+    { n: "邱园 Kew Gardens", d: "District 线直达，连火车都不用坐 · 维多利亚温室，下雨天也能逛一整天", e: "🌿", q: "Kew Gardens London" }
   ] },
-  { z: "✈️ 出个国（Eurostar 从 St Pancras）", list: [
-    { n: "巴黎 Paris", d: "火车 2 小时 15 分，比国内高铁还近", e: "🗼", q: "Paris France" },
-    { n: "布鲁塞尔 Brussels", d: "2 小时 · 华夫饼和薯条", e: "🧇", q: "Brussels Belgium" },
-    { n: "阿姆斯特丹", d: "4 小时 · 运河和美术馆", e: "🚲", q: "Amsterdam Netherlands" },
-    { n: "爱丁堡 Edinburgh", d: "英国境内，火车或廉航都方便", e: "🏴", q: "Edinburgh Scotland" }
+  { z: "🚉 一到两小时（够玩一整天）", list: [
+    { n: "巴斯 Bath", d: "Paddington 1 小时 25 分 · 罗马浴场 · 简奥斯汀的城", e: "♨️", q: "Bath UK" },
+    { n: "惠茨特布尔 Whitstable", d: "Victoria 约 1 小时 20 分 · 一排彩色沙滩小屋，看日落 · 这儿以生蚝出名，但你不用碰生的，炸鱼薯条和现煮的贻贝一样好", e: "🏖️", q: "Whitstable Kent" },
+    { n: "布罗德斯泰斯 Broadstairs", d: "St Pancras 约 1 小时 20 分 · 狄更斯写《大卫·科波菲尔》的那个海湾，沙滩小而安静", e: "📖", q: "Broadstairs Kent" },
+    { n: "拉伊 Rye", d: "St Pancras 换 Ashford 约 1 小时 20 分 · 中世纪小镇，鹅卵石街，半天走得完", e: "🏘️", q: "Rye East Sussex" },
+    { n: "利兹城堡 Leeds Castle", d: "Victoria 到 Bearsted 约 1 小时再接驳巴士 · 护城河围一圈的城堡（在肯特，不在利兹）", e: "🏯", q: "Leeds Castle Kent" },
+    { n: "七姐妹白崖", d: "先到 Brighton 或 Eastbourne 再转巴士 · 白色悬崖长在海边，要走不少路，穿好鞋", e: "🏳️", q: "Seven Sisters Cliffs" },
+    { n: "科茨沃尔德 Cotswolds", d: "没有直达火车，建议报一日团 · 英国最美的村庄群", e: "🐏", q: "Cotswolds England" },
+    { n: "巨石阵 Stonehenge", d: "常和 Bath 拼一天团；自己去是 Waterloo → Salisbury 再接驳巴士", e: "🗿", q: "Stonehenge" }
+  ] },
+  { z: "🛏️ 走远一点，住一晚", list: [
+    { n: "爱丁堡 Edinburgh", d: "King's Cross 直达火车四个半小时，廉航一小时 · 老城、城堡、亚瑟王座 · 当天来回太赶，住一晚刚好", e: "🏴", q: "Edinburgh Scotland" }
   ] }
 ];
 var LD_WD = ["日", "一", "二", "三", "四", "五", "六"];
@@ -20028,7 +20033,9 @@ function LondonRoom(_refLD) {
   var weekTab = ukCard([
     screws,
     ukHead("侦探的周末探险", "坐上火车就走 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
-    zoneRows([LD_TRIPS[2], LD_TRIPS[3]])
+    zoneRows([LD_TRIPS[2], LD_TRIPS[3], LD_TRIPS[4]]),
+    h("div", { key: "wkft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75 } },
+      "火车票提前几天在 Trainline 或 National Rail 上买 Advance，比当天到车站买便宜一半不止。周末常有修路改线，出门前在 National Rail 看一眼当天有没有变。")
   ]);
   var walkTab = ukCard([
     screws,
@@ -20043,7 +20050,7 @@ function LondonRoom(_refLD) {
     })),
     sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "week" ? weekTab : walkTab
   );
-  var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
+  var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
