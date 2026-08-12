@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-101";
+var NANA_VER = "v2026.8.2-105";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17744,13 +17744,153 @@ var ldWeekend = function () {
 // f 是仓库根目录里的文件名；没有照片时显示占位格子。
 // must = 1 表示「一定要去」，0 表示「推荐」。
 // la / lo 是经纬度，用来在小屋自己的伦敦地图上落点
+// 泰晤士河边那栋不让拍的楼：没有照片，画一张
+var ldSpyArt = function (hgt, big) {
+  var h = React.createElement;
+  // 阶梯状的塔身，从下往上一层层收进去
+  var TIER = [[34, 92], [46, 79], [58, 66], [70, 53], [82, 40], [92, 30]];
+  var N = TIER.length;
+  var d = "M34 104", i, gl = [], k, y0, x0, w0, n, gx;
+  // 左半边一级一级往上
+  for (i = 0; i < N; i++) {
+    d += " L" + TIER[i][0] + " " + TIER[i][1];
+    d += " L" + (i + 1 < N ? TIER[i + 1][0] : 200 - TIER[i][0]) + " " + TIER[i][1];
+  }
+  // 右半边镜像着下来
+  for (i = N - 2; i >= 0; i--) {
+    d += " L" + (200 - TIER[i + 1][0]) + " " + TIER[i][1];
+    d += " L" + (200 - TIER[i][0]) + " " + TIER[i][1];
+  }
+  d += " L166 104 Z";
+  // 每一层的绿玻璃
+  for (i = 0; i < TIER.length - 1; i++) {
+    y0 = TIER[i][1] + 3.5;
+    x0 = TIER[i][0] + 4;
+    w0 = 200 - 2 * TIER[i][0] - 8;
+    n = Math.floor(w0 / 8);
+    for (k = 0; k < n; k++) {
+      gx = x0 + (w0 - n * 8 + 4) / 2 + k * 8;
+      gl.push(h("rect", { key: "g" + i + "-" + k, x: gx, y: y0, width: 5, height: 6, rx: 0.8, fill: "#4e8b83", opacity: 0.88 }));
+    }
+  }
+  return h("svg", { viewBox: "0 0 200 130", preserveAspectRatio: "xMidYMid slice",
+      style: { width: "100%", height: hgt, display: "block", borderRadius: 2, background: "linear-gradient(172deg,#dbe4ea 0%,#e6e3d8 62%,#dfe0d6 100%)" } },
+    // 远处的对岸
+    h("path", { d: "M0 100 h200 v6 H0 Z", fill: "rgba(170,165,140,0.35)" }),
+    // 两侧的圆塔
+    h("g", { fill: "#e2d7ba", stroke: "#7a6d4c", strokeWidth: 1.5, strokeLinejoin: "round" },
+      h("path", { d: "M18 104V72q0-7 7-7t7 7v32Z" }),
+      h("path", { d: "M168 104V72q0-7 7-7t7 7v32Z" })),
+    // 塔身
+    h("path", { d: d, fill: "#ded2b2", stroke: "#7a6d4c", strokeWidth: 1.6, strokeLinejoin: "round", strokeLinecap: "round" }),
+    // 每层退台的阴影线
+    h("g", { stroke: "rgba(122,109,76,0.45)", strokeWidth: 0.9 },
+      TIER.slice(0, 5).map(function (tt, ii) {
+        return h("line", { key: "s" + ii, x1: tt[0] + 1, y1: tt[1] + 1.2, x2: 199 - tt[0], y2: tt[1] + 1.2 });
+      })),
+    gl,
+    // 顶上那截和旗杆
+    h("rect", { x: 94, y: 24, width: 12, height: 6, fill: "#e2d7ba", stroke: "#7a6d4c", strokeWidth: 1.2 }),
+    h("line", { x1: 100, y1: 24, x2: 100, y2: 14, stroke: "#7a6d4c", strokeWidth: 1.1 }),
+    h("path", { d: "M100 14 l9 2.6 -9 2.6 Z", fill: "#b4353a" }),
+    // 泰晤士河
+    h("path", { d: "M0 106 q50 -5 100 0 t100 0 v24H0Z", fill: "#a9d6e8" }),
+    h("path", { d: "M0 110 q50 -5 100 0 t100 0", fill: "none", stroke: "rgba(105,165,190,0.55)", strokeWidth: 1.1 }),
+    h("path", { d: "M0 118 q46 -4 92 0 t108 0", fill: "none", stroke: "rgba(105,165,190,0.4)", strokeWidth: 0.9 }),
+    h("text", { x: 32, y: 116, fontSize: 8 }, "\u26F4"),
+    big ? null : h("text", { x: 100, y: 127, textAnchor: "middle", fontSize: 8.5, fill: "rgba(80,95,100,0.85)", fontFamily: "'Patrick Hand',cursive" }, "\u5fd8\u4e86\u62cd\uff0c\u753b\u7684"));
+};
+var LD_WALL_LIVE = 0;   // 0 = 只有熊猫鱼能看见「去玩」
+// 照片墙的随手感：角度、高度、左右挪一点、问句都换着来
+var LD_TILT  = [-2.6, 1.9, -1.2, 3.1, -3.4, 1.3, -1.8, 2.6, -2.1, 3.6, -1.5, 2.2];
+var LD_PH    = [124, 96, 142, 108, 116, 132, 92, 120, 148, 100, 128, 110];
+var LD_NUDGE = [0, 3, -2, 2, -4, 1, 3, -3, 0, 2, -2, 1];
+var LD_ASK   = ["\u8fd9\u662f\u54ea\u513f\uff1f", "\u731c\u4e00\u4e0b\uff1f", "\u8ba4\u5f97\u51fa\u6765\u5417", "\u8fd9\u662f\u54ea\u513f\uff1f", "\u77e5\u9053\u662f\u54ea\u513f\u5417"];
 var LD_WALL = [
-  { f: "", n: "塔桥", q: "Tower Bridge London", la: 51.5055, lo: -0.0754, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明：这里写这个地方有什么特别、几点去最好、怎么玩。" },
-  { f: "", n: "格林威治", q: "Greenwich London", la: 51.4769, lo: -0.0005, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "大英博物馆", q: "British Museum", la: 51.5194, lo: -0.1270, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "诺丁山", q: "Notting Hill London", la: 51.5160, lo: -0.2059, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Sky Garden", q: "Sky Garden London", la: 51.5113, lo: -0.0836, must: 1, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" },
-  { f: "", n: "Borough Market", q: "Borough Market London", la: 51.5055, lo: -0.0910, must: 0, say: "占位 —— 等熊猫鱼的照片和话。", tip: "占位说明。" }
+  { f: "", sk: 1, sn: "MI6", n: "MI6 大楼", q: "SIS Building Vauxhall Cross London", la: 51.4874, lo: -0.1244, must: 1,
+    more: [],
+    say: "",
+    tip: "泰晤士河南岸沃克斯霍尔桥边上那栋像金字塔的绿玻璃楼，军情六处总部，正经名字叫 SIS Building。邦德片里被炸过好几回。它伪装得太好了 —— 走在河边就是一栋普通写字楼，很容易直接走过去，熊猫鱼当年就是这么忘了拍。站在沃克斯霍尔桥上，或者对岸 Millbank 那一侧看，才看得出那个阶梯形状。楼不让进。Jubilee 线到 Green Park 换 Victoria 线到 Vauxhall，半小时。" },
+  { f: "221b-room", sn: "221B", n: "贝克街 221B", q: "Sherlock Holmes Museum London", la: 51.5242, lo: -0.1585, must: 1,
+    more: ["221b-door", "221b-basin", "221b-loo"],
+    say: "",
+    tip: "福尔摩斯博物馆，就是小屋信箱那个 221B。里面按小说布置成 1890 年代的样子：起居室、维多利亚洗手台、连厕所都还原了。门口永远站着一个穿制服的「警察」，可以合影。屋子很小很窄，一次只放一小批人进去，楼梯陡。Jubilee 线 Canary Wharf 直达 Baker Street，20 分钟。" },
+  { f: "greenwich-clock", sn: "天文台", n: "格林威治天文台", q: "Royal Observatory Greenwich", la: 51.4780, lo: -0.0013, must: 1,
+    more: ["greenwich-ave"],
+    say: "",
+    tip: "门口墙上那个 24 小时的 Shepherd 门钟，全世界的时间从这儿开始算。下面嵌着英制标准长度尺。本初子午线 0° 就在院子里 —— 从这儿到家里正好 113°E。DLR 从 Canary Wharf 到 Cutty Sark 只要 10 分钟，是所有地方里离你最近的一个。上山有一段坡。" },
+  { f: "waterloo-sunset", sn: "滑铁卢桥", n: "滑铁卢桥", q: "Waterloo Bridge London", la: 51.5085, lo: -0.1166, must: 1,
+    more: [],
+    say: "",
+    tip: "伦敦看日落最好的一座桥，站在桥中间往东，圣保罗、碎片大厦、对讲机楼一整排都在河湾里。桥上风大，走过去五分钟就到南岸。Jubilee 线到 Waterloo，出站往北走。" },
+  { f: "tate-manray", sn: "泰特", n: "泰特现代美术馆", q: "Tate Modern London", la: 51.5075, lo: -0.0993, must: 1,
+    more: ["tate-prints", "tate-ghost"],
+    say: "",
+    tip: "发电厂改的美术馆，常设展免费。这个夹着眼睛的节拍器是曼·雷的《不可摧毁之物》。顶楼观景台看得到圣保罗和千禧桥。楼下书店和明信片墙很好逛，坐着歇脚也不会有人赶。Jubilee 线到 London Bridge，走 12 分钟。" },
+  { f: "bm-moai", sn: "大英", n: "大英博物馆", q: "British Museum London", la: 51.5195, lo: -0.1270, must: 1,
+    more: ["bm-chess", "bm-chess2", "bm-coins", "bm-cameo"],
+    say: "",
+    tip: "免费，不用买票。复活节岛的 Hoa Hakananai'a 在 24 号厅，路易斯棋子在 40 号厅 —— 那个抱着盾牌一脸生无可恋的国王就是它。馆特别大，别想一天看完，挑两三个厅就够。Elizabeth 线 Canary Wharf 到 Tottenham Court Road 15 分钟。" },
+  { f: "nottinghill", sn: "诺丁山", n: "诺丁山", q: "Notting Hill London", la: 51.5183, lo: -0.2062, must: 1,
+    more: [],
+    say: "",
+    tip: "彩色房子集中在 Portobello Road 往北那几条小街，Lancaster Road 一段最齐。周六是古董市集，人最多也最热闹；平日很安静，拍照反而好拍。Jubilee 到 Bond Street 换 Central 线到 Notting Hill Gate。" },
+  { f: "serpentine-me", sn: "九曲湖", n: "海德公园 · 九曲湖", q: "Serpentine Hyde Park London", la: 51.5055, lo: -0.1614, must: 0,
+    more: ["serpentine-swan"],
+    say: "给你看看我的优雅背影",
+    tip: "湖边有天鹅有野雁，蓝色的脚踏船天气好就开。绕湖走一圈大概四十分钟，长椅很多，坐下来能待一下午。北边就是肯辛顿花园。Jubilee 到 Bond Street 或 Green Park，走进去十分钟。" },
+  { f: "courtauld-me", sn: "考陶德", n: "考陶德美术馆", q: "Courtauld Gallery Somerset House London", la: 51.5117, lo: -0.1178, must: 0,
+    more: [],
+    say: "天啊，优雅背影又来了",
+    tip: "在萨默塞特宫里，不大，一两个小时能看完，人比大馆少很多。看累了院子里有喷泉广场，冬天会变成溜冰场。出门往南走上滑铁卢桥就是那个日落。" },
+  { f: "trafalgar", sn: "特拉法加", n: "特拉法加广场", q: "Trafalgar Square London", la: 51.5083, lo: -0.1279, must: 0,
+    more: [],
+    say: "",
+    tip: "纳尔逊柱底下四只铜狮子，往南望过去那条路直通大本钟。十二月广场上会立挪威送的圣诞树，旁边就是市集摊子。北边台阶上去是国家美术馆，也是免费的。" },
+  { f: "npg-busts", sn: "肖像馆", n: "国家肖像馆", q: "National Portrait Gallery London", la: 51.5095, lo: -0.1288, must: 0,
+    more: [],
+    say: "",
+    tip: "紧挨着特拉法加广场，常设展免费。整馆都是人像 —— 从都铎王朝的油画一路排到当代摄影。这一堆白大理石胸像是十九世纪那批。顶楼有家餐厅，窗外正对特拉法加广场。" },
+  { f: "lesmis", sn: "剧院", n: "桑德海姆剧院", q: "Sondheim Theatre London", la: 51.5119, lo: -0.1324, must: 0,
+    more: ["lesmis-wide"],
+    say: "",
+    tip: "《悲惨世界》常驻的剧院，在 Shaftesbury Avenue 上 —— 你 8 月 22 号那张票就是这儿。提前二十分钟到，门口那面灯牌晚上最好看。散场出来整条街都是剧院灯，往东走十分钟到唐人街。" },
+  { f: "bigben-blue", sn: "大本钟", n: "威斯敏斯特 · 蓝调时刻", q: "Westminster Bridge London", la: 51.5015, lo: -0.1197, must: 0,
+    more: [],
+    say: "",
+    tip: "南岸这一侧，伦敦眼脚下往回看，大本钟和议会大厦整个亮起来。日落后那二十分钟天是深蓝的，比全黑好看得多 —— 手机也拍得出来。Jubilee 线 Westminster 站出来过桥就是。" },
+  { f: "towerbridge", sn: "塔桥", n: "塔桥", q: "Tower Bridge London", la: 51.5048, lo: -0.0784, must: 0,
+    more: ["gull"],
+    say: "",
+    tip: "从南岸 More London 那片台阶看过去最完整。桥边停着的灰色军舰是贝尔法斯特号。海鸥胆子极大，手里拿吃的它真的会过来。Jubilee 线到 London Bridge，沿河往东走十分钟。" },
+  { f: "canarywharf", sn: "Canary", n: "Canary Wharf", q: "Canary Wharf London", la: 51.5070, lo: -0.0204, must: 0,
+    more: [],
+    say: "",
+    tip: "这张不用猜 —— 你一出门就是这个。左边那栋顶上写 HSBC，前面那个像船的木头屋顶是 Crossrail Place，里面有个屋顶花园，免费，冬天也开。从住的地方走过去五分钟。" },
+  { f: "greenwich-path", sn: "格林威治", n: "格林威治公园", q: "Greenwich Park London", la: 51.4798, lo: -0.0041, must: 0,
+    more: ["greenwich-dogs"],
+    say: "",
+    tip: "伦敦最老的皇家公园之一，坡上坡下全是遛狗的人和松鼠。天文台在山顶，站在那儿整个 Canary Wharf 在河对岸铺开。DLR 到 Cutty Sark 走进去，十分钟车程，是离家最近的一片大绿地。" },
+  { f: "blackheath", sn: "布莱克希思", n: "布莱克希思", q: "Blackheath London", la: 51.4715, lo: 0.0047, must: 0,
+    more: [],
+    say: "",
+    tip: "格林威治公园南门出去就是，一整片平坦的草地，天特别大。走到边上那排小房子是 Blackheath 村，咖啡馆和小店都在那儿。傍晚过来看天色最值。" },
+  { f: "breakfastclub", sn: "早餐店", n: "The Breakfast Club", q: "The Breakfast Club Spitalfields London", la: 51.5186, lo: -0.0789, must: 0,
+    more: [],
+    say: "",
+    tip: "那扇黄门在 Spitalfields，早午餐店。周末要排队，工作日早上人少。旁边就是 Old Spitalfields Market 和砖巷。Elizabeth 线 Canary Wharf 到 Liverpool Street 只要 8 分钟，是最好到的一片。" },
+  { f: "platform934", sn: "9¾", n: "国王十字 · 九又四分之三站台", q: "Platform 9 3/4 Kings Cross London", la: 51.5321, lo: -0.1242, must: 0,
+    more: [],
+    say: "",
+    tip: "车站西侧大厅里，推车嵌在墙上那个。工作人员会帮忙甩围巾、递魔杖、按快门，全套免费，只是队有时候排得长。旁边是官方周边店。不想排队的话，隔壁圣潘克拉斯车站本身就很好看。" },
+  { f: "regent-window", sn: "摄政街", n: "摄政街", q: "Regent Street London", la: 51.5103, lo: -0.1380, must: 0,
+    more: [],
+    say: "",
+    tip: "整条街是一个弧线，两边楼是同一套石头立面。橱窗做得比店里还认真，光看不买也值。往南接皮卡迪利广场，往北到牛津圆环。圣诞灯一般十一月初就挂上了。" },
+  { f: "lego-tube", sn: "乐高店", n: "莱斯特广场 · 乐高店", q: "LEGO Store Leicester Square London", la: 51.5105, lo: -0.1310, must: 0,
+    more: [],
+    say: "",
+    tip: "全球最大的乐高店，进门就是这幅用积木拼的地铁线路图，上面那个 UNDERGROUND 圆牌也是积木。不买东西也能逛，二楼有真人大小的地铁车厢。就在剧院区里，看戏前后顺路。" }
 ];
 // 家：Fraser Place, Pan Peninsula
 var LD_HOME_PT = { la: 51.4990, lo: -0.0203 };
@@ -18452,6 +18592,12 @@ function LondonRoom(_refLD) {
   var _mp = useState(null); var pendPin = _mp[0], setPendPin = _mp[1];
   var _mi = useState(""); var pinName = _mi[0], setPinName = _mi[1];
   var _mx = useState(null); var pinDel = _mx[0], setPinDel = _mx[1];
+  var _mw = useState(""); var pinSay = _mw[0], setPinSay = _mw[1];
+  var _mu = useState(""); var pinPhoto = _mu[0], setPinPhoto = _mu[1];
+  var _mub = useState(false); var pinUp = _mub[0], setPinUp = _mub[1];
+  var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
+  var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
+  var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
   var tapMap = function (e) {
     if (!addMode) return;
     var svg = e.currentTarget;
@@ -18463,18 +18609,47 @@ function LondonRoom(_refLD) {
     var ll = ldLatLon(vx, vy);
     setPendPin({ la: ll[0], lo: ll[1] });
   };
+  // 传照片：跟 221B 那套一样，先存本机再往云上推，断了自动重试
+  var onPickPinPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    var inp = e.target;
+    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
+    if (!f || pinUp) return;
+    setPinUp(true); setPinErr("");
+    var pid = "mp" + Date.now() + Math.floor(Math.random() * 900);
+    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
+    nanaPhotoCompress(f, function (err, data) {
+      if (err || !data) { setPinUp(false); setPinErr("这张照片读不出来，换一张试试"); return; }
+      nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
+        nanaCloudPut(url, data);
+        var turl = nanaThumbUrl(url);
+        if (tdata && turl) nanaCloudPut(turl, tdata);
+        setPinPhoto(url);
+        nanaSharedUploadRetry(data, pid, 3, function (err2) {
+          if (err2) { setPinUp(false); setPinPhoto(""); setPinErr("没传上去，再试一次？"); return; }
+          if (!tdata) { setPinUp(false); return; }
+          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setPinUp(false); });
+        });
+      });
+    });
+  };
+  var clearPinDraft = function () {
+    setPendPin(null); setPinName(""); setPinSay(""); setPinPhoto(""); setPinErr(""); setAddMode(false);
+  };
   var savePin = function () {
     var t = pinName.trim();
-    if (!t || !pendPin) return;
+    if (!t || !pendPin || pinUp) return;
     var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo };
+    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo, say: pinSay.trim(), u: pinPhoto };
     setMyPins(function (o) { return o.concat([row]); });
-    setPendPin(null); setPinName(""); setAddMode(false);
-    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo }) }, function () {});
+    clearPinDraft();
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo, say: row.say, u: row.u }) }, function () {});
   };
   var delPin = function (x) {
     if (pinDel !== x.id) { setPinDel(x.id); setTimeout(function () { setPinDel(null); }, 2600); return; }
     setPinDel(null);
+    if (x.u) nanaSharedPhotoDel(x.u);
+    setMyPick(null);
     setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
@@ -18537,7 +18712,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("mp-") === 0) {
           var mo = null;
           try { mo = JSON.parse(r.who); } catch (_) { mo = null; }
-          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo });
+          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo, say: mo.say || "", u: mo.u || "" });
         }
         else if (r.id && r.id.indexOf("ev-") === 0) {
           var eo = null;
@@ -18630,7 +18805,8 @@ function LondonRoom(_refLD) {
     });
   };
   // 照片墙还没放真照片之前，去玩只对熊猫鱼开着，别让她看到一堆占位格子
-  var wallReady = (function () { for (var wi = 0; wi < LD_WALL.length; wi++) { if (LD_WALL[wi].f) return true; } return false; })();
+  // 照片墙还差熊猫鱼的话，写完把 LD_WALL_LIVE 改成 1，去玩才对 nana 开放
+  var wallReady = LD_WALL_LIVE;
   // 出发之后装箱就没用了，挪到最后；安心和吃饭往前提
   var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
   var TABS = (afterGo
@@ -19465,22 +19641,28 @@ function LondonRoom(_refLD) {
   var playTab = h("div", null,
     ukCard([
       screws,
-      ukHead("熊猫鱼的伦敦", "他去的时候拍的 · 猜猜每张是哪儿，点开揭晓", h("span", { style: { fontSize: "1rem" } }, "🖼️")),
+      ukHead("猜猜是哪里", "熊猫鱼去伦敦的时候拍的 · 点开揭晓", h("span", { style: { fontSize: "1rem" } }, "🔍")),
       wallShown.length
-        ? h("div", { key: "wl", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+        ? h("div", { key: "wl", style: { columnCount: 2, WebkitColumnCount: 2, columnGap: 9, WebkitColumnGap: 9, marginTop: 6 } },
             wallShown.map(function (x, i) {
-              var tl = (i % 2 ? 1.8 : -1.8);
+              var tl = LD_TILT[i % LD_TILT.length];
+              var ph = LD_PH[i % LD_PH.length];
+              var mg = LD_NUDGE[i % LD_NUDGE.length];
               var seen = wallSeen.indexOf(x.n) >= 0;
-              return h("div", { key: "w" + i, onClick: function () { revealWall(i, x.n); },
-                style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + tl + "deg)", cursor: "pointer", position: "relative" } },
-                x.f
-                  ? h("img", { src: x.f, alt: "", loading: "lazy", style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } })
-                  : h("div", { style: { width: "100%", height: 112, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", color: "rgba(120,105,80,0.6)" } }, "📷"),
-                (wallBeen.indexOf(x.n) >= 0) ? h("div", { style: { position: "absolute", right: 2, top: 2, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(150,110,30,0.45)", transform: "rotate(9deg)" } }, "✓") : null,
-                seen ? null : h("div", { style: { position: "absolute", left: 6, right: 6, top: 6, height: 112, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" } },
-                  h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "2.6rem", color: "rgba(255,255,255,0.85)", textShadow: "0 2px 10px rgba(0,0,0,0.45)" } }, "?")),
-                h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: seen ? LDHAND : LDSCRAWL, fontSize: seen ? "0.88rem" : "0.82rem", color: seen ? "#3a3226" : "rgba(120,105,85,0.85)" } }, seen ? x.n : "这是哪儿？"),
-                null);
+              var been = wallBeen.indexOf(x.n) >= 0;
+              return h("div", { key: "w" + i,
+                style: { breakInside: "avoid", WebkitColumnBreakInside: "avoid", pageBreakInside: "avoid", display: "inline-block", width: "100%", marginBottom: 15, paddingTop: i < 2 ? 4 : 0 } },
+                h("div", { onClick: function () { revealWall(i, x.n); },
+                  style: { background: "#fff", padding: "6px 6px 20px", borderRadius: 2, boxShadow: "0 " + (5 + (i % 3) * 2) + "px " + (13 + (i % 3) * 4) + "px rgba(60,45,30,0.26)", transform: "rotate(" + tl + "deg) translateX(" + mg + "px)", cursor: "pointer", position: "relative" } },
+                  x.sk
+                    ? ldSpyArt(ph, 0)
+                    : (x.f
+                      ? h("img", { src: "ld/" + x.f + "_t.jpg", alt: "", loading: "lazy", style: { width: "100%", height: ph, objectFit: "cover", display: "block", borderRadius: 2 } })
+                      : h("div", { style: { width: "100%", height: ph, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", color: "rgba(120,105,80,0.6)" } }, "\uD83D\uDCF7")),
+                  been ? h("div", { style: { position: "absolute", right: -6, top: -6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, width: 23, height: 23, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.72rem", fontWeight: 800, boxShadow: "0 2px 7px rgba(150,110,30,0.5)", transform: "rotate(" + (-tl * 2.2) + "deg)" } }, "\u2713") : null,
+                  seen ? null : h("div", { style: { position: "absolute", left: 6, right: 6, top: 6, height: ph, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" } },
+                    h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: (2.1 + (i % 3) * 0.4) + "rem", color: "rgba(255,255,255,0.82)", textShadow: "0 2px 10px rgba(0,0,0,0.5)", transform: "rotate(" + (-tl * 3) + "deg)" } }, "?")),
+                  h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 3, textAlign: "center", fontFamily: seen ? LDHAND : LDSCRAWL, fontSize: seen ? "0.86rem" : "0.8rem", color: seen ? "#3a3226" : "rgba(120,105,85,0.85)", padding: "0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, seen ? x.n : LD_ASK[i % LD_ASK.length])));
             }))
         : h("div", { key: "w0", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "16px 14px", textAlign: "center", fontSize: "0.76rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8 } },
             "照片还在路上 📷"),
@@ -19491,15 +19673,27 @@ function LondonRoom(_refLD) {
     wallSel ? h("div", { onClick: function () { setWallPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
         h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
           h("div", { style: { padding: 9 } },
-            wallSel.f
-              ? h("img", { src: wallSel.f, alt: "", style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
-              : h("div", { style: { width: "100%", height: 190, borderRadius: 6, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" } }, "📷")),
+            wallSel.sk
+              ? h("div", { style: { borderRadius: 6, overflow: "hidden" } }, ldSpyArt(210, 1))
+              : (wallSel.f
+                ? h("img", { src: "ld/" + wallSel.f + ".jpg", alt: "", style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
+                : h("div", { style: { width: "100%", height: 190, borderRadius: 6, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem" } }, "📷"))),
           h("div", { style: { padding: "4px 16px 18px" } },
             h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
               h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, wallSel.n),
               wallSel.must ? h("span", { style: { background: "linear-gradient(135deg,#e0645f,#b4353a)", color: "#fff6ef", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "一定要去") : h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "推荐")),
             wallSel.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #b4353a", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, wallSel.say) : null,
             wallSel.tip ? h("div", { style: { marginTop: 10, fontSize: "0.76rem", color: "rgba(85,75,60,0.96)", lineHeight: 1.8 } }, wallSel.tip) : null,
+            (wallSel.more && wallSel.more.length)
+              ? h("div", { style: { marginTop: 12 } },
+                  h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "同一天他还拍了"),
+                  h("div", { style: { display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 } },
+                    wallSel.more.map(function (mf) {
+                      return h("img", { key: mf, src: "ld/" + mf + "_t.jpg", alt: "", loading: "lazy",
+                        onClick: function () { setWallBig("ld/" + mf + ".jpg"); },
+                        style: { flexShrink: 0, width: 96, height: 74, objectFit: "cover", borderRadius: 5, cursor: "pointer", boxShadow: "0 3px 9px rgba(60,45,30,0.25)" } });
+                    })))
+              : null,
             (function () {
               var been = wallBeen.indexOf(wallSel.n) >= 0;
               return h("button", { onClick: function () { toggleBeen(wallSel.n); }, style: { width: "100%", marginTop: 13, border: been ? "none" : "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 8, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: been ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(255,255,255,0.6)", color: been ? "#4a3510" : "#b4353a" } },
@@ -19509,6 +19703,44 @@ function LondonRoom(_refLD) {
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
+    wallBig ? h("div", { onClick: function () { setWallBig(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(12,16,20,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: 14, cursor: "pointer" } },
+        h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })) : null,
+    // ── Nana 自己拍的 ──
+    (function () {
+      var withP = myPins.filter(function (x) { return x.u; });
+      if (!withP.length) return null;
+      return ukCard([
+        screws,
+        ukHead("Nana 的伦敦", "你自己拍的 · 一张照片就是一枚金针", h("span", { style: { fontSize: "1rem" } }, "🌸")),
+        h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+          withP.map(function (x, i) {
+            return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); },
+              style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
+              h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
+          }))
+      ]);
+    })(),
+    (function () {
+      if (!myPick) return null;
+      var x = null, i;
+      for (i = 0; i < myPins.length; i++) { if (myPins[i].id === myPick) x = myPins[i]; }
+      if (!x) return null;
+      return h("div", { onClick: function () { setMyPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
+        h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
+          x.u ? h("div", { style: { padding: 9 } },
+            h(NanaCloudImg, { u: x.u, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })) : null,
+          h("div", { style: { padding: "4px 16px 18px" } },
+            h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+              h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
+              h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
+            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
+            h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
+              h("a", { href: ldMap(x.n + " London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
+              h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
+            h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+              pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
+    })(),
     // ── 她的伦敦地图（手绘）──
     ukCard([
       screws,
@@ -19588,14 +19820,15 @@ function LondonRoom(_refLD) {
                 return h("circle", { key: "sm" + k, cx: p[0] + 3.3, cy: p[1] - 9.5 - k * 2, r: 1 - k * 0.15, fill: "rgba(255,255,255,0.85)",
                   style: { animation: "mpSmoke 2.6s ease-out infinite", animationDelay: (k * 0.55) + "s" } });
               }),
-              h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive" }, "家"));
+              h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, "家"));
           })(),
-          // 照片点
-          wallShown.map(function (x, i) {
+          // 照片点：没揭晓的先画，揭晓的后画，免得虚线圈盖住名字
+          [0, 1].map(function (pass) { return h("g", { key: "pp" + pass }, wallShown.map(function (x, i) {
             if (!x.la) return null;
             var p = ldXY(x.la, x.lo);
             var seen = wallSeen.indexOf(x.n) >= 0;
             var been = wallBeen.indexOf(x.n) >= 0;
+            if ((seen ? 1 : 0) !== pass) return null;
             return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
               h("circle", { cx: p[0], cy: p[1], r: 12, fill: "transparent" }),
               seen
@@ -19606,21 +19839,22 @@ function LondonRoom(_refLD) {
                     been
                       ? h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" })
                       : h("circle", { cx: p[0], cy: p[1] - 7.4, r: 2.2, fill: "#f2fbf8" }),
-                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: been ? "#a3701a" : "#1a5c56", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, x.n))
+                    been ? h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, x.sn || x.n) : null)
                 : h("g", null,
                     h("circle", { cx: p[0], cy: p[1], r: 5.8, fill: "rgba(240,232,214,0.9)", stroke: "rgba(150,130,100,0.7)", strokeWidth: 1.3, strokeDasharray: "3 2.2" }),
                     h("text", { x: p[0], y: p[1] + 2.8, textAnchor: "middle", fontSize: 7.4, fill: "#8a7a5c", fontFamily: "'Caveat',cursive", fontWeight: "bold" }, "?")));
-          }),
+          })); }),
           // 自己加的针脚
           myPins.map(function (mp, i) {
             if (!mp.la) return null;
             var p = ldXY(mp.la, mp.lo);
-            return h("g", { key: "my" + i, style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.4 + (i % 3) * 0.4) + "s ease-in-out infinite" } },
+            return h("g", { key: "my" + i, onClick: function () { if (mp.u) setMyPick(mp.id); }, style: { cursor: mp.u ? "pointer" : "default", transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.4 + (i % 3) * 0.4) + "s ease-in-out infinite" } },
               h("circle", { cx: p[0], cy: p[1] - 7, r: 11, fill: "rgba(230,180,60,0.2)" }),
               h("ellipse", { cx: p[0], cy: p[1] + 2.4, rx: 3.6, ry: 1.3, fill: "rgba(0,0,0,0.16)" }),
               h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#e8a33a", stroke: "#a3701a", strokeWidth: 1.2, strokeLinejoin: "round" }),
               h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
-              h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, mp.n));
+              mp.u ? h("text", { x: p[0] + 6.6, y: p[1] - 9.4, textAnchor: "middle", fontSize: 5.6 }, "📷") : null,
+              h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive", stroke: "#fdf6e6", strokeWidth: 2.4, paintOrder: "stroke", strokeLinejoin: "round" }, mp.n));
           }),
           // 刚点下去还没起名的
           pendPin ? (function () {
@@ -19638,16 +19872,25 @@ function LondonRoom(_refLD) {
           // 河名
           (function () { var p = ldXY(51.4805, -0.185); return h("text", { x: p[0], y: p[1], fontSize: 8, fill: "rgba(90,140,165,0.9)", fontFamily: "'Caveat',cursive", fontWeight: "bold", transform: "rotate(-14 " + p[0] + " " + p[1] + ")" }, "River Thames"); })())),
       h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
-        "虚线圈还没猜 · 绿针已揭晓 · 金针是真的去过了"),
+        "虚线圈还没猜 · 绿针已揭晓 · 金针是真的去过了，会写上名字"),
       addMode
         ? h("div", { key: "add1", style: { marginTop: 10, background: "rgba(180,53,58,0.08)", borderRadius: 9, padding: "11px 12px" } },
             h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 8 } },
               pendPin ? "就是这儿？给它起个名字" : "点一下地图上你去的位置 📍"),
-            pendPin ? h("div", { style: { display: "flex", gap: 6 } },
-              h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { flex: 1, minWidth: 0, border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
-              h("button", { onClick: savePin, disabled: !pinName.trim(), style: { flexShrink: 0, border: "none", borderRadius: 7, padding: "8px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: pinName.trim() ? "pointer" : "default", background: pinName.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: pinName.trim() ? "#4a3510" : "#fff" } }, "盖章")) : null,
-            h("button", { onClick: function () { setAddMode(false); setPendPin(null); setPinName(""); }, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
-        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方"),
+            pendPin ? h("div", null,
+              h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("input", { value: pinSay, onChange: function (e) { setPinSay(e.target.value); }, placeholder: "想写一句就写（可以空着）", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.35)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.74rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginTop: 8 } },
+                pinPhoto
+                  ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 13px rgba(60,45,30,0.28)", transform: "rotate(-2deg)", borderRadius: 3, flexShrink: 0 } },
+                      h(NanaCloudImg, { u: pinPhoto, thumb: true, style: { width: 72, height: 58, objectFit: "cover", display: "block", borderRadius: 2 } }),
+                      h("button", { onClick: function () { nanaSharedPhotoDel(pinPhoto); setPinPhoto(""); }, style: { position: "absolute", right: -8, top: -8, width: 21, height: 21, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"))
+                  : h("span", { onClick: function () { if (pinUp) return; try { var el = document.getElementById("mp-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: pinUp ? "default" : "pointer", border: "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 999, padding: "7px 13px", color: "#b4353a", fontWeight: 800, fontSize: "0.7rem", background: "rgba(255,255,255,0.75)" } }, pinUp ? "⏫ 照片在传…" : "📷 配一张照片"),
+                h("input", { id: "mp-photo-input", type: "file", accept: "image/*", onChange: onPickPinPhoto, style: { display: "none" } }),
+                h("button", { onClick: savePin, disabled: !pinName.trim() || pinUp, style: { marginLeft: "auto", flexShrink: 0, border: "none", borderRadius: 7, padding: "9px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: (pinName.trim() && !pinUp) ? "pointer" : "default", background: (pinName.trim() && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: (pinName.trim() && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "盖章")),
+              pinErr ? h("div", { style: { marginTop: 7, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null) : null,
+            h("button", { onClick: clearPinDraft, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
+        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）"),
       myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
         h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己走到的 " + myPins.length + " 个地方"),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
