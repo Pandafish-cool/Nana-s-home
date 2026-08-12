@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-118";
+var NANA_VER = "v2026.8.2-119";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20068,7 +20068,7 @@ function LondonRoom(_refLD) {
               return h("button", { onClick: function () { toggleBeen(wallSel.n); }, style: { width: "100%", marginTop: 13, border: been ? "none" : "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 8, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: been ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(255,255,255,0.6)", color: been ? "#4a3510" : "#b4353a" } },
                 been ? "🏅 已经去过了 · 点一下取消" : "✓ 我去过了，盖个章");
             })(),
-            (wallSel.cid && myAuthor === "panda") ? h("div", { onClick: function () { delCf(wallSel); }, style: { marginTop: 10, textAlign: "center", fontSize: "0.64rem", fontWeight: 800, color: cfDel === wallSel.cid ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer" } }, cfDel === wallSel.cid ? "再点一下就撤回了" : "撤回这份案卷") : null,
+            (wallSel.cid && myAuthor === "panda") ? h("div", { onClick: function () { delCf({ id: wallSel.cid, u: wallSel.cu }); }, style: { marginTop: 10, textAlign: "center", fontSize: "0.64rem", fontWeight: 800, color: cfDel === wallSel.cid ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer" } }, cfDel === wallSel.cid ? "再点一下就撤回了" : "撤回这份案卷") : null,
             h("div", { style: { marginTop: 10, display: "flex", gap: 8 } },
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
