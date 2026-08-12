@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-123";
+var NANA_VER = "v2026.8.2-124";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -15285,10 +15285,12 @@ var MS_SCENES = [
   { id: "rest", e: "\uD83E\uDD2B", t: "剩下的时间", b: "……不可描述。", bg: "linear-gradient(160deg,#2a1020,#5a1c38,#b0446a)" }
 ];
 // 沙滩上的一串脚印
-var msFeet = function () {
+var msFeet = function (n) {
   var h = React.createElement;
   var f = [], i, x, y, lr;
+  var show = (typeof n === "number") ? n : 9;
   for (i = 0; i < 9; i++) {
+    if (i >= show) break;
     lr = i % 2;
     x = 26 + i * 20 + (lr ? 9 : 0);
     y = 96 - i * 8.5;
@@ -15334,34 +15336,95 @@ function MeishaStoryActivity(_refMsy) {
   var h = React.createElement;
   var _s1 = useState(0); var i = _s1[0]; var setI = _s1[1];
   var _s2 = useState(0); var tick = _s2[0]; var setTick = _s2[1];
-  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 90); return function () { clearInterval(id); }; }, []);
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    return function () { clearInterval(id); };
+  }, []);
   var sc = MS_SCENES[i];
+  var T = tick;
   var go = function (d) {
     var n = i + d;
     if (n < 0) n = 0;
-    if (n > MS_SCENES.length - 1) { n = MS_SCENES.length - 1; if (onCozy) onCozy(4); }
+    if (n > MS_SCENES.length - 1) n = MS_SCENES.length - 1;
+    if (n !== i && onCozy) onCozy(4);
     setI(n);
   };
-  return h("div", { style: { minHeight: 460, borderRadius: 18, background: sc.bg, transition: "background 1.1s ease", padding: "20px 18px 18px", boxShadow: "0 10px 34px rgba(10,25,35,0.4)", position: "relative", overflow: "hidden" } },
-    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 46, background: "rgba(255,255,255,0.07)", borderRadius: "50% 50% 0 0 / 100% 100% 0 0", transform: "translateY(" + (10 + Math.sin(tick * 0.04) * 3).toFixed(1) + "px)" } }),
+  // 每一段自己的小动画，垫在文字后面
+  var art = function () {
+    var f = [], k, x, y, a2, op;
+    if (sc.id === "sun") {
+      for (k = 0; k < 12; k++) {
+        f.push(h("div", { key: "ray" + k, style: { position: "absolute", left: "78%", top: "16%", width: 3, height: 20 + Math.sin(T * 0.11 + k) * 7, marginLeft: -1.5, borderRadius: 2, background: "rgba(255,228,160,0.5)", transformOrigin: "50% -30px", transform: "rotate(" + ((k * 30 + T * 0.7) % 360) + "deg)" } }));
+      }
+      f.push(h("div", { key: "sunb", style: { position: "absolute", left: "78%", top: "16%", width: 44, height: 44, marginLeft: -22, marginTop: -22, borderRadius: "50%", background: "radial-gradient(circle at 38% 34%,#fff6cc,#f7c94b)", boxShadow: "0 0 26px rgba(247,201,75,0.55)" } }));
+      [[6, 66, 0.30], [48, 78, 0.19]].forEach(function (c, m) {
+        f.push(h("div", { key: "cl" + m, style: { position: "absolute", left: (((c[0] + T * c[2]) % 135) - 18) + "%", top: c[1] + "%", fontSize: (26 + m * 10) + "px", opacity: 0.42 } }, "\u2601\uFE0F"));
+      });
+    } else if (sc.id === "wind") {
+      for (k = 0; k < 5; k++) {
+        x = ((T * (1.4 + k * 0.35) + k * 37) % 150) - 25;
+        f.push(h("div", { key: "wd" + k, style: { position: "absolute", left: x + "%", top: (52 + k * 8) + "%", width: 46 + k * 12, height: 2, borderRadius: 2, background: "rgba(255,255,255," + (0.16 + (k % 3) * 0.09).toFixed(2) + ")" } }));
+      }
+      f.push(h("div", { key: "palm", style: { position: "absolute", right: 14, bottom: 26, fontSize: "2.6rem", transformOrigin: "50% 100%", transform: "rotate(" + (Math.sin(T * 0.08) * 7).toFixed(1) + "deg)", opacity: 0.85 } }, "\uD83C\uDF34"));
+    } else if (sc.id === "yell") {
+      f.push(h("div", { key: "wv", style: { position: "absolute", left: -20, right: -20, bottom: (14 + Math.sin(T * 0.07) * 16), height: 90, borderRadius: "50% 50% 0 0 / 100% 100% 0 0", background: "rgba(200,240,248,0.22)" } }));
+      f.push(h("div", { key: "wv2", style: { position: "absolute", left: -20, right: -20, bottom: (4 + Math.sin(T * 0.07 + 1) * 12), height: 70, borderRadius: "50% 50% 0 0 / 100% 100% 0 0", background: "rgba(230,250,255,0.18)" } }));
+      [[18, 0], [52, 11], [76, 22]].forEach(function (b2, m) {
+        var ph = (T + b2[1] * 3) % 42;
+        op = ph < 30 ? (1 - ph / 30) : 0;
+        f.push(h("div", { key: "yl" + m, style: { position: "absolute", left: b2[0] + "%", bottom: (36 + ph * 1.6) + "%", fontSize: (13 + m * 3) + "px", fontWeight: 800, color: "rgba(255,255,255," + op.toFixed(2) + ")" } }, "\u554a\uFF01"));
+      });
+    } else if (sc.id === "feet") {
+      f.push(h("div", { key: "lap", style: { position: "absolute", left: -20, right: -20, bottom: (10 + Math.sin(T * 0.05) * 7), height: 56, borderRadius: "50% 50% 0 0 / 100% 100% 0 0", background: "rgba(150,200,215,0.16)" } }));
+    } else if (sc.id === "chair") {
+      [[10, 62], [86, 58], [24, 84], [72, 86]].forEach(function (e2, m) {
+        op = 0.2 + 0.45 * (0.5 + 0.5 * Math.sin(T * 0.09 + m * 1.7));
+        f.push(h("div", { key: "ey" + m, style: { position: "absolute", left: e2[0] + "%", top: e2[1] + "%", fontSize: "1.05rem", opacity: op.toFixed(2) } }, "\uD83D\uDC40"));
+      });
+      for (k = 0; k < 3; k++) {
+        y = ((T * 0.9 + k * 26) % 80);
+        f.push(h("div", { key: "hr" + k, style: { position: "absolute", left: (44 + k * 7) + "%", bottom: (18 + y) + "%", fontSize: "0.9rem", opacity: (1 - y / 80).toFixed(2) } }, "\uD83D\uDC9B"));
+      }
+    } else if (sc.id === "rice") {
+      for (k = 0; k < 4; k++) {
+        y = ((T * 1.1 + k * 18) % 72);
+        f.push(h("div", { key: "stm" + k, style: { position: "absolute", left: (12 + k * 4) + "%", top: (30 - y * 0.28) + "%", width: 5, height: 5, borderRadius: "50%", background: "rgba(255,255,255," + (0.34 * (1 - y / 72)).toFixed(2) + ")", transform: "translateX(" + (Math.sin(T * 0.1 + k) * 7).toFixed(1) + "px)" } }));
+      }
+    } else if (sc.id === "nap") {
+      for (k = 0; k < 3; k++) {
+        y = ((T * 0.85 + k * 30) % 90);
+        f.push(h("div", { key: "zz" + k, style: { position: "absolute", right: (16 + k * 8) + "%", bottom: (22 + y * 0.6) + "%", fontSize: (12 + k * 5) + "px", color: "rgba(255,255,255," + (0.55 * (1 - y / 90)).toFixed(2) + ")", fontWeight: 800, transform: "rotate(" + (Math.sin(T * 0.06 + k) * 10).toFixed(1) + "deg)" } }, "z"));
+      }
+      f.push(h("div", { key: "moon", style: { position: "absolute", right: 22, top: 24, fontSize: "1.5rem", opacity: 0.65, transform: "translateY(" + (Math.sin(T * 0.05) * 4).toFixed(1) + "px)" } }, "\uD83C\uDF19"));
+    } else if (sc.id === "rest") {
+      for (k = 0; k < 6; k++) {
+        y = ((T * 0.7 + k * 17) % 100);
+        f.push(h("div", { key: "hh" + k, style: { position: "absolute", left: (8 + k * 15) + "%", bottom: (y * 0.72) + "%", fontSize: (10 + (k % 3) * 6) + "px", opacity: (0.5 * (1 - y / 100)).toFixed(2), transform: "translateX(" + (Math.sin(T * 0.07 + k) * 9).toFixed(1) + "px)" } }, "\u2764\uFE0F"));
+      }
+    }
+    return f;
+  };
+  return h("div", { onClick: function () { go(1); }, style: { minHeight: 470, borderRadius: 18, background: sc.bg, transition: "background 1.1s ease", padding: "20px 18px 18px", boxShadow: "0 10px 34px rgba(10,25,35,0.4)", position: "relative", overflow: "hidden", cursor: "pointer" } },
+    h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, zIndex: 1, pointerEvents: "none" } }, art()),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 46, background: "rgba(255,255,255,0.07)", borderRadius: "50% 50% 0 0 / 100% 100% 0 0", transform: "translateY(" + (10 + Math.sin(T * 0.04) * 3).toFixed(1) + "px)", zIndex: 1 } }),
     h("div", { style: { position: "relative", zIndex: 2 } },
       h("div", { style: { fontSize: "0.6rem", fontWeight: 800, letterSpacing: 2.4, color: "rgba(255,255,255,0.7)", fontFamily: "Georgia,serif" } }, "DAMEISHA \u00B7 SHENZHEN"),
       h("div", { style: { fontSize: "0.68rem", color: "rgba(255,255,255,0.6)", marginTop: 3, fontWeight: 700 } }, "8 月 7 日 · 上周五"),
-      h("div", { style: { fontSize: "3rem", marginTop: 16, transform: "rotate(" + (Math.sin(tick * 0.035) * 5).toFixed(2) + "deg)", transition: "transform 0.6s" } }, sc.e),
-      h("div", { style: { fontWeight: 900, fontSize: "1.4rem", color: "#fff", marginTop: 8, letterSpacing: "0.5px", textShadow: "0 2px 14px rgba(0,0,0,0.4)" } }, sc.t),
+      h("div", { style: { fontSize: "3rem", marginTop: 16, transform: "translateY(" + (Math.sin(T * 0.07) * 5).toFixed(1) + "px) rotate(" + (Math.sin(T * 0.035) * 5).toFixed(2) + "deg)", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.35))" } }, sc.e),
+      h("div", { style: { fontWeight: 900, fontSize: "1.4rem", color: "#fff", marginTop: 8, letterSpacing: "0.5px", textShadow: "0 2px 14px rgba(0,0,0,0.45)" } }, sc.t),
       sc.note
-        ? h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.9)", borderRadius: 12, padding: "13px 14px", borderLeft: "5px solid #4a6a38" } },
+        ? h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.93)", borderRadius: 12, padding: "13px 14px", borderLeft: "5px solid #4a6a38" } },
             h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#4a6a38", letterSpacing: 1 } }, "\uD83D\uDCCC 熊猫鱼记下来了"),
             h("div", { style: { fontSize: "0.92rem", fontWeight: 800, color: "#2a3a20", marginTop: 5, lineHeight: 1.7 } }, sc.b),
             h("div", { style: { fontSize: "0.74rem", color: "rgba(60,80,50,0.9)", marginTop: 7, lineHeight: 1.7 } }, "以后点外卖、下馆子，先看有没有米饭。"))
-        : h("div", { style: { fontSize: "0.9rem", color: "rgba(255,255,255,0.9)", marginTop: 10, lineHeight: 1.85, textShadow: "0 1px 8px rgba(0,0,0,0.35)" } }, sc.b),
-      sc.art ? h("div", { style: { marginTop: 14 } }, msFeet()) : null,
-      h("div", { style: { display: "flex", gap: 5, marginTop: 18, justifyContent: "center" } }, MS_SCENES.map(function (_x, k) {
-        return h("div", { key: "sd" + k, onClick: function () { setI(k); }, style: { width: k === i ? 18 : 6, height: 6, borderRadius: 99, background: k === i ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.3)", transition: "all .3s", cursor: "pointer" } });
+        : h("div", { style: { fontSize: "0.9rem", color: "rgba(255,255,255,0.92)", marginTop: 10, lineHeight: 1.85, textShadow: "0 1px 8px rgba(0,0,0,0.4)" } }, sc.b),
+      sc.art ? h("div", { style: { marginTop: 14 } }, msFeet(Math.floor((T % 90) / 9) + 1)) : null,
+      h("div", { style: { display: "flex", gap: 5, marginTop: 18, justifyContent: "center" } }, MS_SCENES.map(function (_x, k2) {
+        return h("div", { key: "sd" + k2, onClick: function (e) { e.stopPropagation(); setI(k2); }, style: { width: k2 === i ? 18 : 6, height: 6, borderRadius: 99, background: k2 === i ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.3)", transition: "all .3s", cursor: "pointer" } });
       })),
       h("div", { style: { display: "flex", gap: 9, marginTop: 14 } },
-        h("button", { onClick: function () { go(-1); }, disabled: i === 0, style: { flex: 1, border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.1)", color: "#fff", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", opacity: i === 0 ? 0.35 : 1, cursor: i === 0 ? "default" : "pointer" } }, "\u2190 上一段"),
-        h("button", { onClick: function () { go(1); }, disabled: i === MS_SCENES.length - 1, style: { flex: 1, border: "none", background: "rgba(255,255,255,0.92)", color: "#20303a", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", opacity: i === MS_SCENES.length - 1 ? 0.45 : 1, cursor: i === MS_SCENES.length - 1 ? "default" : "pointer" } }, i === MS_SCENES.length - 1 ? "就到这儿" : "下一段 \u2192"))));
+        h("button", { onClick: function (e) { e.stopPropagation(); go(-1); }, disabled: i === 0, style: { flex: 1, border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.1)", color: "#fff", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", opacity: i === 0 ? 0.35 : 1, cursor: i === 0 ? "default" : "pointer" } }, "\u2190 上一段"),
+        h("button", { onClick: function (e) { e.stopPropagation(); go(1); }, disabled: i === MS_SCENES.length - 1, style: { flex: 1, border: "none", background: "rgba(255,255,255,0.92)", color: "#20303a", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", opacity: i === MS_SCENES.length - 1 ? 0.45 : 1, cursor: i === MS_SCENES.length - 1 ? "default" : "pointer" } }, i === MS_SCENES.length - 1 ? "就到这儿" : "下一段 \u2192"))));
 }
 function DisneyMemoryCard(_refDmc) {
   var onOpen = _refDmc.onOpen;
