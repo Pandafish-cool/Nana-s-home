@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-87";
+var NANA_VER = "v2026.8.2-95";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17767,6 +17767,52 @@ var ldXY = function (la, lo) {
   var B = LD_MAP_BOX;
   return [((lo - B.l0) / (B.l1 - B.l0)) * B.w, ((B.t1 - la) / (B.t1 - B.t0)) * B.h];
 };
+// 反过来：地图上点一下，换算成经纬度
+var ldLatLon = function (vx, vy) {
+  var B = LD_MAP_BOX;
+  return [B.t1 - (vy / B.h) * (B.t1 - B.t0), B.l0 + (vx / B.w) * (B.l1 - B.l0)];
+};
+// 手绘感：固定的伪随机抖动，每次画出来一样，但线条不再是直的
+var ldNoise = function (i, seed) {
+  var x = Math.sin(i * 127.1 + seed * 311.7) * 43758.5453;
+  return (x - Math.floor(x)) * 2 - 1;
+};
+// 把一串点连成圆滑的曲线（穿过中点做二次贝塞尔）
+var ldSmooth = function (pts) {
+  if (!pts.length) return "";
+  var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1), i, mx, my;
+  for (i = 1; i < pts.length - 1; i++) {
+    mx = (pts[i][0] + pts[i + 1][0]) / 2;
+    my = (pts[i][1] + pts[i + 1][1]) / 2;
+    d += " Q" + pts[i][0].toFixed(1) + " " + pts[i][1].toFixed(1) + " " + mx.toFixed(1) + " " + my.toFixed(1);
+  }
+  d += " L" + pts[pts.length - 1][0].toFixed(1) + " " + pts[pts.length - 1][1].toFixed(1);
+  return d;
+};
+var ldRiverPath = function (amp, seed) {
+  var pts = LD_THAMES.map(function (t, i) {
+    var p = ldXY(t[1], t[0]);
+    return [p[0] + ldNoise(i, seed) * amp, p[1] + ldNoise(i, seed + 7) * amp];
+  });
+  return ldSmooth(pts);
+};
+// 歪歪扭扭的一团，用来画公园
+var ldBlob = function (cx, cy, r, seed) {
+  var pts = [], i, a, rr;
+  for (i = 0; i <= 9; i++) {
+    a = (i % 9) * (Math.PI * 2 / 9);
+    rr = r * (0.78 + 0.34 * ((ldNoise(i % 9, seed) + 1) / 2));
+    pts.push([cx + rr * Math.cos(a), cy + rr * Math.sin(a) * 0.82]);
+  }
+  return ldSmooth(pts) + " Z";
+};
+// 地图上的公园和小地标
+var LD_PARKS = [
+  { n: "Hyde Park", la: 51.5073, lo: -0.1657, r: 15 },
+  { n: "Regent's", la: 51.5313, lo: -0.1560, r: 12 },
+  { n: "Victoria Pk", la: 51.5362, lo: -0.0390, r: 11 },
+  { n: "Battersea", la: 51.4791, lo: -0.1567, r: 9 }
+];
 // ── 🛬 落地那天：盖特威克 → Fraser Place ──────────────────
 var LD_ARR_STEP = [
   { e: "📱", n: "出发前就办好", items: [
@@ -17809,6 +17855,52 @@ var LD_ARR_WAY = [
   { e: "🚖", n: "Taxi Rank 机场出租", tag: "出门就有", col: "#2b3446", cost: "约 £130 - 170", time: "60 - 90 分钟",
     how: "不用订、不用网、不用装 App。出关后在南楼到达大厅跟着 Taxis 的牌子走，车站就在楼外的车道边，有工作人员排队引导。上车把地址给司机看，行李他搬。到了刷卡付，英国出租车都能刷。",
     why: "好处：零准备 —— 不用订、不用网、走出门就有，行李司机搬。代价：三条里最贵。" }
+];
+// 一键呼叫：三种，都会变成 221B 里的 BB 机来信
+var LD_PAGE = [
+  { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠" },
+  { k: "good", e: "☀️", t: "今天还不错", sub: "就是想说一声", body: "📟 今天还不错。就是想说一声。", ok: "说过了，那边高兴 ☀️" },
+  { k: "knock", e: "🚪", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🚪" },
+  { k: "bad", e: "🌧️", t: "今天有点长", sub: "就这么一句，不用回", pick: 1 }
+];
+// 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
+var LD_BAD_OPT = [
+  { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
+  { k: "sit", e: "🫖", t: "先不说，坐会儿", d: "谁都不用惊动", sit: 1 }
+];
+var LD_SIT = [
+  "把水烧上，站在旁边等它响。",
+  "窗帘拉开，让光进来一点就行。",
+  "洗把脸，水开凉一点。",
+  "下楼绕着码头走十分钟，不用想事。",
+  "躺回床上，什么都不做也算数。",
+  "找件干净衣服换上，就换这一件。"
+];
+// 夜里回家
+var LD_NIGHTSAFE = [
+  { t: "记住这一句：Ask for Angela", b: "英国酒吧和很多场所都有这个暗号。跟任何一个工作人员说「Is Angela here?」，他们就知道你需要帮忙 —— 会带你从后门走、帮你叫车、或者挡掉纠缠你的人。不用解释任何事。" },
+  { t: "999 说不了话，就按 55", b: "拨 999 之后如果不方便出声，先咳嗽或按任意键，听到提示后按 55，接线员就知道你有危险但不能讲话，会转给警察。" },
+  { t: "只上有牌的车", b: "路边招手拦到的、主动凑上来问你要不要车的，一律不上。黑色出租车（black cab）可以街上拦，其余的必须是 App 叫的，上车前对一下车牌和司机照片。" },
+  { t: "Uber 里按「分享行程」", b: "上车后在 App 里点 Share trip status，把链接发给熊猫鱼。他能看着那个点一路挪到家。" },
+  { t: "回家挑亮的那条", b: "Canary Wharf 到公寓那一段商场和码头一路有灯有人。别为了近抄小路或穿工地。" },
+  { t: "觉得被跟了", b: "别回家。走进最近的还开着的店、酒店大堂或者商场，站到柜台边，跟店员说你需要帮助。然后打 999。" }
+];
+// 出事找谁，从近到远
+var LD_SOS_LIST = [
+  { e: "🚑", t: "999", b: "危及生命：呼吸接不上气、说不出整句话、严重外伤。说 asthma attack 和地址，救护车免费。", u: "tel:999" },
+  { e: "☎️", t: "NHS 111", b: "不舒服但拿不准要不要去医院。免费，24 小时有护士在线判断。", u: "tel:111" },
+  { e: "🏨", t: "公寓前台", b: "钥匙进不去、屋里出状况、有人敲门你不确定。服务式公寓多数是 24 小时有人的。" },
+  { e: "🛂", t: "中国驻英使馆 领保", b: "护照丢了、被抢被骗、遇到法律问题。24 小时：+44 20 7631 1430", u: "tel:+442076311430" },
+  { e: "🌏", t: "外交部全球领保热线", b: "国内号码，家里人也能打：+86 10 12308", u: "tel:+861012308" },
+  { e: "💳", t: "银行挂失", b: "卡丢了先在手机 App 里冻结，比打电话快。出发前把两张卡的客服号存好。" }
+];
+// 情绪低的时候
+var LD_LOW = [
+  { t: "第二三周最难，谁都一样", b: "刚到的新鲜劲过去、又还没习惯，人在异地几乎都会在这个时候掉一次。它会过去，跟你没关系。" },
+  { t: "先做最小的那件事", b: "不用振作。喝口水、洗把脸、把窗帘拉开、下楼绕码头走十分钟。做完一件再说下一件。" },
+  { t: "别熬到半夜再想事", b: "凌晨想什么都是放大过的，不作数。想说话就按上面那个「今天有点长」，不用组织语言。" },
+  { t: "吃和睡先保住", b: "情绪差的时候最先塌的是这两样，塌了会更差。哪怕只是一碗热汤面、只睡六小时，也算保住了。" },
+  { t: "别用酒解决", b: "喝的时候好受，第二天会更沉。真想喝就按此刻那页的「家陪你喝一杯」，一杯就够。" }
 ];
 // 06:30 落地那天的实际节奏
 var LD_ARR_CLOCK = [
@@ -18328,8 +18420,52 @@ function LondonRoom(_refLD) {
   var astro = _at[0], setAstro = _at[1];
   var _ar = useState(null); var arrOpen = _ar[0], setArrOpen = _ar[1];
   var _wp = useState(null); var wallPick = _wp[0], setWallPick = _wp[1];
+  var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
+  var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
+  var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
+  var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
   var wallSeen = _ws[0], setWallSeen = _ws[1];
+  var _wb = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-been") || "[]"); } catch (_) { return []; } });
+  var wallBeen = _wb[0], setWallBeen = _wb[1];
+  var _mn = useState([]); var myPins = _mn[0], setMyPins = _mn[1];
+  var _ma = useState(false); var addMode = _ma[0], setAddMode = _ma[1];
+  var _mp = useState(null); var pendPin = _mp[0], setPendPin = _mp[1];
+  var _mi = useState(""); var pinName = _mi[0], setPinName = _mi[1];
+  var _mx = useState(null); var pinDel = _mx[0], setPinDel = _mx[1];
+  var tapMap = function (e) {
+    if (!addMode) return;
+    var svg = e.currentTarget;
+    var r = svg.getBoundingClientRect();
+    var cx = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX);
+    var cy = (e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY);
+    var vx = -6 + ((cx - r.left) / r.width) * 332;
+    var vy = -6 + ((cy - r.top) / r.height) * 186;
+    var ll = ldLatLon(vx, vy);
+    setPendPin({ la: ll[0], lo: ll[1] });
+  };
+  var savePin = function () {
+    var t = pinName.trim();
+    if (!t || !pendPin) return;
+    var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
+    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo };
+    setMyPins(function (o) { return o.concat([row]); });
+    setPendPin(null); setPinName(""); setAddMode(false);
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo }) }, function () {});
+  };
+  var delPin = function (x) {
+    if (pinDel !== x.id) { setPinDel(x.id); setTimeout(function () { setPinDel(null); }, 2600); return; }
+    setPinDel(null);
+    setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaPackDel(x.id, function () {});
+  };
+  var toggleBeen = function (name) {
+    var nx = wallBeen.indexOf(name) >= 0
+      ? wallBeen.filter(function (x) { return x !== name; })
+      : wallBeen.concat([name]);
+    setWallBeen(nx);
+    try { localStorage.setItem("nana-wall-been", JSON.stringify(nx)); } catch (_) {}
+  };
   var revealWall = function (i, name) {
     setWallPick(i);
     if (wallSeen.indexOf(name) >= 0) return;
@@ -18372,12 +18508,17 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {}, ex = [], evs = [];
+      var m = {}, ex = [], evs = [], mps = [];
       (rows || []).forEach(function (r) {
         if (r.id && r.id.indexOf("x-") === 0) {
           var o = null;
           try { o = JSON.parse(r.who); } catch (_) { o = null; }
           ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done, g: o.g || "" } : { id: r.id, t: r.who || "", done: false, g: "" });
+        }
+        else if (r.id && r.id.indexOf("mp-") === 0) {
+          var mo = null;
+          try { mo = JSON.parse(r.who); } catch (_) { mo = null; }
+          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo });
         }
         else if (r.id && r.id.indexOf("ev-") === 0) {
           var eo = null;
@@ -18388,6 +18529,7 @@ function LondonRoom(_refLD) {
       });
       evs.sort(function (a, b) { return a.d < b.d ? -1 : 1; });
       setCalExtra(evs);
+      setMyPins(mps);
       ex.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setPacked(m); setExtras(ex); ldSavePack(m);
       try { localStorage.setItem("nana-pack-extra", JSON.stringify(ex)); } catch (_) {}
@@ -18440,6 +18582,19 @@ function LondonRoom(_refLD) {
     n[id] = nx; setSpots(n);
     try { localStorage.setItem("nana-london-spots", JSON.stringify(n)); } catch (_) {}
   };
+  var sendPage = function (p) {
+    if (pageBusy) return;
+    if (!myAuthor) { setPageMsg("先去 221B 选一下你是谁"); return; }
+    setPageBusy(p.k); setPageMsg("");
+    var dt = new Date();
+    var body = p.body + "\n▸ 伦敦时间：" + lonT + "　▸ 家里：" + gzT;
+    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "call", pu: null };
+    nanaSharedAdd(note, function (err) {
+      setPageBusy("");
+      setPageMsg(err ? "没寄出去…检查下网络再试 😢" : p.ok);
+      setTimeout(function () { setPageMsg(""); }, 5000);
+    });
+  };
   var sendCrave = function (dish) {
     if (craveBusy) return;
     if (!myAuthor) { setCraveMsg("先去 221B 选一下你是谁，才能寄申请哦"); return; }
@@ -18455,26 +18610,41 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = full ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]];
+  // 照片墙还没放真照片之前，去玩只对熊猫鱼开着，别让她看到一堆占位格子
+  var wallReady = (function () { for (var wi = 0; wi < LD_WALL.length; wi++) { if (LD_WALL[wi].f) return true; } return false; })();
+  var TABS = (full
+    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
+    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]]
+  ).filter(function (t) { return t[0] !== "play" || wallReady || myAuthor === "panda"; });
   var card = function (inner, extra) {
-    var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
+    var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
+      boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)" };
     for (var k in (extra || {})) st[k] = extra[k];
-    return h("div", { style: st }, inner);
+    return h("div", { style: st },
+      [["left", "top"], ["right", "top"], ["left", "bottom"], ["right", "bottom"]].map(function (c, i) {
+        var ss = { position: "absolute", width: 6, height: 6, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f2dfa8,#8a6a2a)", opacity: 0.75 };
+        ss[c[0]] = 9; ss[c[1]] = 9;
+        return h("div", { key: "cs" + i, style: ss });
+      }),
+      inner);
   };
   var linkRow = function (o, i) {
     var url = o.u ? o.u : ldMap(o.q);
-    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 4px", borderBottom: "1px solid rgba(165,218,212,0.3)", textDecoration: "none", color: "inherit" } },
-      h("span", { style: { fontSize: "1.3rem", flexShrink: 0 } }, o.e),
+    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 2px", borderBottom: "1px dashed rgba(169,127,46,0.28)", textDecoration: "none", color: "inherit" } },
+      h("span", { style: { fontSize: "1.2rem", flexShrink: 0 } }, o.e),
       h("div", { style: { flex: 1, minWidth: 0 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#1f7a6d" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
-        o.dist ? h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#c8871a", marginTop: 2 } }, "🚶 " + o.dist) : null,
-        h("div", { style: { fontSize: "0.68rem", color: "rgba(100,152,145,0.9)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
-      h("span", { style: { color: "rgba(105,195,188,0.85)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
+        h("div", { style: { fontWeight: 800, fontSize: "0.83rem", color: "#20393f", fontFamily: "Georgia,'PingFang SC',serif" } }, o.n,
+          o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#a1542a", background: "rgba(200,120,50,0.16)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null,
+          o.open ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.14)", borderRadius: 999, padding: "2px 7px" } }, "🌬️ 露天") : null),
+        o.dist ? h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#a1542a", marginTop: 2 } }, "🚶 " + o.dist) : null,
+        h("div", { style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.65 } }, o.d)),
+      h("span", { style: { color: "#123a52", fontSize: "0.78rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
   };
   var head = function (txt, sub) {
-    return h("div", { style: { marginBottom: 8 } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d" } }, txt),
-      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 2 } }, sub) : null);
+    return h("div", { style: { marginBottom: 11 } },
+      h("div", { style: { fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: "#1c3a35", letterSpacing: "0.4px" } }, txt),
+      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", marginTop: 4, letterSpacing: "0.3px" } }, sub) : null,
+      h("div", { style: { marginTop: 9, borderTop: "2px dotted rgba(169,127,46,0.5)" } }));
   };
   // ── 此刻 ──
   // ── 此刻（伦敦航海家）────────────────────────────
@@ -19118,41 +19288,127 @@ function LondonRoom(_refLD) {
   );
   // ── 安心 ──
   var careTab = h("div", null,
-    card([
-      h("div", { key: "a0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 3 } }, "🫁 哮喘随身"),
-      h("div", { key: "a1", style: { fontSize: "0.68rem", color: "rgba(110,162,155,0.88)", marginBottom: 8, lineHeight: 1.6 } }, "出门前看一眼，比什么都重要"),
+    // ── 一键呼叫 ──
+    ukCard([
+      screws,
+      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
+      h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
+        var busy = pageBusy === p.k;
+        var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
+        var isPick = !!p.pick;
+        return h("button", { key: "pg" + i, onClick: function () { if (isPick) { setBadOpen(!badOpen); setSitMode(null); } else { sendPage(p); } }, disabled: !!pageBusy,
+          style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
+          h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
+          h("span", { style: { flex: 1, minWidth: 0 } },
+            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : p.t),
+            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
+          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
+      })),
+      badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
+        sitMode
+          ? h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "那就坐一会儿，不着急"),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, "🏡 " + beat),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", marginTop: 8, fontSize: "0.8rem", color: "#2c4f48", lineHeight: 1.8 } }, "🫖 " + sitMode),
+              h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.8, marginTop: 10 } }, "不用做什么。坐着也算数。"),
+              h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+                h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
+                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
+          : h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
+              LD_BAD_OPT.map(function (o, oi) {
+                return h("button", { key: "bo" + oi, onClick: function () {
+                    if (o.sit) { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); return; }
+                    sendPage(o); setBadOpen(false);
+                  }, disabled: !!pageBusy,
+                  style: { width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 7, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "10px 12px", fontFamily: "inherit", cursor: "pointer" } },
+                  h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, o.e),
+                  h("span", null,
+                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.83rem", color: "#20393f" } }, o.t),
+                    h("span", { style: { display: "block", fontSize: "0.67rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, o.d)));
+              }))) : null,
+      pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
+      h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
+        "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
+    ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }),
+    // ── 哮喘 ──
+    ukCard([
+      screws,
+      ukHead("哮喘随身", "出门前看一眼，比什么都重要", h("span", { style: { fontSize: "1rem" } }, "🫁")),
       h("div", { key: "a2" }, LD_ASTHMA.map(function (x, i) {
-        return h("div", { key: "as" + i, style: { padding: "9px 0", borderBottom: i === LD_ASTHMA.length - 1 ? "none" : "1px solid rgba(165,218,212,0.3)" } },
-          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#1f7a6d" } }, "· " + x.t),
-          h("div", { style: { fontSize: "0.72rem", color: "rgba(100,152,145,0.94)", marginTop: 3, lineHeight: 1.68 } }, x.b));
+        return h("div", { key: "as" + i, style: { padding: "9px 0", borderBottom: i === LD_ASTHMA.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, "• " + x.t),
+          h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b));
       }))
     ]),
-    card([
-      h("div", { key: "c0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 3 } }, "🚈 不闷不挤的路线"),
-      h("div", { key: "c1", style: { fontSize: "0.68rem", color: "rgba(110,162,155,0.88)", marginBottom: 6, lineHeight: 1.6 } }, "伦敦不是只有地铁 · 下面这些都能到市中心"),
-      h("div", { key: "c2" }, LD_CALMWAY.map(linkRow)),
-      h("div", { key: "c3", style: { marginTop: 10, background: "rgba(130,220,212,0.16)", borderRadius: 10, padding: "9px 11px" } },
+    // ── 出事找谁 ──
+    ukCard([
+      screws,
+      ukHead("出事找谁", "从上往下打，别自己扛", h("span", { style: { fontSize: "1rem" } }, "🆘")),
+      h("div", { key: "so" }, LD_SOS_LIST.map(function (x, i) {
+        var inner = h("div", { style: { display: "flex", gap: 10, padding: "10px 0", borderBottom: i === LD_SOS_LIST.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.15rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.83rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t, x.u ? h("span", { style: { color: "#b4353a", marginLeft: 6, fontSize: "0.68rem" } }, "点这行拨号") : null),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b)));
+        return x.u ? h("a", { key: "so" + i, href: x.u, style: { textDecoration: "none", color: "inherit", display: "block" } }, inner) : h("div", { key: "so" + i }, inner);
+      })),
+      h("div", { key: "sof", style: { marginTop: 12, background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "11px 12px", fontSize: "0.75rem", color: "#1f6f68", lineHeight: 1.85 } },
+        "这张单子上没有熊猫鱼 —— 他不在「出事才找」这一栏。",
+        h("br", null),
+        "这一页最上面那四个按钮，什么时候按都行。")
+    ]),
+    // ── 不闷不挤的路线 ──
+    ukCard([
+      screws,
+      ukHead("不闷不挤的路线", "伦敦不是只有地铁 · 下面这些都能到市中心", pennant("#3a8fbf")),
+      h("div", { key: "cm" }, LD_CALMWAY.map(linkRow)),
+      h("div", { key: "ct", style: { marginTop: 10, background: "rgba(31,111,104,0.08)", borderRadius: 8, padding: "10px 12px" } },
         LD_CALMTIP.map(function (t, i) {
-          return h("div", { key: "ct" + i, style: { fontSize: "0.71rem", color: "rgba(38,128,120,0.95)", lineHeight: 1.7, padding: "2px 0" } }, "· " + t);
+          return h("div", { key: "cp" + i, style: { fontSize: "0.73rem", color: "rgba(70,90,84,0.96)", lineHeight: 1.8, marginTop: i ? 5 : 0 } }, "· " + t);
         }))
     ]),
-    card([
-      h("div", { key: "n0", style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d", marginBottom: 3 } }, "🌙 一个人的晚上"),
-      h("div", { key: "n1", style: { fontSize: "0.68rem", color: "rgba(110,162,155,0.88)", marginBottom: 8, lineHeight: 1.6 } }, "不想干嘛也行，这些只是摆在这儿"),
-      h("div", { key: "n2" }, LD_NIGHT.map(function (x, i) {
-        return h("div", { key: "nt" + i, style: { display: "flex", gap: 10, padding: "8px 0", borderBottom: i === LD_NIGHT.length - 1 ? "none" : "1px solid rgba(165,218,212,0.3)" } },
-          h("span", { style: { fontSize: "1.15rem", flexShrink: 0 } }, x.e),
-          h("div", { style: { flex: 1, minWidth: 0 } },
-            h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#1f7a6d" } }, x.t),
-            h("div", { style: { fontSize: "0.7rem", color: "rgba(100,152,145,0.92)", marginTop: 2, lineHeight: 1.55 } }, x.d)));
+    // ── 夜里回家 ──
+    ukCard([
+      screws,
+      ukHead("夜里回家", "记住前两条就够了", h("span", { style: { fontSize: "1rem" } }, "🌙")),
+      h("div", { key: "ns" }, LD_NIGHTSAFE.map(function (x, i) {
+        return h("div", { key: "nsi" + i, style: { display: "flex", gap: 9, padding: "10px 0", borderBottom: i === LD_NIGHTSAFE.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { color: i < 2 ? "#b4353a" : "rgba(169,127,46,0.8)", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0, lineHeight: 1.7 } }, i < 2 ? "★" : "▸"),
+          h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b)));
       }))
     ]),
-    card([
-      h("div", { key: "d0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#7a4a52", marginBottom: 4 } }, "🍷 今晚想喝一杯？"),
-      h("div", { key: "d1", style: { fontSize: "0.71rem", color: "rgba(140,100,110,0.9)", lineHeight: 1.7, marginBottom: 10 } }, "想喝就喝，只是别一个人喝闷酒。按一下，家陪你 👇"),
-      drinkLine ? h("div", { key: "d2", style: { background: "rgba(255,255,255,0.75)", borderRadius: 12, padding: "12px 13px", fontSize: "0.84rem", color: "#7a4a52", lineHeight: 1.75, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", marginBottom: 10, textAlign: "center" } }, drinkLine) : null,
-      h("button", { key: "d3", onClick: function () { setDrinkLine(LD_DRINK[Math.floor(Math.random() * LD_DRINK.length)]); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "11px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.85rem", cursor: "pointer", background: "linear-gradient(135deg,#e79aa8,#c96b80)", color: "#fff", boxShadow: "0 6px 14px rgba(200,110,130,0.3)" } }, drinkLine ? "🥂 再来一句" : "🥂 家陪你喝一杯")
-    ], { background: "linear-gradient(160deg,#fff4f5,#ffe6ea)", border: "1.5px solid rgba(230,180,190,0.5)" })
+    // ── 情绪低的时候 ──
+    ukCard([
+      screws,
+      ukHead("哪天提不起劲", "不用振作，往下看就行", h("span", { style: { fontSize: "1rem" } }, "🌧️")),
+      h("div", { key: "lw" }, LD_LOW.map(function (x, i) {
+        return h("div", { key: "lwi" + i, style: { padding: "10px 0", borderBottom: i === LD_LOW.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#7a5aa8", fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
+          h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.75 } }, x.b));
+      }))
+    ]),
+    // ── 一个人的晚上 ──
+    ukCard([
+      screws,
+      ukHead("一个人的晚上", "不干等也行，这些比干等好", h("span", { style: { fontSize: "1rem" } }, "🌃")),
+      h("div", { key: "ni" }, LD_NIGHT.map(function (x, i) {
+        return h("div", { key: "nti" + i, style: { display: "flex", gap: 10, padding: "9px 0", borderBottom: i === LD_NIGHT.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, x.e),
+          h("div", null,
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.7 } }, x.b)));
+      }))
+    ]),
+    // ── 想喝一杯 ──
+    ukCard([
+      screws,
+      ukHead("今晚想喝一杯？", "想喝就喝，只是别一个人喝闷酒", h("span", { style: { fontSize: "1rem" } }, "🥂")),
+      drinkLine ? h("div", { key: "dl", style: { background: "rgba(255,255,255,0.72)", borderLeft: "4px solid #b4353a", borderRadius: "0 9px 9px 0", padding: "12px 13px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.88rem", color: "#4a3f30", lineHeight: 1.8, marginBottom: 10 } }, drinkLine) : null,
+      h("button", { key: "db", onClick: function () { setDrinkLine(LD_DRINK[Math.floor(Math.random() * LD_DRINK.length)]); }, style: { width: "100%", border: "none", borderRadius: 9, padding: "12px 8px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.88rem", cursor: "pointer", background: "linear-gradient(135deg,#c74a4f,#a02b31)", color: "#fff6ef", boxShadow: "0 6px 16px rgba(160,43,49,0.3)" } }, "🍷 家陪你喝一杯")
+    ])
   );
   // ── 去玩 ──
   var chipOf = function (st) {
@@ -19178,6 +19434,7 @@ function LondonRoom(_refLD) {
                 x.f
                   ? h("img", { src: x.f, alt: "", loading: "lazy", style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } })
                   : h("div", { style: { width: "100%", height: 112, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", color: "rgba(120,105,80,0.6)" } }, "📷"),
+                (wallBeen.indexOf(x.n) >= 0) ? h("div", { style: { position: "absolute", right: 2, top: 2, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(150,110,30,0.45)", transform: "rotate(9deg)" } }, "✓") : null,
                 seen ? null : h("div", { style: { position: "absolute", left: 6, right: 6, top: 6, height: 112, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" } },
                   h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "2.6rem", color: "rgba(255,255,255,0.85)", textShadow: "0 2px 10px rgba(0,0,0,0.45)" } }, "?")),
                 h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: seen ? LDHAND : LDSCRAWL, fontSize: seen ? "0.88rem" : "0.82rem", color: seen ? "#3a3226" : "rgba(120,105,85,0.85)" } }, seen ? x.n : "这是哪儿？"),
@@ -19186,7 +19443,7 @@ function LondonRoom(_refLD) {
         : h("div", { key: "w0", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "16px 14px", textAlign: "center", fontSize: "0.76rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8 } },
             "照片还在路上 📷"),
       h("div", { key: "cnt", style: { marginTop: 12, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
-        "揭晓了 " + wallShown.filter(function (x) { return wallSeen.indexOf(x.n) >= 0; }).length + " / " + wallShown.length + " · 其中 " + wallShown.filter(function (x) { return x.must; }).length + " 个是他点名要你去的")
+        "揭晓 " + wallShown.filter(function (x) { return wallSeen.indexOf(x.n) >= 0; }).length + " / " + wallShown.length + " · 去过 " + wallShown.filter(function (x) { return wallBeen.indexOf(x.n) >= 0; }).length + " · 其中 " + wallShown.filter(function (x) { return x.must; }).length + " 个是他点名要你去的")
     ]),
     // 打开的那张
     wallSel ? h("div", { onClick: function () { setWallPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
@@ -19201,60 +19458,161 @@ function LondonRoom(_refLD) {
               wallSel.must ? h("span", { style: { background: "linear-gradient(135deg,#e0645f,#b4353a)", color: "#fff6ef", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "一定要去") : h("span", { style: { background: "rgba(31,111,104,0.14)", color: "#1f6f68", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "推荐")),
             wallSel.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #b4353a", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, wallSel.say) : null,
             wallSel.tip ? h("div", { style: { marginTop: 10, fontSize: "0.76rem", color: "rgba(85,75,60,0.96)", lineHeight: 1.8 } }, wallSel.tip) : null,
-            h("div", { style: { marginTop: 13, display: "flex", gap: 8 } },
+            (function () {
+              var been = wallBeen.indexOf(wallSel.n) >= 0;
+              return h("button", { onClick: function () { toggleBeen(wallSel.n); }, style: { width: "100%", marginTop: 13, border: been ? "none" : "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 8, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: been ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(255,255,255,0.6)", color: been ? "#4a3510" : "#b4353a" } },
+                been ? "🏅 已经去过了 · 点一下取消" : "✓ 我去过了，盖个章");
+            })(),
+            h("div", { style: { marginTop: 10, display: "flex", gap: 8 } },
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
-    // ── 她的伦敦地图 ──
+    // ── 她的伦敦地图（手绘）──
     ukCard([
       screws,
-      ukHead("她的伦敦地图", "揭晓一个亮一个 · 点针脚也能看", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
-      h("div", { key: "mp", style: { background: "linear-gradient(165deg,#eef3e6,#e2ead9)", borderRadius: 9, padding: "8px 6px 6px", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.28)" } },
-        h("svg", { viewBox: "0 0 320 174", style: { width: "100%", display: "block", overflow: "visible" } },
-          // 河
-          h("path", { d: (function () {
-              var d = "", i, p;
-              for (i = 0; i < LD_THAMES.length; i++) {
-                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
-                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
-              }
-              return d;
-            })(), fill: "none", stroke: "#8fc4d8", strokeWidth: 11, strokeLinecap: "round", strokeLinejoin: "round", opacity: 0.85 }),
-          h("path", { d: (function () {
-              var d = "", i, p;
-              for (i = 0; i < LD_THAMES.length; i++) {
-                p = ldXY(LD_THAMES[i][1], LD_THAMES[i][0]);
-                d += (i ? " L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1);
-              }
-              return d;
-            })(), fill: "none", stroke: "#b9dced", strokeWidth: 5, strokeLinecap: "round", strokeLinejoin: "round" }),
+      ukHead("她的伦敦地图", "猜出来是绿针，去过了盖成金针", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
+      h("div", { key: "mp", style: { background: "#fdf6e6", borderRadius: 10, padding: "6px 5px 4px", position: "relative", backgroundImage: "radial-gradient(circle at 3px 3px, rgba(169,127,46,0.13) 1px, transparent 1.2px)", backgroundSize: "13px 13px", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.22)" } },
+        h("svg", { viewBox: "-6 -6 332 186", onClick: tapMap, style: { width: "100%", display: "block", overflow: "visible", cursor: addMode ? "crosshair" : "default" } },
+          // 手画的外框
+          h("path", { d: ldSmooth([[-1, 4], [80, -2], [170, 3], [260, -3], [325, 4], [329, 60], [324, 120], [328, 175], [250, 179], [150, 174], [60, 179], [-2, 175], [2, 110], [-3, 55], [-1, 4]]),
+            fill: "none", stroke: "rgba(150,115,60,0.4)", strokeWidth: 1.6, strokeLinecap: "round" }),
+          // 公园
+          LD_PARKS.map(function (pk, i) {
+            var p = ldXY(pk.la, pk.lo);
+            return h("g", { key: "pk" + i },
+              h("path", { d: ldBlob(p[0], p[1], pk.r, i + 2), fill: "#cfe3bd", opacity: 0.9 }),
+              h("path", { d: ldBlob(p[0], p[1], pk.r, i + 2), fill: "none", stroke: "#9dc283", strokeWidth: 1.3, strokeLinejoin: "round" }),
+              [0, 1, 2].map(function (t) {
+                var ang = t * 2.1 + i, tx = p[0] + Math.cos(ang) * pk.r * 0.62, ty = p[1] + Math.sin(ang) * pk.r * 0.5;
+                return h("g", { key: "tr" + t },
+                  h("rect", { x: tx - 0.5, y: ty, width: 1, height: 2.4, fill: "#7d6a45" }),
+                  h("circle", { cx: tx, cy: ty - 1.4, r: 2.2, fill: "#8fbc74" }));
+              }),
+              h("text", { x: p[0], y: p[1] - pk.r * 0.72, textAnchor: "middle", fontSize: 5.8, fill: "#5f7f4c", fontFamily: "'Patrick Hand',cursive" }, pk.n));
+          }),
+          // 河：三笔叠出手绘的毛边
+          h("path", { d: ldRiverPath(1.6, 3), fill: "none", stroke: "#a9d6e8", strokeWidth: 12, strokeLinecap: "round", strokeLinejoin: "round", opacity: 0.75 }),
+          h("path", { d: ldRiverPath(1.1, 11), fill: "none", stroke: "#c9e8f5", strokeWidth: 7, strokeLinecap: "round", strokeLinejoin: "round" }),
+          h("path", { d: ldRiverPath(2.2, 21), fill: "none", stroke: "rgba(110,170,195,0.5)", strokeWidth: 1, strokeLinecap: "round" }),
+          // 小船顺着河开
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 9, y: 3 }, "⛵"),
+            h("animateMotion", { dur: "34s", repeatCount: "indefinite", path: ldRiverPath(1.1, 11), rotate: "0" })),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 7, y: 3 }, "🛥️"),
+            h("animateMotion", { dur: "52s", begin: "-20s", repeatCount: "indefinite", path: ldRiverPath(1.1, 11), rotate: "0" })),
+          // 马路 + 双层巴士
+          h("path", { d: ldSmooth([[6, 40], [70, 34], [140, 38], [210, 31], [290, 36], [324, 32]]), fill: "none", stroke: "rgba(190,170,140,0.55)", strokeWidth: 3, strokeDasharray: "6 5", strokeLinecap: "round" }),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 9, y: 3 }, "🚌"),
+            h("animateMotion", { dur: "26s", repeatCount: "indefinite", path: ldSmooth([[6, 40], [70, 34], [140, 38], [210, 31], [290, 36], [324, 32]]), rotate: "0" })),
+          h("g", null,
+            h("text", { textAnchor: "middle", fontSize: 7, y: 3 }, "🚕"),
+            h("animateMotion", { dur: "38s", begin: "-14s", repeatCount: "indefinite", path: ldSmooth([[324, 44], [250, 50], [170, 45], [90, 52], [6, 47]]), rotate: "0" })),
+          // 云和鸟
+          [[14, 3.4, 22], [96, 2.6, 31], [150, 3.0, 26]].map(function (c, i) {
+            return h("g", { key: "cl" + i, style: { animation: "mpDrift " + c[2] + "s linear infinite", animationDelay: (-i * 9) + "s" } },
+              h("path", { d: "M" + (-20 + i * 40) + " " + c[0] + " q-5 0 -5 -4 q0 -4 5 -3.6 q1.6 -4.6 6.4 -3.6 q4.8 -2 6.4 3 q4.8 0 4.8 4.2 q0 4 -4.8 4 Z", fill: "#ffffff", opacity: 0.85 }));
+          }),
+          h("g", { style: { animation: "mpDrift 30s linear infinite" } },
+            h("g", { style: { transformOrigin: "center", animation: "mpFlap 0.5s ease-in-out infinite" } },
+              h("path", { d: "M40 16 q3 -3 6 0 M46 16 q3 -3 6 0", fill: "none", stroke: "rgba(120,110,95,0.65)", strokeWidth: 1.1, strokeLinecap: "round" }))),
+          // 地标涂鸦
+          (function () {
+            var ink = "rgba(120,95,60,0.75)";
+            var bb = ldXY(51.5007, -0.1246), ey = ldXY(51.5033, -0.1196), sp = ldXY(51.5138, -0.0984);
+            var spokes = [], i, a;
+            for (i = 0; i < 8; i++) { a = i * Math.PI / 4; spokes.push(h("line", { key: "sk" + i, x1: ey[0], y1: ey[1] - 7, x2: ey[0] + 4.6 * Math.cos(a), y2: ey[1] - 7 + 4.6 * Math.sin(a), stroke: ink, strokeWidth: 0.5 })); }
+            return h("g", { fill: "none", stroke: ink, strokeWidth: 1.1, strokeLinecap: "round", strokeLinejoin: "round" },
+              // 大本钟
+              h("path", { d: "M" + (bb[0] - 2.4) + " " + bb[1] + " L" + (bb[0] - 2.4) + " " + (bb[1] - 11) + " L" + bb[0] + " " + (bb[1] - 15) + " L" + (bb[0] + 2.4) + " " + (bb[1] - 11) + " L" + (bb[0] + 2.4) + " " + bb[1] + " Z" }),
+              h("circle", { cx: bb[0], cy: bb[1] - 9.5, r: 1.5 }),
+              // 伦敦眼
+              h("circle", { cx: ey[0], cy: ey[1] - 7, r: 5 }), spokes,
+              h("path", { d: "M" + (ey[0] - 2.4) + " " + ey[1] + " L" + ey[0] + " " + (ey[1] - 7) + " L" + (ey[0] + 2.4) + " " + ey[1] }),
+              // 圣保罗
+              h("path", { d: "M" + (sp[0] - 5) + " " + sp[1] + " L" + (sp[0] - 5) + " " + (sp[1] - 4) + " Q" + sp[0] + " " + (sp[1] - 13) + " " + (sp[0] + 5) + " " + (sp[1] - 4) + " L" + (sp[0] + 5) + " " + sp[1] }),
+              h("path", { d: "M" + sp[0] + " " + (sp[1] - 10.5) + " L" + sp[0] + " " + (sp[1] - 14) }));
+          })(),
           // 家
           (function () {
             var p = ldXY(LD_HOME_PT.la, LD_HOME_PT.lo);
             return h("g", null,
-              h("circle", { cx: p[0], cy: p[1], r: 13, fill: "rgba(180,53,58,0.14)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 2.4s ease-in-out infinite" } }),
-              h("circle", { cx: p[0], cy: p[1], r: 6, fill: "#b4353a", stroke: "#fff", strokeWidth: 2 }),
-              h("text", { x: p[0], y: p[1] + 19, textAnchor: "middle", fontSize: 8.5, fill: "#8a3a3d", fontWeight: "bold" }, "家"));
+              h("circle", { cx: p[0], cy: p[1], r: 14, fill: "rgba(180,53,58,0.13)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 2.4s ease-in-out infinite" } }),
+              h("path", { d: "M" + (p[0] - 5.5) + " " + (p[1] + 5) + " L" + (p[0] - 5.5) + " " + (p[1] - 1) + " L" + p[0] + " " + (p[1] - 6.5) + " L" + (p[0] + 5.5) + " " + (p[1] - 1) + " L" + (p[0] + 5.5) + " " + (p[1] + 5) + " Z", fill: "#e8746e", stroke: "#8a3a3d", strokeWidth: 1.3, strokeLinejoin: "round" }),
+              h("rect", { x: p[0] - 1.6, y: p[1] + 0.6, width: 3.2, height: 4.4, fill: "#7d2d30" }),
+              h("rect", { x: p[0] + 2.4, y: p[1] - 7.6, width: 1.8, height: 3.4, fill: "#c05a55", stroke: "#8a3a3d", strokeWidth: 0.7 }),
+              [0, 1, 2].map(function (k) {
+                return h("circle", { key: "sm" + k, cx: p[0] + 3.3, cy: p[1] - 9.5 - k * 2, r: 1 - k * 0.15, fill: "rgba(255,255,255,0.85)",
+                  style: { animation: "mpSmoke 2.6s ease-out infinite", animationDelay: (k * 0.55) + "s" } });
+              }),
+              h("text", { x: p[0], y: p[1] + 15, textAnchor: "middle", fontSize: 7.4, fill: "#8a3a3d", fontFamily: "'Patrick Hand',cursive" }, "家"));
           })(),
           // 照片点
           wallShown.map(function (x, i) {
             if (!x.la) return null;
             var p = ldXY(x.la, x.lo);
             var seen = wallSeen.indexOf(x.n) >= 0;
+            var been = wallBeen.indexOf(x.n) >= 0;
             return h("g", { key: "pin" + i, onClick: function () { revealWall(i, x.n); }, style: { cursor: "pointer" } },
-              h("circle", { cx: p[0], cy: p[1], r: 11, fill: "transparent" }),
+              h("circle", { cx: p[0], cy: p[1], r: 12, fill: "transparent" }),
               seen
-                ? h("g", null,
-                    h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " l-5 -8 a5.8 5.8 0 1 1 10 0 Z", fill: "#1f6f68" }),
-                    h("circle", { cx: p[0], cy: p[1] - 6.5, r: 2.1, fill: "#eaf6f2" }),
-                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.6, fill: "#1a5c56", fontWeight: "bold" }, x.n))
+                ? h("g", { style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.2 + (i % 4) * 0.35) + "s ease-in-out infinite" } },
+                    been ? h("circle", { cx: p[0], cy: p[1] - 7, r: 11, fill: "rgba(230,180,60,0.2)" }) : null,
+                    h("ellipse", { cx: p[0], cy: p[1] + 2.4, rx: 3.6, ry: 1.3, fill: "rgba(0,0,0,0.16)" }),
+                    h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: been ? "#e8a33a" : "#3f9b8e", stroke: been ? "#a3701a" : "#1a5c56", strokeWidth: 1.2, strokeLinejoin: "round" }),
+                    been
+                      ? h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" })
+                      : h("circle", { cx: p[0], cy: p[1] - 7.4, r: 2.2, fill: "#f2fbf8" }),
+                    h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: been ? "#a3701a" : "#1a5c56", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, x.n))
                 : h("g", null,
-                    h("circle", { cx: p[0], cy: p[1], r: 5.4, fill: "rgba(150,140,120,0.32)", stroke: "rgba(120,110,90,0.55)", strokeWidth: 1.4, strokeDasharray: "2.5 2" }),
-                    h("text", { x: p[0], y: p[1] + 2.6, textAnchor: "middle", fontSize: 7, fill: "#6b6355", fontWeight: "bold" }, "?")));
+                    h("circle", { cx: p[0], cy: p[1], r: 5.8, fill: "rgba(240,232,214,0.9)", stroke: "rgba(150,130,100,0.7)", strokeWidth: 1.3, strokeDasharray: "3 2.2" }),
+                    h("text", { x: p[0], y: p[1] + 2.8, textAnchor: "middle", fontSize: 7.4, fill: "#8a7a5c", fontFamily: "'Caveat',cursive", fontWeight: "bold" }, "?")));
           }),
-          h("text", { x: 6, y: 168, fontSize: 7, fill: "rgba(110,100,78,0.7)", fontFamily: "Georgia,serif" }, "R. THAMES"))),
-      h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
-        "灰点是还没猜的 · 绿针是已经揭晓的")
+          // 自己加的针脚
+          myPins.map(function (mp, i) {
+            if (!mp.la) return null;
+            var p = ldXY(mp.la, mp.lo);
+            return h("g", { key: "my" + i, style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.4 + (i % 3) * 0.4) + "s ease-in-out infinite" } },
+              h("circle", { cx: p[0], cy: p[1] - 7, r: 11, fill: "rgba(230,180,60,0.2)" }),
+              h("ellipse", { cx: p[0], cy: p[1] + 2.4, rx: 3.6, ry: 1.3, fill: "rgba(0,0,0,0.16)" }),
+              h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#e8a33a", stroke: "#a3701a", strokeWidth: 1.2, strokeLinejoin: "round" }),
+              h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
+              h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, mp.n));
+          }),
+          // 刚点下去还没起名的
+          pendPin ? (function () {
+            var p = ldXY(pendPin.la, pendPin.lo);
+            return h("g", null,
+              h("circle", { cx: p[0], cy: p[1] - 7, r: 12, fill: "rgba(180,53,58,0.2)", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "shKnock 1.3s ease-in-out infinite" } }),
+              h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#b4353a", stroke: "#7d1c22", strokeWidth: 1.2, strokeLinejoin: "round" }),
+              h("text", { x: p[0], y: p[1] - 6.4, textAnchor: "middle", fontSize: 7, fill: "#fff6ef", fontWeight: "bold" }, "?"));
+          })() : null,
+          // 指北针
+          h("g", null,
+            h("circle", { cx: 305, cy: 26, r: 11, fill: "rgba(253,246,230,0.9)", stroke: "rgba(150,115,60,0.5)", strokeWidth: 1.2 }),
+            h("path", { d: "M305 17 L308 27 L305 25 L302 27 Z", fill: "#b4353a" }),
+            h("text", { x: 305, y: 15, textAnchor: "middle", fontSize: 6, fill: "#8a6a2a", fontFamily: "Georgia,serif", fontWeight: "bold" }, "N")),
+          // 河名
+          (function () { var p = ldXY(51.4805, -0.185); return h("text", { x: p[0], y: p[1], fontSize: 8, fill: "rgba(90,140,165,0.9)", fontFamily: "'Caveat',cursive", fontWeight: "bold", transform: "rotate(-14 " + p[0] + " " + p[1] + ")" }, "River Thames"); })())),
+      h("div", { key: "mpc", style: { marginTop: 8, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
+        "虚线圈还没猜 · 绿针已揭晓 · 金针是真的去过了"),
+      addMode
+        ? h("div", { key: "add1", style: { marginTop: 10, background: "rgba(180,53,58,0.08)", borderRadius: 9, padding: "11px 12px" } },
+            h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 8 } },
+              pendPin ? "就是这儿？给它起个名字" : "点一下地图上你去的位置 📍"),
+            pendPin ? h("div", { style: { display: "flex", gap: 6 } },
+              h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { flex: 1, minWidth: 0, border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("button", { onClick: savePin, disabled: !pinName.trim(), style: { flexShrink: 0, border: "none", borderRadius: 7, padding: "8px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: pinName.trim() ? "pointer" : "default", background: pinName.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: pinName.trim() ? "#4a3510" : "#fff" } }, "盖章")) : null,
+            h("button", { onClick: function () { setAddMode(false); setPendPin(null); setPinName(""); }, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
+        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方"),
+      myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
+        h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己走到的 " + myPins.length + " 个地方"),
+        h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
+          myPins.map(function (mp, i) {
+            return h("span", { key: "ml" + i, onClick: function () { delPin(mp); }, style: { cursor: "pointer", background: pinDel === mp.id ? "rgba(200,60,60,0.16)" : "rgba(230,180,60,0.18)", color: pinDel === mp.id ? "#c0392b" : "#a3701a", borderRadius: 999, padding: "4px 11px", fontSize: "0.68rem", fontWeight: 800 } },
+              pinDel === mp.id ? "再点一下删掉" : "🏅 " + mp.n);
+          }))) : null
     ]),
     ukCard([
       screws,
@@ -19293,7 +19651,11 @@ function LondonRoom(_refLD) {
       "@keyframes ldSpinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}" +
       "@keyframes ldCloud{from{transform:translateX(-30%)}to{transform:translateX(430%)}}" +
       "@keyframes ldSail{from{transform:translateX(-14%)}to{transform:translateX(420%)}}" +
-      "@keyframes ldWin{0%,100%{opacity:.35}50%{opacity:1}}"),
+      "@keyframes ldWin{0%,100%{opacity:.35}50%{opacity:1}}" +
+      "@keyframes mpDrift{from{transform:translateX(-14px)}to{transform:translateX(340px)}}" +
+      "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}" +
+      "@keyframes mpSmoke{0%{opacity:0;transform:translateY(2px) scale(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-9px) scale(1.25)}}" +
+      "@keyframes mpFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}}"),
     h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
