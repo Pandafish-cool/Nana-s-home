@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-92";
+var NANA_VER = "v2026.8.2-94";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17861,7 +17861,21 @@ var LD_PAGE = [
   { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠" },
   { k: "good", e: "☀️", t: "今天还不错", sub: "就是想说一声", body: "📟 今天还不错。就是想说一声。", ok: "说过了，那边高兴 ☀️" },
   { k: "knock", e: "🚪", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🚪" },
-  { k: "bad", e: "🌧️", t: "今天不太顺", sub: "不用说为什么", body: "📟 今天不太顺。别问，你在就行。", ok: "他看到了 🌧️" }
+  { k: "bad", e: "🌧️", t: "今天有点长", sub: "就这么一句，不用回", pick: 1 }
+];
+// 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
+var LD_BAD_OPT = [
+  { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
+  { k: "talk", e: "📞", t: "有空说两句", d: "他一有空就来找你", body: "📟 今天有点长。有空说两句。", ok: "说出去了，他会来找你 📞" },
+  { k: "sit", e: "🫖", t: "先不说，坐会儿", d: "谁都不用惊动", sit: 1 }
+];
+var LD_SIT = [
+  "把水烧上，站在旁边等它响。",
+  "窗帘拉开，让光进来一点就行。",
+  "洗把脸，水开凉一点。",
+  "下楼绕着码头走十分钟，不用想事。",
+  "躺回床上，什么都不做也算数。",
+  "找件干净衣服换上，就换这一件。"
 ];
 // 夜里回家
 var LD_NIGHTSAFE = [
@@ -17883,9 +17897,9 @@ var LD_SOS_LIST = [
 ];
 // 情绪低的时候
 var LD_LOW = [
-  { t: "第二三周最难，这是正常的", b: "刚到的新鲜劲过去、又还没习惯，人在异地几乎都会在这个时候掉一次。它会过去，不是你出了什么问题。" },
+  { t: "第二三周最难，谁都一样", b: "刚到的新鲜劲过去、又还没习惯，人在异地几乎都会在这个时候掉一次。它会过去，跟你没关系。" },
   { t: "先做最小的那件事", b: "不用振作。喝口水、洗把脸、把窗帘拉开、下楼绕码头走十分钟。做完一件再说下一件。" },
-  { t: "别一个人扛到半夜", b: "凌晨的情绪都是假的，放大过的。想说话就按上面那个「我现在不太好」，不用组织语言。" },
+  { t: "别熬到半夜再想事", b: "凌晨想什么都是放大过的，不作数。想说话就按上面那个「今天有点长」，不用组织语言。" },
   { t: "吃和睡先保住", b: "情绪差的时候最先塌的是这两样，塌了会更差。哪怕只是一碗热汤面、只睡六小时，也算保住了。" },
   { t: "别用酒解决", b: "喝的时候好受，第二天会更沉。真想喝就按此刻那页的「家陪你喝一杯」，一杯就够。" }
 ];
@@ -18409,6 +18423,8 @@ function LondonRoom(_refLD) {
   var _wp = useState(null); var wallPick = _wp[0], setWallPick = _wp[1];
   var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
+  var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
+  var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
   var wallSeen = _ws[0], setWallSeen = _ws[1];
   var _wb = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-been") || "[]"); } catch (_) { return []; } });
@@ -19275,13 +19291,38 @@ function LondonRoom(_refLD) {
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
-        return h("button", { key: "pg" + i, onClick: function () { sendPage(p); }, disabled: !!pageBusy,
+        var isPick = !!p.pick;
+        return h("button", { key: "pg" + i, onClick: function () { if (isPick) { setBadOpen(!badOpen); setSitMode(null); } else { sendPage(p); } }, disabled: !!pageBusy,
           style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
           h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
           h("span", { style: { flex: 1, minWidth: 0 } },
             h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : p.t),
-            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)));
+            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
+          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
       })),
+      badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
+        sitMode
+          ? h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "那就坐一会儿，不着急"),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, "🏡 " + beat),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", marginTop: 8, fontSize: "0.8rem", color: "#2c4f48", lineHeight: 1.8 } }, "🫖 " + sitMode),
+              h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.8, marginTop: 10 } }, "不用做什么。坐着也算数。"),
+              h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+                h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
+                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
+          : h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
+              LD_BAD_OPT.map(function (o, oi) {
+                return h("button", { key: "bo" + oi, onClick: function () {
+                    if (o.sit) { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); return; }
+                    sendPage(o); setBadOpen(false);
+                  }, disabled: !!pageBusy,
+                  style: { width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 7, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "10px 12px", fontFamily: "inherit", cursor: "pointer" } },
+                  h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, o.e),
+                  h("span", null,
+                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.83rem", color: "#20393f" } }, o.t),
+                    h("span", { style: { display: "block", fontSize: "0.67rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, o.d)));
+              }))) : null,
       pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
       h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
         "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
@@ -19338,7 +19379,7 @@ function LondonRoom(_refLD) {
     // ── 情绪低的时候 ──
     ukCard([
       screws,
-      ukHead("如果哪天很低落", "不用振作，往下看就行", h("span", { style: { fontSize: "1rem" } }, "🌧️")),
+      ukHead("哪天提不起劲", "不用振作，往下看就行", h("span", { style: { fontSize: "1rem" } }, "🌧️")),
       h("div", { key: "lw" }, LD_LOW.map(function (x, i) {
         return h("div", { key: "lwi" + i, style: { padding: "10px 0", borderBottom: i === LD_LOW.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
           h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#7a5aa8", fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
