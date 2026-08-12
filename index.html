@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-101";
+var NANA_VER = "v2026.8.2-102";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18452,6 +18452,11 @@ function LondonRoom(_refLD) {
   var _mp = useState(null); var pendPin = _mp[0], setPendPin = _mp[1];
   var _mi = useState(""); var pinName = _mi[0], setPinName = _mi[1];
   var _mx = useState(null); var pinDel = _mx[0], setPinDel = _mx[1];
+  var _mw = useState(""); var pinSay = _mw[0], setPinSay = _mw[1];
+  var _mu = useState(""); var pinPhoto = _mu[0], setPinPhoto = _mu[1];
+  var _mub = useState(false); var pinUp = _mub[0], setPinUp = _mub[1];
+  var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
+  var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
   var tapMap = function (e) {
     if (!addMode) return;
     var svg = e.currentTarget;
@@ -18463,18 +18468,47 @@ function LondonRoom(_refLD) {
     var ll = ldLatLon(vx, vy);
     setPendPin({ la: ll[0], lo: ll[1] });
   };
+  // 传照片：跟 221B 那套一样，先存本机再往云上推，断了自动重试
+  var onPickPinPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    var inp = e.target;
+    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
+    if (!f || pinUp) return;
+    setPinUp(true); setPinErr("");
+    var pid = "mp" + Date.now() + Math.floor(Math.random() * 900);
+    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
+    nanaPhotoCompress(f, function (err, data) {
+      if (err || !data) { setPinUp(false); setPinErr("这张照片读不出来，换一张试试"); return; }
+      nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
+        nanaCloudPut(url, data);
+        var turl = nanaThumbUrl(url);
+        if (tdata && turl) nanaCloudPut(turl, tdata);
+        setPinPhoto(url);
+        nanaSharedUploadRetry(data, pid, 3, function (err2) {
+          if (err2) { setPinUp(false); setPinPhoto(""); setPinErr("没传上去，再试一次？"); return; }
+          if (!tdata) { setPinUp(false); return; }
+          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setPinUp(false); });
+        });
+      });
+    });
+  };
+  var clearPinDraft = function () {
+    setPendPin(null); setPinName(""); setPinSay(""); setPinPhoto(""); setPinErr(""); setAddMode(false);
+  };
   var savePin = function () {
     var t = pinName.trim();
-    if (!t || !pendPin) return;
+    if (!t || !pendPin || pinUp) return;
     var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo };
+    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo, say: pinSay.trim(), u: pinPhoto };
     setMyPins(function (o) { return o.concat([row]); });
-    setPendPin(null); setPinName(""); setAddMode(false);
-    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo }) }, function () {});
+    clearPinDraft();
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo, say: row.say, u: row.u }) }, function () {});
   };
   var delPin = function (x) {
     if (pinDel !== x.id) { setPinDel(x.id); setTimeout(function () { setPinDel(null); }, 2600); return; }
     setPinDel(null);
+    if (x.u) nanaSharedPhotoDel(x.u);
+    setMyPick(null);
     setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
@@ -18537,7 +18571,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("mp-") === 0) {
           var mo = null;
           try { mo = JSON.parse(r.who); } catch (_) { mo = null; }
-          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo });
+          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo, say: mo.say || "", u: mo.u || "" });
         }
         else if (r.id && r.id.indexOf("ev-") === 0) {
           var eo = null;
@@ -19509,6 +19543,42 @@ function LondonRoom(_refLD) {
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
+    // ── Nana 自己拍的 ──
+    (function () {
+      var withP = myPins.filter(function (x) { return x.u; });
+      if (!withP.length) return null;
+      return ukCard([
+        screws,
+        ukHead("Nana 的伦敦", "你自己拍的 · 一张照片就是一枚金针", h("span", { style: { fontSize: "1rem" } }, "🌸")),
+        h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+          withP.map(function (x, i) {
+            return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); },
+              style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
+              h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
+          }))
+      ]);
+    })(),
+    (function () {
+      if (!myPick) return null;
+      var x = null, i;
+      for (i = 0; i < myPins.length; i++) { if (myPins[i].id === myPick) x = myPins[i]; }
+      if (!x) return null;
+      return h("div", { onClick: function () { setMyPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
+        h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
+          x.u ? h("div", { style: { padding: 9 } },
+            h(NanaCloudImg, { u: x.u, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })) : null,
+          h("div", { style: { padding: "4px 16px 18px" } },
+            h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+              h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
+              h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
+            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
+            h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
+              h("a", { href: ldMap(x.n + " London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
+              h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
+            h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+              pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
+    })(),
     // ── 她的伦敦地图（手绘）──
     ukCard([
       screws,
@@ -19615,11 +19685,12 @@ function LondonRoom(_refLD) {
           myPins.map(function (mp, i) {
             if (!mp.la) return null;
             var p = ldXY(mp.la, mp.lo);
-            return h("g", { key: "my" + i, style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.4 + (i % 3) * 0.4) + "s ease-in-out infinite" } },
+            return h("g", { key: "my" + i, onClick: function () { if (mp.u) setMyPick(mp.id); }, style: { cursor: mp.u ? "pointer" : "default", transformOrigin: p[0] + "px " + p[1] + "px", animation: "mpBob " + (2.4 + (i % 3) * 0.4) + "s ease-in-out infinite" } },
               h("circle", { cx: p[0], cy: p[1] - 7, r: 11, fill: "rgba(230,180,60,0.2)" }),
               h("ellipse", { cx: p[0], cy: p[1] + 2.4, rx: 3.6, ry: 1.3, fill: "rgba(0,0,0,0.16)" }),
               h("path", { d: "M" + p[0] + " " + (p[1] + 2) + " C" + (p[0] - 6.4) + " " + (p[1] - 6) + " " + (p[0] - 5.4) + " " + (p[1] - 13) + " " + p[0] + " " + (p[1] - 13) + " C" + (p[0] + 5.4) + " " + (p[1] - 13) + " " + (p[0] + 6.4) + " " + (p[1] - 6) + " " + p[0] + " " + (p[1] + 2) + " Z", fill: "#e8a33a", stroke: "#a3701a", strokeWidth: 1.2, strokeLinejoin: "round" }),
               h("path", { d: "M" + (p[0] - 2.4) + " " + (p[1] - 7.4) + " l1.8 2 l3.2 -3.6", fill: "none", stroke: "#fff8e6", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
+              mp.u ? h("text", { x: p[0] + 6.6, y: p[1] - 9.4, textAnchor: "middle", fontSize: 5.6 }, "📷") : null,
               h("text", { x: p[0], y: p[1] + 11, textAnchor: "middle", fontSize: 7.4, fill: "#a3701a", fontFamily: "'Patrick Hand','PingFang SC',cursive" }, mp.n));
           }),
           // 刚点下去还没起名的
@@ -19643,11 +19714,20 @@ function LondonRoom(_refLD) {
         ? h("div", { key: "add1", style: { marginTop: 10, background: "rgba(180,53,58,0.08)", borderRadius: 9, padding: "11px 12px" } },
             h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 8 } },
               pendPin ? "就是这儿？给它起个名字" : "点一下地图上你去的位置 📍"),
-            pendPin ? h("div", { style: { display: "flex", gap: 6 } },
-              h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { flex: 1, minWidth: 0, border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
-              h("button", { onClick: savePin, disabled: !pinName.trim(), style: { flexShrink: 0, border: "none", borderRadius: 7, padding: "8px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: pinName.trim() ? "pointer" : "default", background: pinName.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: pinName.trim() ? "#4a3510" : "#fff" } }, "盖章")) : null,
-            h("button", { onClick: function () { setAddMode(false); setPendPin(null); setPinName(""); }, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
-        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方"),
+            pendPin ? h("div", null,
+              h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("input", { value: pinSay, onChange: function (e) { setPinSay(e.target.value); }, placeholder: "想写一句就写（可以空着）", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.35)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.74rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginTop: 8 } },
+                pinPhoto
+                  ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 13px rgba(60,45,30,0.28)", transform: "rotate(-2deg)", borderRadius: 3, flexShrink: 0 } },
+                      h(NanaCloudImg, { u: pinPhoto, thumb: true, style: { width: 72, height: 58, objectFit: "cover", display: "block", borderRadius: 2 } }),
+                      h("button", { onClick: function () { nanaSharedPhotoDel(pinPhoto); setPinPhoto(""); }, style: { position: "absolute", right: -8, top: -8, width: 21, height: 21, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"))
+                  : h("span", { onClick: function () { if (pinUp) return; try { var el = document.getElementById("mp-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: pinUp ? "default" : "pointer", border: "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 999, padding: "7px 13px", color: "#b4353a", fontWeight: 800, fontSize: "0.7rem", background: "rgba(255,255,255,0.75)" } }, pinUp ? "⏫ 照片在传…" : "📷 配一张照片"),
+                h("input", { id: "mp-photo-input", type: "file", accept: "image/*", onChange: onPickPinPhoto, style: { display: "none" } }),
+                h("button", { onClick: savePin, disabled: !pinName.trim() || pinUp, style: { marginLeft: "auto", flexShrink: 0, border: "none", borderRadius: 7, padding: "9px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: (pinName.trim() && !pinUp) ? "pointer" : "default", background: (pinName.trim() && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: (pinName.trim() && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "盖章")),
+              pinErr ? h("div", { style: { marginTop: 7, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null) : null,
+            h("button", { onClick: clearPinDraft, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
+        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）"),
       myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
         h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己走到的 " + myPins.length + " 个地方"),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
