@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-98";
+var NANA_VER = "v2026.8.2-100";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18631,9 +18631,11 @@ function LondonRoom(_refLD) {
   };
   // 照片墙还没放真照片之前，去玩只对熊猫鱼开着，别让她看到一堆占位格子
   var wallReady = (function () { for (var wi = 0; wi < LD_WALL.length; wi++) { if (LD_WALL[wi].f) return true; } return false; })();
-  var TABS = (full
-    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
-    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]]
+  // 出发之后装箱就没用了，挪到最后；安心和吃饭往前提
+  var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
+  var TABS = (afterGo
+    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"], ["pack", "🧳 装箱"]]
+    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
   ).filter(function (t) { return t[0] !== "play" || wallReady || myAuthor === "panda"; });
   var card = function (inner, extra) {
     var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
@@ -19283,8 +19285,8 @@ function LondonRoom(_refLD) {
   // ── 吃饭 ──
   var eatTab = h("div", null,
     card([
-      h("div", { key: "e0", style: { fontWeight: 800, fontSize: "0.88rem", color: "#1f7a6d", marginBottom: 4 } }, "📮 远程投喂"),
-      h("div", { key: "e1", style: { fontSize: "0.72rem", color: "rgba(110,162,155,0.9)", lineHeight: 1.7, marginBottom: 10 } }, "在伦敦点一下想吃的，申请会变成一台 BB 机寄回 221B。广州收到就用熊猫外卖下单 —— 隔着七小时也能给你送饭 🐼"),
+      h("div", { key: "e0", style: { fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: "#1c3a35", letterSpacing: "0.4px", marginBottom: 4 } }, "🛵 熊猫鱼骑手"),
+      h("div", { key: "e1", style: { fontSize: "0.73rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.75, marginBottom: 11 } }, "点一下想吃的，单子直接到骑手手上。想吃什么写什么，没有的也能写。准时送达 🐼"),
       h("button", { key: "e2", onClick: function () { setCraveOpen(true); }, style: { width: "100%", border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#ffd86a,#f4a636)", color: "#3a2405", boxShadow: "0 6px 16px rgba(244,166,54,0.35)" } }, "🍜 发一份投喂申请")
     ], { background: "linear-gradient(160deg,#fffdf4,#fff2d8)" }),
     card([head("🛵 外卖 App", "华人平台可以用支付宝微信付款"), h("div", { key: "a" }, LD_APPS.map(linkRow))]),
