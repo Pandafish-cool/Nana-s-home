@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-115";
+var NANA_VER = "v2026.8.2-116";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19782,8 +19782,17 @@ function LondonRoom(_refLD) {
       screws,
       ukHead("猜猜是哪里", "二十一份案卷 · 翻开看照片，再点一下揭晓地点", h("span", { style: { fontSize: "1rem" } }, "🔍")),
       wallShown.length
-        ? h("div", { key: "wl", style: { columnCount: 2, WebkitColumnCount: 2, columnGap: 9, WebkitColumnGap: 9, marginTop: 6 } },
-            wallShown.map(function (x, i) {
+        ? (function () {
+            // 分两列自己排：CSS 分栏碰上 rotate 会把卡片甩出容器，这里改成两列各排各的
+            var cols = [[], []], hs = [0, 0];
+            wallShown.forEach(function (x, i) {
+              var ph = LD_PH[i % LD_PH.length];
+              var k = hs[0] <= hs[1] ? 0 : 1;
+              cols[k].push([x, i]);
+              hs[k] += ph + 41;
+            });
+            var tile = function (pair) {
+              var x = pair[0], i = pair[1];
               var tl = LD_TILT[i % LD_TILT.length];
               var ph = LD_PH[i % LD_PH.length];
               var mg = LD_NUDGE[i % LD_NUDGE.length];
@@ -19792,14 +19801,12 @@ function LondonRoom(_refLD) {
               var been = wallBeen.indexOf(x.n) >= 0;
               var ch = ph + 26;
               var faceBase = { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", borderRadius: 2, boxShadow: "0 " + (5 + (i % 3) * 2) + "px " + (13 + (i % 3) * 4) + "px rgba(60,45,30,0.26)" };
-              // 卡背：还没翻开的案卷
               var back = h("div", { style: Object.assign({}, faceBase, { background: "linear-gradient(158deg,#f6ecd2,#e6d5ae)", border: "1px solid rgba(150,115,60,0.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, padding: 8 }) },
                 h("div", { style: { position: "absolute", left: 6, top: 6, right: 6, bottom: 6, border: "1px dashed rgba(150,115,60,0.42)", borderRadius: 2, pointerEvents: "none" } }),
                 h("div", { style: { fontSize: "0.5rem", letterSpacing: "0.22em", color: "rgba(140,110,60,0.85)", fontFamily: "Georgia,serif", fontWeight: 700 } }, "CASE FILE"),
                 h("div", { style: { width: 38, height: 38, borderRadius: "50%", background: "radial-gradient(circle at 34% 30%,#d4585c,#93262c)", boxShadow: "0 3px 8px rgba(120,35,40,0.4), inset 0 -2px 4px rgba(0,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem" } }, "\uD83D\uDD0D"),
                 h("div", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.05rem", color: "#8a6a2a" } }, "No." + (i + 1 < 10 ? "0" : "") + (i + 1)),
                 h("div", { style: { fontFamily: LDHAND, fontSize: "0.78rem", color: "rgba(120,95,55,0.95)" } }, "\u7ffb\u5f00\u770b\u770b"));
-              // 卡面：照片
               var front = h("div", { style: Object.assign({}, faceBase, { transform: "rotateY(180deg)", background: "#fff", padding: "6px 6px 20px" }) },
                 x.sk
                   ? ldSpyArt(ph, 0)
@@ -19807,14 +19814,18 @@ function LondonRoom(_refLD) {
                     ? h("img", { src: "ld/" + x.f + "_t.jpg", alt: "", loading: "lazy", style: { width: "100%", height: ph, objectFit: "cover", display: "block", borderRadius: 2 } })
                     : h("div", { style: { width: "100%", height: ph, borderRadius: 2, background: "linear-gradient(150deg,#e8e0d0,#d8cdb8)" } })),
                 h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 3, textAlign: "center", fontFamily: seen ? LDHAND : LDSCRAWL, fontSize: seen ? "0.86rem" : "0.8rem", color: seen ? "#3a3226" : "rgba(120,105,85,0.85)", padding: "0 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, seen ? x.n : LD_ASK[i % LD_ASK.length]));
-              return h("div", { key: "w" + i,
-                style: { breakInside: "avoid", WebkitColumnBreakInside: "avoid", pageBreakInside: "avoid", display: "inline-block", width: "100%", marginBottom: 15, paddingTop: i < 2 ? 4 : 0, position: "relative" } },
+              return h("div", { key: "w" + i, style: { position: "relative", width: "100%", marginBottom: 15 } },
                 h("div", { onClick: function () { if (!fl) { flipWall(x.n); } else { revealWall(i, x.n); } },
                   style: { perspective: "820px", cursor: "pointer", transform: "rotate(" + tl + "deg) translateX(" + mg + "px)" } },
                   h("div", { style: { position: "relative", width: "100%", height: ch, transformStyle: "preserve-3d", WebkitTransformStyle: "preserve-3d", transition: "transform 0.66s cubic-bezier(.2,.72,.28,1)", transform: fl ? "rotateY(180deg)" : "rotateY(0deg)" } },
                     back, front)),
                 (been && fl) ? h("div", { style: { position: "absolute", right: -2, top: 0, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, width: 23, height: 23, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.72rem", fontWeight: 800, boxShadow: "0 2px 7px rgba(150,110,30,0.5)", transform: "rotate(" + (-tl * 2.2) + "deg)", pointerEvents: "none" } }, "\u2713") : null);
-            }))
+            };
+            return h("div", { key: "wl", style: { display: "flex", gap: 9, alignItems: "flex-start", marginTop: 6 } },
+              cols.map(function (col, ci) {
+                return h("div", { key: "col" + ci, style: { flex: "1 1 0", minWidth: 0, paddingTop: ci ? 14 : 0 } }, col.map(tile));
+              }));
+          })()
         : h("div", { key: "w0", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "16px 14px", textAlign: "center", fontSize: "0.76rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8 } },
             "照片还在路上 📷"),
       h("div", { key: "cnt", style: { marginTop: 12, textAlign: "center", fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", fontFamily: LDHAND } },
