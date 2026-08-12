@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-90";
+var NANA_VER = "v2026.8.2-92";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17859,7 +17859,8 @@ var LD_ARR_WAY = [
 // 一键呼叫：三种，都会变成 221B 里的 BB 机来信
 var LD_PAGE = [
   { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠" },
-  { k: "knock", e: "🕯️", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🕯️" },
+  { k: "good", e: "☀️", t: "今天还不错", sub: "就是想说一声", body: "📟 今天还不错。就是想说一声。", ok: "说过了，那边高兴 ☀️" },
+  { k: "knock", e: "🚪", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🚪" },
   { k: "bad", e: "🌧️", t: "今天不太顺", sub: "不用说为什么", body: "📟 今天不太顺。别问，你在就行。", ok: "他看到了 🌧️" }
 ];
 // 夜里回家
@@ -18596,24 +18597,34 @@ function LondonRoom(_refLD) {
   };
   var TABS = full ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]];
   var card = function (inner, extra) {
-    var st = { background: "#fff", borderRadius: 16, padding: "14px 15px", boxShadow: "0 4px 14px rgba(95,195,185,0.15)", border: "1.5px solid rgba(180,230,225,0.72)", marginBottom: 12 };
+    var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
+      boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)" };
     for (var k in (extra || {})) st[k] = extra[k];
-    return h("div", { style: st }, inner);
+    return h("div", { style: st },
+      [["left", "top"], ["right", "top"], ["left", "bottom"], ["right", "bottom"]].map(function (c, i) {
+        var ss = { position: "absolute", width: 6, height: 6, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f2dfa8,#8a6a2a)", opacity: 0.75 };
+        ss[c[0]] = 9; ss[c[1]] = 9;
+        return h("div", { key: "cs" + i, style: ss });
+      }),
+      inner);
   };
   var linkRow = function (o, i) {
     var url = o.u ? o.u : ldMap(o.q);
-    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 4px", borderBottom: "1px solid rgba(165,218,212,0.3)", textDecoration: "none", color: "inherit" } },
-      h("span", { style: { fontSize: "1.3rem", flexShrink: 0 } }, o.e),
+    return h("a", { key: (o.n || "") + i, href: url, target: "_blank", rel: "noopener", style: { display: "flex", alignItems: "center", gap: 11, padding: "10px 2px", borderBottom: "1px dashed rgba(169,127,46,0.28)", textDecoration: "none", color: "inherit" } },
+      h("span", { style: { fontSize: "1.2rem", flexShrink: 0 } }, o.e),
       h("div", { style: { flex: 1, minWidth: 0 } },
-        h("div", { style: { fontWeight: 800, fontSize: "0.84rem", color: "#1f7a6d" } }, o.n, o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#c8871a", background: "rgba(255,200,90,0.22)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null),
-        o.dist ? h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#c8871a", marginTop: 2 } }, "🚶 " + o.dist) : null,
-        h("div", { style: { fontSize: "0.68rem", color: "rgba(100,152,145,0.9)", marginTop: 2, lineHeight: 1.5 } }, o.d)),
-      h("span", { style: { color: "rgba(105,195,188,0.85)", fontSize: "0.8rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
+        h("div", { style: { fontWeight: 800, fontSize: "0.83rem", color: "#20393f", fontFamily: "Georgia,'PingFang SC',serif" } }, o.n,
+          o.tag ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#a1542a", background: "rgba(200,120,50,0.16)", borderRadius: 999, padding: "2px 7px" } }, o.tag) : null,
+          o.open ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.14)", borderRadius: 999, padding: "2px 7px" } }, "🌬️ 露天") : null),
+        o.dist ? h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#a1542a", marginTop: 2 } }, "🚶 " + o.dist) : null,
+        h("div", { style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.65 } }, o.d)),
+      h("span", { style: { color: "#123a52", fontSize: "0.78rem", flexShrink: 0 } }, o.u ? "↗" : "📍"));
   };
   var head = function (txt, sub) {
-    return h("div", { style: { marginBottom: 8 } },
-      h("div", { style: { fontWeight: 800, fontSize: "0.9rem", color: "#1f7a6d" } }, txt),
-      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,162,155,0.85)", marginTop: 2 } }, sub) : null);
+    return h("div", { style: { marginBottom: 11 } },
+      h("div", { style: { fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: "#1c3a35", letterSpacing: "0.4px" } }, txt),
+      sub ? h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", marginTop: 4, letterSpacing: "0.3px" } }, sub) : null,
+      h("div", { style: { marginTop: 9, borderTop: "2px dotted rgba(169,127,46,0.5)" } }));
   };
   // ── 此刻 ──
   // ── 此刻（伦敦航海家）────────────────────────────
@@ -19263,7 +19274,7 @@ function LondonRoom(_refLD) {
       ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
-        var col = ["#1f6f68", "#a1542a", "#b4353a"][i];
+        var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
         return h("button", { key: "pg" + i, onClick: function () { sendPage(p); }, disabled: !!pageBusy,
           style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
           h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
@@ -19300,7 +19311,7 @@ function LondonRoom(_refLD) {
       h("div", { key: "sof", style: { marginTop: 12, background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "11px 12px", fontSize: "0.75rem", color: "#1f6f68", lineHeight: 1.85 } },
         "这张单子上没有熊猫鱼 —— 他不在「出事才找」这一栏。",
         h("br", null),
-        "上面那三个按钮，什么时候按都行。")
+        "这一页最上面那四个按钮，什么时候按都行。")
     ]),
     // ── 不闷不挤的路线 ──
     ukCard([
