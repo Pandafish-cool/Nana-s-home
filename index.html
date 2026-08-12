@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-89";
+var NANA_VER = "v2026.8.2-90";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17858,9 +17858,9 @@ var LD_ARR_WAY = [
 ];
 // 一键呼叫：三种，都会变成 221B 里的 BB 机来信
 var LD_PAGE = [
-  { k: "home", e: "🏠", t: "我到家了", sub: "报个平安", body: "📟 我到家了，门锁好了，一切都好。", ok: "报过了，家里知道了 🏠" },
-  { k: "miss", e: "🫧", t: "我想你了", sub: "不用回，说出来就好受点", body: "📟 没什么事，就是想你了。", ok: "说出去了，他会看到的 🫧" },
-  { k: "bad", e: "🌧️", t: "我现在不太好", sub: "不用解释为什么", body: "📟 我现在不太好。不用问为什么，你在就行。", ok: "他会来找你的 🌧️" }
+  { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠" },
+  { k: "knock", e: "🕯️", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🕯️" },
+  { k: "bad", e: "🌧️", t: "今天不太顺", sub: "不用说为什么", body: "📟 今天不太顺。别问，你在就行。", ok: "他看到了 🌧️" }
 ];
 // 夜里回家
 var LD_NIGHTSAFE = [
@@ -17875,7 +17875,6 @@ var LD_NIGHTSAFE = [
 var LD_SOS_LIST = [
   { e: "🚑", t: "999", b: "危及生命：呼吸接不上气、说不出整句话、严重外伤。说 asthma attack 和地址，救护车免费。", u: "tel:999" },
   { e: "☎️", t: "NHS 111", b: "不舒服但拿不准要不要去医院。免费，24 小时有护士在线判断。", u: "tel:111" },
-  { e: "🐼", t: "熊猫鱼", b: "任何时候。半夜也打，他会醒。真的。" },
   { e: "🏨", t: "公寓前台", b: "钥匙进不去、屋里出状况、有人敲门你不确定。服务式公寓多数是 24 小时有人的。" },
   { e: "🛂", t: "中国驻英使馆 领保", b: "护照丢了、被抢被骗、遇到法律问题。24 小时：+44 20 7631 1430", u: "tel:+442076311430" },
   { e: "🌏", t: "外交部全球领保热线", b: "国内号码，家里人也能打：+86 10 12308", u: "tel:+861012308" },
@@ -19261,7 +19260,7 @@ function LondonRoom(_refLD) {
     // ── 一键呼叫 ──
     ukCard([
       screws,
-      ukHead("按一下，广州就响", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
+      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#a1542a", "#b4353a"][i];
@@ -19274,40 +19273,8 @@ function LondonRoom(_refLD) {
       })),
       pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
       h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
-        "按下去就变成一封信落到 221B，广州这边的 BB 机会响。不用等回复，说出来这件事本身就算数。")
+        "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
     ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }),
-    // ── 现在方便打电话吗 ──
-    (function () {
-      var gh = parseInt(gzT.slice(0, 2), 10);
-      var band = gh >= 1 && gh < 7
-        ? { s: "他在睡觉", b: "但真有事就打 —— 半夜的电话他会醒，这个不用犹豫。", c: "#7a5aa8", e: "😴" }
-        : (gh >= 7 && gh < 9
-          ? { s: "他刚起来", b: "正在洗漱或者出门，能接。", c: "#c47a2a", e: "🌅" }
-          : (gh >= 9 && gh < 12
-            ? { s: "他在上班", b: "文字最好，电话也行，他会找地方接。", c: "#3a8fbf", e: "💼" }
-            : (gh >= 12 && gh < 14
-              ? { s: "他在午休", b: "这个点最好聊，人是松的。", c: "#1f6f68", e: "🍚" }
-              : (gh >= 14 && gh < 19
-                ? { s: "他在上班", b: "文字最好，电话也行，他会找地方接。", c: "#3a8fbf", e: "💼" }
-                : (gh >= 19 && gh < 24
-                  ? { s: "他下班了", b: "随便打，多久都行。这是一天里最好的窗口。", c: "#b4353a", e: "🛋️" }
-                  : { s: "他快睡了", b: "还醒着，打得通。", c: "#7a5aa8", e: "🌙" }))))); 
-      return ukCard([
-        screws,
-        ukHead("现在方便打电话吗", "家里是 " + gzT + "　你这儿是 " + lonT, h("span", { style: { fontSize: "1rem" } }, "📞")),
-        h("div", { key: "cw", style: { display: "flex", alignItems: "center", gap: 12, background: "rgba(255,255,255,0.68)", borderLeft: "4px solid " + band.c, borderRadius: "0 9px 9px 0", padding: "12px 13px" } },
-          h("span", { style: { fontSize: "1.7rem" } }, band.e),
-          h("div", null,
-            h("div", { style: { fontWeight: 800, fontSize: "0.92rem", color: band.c } }, band.s),
-            h("div", { style: { fontSize: "0.74rem", color: "rgba(85,75,60,0.95)", marginTop: 3, lineHeight: 1.7 } }, band.b))),
-        h("div", { key: "cw2", style: { marginTop: 10, fontSize: "0.7rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.85 } },
-          "你早上七八点 = 他下午两三点，随时能聊。",
-          h("br", null),
-          "你傍晚六七点 = 他半夜一两点，那会儿别硬撑着等你。",
-          h("br", null),
-          "最好的时段：你的早上，和你的午休。")
-      ]);
-    })(),
     // ── 哮喘 ──
     ukCard([
       screws,
@@ -19329,7 +19296,11 @@ function LondonRoom(_refLD) {
             h("div", { style: { fontWeight: 800, fontSize: "0.83rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.t, x.u ? h("span", { style: { color: "#b4353a", marginLeft: 6, fontSize: "0.68rem" } }, "点这行拨号") : null),
             h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b)));
         return x.u ? h("a", { key: "so" + i, href: x.u, style: { textDecoration: "none", color: "inherit", display: "block" } }, inner) : h("div", { key: "so" + i }, inner);
-      }))
+      })),
+      h("div", { key: "sof", style: { marginTop: 12, background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "11px 12px", fontSize: "0.75rem", color: "#1f6f68", lineHeight: 1.85 } },
+        "这张单子上没有熊猫鱼 —— 他不在「出事才找」这一栏。",
+        h("br", null),
+        "上面那三个按钮，什么时候按都行。")
     ]),
     // ── 不闷不挤的路线 ──
     ukCard([
