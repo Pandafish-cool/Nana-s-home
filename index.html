@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-129";
+var NANA_VER = "v2026.8.2-130";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17957,39 +17957,40 @@ var LD_MART = [
   { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街大中超 · 老干妈火锅料都有", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
   { dist: "送到楼下", n: "Starry Mart 网购", d: "亚洲食品网上下单送到公寓", e: "📦", u: "https://starrymart.co.uk" }
 ];
-// 楼下：以 Fraser Place（Pan Peninsula / South Quay 一带）为原点
+// 楼下：以 Fraser Place（80 Boardwalk Place，Blackwall Basin 边上）为原点
 var LD_NEAR = [
-  { dist: "走 3 分钟 · 250m", n: "South Quay DLR", d: "最近的站，走三四分钟 · 露天高架 · 无人驾驶，坐第一排像自己开火车", e: "🚈", q: "South Quay DLR Station London", open: 1 },
-  { dist: "走 8 分钟 · 600m", n: "Heron Quays DLR", d: "另一个方向，也是几分钟 · 去银行区方便", e: "🚉", q: "Heron Quays DLR Station", open: 1 },
-  { dist: "出门就是", n: "Marsh Wall 一条街", d: "楼下这条路上有便利店、咖啡和几家小馆子，懒得走远就在这解决", e: "🏪", q: "Marsh Wall London E14" },
-  { dist: "走 2 分钟 · 100m", n: "Millwall Inner Dock 水边", d: "出门就是水，绕内港走一圈大约二十分钟，晚上路灯很亮", e: "🌊", q: "Millwall Inner Dock London", open: 1 },
-  { dist: "走 12 分钟 · 900m", n: "Canary Wharf 商场群", d: "走过桥十分钟 · Canada Place / Jubilee Place / Crossrail Place 连在一起，下雨天能一路不淋雨", e: "🛍️", q: "Canada Place Canary Wharf" }
+  { dist: "走 2 分钟 · 100m", n: "Blackwall DLR", d: "出楼右转就是站 · 高架露天，无人驾驶，坐第一排像自己开火车", e: "🚈", q: "Blackwall DLR Station London", open: 1 },
+  { dist: "出门就是", n: "Poplar Dock 内港", d: "楼下这一圈水面停满小帆船 · 绕一圈二十分钟，晚上路灯很亮", e: "⛵", q: "Poplar Dock Marina London", open: 1 },
+  { dist: "走 3 分钟 · 250m", n: "Billingsgate 鱼市", d: "英国最大的鱼市，就在马路对面 · 只在清晨开（周二到周六，四点到八点），不买也能去看看", e: "🐟", q: "Billingsgate Market London", open: 1 },
+  { dist: "走 8 分钟 · 600m", n: "Wood Wharf", d: "Canary Wharf 新开发的那片，餐厅酒吧和水边步道都在这 · 是最近的一片热闹地方", e: "🍽️", q: "Wood Wharf London" },
+  { dist: "走 12 分钟 · 950m", n: "Canary Wharf 商场群", d: "Canada Place / Jubilee Place / Crossrail Place 连在一起，下雨天能一路不淋雨 · 吃的买的都在里面", e: "🛍️", q: "Canada Place Canary Wharf" }
 ];
 var LD_SHOP = [
-  { dist: "走 13 分钟 · 1.0km", n: "Waitrose", d: "Canada Place 商场里 · 走十分钟 · 熟食和半成品好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
-  { dist: "走 13 分钟 · 1.0km", n: "M&S Food", d: "便当和半成品最救命 · 商场里", e: "🍱", q: "M&S Simply Food Canary Wharf" },
-  { dist: "走 16 分钟，或 DLR 两站 5 分钟", n: "Asda Isle of Dogs", d: "DLR 往南一两站 · 大超市，同样的东西便宜一截 · 周日受六小时限制", e: "🏬", q: "Asda Isle of Dogs London" },
-  { dist: "走 4 分钟 · 300m", n: "Tesco / Sainsbury's 小店", d: "Marsh Wall 和商场里都有 Express、Local · 不受周日限制，开得晚", e: "🥬", q: "Tesco Express Marsh Wall London" },
-  { dist: "走 13 分钟 · 1.0km", n: "Boots 药店", d: "商场里 · 药剂师免费问诊 · 备用吸入器、口罩、维生素都在这买", e: "💊", q: "Boots Canary Wharf" },
-  { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街的大中超 · Elizabeth line 一站到 Tottenham Court Road，八分钟", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
+  { dist: "走 12 分钟 · 950m", n: "Waitrose", d: "Canada Place 商场里 · 熟食和半成品好吃", e: "🛒", q: "Waitrose Canada Place Canary Wharf" },
+  { dist: "走 12 分钟 · 950m", n: "M&S Food", d: "便当和半成品最救命 · 商场里", e: "🍱", q: "M&S Simply Food Canary Wharf" },
+  { dist: "走 12 分钟 · 950m", n: "Tesco / Sainsbury's 小店", d: "商场里都有 Express、Local · 不受周日六小时限制，开得晚", e: "🥬", q: "Tesco Express Canary Wharf" },
+  { dist: "走 19 分钟，或 DLR 三站", n: "Asda Crossharbour", d: "往南走或者坐 DLR · 大超市，同样的东西便宜一截 · 周日只开六小时", e: "🏬", q: "Asda Crossharbour London" },
+  { dist: "走 12 分钟 · 950m", n: "Boots 药店", d: "商场里 · 药剂师免费问诊 · 备用吸入器、口罩、维生素都在这买", e: "💊", q: "Boots Canary Wharf" },
+  { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街的大中超 · 走到 Canary Wharf 坐 Elizabeth line 一站到 Tottenham Court Road，车程八分钟", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
   { dist: "送到楼下", n: "Starry Mart 网购", d: "亚洲食品网上下单送到楼下，不用扛", e: "📦", u: "https://starrymart.co.uk" }
 ];
 var LD_AIR = [
-  { dist: "走 14 分钟 · 1.1km", n: "Crossrail Place 屋顶花园", d: "商场顶层的热带植物园 · 免费 · 半露天，一点不闷", e: "🌴", q: "Crossrail Place Roof Garden", open: 1 },
+  { dist: "出门就是", n: "Poplar Dock 水边", d: "不用走远 · 出楼就有水、有船、有长椅，闷了就下去站十分钟", e: "⛵", q: "Poplar Dock Marina London", open: 1 },
+  { dist: "走 11 分钟 · 850m", n: "Crossrail Place 屋顶花园", d: "商场顶层的热带植物园 · 免费 · 半露天，一点不闷", e: "🌴", q: "Crossrail Place Roof Garden", open: 1 },
   { dist: "走 12 分钟 · 950m", n: "Jubilee Park", d: "Canary Wharf 中间那块草地 · 天气好全是躺着的人", e: "🌳", q: "Jubilee Park Canary Wharf", open: 1 },
-  { dist: "走 18 分钟，或 DLR 三站", n: "Mudchute 农场", d: "往南走十五分钟 · 免费 · 有羊驼和小羊，城里最不像城里的地方", e: "🐑", q: "Mudchute Park and Farm", open: 1 },
-  { dist: "走 27 分钟，或 DLR 四站 8 分钟", n: "Island Gardens", d: "岛最南端 · 隔着河正对格林威治，日落很好看", e: "🌅", q: "Island Gardens London", open: 1 },
-  { dist: "走 14 分钟 · 1.1km", n: "Canary Wharf Pier", d: "坐船的码头 · 走十分钟 · 光是坐在那看河也行", e: "⛴️", q: "Canary Wharf Pier London", open: 1 }
+  { dist: "走 25 分钟，或 DLR 几站", n: "Mudchute 农场", d: "岛中间那片 · 免费 · 有羊驼和小羊，城里最不像城里的地方", e: "🐑", q: "Mudchute Park and Farm", open: 1 },
+  { dist: "走 29 分钟，或 DLR 几站", n: "Island Gardens", d: "岛最南端 · 隔着河正对格林威治，日落很好看", e: "🌅", q: "Island Gardens London", open: 1 },
+  { dist: "走 16 分钟 · 1.2km", n: "Canary Wharf Pier", d: "坐船的码头 · 光是坐在那看河也行", e: "⛴️", q: "Canary Wharf Pier London", open: 1 }
 ];
 var LD_GO = [
-  { dist: "到站走 3 分钟", n: "DLR（South Quay / Heron Quays）", d: "全程高架露天，不闷。往北去银行区和塔桥，往南去格林威治十分钟", e: "🚈", q: "South Quay DLR Station London", open: 1 },
-  { dist: "到站走 13 分钟", n: "Elizabeth line（Canary Wharf 站）", d: "新线，车厢宽敞明亮有空调 · 到市中心 Tottenham Court Road 只要八分钟", e: "🚆", q: "Canary Wharf Elizabeth Line Station", open: 0 },
-  { dist: "到码头走 14 分钟", n: "Uber Boat（Canary Wharf Pier）", d: "最推荐 · 全程露天甲板，看着河进城 · 刷交通卡，比地铁贵一点但值", e: "⛴️", q: "Canary Wharf Pier London", open: 1 },
+  { dist: "到站走 2 分钟", n: "DLR（Blackwall 站）", d: "楼下就是 · 全程高架露天，不闷。往西两站到 Canary Wharf，往北去银行区和塔桥", e: "🚈", q: "Blackwall DLR Station London", open: 1 },
+  { dist: "到站走 11 分钟", n: "Elizabeth line（Canary Wharf 站）", d: "新线，车厢宽敞明亮有空调 · 到市中心 Tottenham Court Road 只要八分钟", e: "🚆", q: "Canary Wharf Elizabeth Line Station", open: 0 },
+  { dist: "到码头走 16 分钟", n: "Uber Boat（Canary Wharf Pier）", d: "全程露天甲板，看着河进城 · 刷交通卡，比地铁贵一点但值", e: "⛴️", q: "Canary Wharf Pier London", open: 1 },
   { dist: "到站走 12 分钟", n: "Jubilee line（Canary Wharf 站）", d: "最快但是深隧道 · 赶时间才坐，不舒服就换上面三种", e: "🚇", q: "Canary Wharf Station London", open: 0 },
-  { dist: "Marsh Wall 站牌走 3 分钟", n: "双层巴士上层前排", d: "慢，但一路看街景，随时能下车 · 刷卡，要按铃", e: "🚌", q: "Canary Wharf bus station", open: 0 }
+  { dist: "DLR 站旁边就有站牌", n: "双层巴士上层前排", d: "慢，但一路看街景，随时能下车 · 刷卡，要按铃", e: "🚌", q: "Blackwall DLR Station London", open: 0 }
 ];
 var LD_MED = [
-  { dist: "走 13 分钟 · 1.0km", n: "先找 Boots 的药剂师", d: "轻症免费咨询，不用预约。柜台后面的药也是问他们拿", e: "💊", q: "Boots Canary Wharf" },
+  { dist: "走 12 分钟 · 950m", n: "先找 Boots 的药剂师", d: "轻症免费咨询，不用预约。柜台后面的药也是问他们拿", e: "💊", q: "Boots Canary Wharf" },
   { dist: "打电话，免费", n: "NHS 111", d: "拿不准要不要去医院就打，免费，24 小时有护士", e: "☎️", u: "https://111.nhs.uk" },
   { dist: "打电话", n: "999", d: "呼吸困难、说不出整句话 —— 直接打，说 asthma attack 加地址", e: "🚑", u: "tel:999" },
   { dist: "DLR 转地铁约 20-25 分钟", n: "Royal London Hospital 急诊", d: "最近的大医院急诊，在 Whitechapel · DLR 转地铁大约十五分钟", e: "🏥", q: "Royal London Hospital Whitechapel London" },
@@ -18006,7 +18007,7 @@ var ldSky = function (hh) {
   return             { n: "\u591C\u91CC",  bg: "linear-gradient(165deg,#3b3f70,#1e2544)", ink: "#e7ebfb", sub: "rgba(206,214,244,0.75)", face: "rgba(255,255,255,0.11)", ring: "rgba(255,255,255,0.36)", hand: "#eef1ff", e: "\uD83C\uDF03" };
 };
 var LD_SURVIVE = [
-  { t: "🛒 大超市周日只开六小时", b: "英国法律规定的，大店周日一般只开 11:00-17:00 —— Waitrose、Asda 都算。楼下 Marsh Wall 那种 Tesco Express、Sainsbury's Local 不受限，照常开到很晚。周日想大采购就赶在下午五点前。" },
+  { t: "🛒 大超市周日只开六小时", b: "英国法律规定的，大店周日一般只开 11:00-17:00 —— Waitrose、Asda 都算。商场里那种 Tesco Express、Sainsbury's Local 不受限，照常开到很晚。周日想大采购就赶在下午五点前。" },
   { t: "🏦 银行假日很多店缩时间", b: "Bank Holiday 不受周日那条六小时限制，但商店大多自己缩短营业、有的干脆不开。八月三十一号就是一个，出门前查一下那家当天几点开。" },
   { t: "🍽️ 厨房九点就打烊", b: "不少餐厅 21:00 前后停止点餐，超市热食柜也是。Canary Wharf 商场里的店多半跟着商场关，周末收得更早。想吃口热的别拖太晚，这边不是宵夜城市。" },
   { t: "🍺 酒吧各家关门时间不一样", b: "老说法是十一点喊 last orders，那是二〇〇五年以前的规矩。现在市中心不少店开到午夜甚至更晚，社区小酒馆倒常常十一点就收。想去哪家先看门口贴的时间。" },
@@ -18233,7 +18234,7 @@ var LD_WALL = [
   { f: "greenwich-clock", sn: "天文台", n: "格林威治天文台", q: "Royal Observatory Greenwich", la: 51.4780, lo: -0.0013, must: 1,
     more: ["greenwich-ave"],
     say: "",
-    tip: "门口墙上那个 24 小时的 Shepherd 门钟，全世界的时间从这儿开始算。下面嵌着英制标准长度尺。本初子午线 0° 就在院子里 —— 从这儿到家里正好 113°E。DLR 从 Canary Wharf 到 Cutty Sark 只要 10 分钟，是所有地方里离你最近的一个。上山有一段坡。" },
+    tip: "门口墙上那个 24 小时的 Shepherd 门钟，全世界的时间从这儿开始算。下面嵌着英制标准长度尺。本初子午线 0° 就在院子里 —— 从这儿到家里正好 113°E。楼下 Blackwall 站坐 DLR 换一次就到 Cutty Sark，二十分钟上下，是所有地方里离你最近的一个。上山有一段坡。" },
   { f: "waterloo-sunset", sn: "滑铁卢桥", n: "滑铁卢桥", q: "Waterloo Bridge London", la: 51.5085, lo: -0.1166, must: 1,
     more: [],
     say: "适合一个人走走，看看大本钟。",
@@ -18281,11 +18282,11 @@ var LD_WALL = [
   { f: "canarywharf", sn: "Canary", n: "Canary Wharf", q: "Canary Wharf London", la: 51.5070, lo: -0.0204, must: 0,
     more: [],
     say: "",
-    tip: "这张不用猜 —— 你一出门就是这个。左边那栋顶上写 HSBC，前面那个像船的木头屋顶是 Crossrail Place，里面有个屋顶花园，免费，冬天也开。从住的地方走过去五分钟。" },
+    tip: "这张不用猜 —— 你一出门就是这个。左边那栋顶上写 HSBC，前面那个像船的木头屋顶是 Crossrail Place，里面有个屋顶花园，免费，冬天也开。从住的地方走过去十来分钟，也可以在 Blackwall 坐 DLR 两站。" },
   { f: "greenwich-path", sn: "格林威治", n: "格林威治公园", q: "Greenwich Park London", la: 51.4798, lo: -0.0041, must: 0,
     more: ["greenwich-dogs"],
     say: "特别大，那个大坡 —— 我当年还想滚下去试试，应该挺爽的。",
-    tip: "伦敦最老的皇家公园之一，坡上坡下全是遛狗的人和松鼠。那个大坡真的很陡，上去是天文台，站在顶上整个 Canary Wharf 在河对岸铺开；下过雨草很滑，别学他。DLR 到 Cutty Sark 走进去，十分钟车程，是离家最近的一片大绿地。" },
+    tip: "伦敦最老的皇家公园之一，坡上坡下全是遛狗的人和松鼠。那个大坡真的很陡，上去是天文台，站在顶上整个 Canary Wharf 在河对岸铺开；下过雨草很滑，别学他。从楼下 Blackwall 站坐 DLR 换一次到 Cutty Sark，二十分钟上下，是离家最近的一片大绿地。" },
   { f: "blackheath", sn: "布莱克希思", n: "布莱克希思", q: "Blackheath London", la: 51.4715, lo: 0.0047, must: 0,
     more: [],
     say: "",
@@ -18307,7 +18308,7 @@ var LD_WALL = [
     say: "",
     tip: "全球最大的乐高店，进门就是这幅用积木拼的地铁线路图，上面那个 UNDERGROUND 圆牌也是积木。不买东西也能逛，二楼有真人大小的地铁车厢。就在剧院区里，看戏前后顺路。" }
 ];
-// 家：Fraser Place, Pan Peninsula
+// 家：Fraser Place，80 Boardwalk Place
 // 家：Fraser Place Canary Wharf，80 Boardwalk Place（Blackwall Basin 边上，不是南码头那侧）
 var LD_ADDR = "80 Boardwalk Place, London E14 5SF";
 var LD_HOME_PT = { la: 51.5072, lo: -0.0070 };
@@ -20204,7 +20205,7 @@ function LondonRoom(_refLD) {
   var liveTab = h("div", null,
     ukCard([
       screws,
-      ukHead("楼下", "Fraser Place · Pan Peninsula 一带 · 走路能到的都在这", h("span", { style: { fontSize: "1rem" } }, "🏠")),
+      ukHead("楼下", "Boardwalk Place · Blackwall Basin 一带 · 走路能到的都在这", h("span", { style: { fontSize: "1rem" } }, "🏠")),
       h("div", { key: "n0", style: { fontSize: "0.68rem", color: "rgba(120,105,78,0.9)", lineHeight: 1.7, marginBottom: 9, background: "rgba(169,127,46,0.1)", borderRadius: 7, padding: "8px 10px" } },
         "距离和步行时间是按公寓那一带估的，实际走可能差个两三分钟。走过一遍觉得不对，跟熊猫鱼说就行。"),
       h("div", { key: "n" }, LD_NEAR.map(linkRow))
