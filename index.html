@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-97";
+var NANA_VER = "v2026.8.2-98";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18442,6 +18442,7 @@ function LondonRoom(_refLD) {
   var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
   var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _tk2 = useState(null); var task = _tk2[0], setTask = _tk2[1];
+  var _ao = useState(false); var astOpen = _ao[0], setAstOpen = _ao[1];
   var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
   var wallSeen = _ws[0], setWallSeen = _ws[1];
   var _wb = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-been") || "[]"); } catch (_) { return []; } });
@@ -19349,15 +19350,23 @@ function LondonRoom(_refLD) {
       h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
         "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
     ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }),
-    // ── 哮喘 ──
+    // ── 哮喘（默认收着，急救那句留在外面）──
     ukCard([
       screws,
-      ukHead("哮喘随身", "出门前看一眼，比什么都重要", h("span", { style: { fontSize: "1rem" } }, "🫁")),
-      h("div", { key: "a2" }, LD_ASTHMA.map(function (x, i) {
+      h("div", { key: "ah", onClick: function () { setAstOpen(!astOpen); }, style: { cursor: "pointer" } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+          h("span", { style: { fontSize: "1rem" } }, "🫁"),
+          h("div", { style: { flex: 1, fontFamily: "Georgia,'Times New Roman',serif", fontWeight: 700, fontSize: "1.02rem", color: UK_INK, letterSpacing: "0.4px" } }, "哮喘随身"),
+          h("span", { style: { fontSize: "0.72rem", color: "#a1542a", fontWeight: 800, flexShrink: 0 } }, astOpen ? "收起 ▲" : "展开 ▼")),
+        h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", marginTop: 4 } }, astOpen ? "出门前看一眼，比什么都重要" : "七条都在这儿，需要的时候点开"),
+        h("div", { style: { marginTop: 9, borderTop: "2px dotted rgba(169,127,46,0.5)" } })),
+      h("div", { key: "aq", style: { marginTop: 10, background: "rgba(180,53,58,0.09)", borderRadius: 8, padding: "10px 12px", fontSize: "0.75rem", color: "#7d1c22", lineHeight: 1.8, fontWeight: 700 } },
+        "真喘起来：拨 999，说「asthma attack」加地址。救护车免费。"),
+      astOpen ? h("div", { key: "a2", style: { marginTop: 4 } }, LD_ASTHMA.map(function (x, i) {
         return h("div", { key: "as" + i, style: { padding: "9px 0", borderBottom: i === LD_ASTHMA.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
           h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, "• " + x.t),
           h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.b));
-      }))
+      })) : null
     ]),
     // ── 出事找谁 ──
     ukCard([
