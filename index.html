@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-126";
+var NANA_VER = "v2026.8.2-127";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -15275,6 +15275,7 @@ function DisneyStoryActivity(_refDsy) {
 }
 // ── 🏖️ 大梅沙：8 月 7 日那个下午 ──────────────────────
 var MS_SCENES = [
+  { id: "odys",  t: "先去香港看《奥德赛》", b: "那天先过关去香港看了场电影。银幕上也是海 —— 看完再去海边，正好。" },
   { id: "sun",   t: "行走的小太阳", b: "去到哪里天气都很好。这次也一样 —— 车一停，云就散开了。" },
   { id: "wind",  t: "海风",         b: "很舒服的那种。咸的，但不呛，吹在脸上刚刚好。" },
   { id: "yell",  t: "尖叫",         b: "浪冲上来的时候我们都叫了 —— 主要是 Nana 叫。那声音，感觉浪真的要把她卷走。" },
@@ -15282,12 +15283,12 @@ var MS_SCENES = [
   { id: "chair", t: "同一张凳子",   b: "头一次在餐厅和 Nana 坐同一张凳子。对，周围人就是羡慕。" },
   { id: "rice",  t: "记住了",       b: "中途 Nana 胃疼。所以记住了 —— Nana 是要吃主食的，要吃米饭，会舒服一点。", note: 1 },
   { id: "nap",   t: "小憩",         b: "抱着 Nana 像抱着一只小小动物，很可爱。睡得很沉 —— 希望她能多睡一会儿，把累缓过来。" },
-  { id: "odys",  t: "去香港看《奥德赛》", b: "海边玩完，过关去香港看了一场电影。银幕上也是海。" },
   { id: "rest",  t: "剩下的时间",   b: "……不可描述。" }
 ];
 
 // ── 大梅沙的九幅小画（照着香港那套：整幅 SVG，人物用 emoji）──
-var MS_P = "\uD83D\uDC3C", MS_N = "\uD83D\uDC69";
+var MS_P = "\uD83E\uDDCD", MS_N = "\uD83E\uDDCD\u200D\u2640\uFE0F";
+var MS_PW = "\uD83D\uDEB6", MS_NW = "\uD83D\uDEB6\u200D\u2640\uFE0F";
 var msArt = function (id, T) {
   var h = React.createElement;
   var W = 300, H = 200;
@@ -15297,13 +15298,14 @@ var msArt = function (id, T) {
       cols.map(function (c, i) { return h("stop", { key: "s" + i, offset: (i / (cols.length - 1) * 100) + "%", stopColor: c }); }));
   };
   // 两个小人（带影子）
-  var pair = function (px, py, size, tiltP, tiltN, gap) {
+  var pair = function (px, py, size, tiltP, tiltN, gap, moving) {
     var sp = size || 20, gp = gap === undefined ? 17 : gap;
+    var em1 = moving ? MS_PW : MS_P, em2 = moving ? MS_NW : MS_N;
     return h("g", { key: "pair" },
       h("ellipse", { cx: px, cy: py + 3, rx: sp * 0.42, ry: sp * 0.14, fill: "rgba(0,0,0,0.18)" }),
       h("ellipse", { cx: px + gp, cy: py + 3, rx: sp * 0.42, ry: sp * 0.14, fill: "rgba(0,0,0,0.18)" }),
-      h("text", { x: px, y: py, fontSize: sp, textAnchor: "middle", transform: tiltP ? "rotate(" + tiltP + " " + px + " " + py + ")" : null }, MS_P),
-      h("text", { x: px + gp, y: py, fontSize: sp, textAnchor: "middle", transform: tiltN ? "rotate(" + tiltN + " " + (px + gp) + " " + py + ")" : null }, MS_N));
+      h("text", { x: px, y: py, fontSize: sp, textAnchor: "middle", transform: tiltP ? "rotate(" + tiltP + " " + px + " " + py + ")" : null }, em1),
+      h("text", { x: px + gp, y: py, fontSize: sp, textAnchor: "middle", transform: tiltN ? "rotate(" + tiltN + " " + (px + gp) + " " + py + ")" : null }, em2));
   };
   var bubble = function (bx, by, txt, w) {
     var bw = w || 52;
@@ -15366,7 +15368,7 @@ var msArt = function (id, T) {
       h("path", { d: "M14 152 q26 -26 52 0 Z", fill: "#f2827e" }),
       h("path", { d: "M14 152 q13 -13 26 -13 q13 0 26 13 Z", fill: "#fff0ee", opacity: 0.55 })));
     x = 96 + ((T * 0.4) % 170);
-    el.push(pair(x, 176, 22, (Math.sin(T * 0.18) * 4).toFixed(1), (Math.sin(T * 0.18 + 1.6) * 4).toFixed(1)));
+    el.push(pair(x, 176, 22, (Math.sin(T * 0.18) * 4).toFixed(1), (Math.sin(T * 0.18 + 1.6) * 4).toFixed(1), 17, 1));
   } else if (id === "wind") {
     el.push(h("defs", { key: "d" }, g("msWind", ["#2f7fa0", "#5fb3c9", "#cfeaf0"])));
     el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msWind)" }));
@@ -15416,7 +15418,7 @@ var msArt = function (id, T) {
       el.push(h("ellipse", { key: "fp" + k, cx: 268 - k * 22, cy: 190 - k * 6, rx: 4.6 - k * 0.2, ry: 6.6 - k * 0.3, fill: "rgba(30,36,42,0.5)", transform: "rotate(" + (k % 2 ? -12 : 10) + " " + (268 - k * 22) + " " + (190 - k * 6) + ")" }));
     }
     x = 274 - cyc * 1.5;
-    if (cyc > 8 && x > -30) el.push(pair(x, 190 - Math.max(0, (274 - x) / 22) * 6, 18, null, null, 14));
+    if (cyc > 8 && x > -30) el.push(pair(x, 190 - Math.max(0, (274 - x) / 22) * 6, 18, null, null, 14, 1));
   } else if (id === "chair") {
     el.push(h("defs", { key: "d" }, g("msCh", ["#4a3120", "#7a5330", "#c98f4a"])));
     el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msCh)" }));
@@ -15494,26 +15496,43 @@ var msArt = function (id, T) {
     el.push(pair(142, 172, 19, null, null, 16));
     el.push(h("text", { key: "pc", x: 186, y: 178, fontSize: 15, textAnchor: "middle" }, "\uD83C\uDF7F"));
   } else if (id === "rest") {
-    el.push(h("defs", { key: "d" }, g("msRs", ["#180a1c", "#3a1230", "#8a2c50"])));
+    el.push(h("defs", { key: "d" }, g("msRs", ["#0d0a16", "#1c1226", "#2c1a2e"])));
     el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msRs)" }));
-    for (k = 0; k < 14; k++) {
-      op = 0.2 + 0.5 * (0.5 + 0.5 * Math.sin(T * 0.08 + k));
-      el.push(h("circle", { key: "st" + k, cx: (k * 43 % 300), cy: 10 + (k * 19 % 60), r: 1.2, fill: "rgba(255,225,235," + op.toFixed(2) + ")" }));
+    for (k = 0; k < 12; k++) {
+      op = 0.15 + 0.4 * (0.5 + 0.5 * Math.sin(T * 0.08 + k));
+      el.push(h("circle", { key: "st" + k, cx: (k * 47 % 300), cy: 10 + (k * 17 % 50), r: 1.1, fill: "rgba(255,240,230," + op.toFixed(2) + ")" }));
     }
-    el.push(h("circle", { key: "mn", cx: 240, cy: 40, r: 15, fill: "rgba(255,236,200,0.9)" }));
-    el.push(waveTop(112, 3, 0.05, "#4a1a3a", "sea"));
-    for (k = 0; k < 9; k++) {
-      op = 0.1 + 0.3 * (0.5 + 0.5 * Math.sin(T * 0.11 + k * 1.4));
-      el.push(h("rect", { key: "sp" + k, x: 222 - (k % 3) * 9 + Math.sin(T * 0.06 + k) * 3, y: 116 + k * 3.4, width: 26 - k * 1.6, height: 2, rx: 1, fill: "rgba(255,236,205," + op.toFixed(2) + ")" }));
+    el.push(h("text", { key: "mn", x: 262, y: 34, fontSize: 17, textAnchor: "middle" }, "\uD83C\uDF19"));
+    // 一栋楼，只有一扇窗还亮着
+    el.push(h("rect", { key: "bld", x: 52, y: 46, width: 196, height: 154, rx: 6, fill: "#161022" }));
+    for (k = 0; k < 8; k++) {
+      x = 66 + (k % 4) * 44; y = 58 + Math.floor(k / 4) * 26;
+      el.push(h("rect", { key: "dw" + k, x: x, y: y, width: 30, height: 17, rx: 2, fill: "rgba(255,255,255,0.05)" }));
     }
-    el.push(waveTop(140, 2, 0.04, "#3a1428", "sand"));
-    var near = Math.sin(T * 0.045) * 2.5;
-    el.push(pair(136 - near, 184, 22, null, null, 15 + near));
-    for (k = 0; k < 6; k++) {
-      y = (T * 1.0 + k * 16) % 96;
-      el.push(h("text", { key: "hr" + k, x: 140 + Math.sin(T * 0.07 + k) * 12, y: 176 - y, fontSize: 8 + (k % 3) * 5, opacity: (0.85 * (1 - y / 96)).toFixed(2) }, "\u2764\uFE0F"));
+    ph = (T % 150) / 150;
+    var close = ph < 0.42 ? 0 : (ph < 0.62 ? (ph - 0.42) / 0.2 : 1);
+    var dim = ph < 0.66 ? 1 : Math.max(0.12, 1 - (ph - 0.66) / 0.14);
+    el.push(h("rect", { key: "win", x: 96, y: 108, width: 108, height: 66, rx: 4, fill: "rgba(255,206,120," + (0.92 * dim).toFixed(2) + ")" }));
+    el.push(h("g", { key: "ppl", opacity: (1 - close * 0.15).toFixed(2) },
+      h("text", { x: 132, y: 164, fontSize: 26, textAnchor: "middle", opacity: 0.82 }, MS_P),
+      h("text", { x: 158 - close * 8, y: 164, fontSize: 26, textAnchor: "middle", opacity: 0.82 }, MS_N)));
+    // 窗帘从两边拉上
+    el.push(h("rect", { key: "cL", x: 96, y: 108, width: 54 * close, height: 66, fill: "#5d2740" }));
+    el.push(h("rect", { key: "cR", x: 204 - 54 * close, y: 108, width: 54 * close, height: 66, fill: "#5d2740" }));
+    for (k = 0; k < 5; k++) {
+      if (54 * close > k * 11 + 4) {
+        el.push(h("rect", { key: "cl" + k, x: 96 + k * 11, y: 108, width: 2.4, height: 66, fill: "rgba(0,0,0,0.18)" }));
+        el.push(h("rect", { key: "cr" + k, x: 201 - k * 11, y: 108, width: 2.4, height: 66, fill: "rgba(0,0,0,0.18)" }));
+      }
     }
-    el.push(h("rect", { key: "vig", x: 0, y: 0, width: 300, height: 200, fill: "rgba(0,0,0," + (0.05 + 0.16 * (0.5 + 0.5 * Math.sin(T * 0.04))).toFixed(2) + ")" }));
+    el.push(h("rect", { key: "wf", x: 96, y: 108, width: 108, height: 66, rx: 4, fill: "none", stroke: "#2a1c30", strokeWidth: 4 }));
+    // 门把手上那块牌子，晃两下
+    el.push(h("g", { key: "dnd", transform: "rotate(" + (Math.sin(T * 0.13) * 7).toFixed(1) + " 258 118)" },
+      h("line", { x1: 258, y1: 112, x2: 258, y2: 126, stroke: "rgba(220,200,190,0.6)", strokeWidth: 1.4 }),
+      h("rect", { x: 236, y: 126, width: 44, height: 26, rx: 4, fill: "#c0392b" }),
+      h("text", { x: 258, y: 136, fontSize: 6.2, textAnchor: "middle", fill: "#fff0ee", fontWeight: "bold", letterSpacing: 0.4 }, "DO NOT"),
+      h("text", { x: 258, y: 146, fontSize: 6.2, textAnchor: "middle", fill: "#fff0ee", fontWeight: "bold", letterSpacing: 0.4 }, "DISTURB")));
+    if (close > 0.9) el.push(h("text", { key: "sh", x: 78, y: 190, fontSize: 17, textAnchor: "middle", opacity: ((close - 0.9) * 10).toFixed(2) }, "\uD83E\uDD2B"));
   }
   return h("svg", { viewBox: "0 0 300 200", width: "100%", style: { display: "block" } }, el);
 };
