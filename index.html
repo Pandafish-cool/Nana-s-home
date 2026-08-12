@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-100";
+var NANA_VER = "v2026.8.2-101";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18757,7 +18757,54 @@ function LondonRoom(_refLD) {
     setCalExtra(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
+  // 一键呼叫（安心页和此刻页共用）
+  var pagerCard = function () {
+    return ukCard([
+
+      screws,
+      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
+      h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
+        var busy = pageBusy === p.k;
+        var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
+        var isPick = !!p.pick;
+        return h("button", { key: "pg" + i, onClick: function () { if (isPick) { setBadOpen(!badOpen); setSitMode(null); } else { sendPage(p); } }, disabled: !!pageBusy,
+          style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
+          h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
+          h("span", { style: { flex: 1, minWidth: 0 } },
+            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : p.t),
+            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
+          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
+      })),
+      badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
+        sitMode
+          ? h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "那就坐一会儿，不着急"),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, "🏡 " + beat),
+              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", marginTop: 8, fontSize: "0.8rem", color: "#2c4f48", lineHeight: 1.8 } }, "🫖 " + sitMode),
+              h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.8, marginTop: 10 } }, "不用做什么。坐着也算数。"),
+              h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+                h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
+                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
+          : h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
+              LD_BAD_OPT.map(function (o, oi) {
+                return h("button", { key: "bo" + oi, onClick: function () {
+                    if (o.sit) { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); return; }
+                    sendPage(o); setBadOpen(false);
+                  }, disabled: !!pageBusy,
+                  style: { width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 7, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "10px 12px", fontFamily: "inherit", cursor: "pointer" } },
+                  h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, o.e),
+                  h("span", null,
+                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.83rem", color: "#20393f" } }, o.t),
+                    h("span", { style: { display: "block", fontSize: "0.67rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, o.d)));
+              }))) : null,
+      pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
+      h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
+        "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
+        ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" });
+  };
   var nowTab = h("div", null,
+    afterGo ? pagerCard() : null,
     ukCard([
       screws,
       h("div", { key: "cl", style: { display: "flex", gap: 9 } },
@@ -19309,49 +19356,7 @@ function LondonRoom(_refLD) {
   );
   // ── 安心 ──
   var careTab = h("div", null,
-    // ── 一键呼叫 ──
-    ukCard([
-      screws,
-      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
-      h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
-        var busy = pageBusy === p.k;
-        var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
-        var isPick = !!p.pick;
-        return h("button", { key: "pg" + i, onClick: function () { if (isPick) { setBadOpen(!badOpen); setSitMode(null); } else { sendPage(p); } }, disabled: !!pageBusy,
-          style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
-          h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
-          h("span", { style: { flex: 1, minWidth: 0 } },
-            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : p.t),
-            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
-          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
-      })),
-      badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
-        sitMode
-          ? h("div", null,
-              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "那就坐一会儿，不着急"),
-              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, "🏡 " + beat),
-              h("div", { style: { background: "rgba(255,255,255,0.72)", borderRadius: 9, padding: "11px 12px", marginTop: 8, fontSize: "0.8rem", color: "#2c4f48", lineHeight: 1.8 } }, "🫖 " + sitMode),
-              h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.8, marginTop: 10 } }, "不用做什么。坐着也算数。"),
-              h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
-                h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
-                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
-          : h("div", null,
-              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
-              LD_BAD_OPT.map(function (o, oi) {
-                return h("button", { key: "bo" + oi, onClick: function () {
-                    if (o.sit) { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); return; }
-                    sendPage(o); setBadOpen(false);
-                  }, disabled: !!pageBusy,
-                  style: { width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 7, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "10px 12px", fontFamily: "inherit", cursor: "pointer" } },
-                  h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, o.e),
-                  h("span", null,
-                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.83rem", color: "#20393f" } }, o.t),
-                    h("span", { style: { display: "block", fontSize: "0.67rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, o.d)));
-              }))) : null,
-      pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
-      h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
-        "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
-    ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }),
+    pagerCard(),
     // ── 哮喘（默认收着，急救那句留在外面）──
     ukCard([
       screws,
