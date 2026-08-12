@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-119";
+var NANA_VER = "v2026.8.2-120";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18783,7 +18783,7 @@ function LondonRoom(_refLD) {
     nanaPackDel(x.id, function () {});
   };
   var tapMap = function (e) {
-    if (!addMode) return;
+    if (!addMode || myAuthor === "panda") return;
     var svg = e.currentTarget;
     var r = svg.getBoundingClientRect();
     var cx = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX);
@@ -20265,7 +20265,9 @@ function LondonRoom(_refLD) {
                 h("button", { onClick: savePin, disabled: !pinName.trim() || pinUp, style: { marginLeft: "auto", flexShrink: 0, border: "none", borderRadius: 7, padding: "9px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: (pinName.trim() && !pinUp) ? "pointer" : "default", background: (pinName.trim() && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: (pinName.trim() && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "盖章")),
               pinErr ? h("div", { style: { marginTop: 7, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null) : null,
             h("button", { onClick: clearPinDraft, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
-        : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）"),
+        : (myAuthor === "panda"
+            ? h("div", { key: "add0p", style: { marginTop: 10, textAlign: "center", fontSize: "0.66rem", color: "rgba(120,105,80,0.85)", fontFamily: LDHAND, lineHeight: 1.7 } }, "这张地图归 Nana 自己钉 · 你要加地方，用上面的「寄一份新案卷」")
+            : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）")),
       myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
         h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己加的 " + myPins.length + " 个地方"),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
