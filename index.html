@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-131";
+var NANA_VER = "v2026.8.2-132";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19045,7 +19045,7 @@ function LondonRoom(_refLD) {
   var _pi = useState(""); var packInp = _pi[0], setPackInp = _pi[1];
   var _pd = useState(null); var extraDel = _pd[0], setExtraDel = _pd[1];
   var _pg = useState("care"); var packCat = _pg[0], setPackCat = _pg[1];
-  var _sp = useState(function () { try { return JSON.parse(localStorage.getItem("nana-london-spots") || "{}"); } catch (_) { return {}; } });
+  var _sp = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-london-spots")) || "{}"); } catch (_) { return {}; } });
   var spots = _sp[0], setSpots = _sp[1];
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
   var _cm = useState(""); var craveMsg = _cm[0], setCraveMsg = _cm[1];
@@ -19430,7 +19430,7 @@ function LondonRoom(_refLD) {
     var nx = cur === "" ? "want" : cur === "want" ? "done" : "";
     var n = {}; for (var k in spots) { if (Object.prototype.hasOwnProperty.call(spots, k)) n[k] = spots[k]; }
     n[id] = nx; setSpots(n);
-    try { localStorage.setItem("nana-london-spots", JSON.stringify(n)); } catch (_) {}
+    try { localStorage.setItem(ldWKey("nana-london-spots"), JSON.stringify(n)); } catch (_) {}
   };
   var sendPage = function (p) {
     if (pageBusy) return;
