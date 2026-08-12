@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-95";
+var NANA_VER = "v2026.8.2-97";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17895,8 +17895,22 @@ var LD_SOS_LIST = [
   { e: "💳", t: "银行挂失", b: "卡丢了先在手机 App 里冻结，比打电话快。出发前把两张卡的客服号存好。" }
 ];
 // 情绪低的时候
+// 提不起劲的时候不讲道理，直接派活。都是十分钟以内能做完的
+var LD_TASK = [
+  "下楼买一杯咖啡，什么都不干，就把它喝完。",
+  "走到码头边，看三条船过去再回来。",
+  "拍一张今天的天空，寄回 221B。",
+  "换一件干净衣服。就换这一件，别的不用管。",
+  "烧一壶水，站在旁边等它响。",
+  "在地图上盖一个章 —— 今天走到过的任何地方都算。",
+  "找一家没进过的店，进去看一眼，不买也行。",
+  "把窗户开到最大，站着数十次呼吸。",
+  "走一站路再上车。就一站。",
+  "买一支花回去，插在杯子里就行。",
+  "去屋顶花园坐五分钟，手机放兜里。",
+  "把明天要穿的衣服挑出来摆好。"
+];
 var LD_LOW = [
-  { t: "第二三周最难，谁都一样", b: "刚到的新鲜劲过去、又还没习惯，人在异地几乎都会在这个时候掉一次。它会过去，跟你没关系。" },
   { t: "先做最小的那件事", b: "不用振作。喝口水、洗把脸、把窗帘拉开、下楼绕码头走十分钟。做完一件再说下一件。" },
   { t: "别熬到半夜再想事", b: "凌晨想什么都是放大过的，不作数。想说话就按上面那个「今天有点长」，不用组织语言。" },
   { t: "吃和睡先保住", b: "情绪差的时候最先塌的是这两样，塌了会更差。哪怕只是一碗热汤面、只睡六小时，也算保住了。" },
@@ -18413,6 +18427,9 @@ function LondonRoom(_refLD) {
   var _cr = useState(false); var craveOpen = _cr[0], setCraveOpen = _cr[1];
   var _cm = useState(""); var craveMsg = _cm[0], setCraveMsg = _cm[1];
   var _cb = useState(false); var craveBusy = _cb[0], setCraveBusy = _cb[1];
+  var _cmi = useState(function () { try { return JSON.parse(localStorage.getItem("nana-crave-mine") || "[]"); } catch (_) { return []; } });
+  var craveMine = _cmi[0], setCraveMine = _cmi[1];
+  var _cin = useState(""); var craveInp = _cin[0], setCraveInp = _cin[1];
   var _dk = useState(""); var drinkLine = _dk[0], setDrinkLine = _dk[1];
   var _bt = useState(function () { return LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]; });
   var beat = _bt[0], setBeat = _bt[1];
@@ -18424,6 +18441,7 @@ function LondonRoom(_refLD) {
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
   var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
   var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
+  var _tk2 = useState(null); var task = _tk2[0], setTask = _tk2[1];
   var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
   var wallSeen = _ws[0], setWallSeen = _ws[1];
   var _wb = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-been") || "[]"); } catch (_) { return []; } });
@@ -18600,13 +18618,13 @@ function LondonRoom(_refLD) {
     if (!myAuthor) { setCraveMsg("先去 221B 选一下你是谁，才能寄申请哦"); return; }
     setCraveBusy(true); setCraveMsg("");
     var dt = new Date();
-    var body = "📟 伦敦航海家 · 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Place, Canary Wharf\n▸ 伦敦时间：" + lonT + "\n收到回封小信就好 📮";
+    var body = "📟 投喂申请\n▸ 今天想吃：" + dish + "\n▸ 送到：Fraser Place, Canary Wharf\n熊猫鱼骑手，准时送达 🛵";
     var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "call", pu: null };
     nanaSharedAdd(note, function (err) {
       setCraveBusy(false);
       if (err) { setCraveMsg("没寄出去…检查下网络再试 😢"); return; }
       setCraveOpen(false);
-      setCraveMsg("📮 申请已寄到 221B，广州那边的 BB 机响了！");
+      setCraveMsg("🛵 接单了，熊猫鱼骑手正在赶来");
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
@@ -18923,7 +18941,7 @@ function LondonRoom(_refLD) {
       h("div", { key: "m0", style: { textAlign: "center", marginBottom: 10 } },
         h("div", { style: { fontFamily: "Georgia,serif", fontSize: "0.58rem", letterSpacing: 3, color: "rgba(140,110,60,0.95)", fontWeight: 800 } }, "BILL OF FARE"),
         h("div", { style: { borderTop: "1px solid rgba(169,127,46,0.55)", borderBottom: "3px double rgba(169,127,46,0.55)", padding: "6px 0", margin: "5px 0 7px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "1.05rem", color: UK_INK } }, "🍜 今天想吃什么？"),
-        h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.6 } }, "点一下，广州的 BB 机就会响 —— 熊猫鱼收到就去下单 📟")),
+        h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.6 } }, "熊猫鱼骑手，准时送达 🛵")),
       h("button", { key: "q3", onClick: function () { setCraveOpen(true); }, style: { position: "relative", width: "100%", border: "none", borderRadius: 8, padding: "13px 8px", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.9rem", cursor: "pointer", background: "linear-gradient(135deg,#c74a4f,#a02b31)", color: "#fff6ef", boxShadow: "0 6px 16px rgba(160,43,49,0.34)", letterSpacing: "0.5px", overflow: "hidden" } },
         h("span", { style: { position: "absolute", left: 12, top: "50%", marginTop: -13, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f0a8a0,#7d1c22)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem" } }, "⚓"),
         "发一份投喂申请")
@@ -19383,7 +19401,15 @@ function LondonRoom(_refLD) {
     // ── 情绪低的时候 ──
     ukCard([
       screws,
-      ukHead("哪天提不起劲", "不用振作，往下看就行", h("span", { style: { fontSize: "1rem" } }, "🌧️")),
+      ukHead("哪天提不起劲", "不用振作 —— 领个任务，做完就算", h("span", { style: { fontSize: "1rem" } }, "🎯")),
+      task
+        ? h("div", { key: "tk", style: { background: "rgba(31,111,104,0.09)", borderRadius: 10, padding: "13px 13px 11px", marginBottom: 12 } },
+            h("div", { style: { fontSize: "0.62rem", fontWeight: 800, letterSpacing: 1.6, color: "#1f6f68", fontFamily: "Georgia,serif", marginBottom: 7 } }, "🎯 今日任务"),
+            h("div", { style: { fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.92rem", color: "#2c4f48", lineHeight: 1.85 } }, task),
+            h("div", { style: { display: "flex", gap: 8, marginTop: 11 } },
+              h("button", { onClick: function () { setTask(LD_TASK[Math.floor(Math.random() * LD_TASK.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "9px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", color: "#8a6a2a", cursor: "pointer" } }, "换一个"),
+              h("button", { onClick: function () { sendPage({ k: "task", body: "📟 任务完成。", ok: "记下了 🎯" }); setTask(null); }, disabled: !!pageBusy, style: { flex: 1, border: "none", background: "linear-gradient(135deg,#3fa596,#1f6f68)", borderRadius: 8, padding: "9px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", color: "#fff", cursor: "pointer" } }, "做完了")))
+        : h("button", { key: "tk0", onClick: function () { setTask(LD_TASK[Math.floor(Math.random() * LD_TASK.length)]); }, style: { width: "100%", border: "1.5px dashed rgba(31,111,104,0.5)", background: "rgba(255,255,255,0.55)", borderRadius: 10, padding: "13px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.86rem", color: "#1f6f68", cursor: "pointer", marginBottom: 12 } }, "🎯 领一个任务"),
       h("div", { key: "lw" }, LD_LOW.map(function (x, i) {
         return h("div", { key: "lwi" + i, style: { padding: "10px 0", borderBottom: i === LD_LOW.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
           h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#7a5aa8", fontFamily: "Georgia,'PingFang SC',serif" } }, x.t),
@@ -19639,7 +19665,8 @@ function LondonRoom(_refLD) {
       }))
     ])
   );
-  var CRAVE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
+  var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料寿司", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
+  var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
@@ -19673,7 +19700,15 @@ function LondonRoom(_refLD) {
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(48,140,132,0.3)" } },
         h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
         h("div", { style: { textAlign: "center", fontWeight: 800, fontSize: "0.98rem", color: "#8a5a52" } }, "🍜 今天想吃什么？"),
-        h("div", { style: { textAlign: "center", fontSize: "0.68rem", color: "rgba(160,120,110,0.75)", margin: "3px 0 14px" } }, "选一个，申请立刻寄回 221B"),
+        h("div", { style: { textAlign: "center", fontSize: "0.68rem", color: "rgba(160,120,110,0.75)", margin: "3px 0 14px" } }, "选一个，或者自己写一个 · 熊猫鱼骑手接单"),
+        h("div", { style: { display: "flex", gap: 6, marginBottom: 10 } },
+          h("input", { value: craveInp, onChange: function (e) { setCraveInp(e.target.value); }, placeholder: "自己写一个，比如 楼下那家的牛肉面", style: { flex: 1, minWidth: 0, border: "1.5px solid rgba(200,150,90,0.4)", borderRadius: 11, padding: "9px 11px", fontFamily: "inherit", fontSize: "0.78rem", background: "#fff", color: "#7a5a3a", outline: "none" } }),
+          h("button", { onClick: function () {
+              var t = craveInp.trim(); if (!t) return;
+              var nx = craveMine.indexOf(t) >= 0 ? craveMine : [t].concat(craveMine).slice(0, 8);
+              setCraveMine(nx); setCraveInp("");
+              try { localStorage.setItem("nana-crave-mine", JSON.stringify(nx)); } catch (_) {}
+            }, disabled: !craveInp.trim(), style: { flexShrink: 0, border: "none", borderRadius: 11, padding: "9px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: craveInp.trim() ? "pointer" : "default", background: craveInp.trim() ? "linear-gradient(135deg,#ffd86a,#f4a636)" : "rgba(200,190,170,0.35)", color: craveInp.trim() ? "#3a2405" : "#fff" } }, "加上")),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, CRAVE.map(function (d) {
           return h("button", { key: d, onClick: function () { sendCrave(d); }, disabled: craveBusy, style: { width: "calc(50% - 4px)", boxSizing: "border-box", border: "1.5px solid rgba(200,150,90,0.35)", background: "#fff", color: "#7a5a3a", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: craveBusy ? "default" : "pointer", opacity: craveBusy ? 0.6 : 1, lineHeight: 1.4 } }, d);
         })),
