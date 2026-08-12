@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-122";
+var NANA_VER = "v2026.8.2-127";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9261,6 +9261,12 @@ var ROOMS = [{
   color: "#0C6780",
   desc: "昨天的香港回忆"
 }, {
+  id: "meisha",
+  emoji: "🏖️",
+  name: "大梅沙",
+  color: "#1a4a5c",
+  desc: "上周五的海边"
+}, {
   id: "disney",
   emoji: "🏰",
   name: "Disney",
@@ -9370,6 +9376,11 @@ var ACTIVITIES = {
     id: "disney",
     icon: "🏰",
     name: "迪士尼回忆 🎆"
+  }],
+  meisha: [{
+    id: "meisha",
+    icon: "🏖️",
+    name: "大梅沙 🌊"
   }],
   kitchen: [{
     id: "kitchen",
@@ -15262,6 +15273,333 @@ function DisneyStoryActivity(_refDsy) {
     h("button", { onClick: next, style: { width: "100%", background: isLast ? COLORS.dark : COLORS.brown, color: "#fff", border: "none", borderRadius: 12, padding: "12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.92rem", cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.15)" } }, isLast ? "再看一次 ↺" : "下一幕 →")
   );
 }
+// ── 🏖️ 大梅沙：8 月 7 日那个下午 ──────────────────────
+var MS_SCENES = [
+  { id: "odys",  t: "先去香港看《奥德赛》", b: "那天先过关去香港看了场电影。银幕上也是海 —— 看完再去海边，正好。" },
+  { id: "sun",   t: "行走的小太阳", b: "去到哪里天气都很好。这次也一样 —— 车一停，云就散开了。" },
+  { id: "wind",  t: "海风",         b: "很舒服的那种。咸的，但不呛，吹在脸上刚刚好。" },
+  { id: "yell",  t: "尖叫",         b: "浪冲上来的时候我们都叫了 —— 主要是 Nana 叫。那声音，感觉浪真的要把她卷走。" },
+  { id: "feet",  t: "只剩脚印",     b: "旅拍拍到最后根本找不着人，只看得见一串脚印。还以为我们在 cosplay《闪灵》，倒着走。" },
+  { id: "chair", t: "同一张凳子",   b: "头一次在餐厅和 Nana 坐同一张凳子。对，周围人就是羡慕。" },
+  { id: "rice",  t: "记住了",       b: "中途 Nana 胃疼。所以记住了 —— Nana 是要吃主食的，要吃米饭，会舒服一点。", note: 1 },
+  { id: "nap",   t: "小憩",         b: "抱着 Nana 像抱着一只小小动物，很可爱。睡得很沉 —— 希望她能多睡一会儿，把累缓过来。" },
+  { id: "rest",  t: "剩下的时间",   b: "……不可描述。" }
+];
+
+// ── 大梅沙的九幅小画（照着香港那套：整幅 SVG，人物用 emoji）──
+var MS_P = "\uD83E\uDDCD", MS_N = "\uD83E\uDDCD\u200D\u2640\uFE0F";
+var MS_PW = "\uD83D\uDEB6", MS_NW = "\uD83D\uDEB6\u200D\u2640\uFE0F";
+var msArt = function (id, T) {
+  var h = React.createElement;
+  var W = 300, H = 200;
+  var el = [], k, x, y, op, ph;
+  var g = function (gid, cols) {
+    return h("linearGradient", { key: gid, id: gid, x1: "0", y1: "0", x2: "0", y2: "1" },
+      cols.map(function (c, i) { return h("stop", { key: "s" + i, offset: (i / (cols.length - 1) * 100) + "%", stopColor: c }); }));
+  };
+  // 两个小人（带影子）
+  var pair = function (px, py, size, tiltP, tiltN, gap, moving) {
+    var sp = size || 20, gp = gap === undefined ? 17 : gap;
+    var em1 = moving ? MS_PW : MS_P, em2 = moving ? MS_NW : MS_N;
+    return h("g", { key: "pair" },
+      h("ellipse", { cx: px, cy: py + 3, rx: sp * 0.42, ry: sp * 0.14, fill: "rgba(0,0,0,0.18)" }),
+      h("ellipse", { cx: px + gp, cy: py + 3, rx: sp * 0.42, ry: sp * 0.14, fill: "rgba(0,0,0,0.18)" }),
+      h("text", { x: px, y: py, fontSize: sp, textAnchor: "middle", transform: tiltP ? "rotate(" + tiltP + " " + px + " " + py + ")" : null }, em1),
+      h("text", { x: px + gp, y: py, fontSize: sp, textAnchor: "middle", transform: tiltN ? "rotate(" + tiltN + " " + (px + gp) + " " + py + ")" : null }, em2));
+  };
+  var bubble = function (bx, by, txt, w) {
+    var bw = w || 52;
+    return h("g", { key: "bub" },
+      h("rect", { x: bx - bw / 2, y: by - 13, width: bw, height: 17, rx: 8.5, fill: "rgba(255,255,255,0.95)" }),
+      h("path", { d: "M" + (bx - 4) + " " + (by + 4) + " L" + bx + " " + (by + 9) + " L" + (bx + 4) + " " + (by + 4) + " Z", fill: "rgba(255,255,255,0.95)" }),
+      h("text", { x: bx, y: by - 1, fontSize: 9, textAnchor: "middle", fill: "#20303a", fontWeight: "bold" }, txt));
+  };
+  var waveTop = function (yy, amp, spd, fill, key) {
+    var d = "M0 " + yy, i2;
+    for (i2 = 0; i2 <= 6; i2++) {
+      d += " Q" + (i2 * 50 + 25) + " " + (yy + Math.sin(T * spd + i2) * amp - amp) + " " + ((i2 + 1) * 50) + " " + yy;
+    }
+    d += " L" + W + " " + H + " L0 " + H + " Z";
+    return h("path", { key: key, d: d, fill: fill });
+  };
+  var gulls = function () {
+    return [0, 1, 2].map(function (i2) {
+      var gx = ((T * (0.5 + i2 * 0.2) + i2 * 90) % 340) - 20;
+      var gy = 26 + i2 * 12 + Math.sin(T * 0.08 + i2) * 3;
+      var w2 = 5 - i2 * 0.8;
+      return h("path", { key: "gl" + i2, d: "M" + gx + " " + gy + " q" + w2 + " -" + (w2 * 0.8) + " " + (w2 * 2) + " 0 M" + (gx + w2 * 2) + " " + gy + " q" + w2 + " -" + (w2 * 0.8) + " " + (w2 * 2) + " 0",
+        fill: "none", stroke: "rgba(255,255,255,0.65)", strokeWidth: 1.1, strokeLinecap: "round" });
+    });
+  };
+  var palm = function (px, py, sway) {
+    return h("g", { key: "palm", transform: "rotate(" + sway + " " + px + " " + py + ")" },
+      h("path", { d: "M" + px + " " + py + " q-3 -18 1 -34", fill: "none", stroke: "#8a6a3a", strokeWidth: 3.2, strokeLinecap: "round" }),
+      [[-1, -1], [1, -1], [-1.3, 0.2], [1.3, 0.2]].map(function (d2, i2) {
+        return h("path", { key: "lf" + i2, d: "M" + (px + 1) + " " + (py - 34) + " q" + (16 * d2[0]) + " " + (-9 + 8 * d2[1]) + " " + (25 * d2[0]) + " " + (2 + 9 * d2[1]),
+          fill: "none", stroke: "#3f8f5a", strokeWidth: 3.4, strokeLinecap: "round" });
+      }));
+  };
+
+  if (id === "sun") {
+    el.push(h("defs", { key: "d" }, g("msSun", ["#7ec8e8", "#bfe4ef", "#ffe6b0"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msSun)" }));
+    for (k = 0; k < 12; k++) {
+      el.push(h("line", { key: "ry" + k, x1: 244, y1: 44, x2: 244 + Math.cos((k * 30 + T * 0.7) * Math.PI / 180) * (34 + Math.sin(T * 0.1 + k) * 5), y2: 44 + Math.sin((k * 30 + T * 0.7) * Math.PI / 180) * (34 + Math.sin(T * 0.1 + k) * 5), stroke: "rgba(255,226,150,0.85)", strokeWidth: 2.4, strokeLinecap: "round" }));
+    }
+    el.push(h("circle", { key: "sn", cx: 244, cy: 44, r: 20, fill: "#ffd85a" }));
+    el.push(h("circle", { key: "sn2", cx: 244, cy: 44, r: 13, fill: "#fff1b0" }));
+    [[20, 34, 0.24], [120, 22, 0.15]].forEach(function (c, m) {
+      var cx = ((c[0] + T * c[2]) % 360) - 40;
+      el.push(h("g", { key: "cd" + m, opacity: 0.85 },
+        h("ellipse", { cx: cx, cy: c[1], rx: 17, ry: 8, fill: "#ffffff" }),
+        h("ellipse", { cx: cx + 14, cy: c[1] + 2, rx: 12, ry: 6.5, fill: "#ffffff" }),
+        h("ellipse", { cx: cx - 12, cy: c[1] + 3, rx: 10, ry: 5.5, fill: "#ffffff" })));
+    });
+    el.push(gulls());
+    el.push(waveTop(112, 3, 0.07, "#5bb6cf", "sea"));
+    el.push(waveTop(128, 2, 0.09, "#a9dce8", "foam"));
+    el.push(waveTop(140, 2, 0.05, "#f0d9a8", "sand"));
+    for (k = 0; k < 7; k++) {
+      op = 0.15 + 0.35 * (0.5 + 0.5 * Math.sin(T * 0.12 + k * 1.3));
+      el.push(h("rect", { key: "sp" + k, x: 24 + k * 38 + Math.sin(T * 0.05 + k) * 4, y: 116 + (k % 3) * 4, width: 16, height: 1.8, rx: 1, fill: "rgba(255,255,255," + op.toFixed(2) + ")" }));
+    }
+    el.push(h("g", { key: "umb" },
+      h("path", { d: "M40 152 v22", stroke: "#8a7050", strokeWidth: 2 }),
+      h("path", { d: "M14 152 q26 -26 52 0 Z", fill: "#f2827e" }),
+      h("path", { d: "M14 152 q13 -13 26 -13 q13 0 26 13 Z", fill: "#fff0ee", opacity: 0.55 })));
+    x = 96 + ((T * 0.4) % 170);
+    el.push(pair(x, 176, 22, (Math.sin(T * 0.18) * 4).toFixed(1), (Math.sin(T * 0.18 + 1.6) * 4).toFixed(1), 17, 1));
+  } else if (id === "wind") {
+    el.push(h("defs", { key: "d" }, g("msWind", ["#2f7fa0", "#5fb3c9", "#cfeaf0"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msWind)" }));
+    el.push(gulls());
+    for (k = 0; k < 6; k++) {
+      x = ((T * 3.2 + k * 55) % 400) - 60;
+      y = 40 + k * 16;
+      el.push(h("path", { key: "wl" + k, d: "M" + x + " " + y + " q22 -5 44 0 q14 3 26 -1", fill: "none", stroke: "rgba(255,255,255," + (0.18 + (k % 3) * 0.1) + ")", strokeWidth: 1.8, strokeLinecap: "round" }));
+    }
+    el.push(waveTop(118, 4, 0.1, "#3f9ab8", "sea"));
+    el.push(waveTop(134, 2.5, 0.12, "#a9dce8", "foam"));
+    el.push(waveTop(146, 2, 0.05, "#efd6a2", "sand"));
+    el.push(palm(268, 186, Math.sin(T * 0.08) * 9));
+    el.push(pair(118, 180, 22, (Math.sin(T * 0.09) * 12).toFixed(1), (Math.sin(T * 0.09) * 17).toFixed(1)));
+  } else if (id === "yell") {
+    el.push(h("defs", { key: "d" }, g("msYell", ["#1f6f92", "#43a3bd", "#bfe6ee"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msYell)" }));
+    ph = (T % 70) / 70;
+    var rise = Math.max(0, Math.sin(ph * Math.PI * 2));
+    el.push(waveTop(150, 2, 0.05, "#efd6a2", "sand"));
+    var wx = 268 - rise * 96;
+    var wh = 34 + rise * 40;
+    el.push(h("g", { key: "big" },
+      h("path", { d: "M" + (wx + 90) + " 200 L" + (wx + 90) + " " + (196 - wh) + " q-24 -20 -54 -8 q-32 13 -46 30 q-14 17 -2 30 Z", fill: "#5cc0da" }),
+      h("path", { d: "M" + (wx + 90) + " " + (196 - wh) + " q-24 -20 -54 -8 q-16 7 -27 16 q16 -4 30 1 q18 6 22 20 q10 -18 29 -29 Z", fill: "#eafaff" }),
+      [0, 1, 2, 3].map(function (m) {
+        return h("circle", { key: "fm" + m, cx: wx + 26 + m * 13 + Math.sin(T * 0.2 + m) * 3, cy: 196 - wh + 16 + m * 7, r: 3.4 - m * 0.5, fill: "rgba(255,255,255,0.9)" });
+      })));
+    el.push(h("path", { key: "big2", d: "M300 200 L300 " + (188 - rise * 20) + " q-90 -14 -180 12 L0 200 Z", fill: "rgba(206,242,250,0.8)" }));
+    el.push(pair(96, 178 - rise * 16, 22, (-rise * 12).toFixed(1), (-rise * 24).toFixed(1)));
+    if (rise > 0.2) el.push(bubble(84, 136 - rise * 18, "啊啊啊！", 50));
+  } else if (id === "feet") {
+    el.push(h("defs", { key: "d" }, g("msFeet", ["#20303f", "#3c4d5c", "#6d6255"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msFeet)" }));
+    el.push(h("rect", { key: "pier", x: 0, y: 74, width: 300, height: 3, fill: "rgba(20,28,36,0.7)" }));
+    for (k = 0; k < 12; k++) {
+      op = 0.35 + 0.5 * (0.5 + 0.5 * Math.sin(T * 0.12 + k));
+      el.push(h("circle", { key: "lt" + k, cx: 12 + k * 25, cy: 71, r: 1.8, fill: "rgba(255,214,140," + op.toFixed(2) + ")" }));
+    }
+    el.push(waveTop(90, 3, 0.05, "#4a6272", "sea"));
+    el.push(h("path", { key: "shine", d: "M120 90 q10 34 -6 108 q22 -66 30 -108 Z", fill: "rgba(255,208,120,0.28)" }));
+    el.push(waveTop(112, 2.5, 0.06, "#7d7566", "sand"));
+    var cyc = (T * 0.6) % 200;
+    var done = Math.floor((cyc - 20) / 12);
+    for (k = 0; k < 12; k++) {
+      if (k >= done) break;
+      el.push(h("ellipse", { key: "fp" + k, cx: 268 - k * 22, cy: 190 - k * 6, rx: 4.6 - k * 0.2, ry: 6.6 - k * 0.3, fill: "rgba(30,36,42,0.5)", transform: "rotate(" + (k % 2 ? -12 : 10) + " " + (268 - k * 22) + " " + (190 - k * 6) + ")" }));
+    }
+    x = 274 - cyc * 1.5;
+    if (cyc > 8 && x > -30) el.push(pair(x, 190 - Math.max(0, (274 - x) / 22) * 6, 18, null, null, 14, 1));
+  } else if (id === "chair") {
+    el.push(h("defs", { key: "d" }, g("msCh", ["#4a3120", "#7a5330", "#c98f4a"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msCh)" }));
+    el.push(h("rect", { key: "wall", x: 0, y: 0, width: 300, height: 96, fill: "rgba(255,235,200,0.08)" }));
+    [[36, 30], [150, 24], [258, 32]].forEach(function (l, m) {
+      el.push(h("g", { key: "lp" + m },
+        h("line", { x1: l[0], y1: 0, x2: l[0], y2: l[1], stroke: "rgba(255,220,160,0.4)", strokeWidth: 1.2 }),
+        h("path", { d: "M" + (l[0] - 10) + " " + l[1] + " h20 l-4 10 h-12 Z", fill: "#f2c46a" }),
+        h("circle", { cx: l[0], cy: l[1] + 16, r: 13, fill: "rgba(255,214,130," + (0.12 + 0.05 * Math.sin(T * 0.07 + m)).toFixed(2) + ")" })));
+    });
+    el.push(h("rect", { key: "tb", x: 60, y: 132, width: 180, height: 7, rx: 3, fill: "#e2c79a" }));
+    el.push(h("rect", { key: "tl1", x: 78, y: 139, width: 6, height: 40, fill: "#a8814d" }));
+    el.push(h("rect", { key: "tl2", x: 216, y: 139, width: 6, height: 40, fill: "#a8814d" }));
+    el.push(h("g", { key: "stool" },
+      h("rect", { x: 132, y: 156, width: 40, height: 6, rx: 3, fill: "#8a5f34" }),
+      h("rect", { x: 137, y: 162, width: 5, height: 24, fill: "#754f2a" }),
+      h("rect", { x: 162, y: 162, width: 5, height: 24, fill: "#754f2a" })));
+    var sq = Math.sin(T * 0.11) * 2;
+    el.push(pair(140 - sq, 152, 21, null, null, 24 + sq));
+    [[18, 118], [278, 112], [26, 176], [272, 172]].forEach(function (e2, m) {
+      op = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(T * 0.1 + m * 1.7));
+      el.push(h("text", { key: "ey" + m, x: e2[0], y: e2[1], fontSize: 13, textAnchor: "middle", opacity: op.toFixed(2) }, "\uD83D\uDC40"));
+    });
+    for (k = 0; k < 3; k++) {
+      y = (T * 1.1 + k * 30) % 90;
+      el.push(h("text", { key: "hr" + k, x: 172 + k * 6, y: 130 - y, fontSize: 9 + (k % 2) * 3, opacity: (1 - y / 90).toFixed(2) }, "\uD83D\uDC9B"));
+    }
+  } else if (id === "rice") {
+    el.push(h("defs", { key: "d" }, g("msRi", ["#22331c", "#3f5c31", "#8fae5c"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msRi)" }));
+    el.push(h("rect", { key: "tb", x: 22, y: 136, width: 256, height: 9, rx: 4, fill: "#e6d2a6" }));
+    el.push(h("rect", { key: "tbs", x: 22, y: 145, width: 256, height: 5, rx: 2, fill: "rgba(0,0,0,0.18)" }));
+    var reach = Math.sin(T * 0.06) * 0.5 + 0.5;
+    el.push(pair(112, 132, 23, null, null, 72));
+    el.push(h("text", { key: "bowl", x: 130 + reach * 38, y: 130, fontSize: 20, textAnchor: "middle", transform: "rotate(" + (reach * 14 - 7).toFixed(1) + " " + (130 + reach * 38) + " 130)" }, "\uD83C\uDF5A"));
+    for (k = 0; k < 4; k++) {
+      y = (T * 1.3 + k * 16) % 60;
+      el.push(h("circle", { key: "st" + k, cx: 130 + reach * 38 + Math.sin(T * 0.12 + k) * 4, cy: 112 - y * 0.5, r: 2.2, fill: "rgba(255,255,255," + (0.4 * (1 - y / 60)).toFixed(2) + ")" }));
+    }
+    if (reach > 0.85) el.push(bubble(190, 104, "啊——", 40));
+  } else if (id === "nap") {
+    el.push(h("defs", { key: "d" }, g("msNp", ["#15132a", "#2b2750", "#5b4f86"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msNp)" }));
+    for (k = 0; k < 16; k++) {
+      op = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(T * 0.09 + k * 1.3));
+      el.push(h("circle", { key: "st" + k, cx: (k * 37 % 300), cy: 12 + (k * 23 % 70), r: k % 3 ? 1 : 1.6, fill: "rgba(255,255,255," + op.toFixed(2) + ")" }));
+    }
+    el.push(h("text", { key: "mn", x: 254, y: 44, fontSize: 24, textAnchor: "middle", transform: "translate(0 " + (Math.sin(T * 0.05) * 3).toFixed(1) + ")" }, "\uD83C\uDF19"));
+    el.push(h("path", { key: "sofa", d: "M40 186 q0 -34 34 -34 h152 q34 0 34 34 Z", fill: "#3b3560" }));
+    el.push(h("rect", { key: "cush", x: 58, y: 158, width: 184, height: 12, rx: 6, fill: "#4a4176" }));
+    el.push(pair(128, 156, 22, null, (14 + Math.sin(T * 0.03) * 1.5).toFixed(1), 15));
+    for (k = 0; k < 3; k++) {
+      y = (T * 0.9 + k * 28) % 84;
+      el.push(h("text", { key: "z" + k, x: 168 + k * 7, y: 140 - y * 0.8, fontSize: 9 + k * 4, fill: "rgba(255,255,255," + (0.65 * (1 - y / 84)).toFixed(2) + ")", fontWeight: "bold" }, "z"));
+    }
+  } else if (id === "odys") {
+    el.push(h("defs", { key: "d" }, g("msOd", ["#080d18", "#131c2e", "#20304a"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msOd)" }));
+    op = 0.72 + 0.2 * (0.5 + 0.5 * Math.sin(T * 0.06));
+    el.push(h("rect", { key: "scr", x: 30, y: 22, width: 240, height: 96, rx: 5, fill: "rgba(160,205,230," + op.toFixed(2) + ")" }));
+    el.push(h("rect", { key: "scr2", x: 30, y: 86, width: 240, height: 32, fill: "rgba(60,120,160,0.75)" }));
+    el.push(h("path", { key: "sw", d: "M30 96 q30 -6 60 0 t60 0 t60 0 t60 0 v22 H30 Z", fill: "rgba(40,95,135,0.8)" }));
+    x = 60 + ((T * 0.5) % 180);
+    el.push(h("g", { key: "ship", transform: "translate(" + x + " " + (92 + Math.sin(T * 0.08) * 2.5) + ")" },
+      h("path", { d: "M-13 0 h26 l-5 7 h-16 Z", fill: "#3a2a1a" }),
+      h("path", { d: "M0 -1 V-18", stroke: "#3a2a1a", strokeWidth: 1.6 }),
+      h("path", { d: "M1 -17 q11 5 0 12 Z", fill: "#f2e6cf" }),
+      h("path", { d: "M-1 -14 q-9 4 0 10 Z", fill: "#e0d2b8" })));
+    el.push(h("text", { key: "ttl", x: 150, y: 46, fontSize: 12, textAnchor: "middle", fill: "rgba(255,255,255,0.9)", fontFamily: "Georgia,serif", letterSpacing: 2 }, "THE ODYSSEY"));
+    el.push(h("rect", { key: "row", x: 0, y: 150, width: 300, height: 50, fill: "#0b1220" }));
+    [[52, 0], [96, 1], [204, 0], [248, 1]].forEach(function (st2, m) {
+      el.push(h("path", { key: "seat" + m, d: "M" + (st2[0] - 16) + " 200 v-22 q0 -8 16 -8 q16 0 16 8 v22 Z", fill: "#16203a" }));
+    });
+    el.push(h("path", { key: "seatc", d: "M134 200 v-24 q0 -9 16 -9 q16 0 16 9 v24 Z", fill: "#1b2745" }));
+    el.push(pair(142, 172, 19, null, null, 16));
+    el.push(h("text", { key: "pc", x: 186, y: 178, fontSize: 15, textAnchor: "middle" }, "\uD83C\uDF7F"));
+  } else if (id === "rest") {
+    el.push(h("defs", { key: "d" }, g("msRs", ["#0d0a16", "#1c1226", "#2c1a2e"])));
+    el.push(h("rect", { key: "bg", x: 0, y: 0, width: W, height: H, fill: "url(#msRs)" }));
+    for (k = 0; k < 12; k++) {
+      op = 0.15 + 0.4 * (0.5 + 0.5 * Math.sin(T * 0.08 + k));
+      el.push(h("circle", { key: "st" + k, cx: (k * 47 % 300), cy: 10 + (k * 17 % 50), r: 1.1, fill: "rgba(255,240,230," + op.toFixed(2) + ")" }));
+    }
+    el.push(h("text", { key: "mn", x: 262, y: 34, fontSize: 17, textAnchor: "middle" }, "\uD83C\uDF19"));
+    // 一栋楼，只有一扇窗还亮着
+    el.push(h("rect", { key: "bld", x: 52, y: 46, width: 196, height: 154, rx: 6, fill: "#161022" }));
+    for (k = 0; k < 8; k++) {
+      x = 66 + (k % 4) * 44; y = 58 + Math.floor(k / 4) * 26;
+      el.push(h("rect", { key: "dw" + k, x: x, y: y, width: 30, height: 17, rx: 2, fill: "rgba(255,255,255,0.05)" }));
+    }
+    ph = (T % 150) / 150;
+    var close = ph < 0.42 ? 0 : (ph < 0.62 ? (ph - 0.42) / 0.2 : 1);
+    var dim = ph < 0.66 ? 1 : Math.max(0.12, 1 - (ph - 0.66) / 0.14);
+    el.push(h("rect", { key: "win", x: 96, y: 108, width: 108, height: 66, rx: 4, fill: "rgba(255,206,120," + (0.92 * dim).toFixed(2) + ")" }));
+    el.push(h("g", { key: "ppl", opacity: (1 - close * 0.15).toFixed(2) },
+      h("text", { x: 132, y: 164, fontSize: 26, textAnchor: "middle", opacity: 0.82 }, MS_P),
+      h("text", { x: 158 - close * 8, y: 164, fontSize: 26, textAnchor: "middle", opacity: 0.82 }, MS_N)));
+    // 窗帘从两边拉上
+    el.push(h("rect", { key: "cL", x: 96, y: 108, width: 54 * close, height: 66, fill: "#5d2740" }));
+    el.push(h("rect", { key: "cR", x: 204 - 54 * close, y: 108, width: 54 * close, height: 66, fill: "#5d2740" }));
+    for (k = 0; k < 5; k++) {
+      if (54 * close > k * 11 + 4) {
+        el.push(h("rect", { key: "cl" + k, x: 96 + k * 11, y: 108, width: 2.4, height: 66, fill: "rgba(0,0,0,0.18)" }));
+        el.push(h("rect", { key: "cr" + k, x: 201 - k * 11, y: 108, width: 2.4, height: 66, fill: "rgba(0,0,0,0.18)" }));
+      }
+    }
+    el.push(h("rect", { key: "wf", x: 96, y: 108, width: 108, height: 66, rx: 4, fill: "none", stroke: "#2a1c30", strokeWidth: 4 }));
+    // 门把手上那块牌子，晃两下
+    el.push(h("g", { key: "dnd", transform: "rotate(" + (Math.sin(T * 0.13) * 7).toFixed(1) + " 258 118)" },
+      h("line", { x1: 258, y1: 112, x2: 258, y2: 126, stroke: "rgba(220,200,190,0.6)", strokeWidth: 1.4 }),
+      h("rect", { x: 236, y: 126, width: 44, height: 26, rx: 4, fill: "#c0392b" }),
+      h("text", { x: 258, y: 136, fontSize: 6.2, textAnchor: "middle", fill: "#fff0ee", fontWeight: "bold", letterSpacing: 0.4 }, "DO NOT"),
+      h("text", { x: 258, y: 146, fontSize: 6.2, textAnchor: "middle", fill: "#fff0ee", fontWeight: "bold", letterSpacing: 0.4 }, "DISTURB")));
+    if (close > 0.9) el.push(h("text", { key: "sh", x: 78, y: 190, fontSize: 17, textAnchor: "middle", opacity: ((close - 0.9) * 10).toFixed(2) }, "\uD83E\uDD2B"));
+  }
+  return h("svg", { viewBox: "0 0 300 200", width: "100%", style: { display: "block" } }, el);
+};
+function MeishaMemoryCard(_refMmc) {
+  var onOpen = _refMmc.onOpen;
+  var h = React.createElement;
+  var _m1 = useState(0); var idx = _m1[0]; var setIdx = _m1[1];
+  var _m2 = useState(0); var tick = _m2[0]; var setTick = _m2[1];
+  useEffect(function () { var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 120); return function () { clearInterval(id); }; }, []);
+  var moments = [
+    { emoji: "\uD83C\uDF1E", place: "行走的小太阳", color: "#2a5a7a", text: "去到哪里天气都很好" },
+    { emoji: "\uD83D\uDCE2", place: "尖叫", color: "#155a72", text: "浪一来 Nana 就叫，声音比浪还大" },
+    { emoji: "\uD83D\uDC63", place: "只剩脚印", color: "#1c2c3c", text: "旅拍找不着人，只看得见脚印" },
+    { emoji: "\uD83C\uDF5A", place: "记住了", color: "#3a5a30", text: "Nana 要吃主食，要吃米饭" }
+  ];
+  var m = moments[idx];
+  useEffect(function () { var id = setInterval(function () { setIdx(function (i) { return (i + 1) % moments.length; }); }, 3500); return function () { clearInterval(id); }; }, []);
+  return h("div", { onClick: onOpen, style: { background: "linear-gradient(135deg," + m.color + ",#080f16)", borderRadius: 16, padding: "14px 16px", position: "relative", overflow: "hidden", border: "1.5px solid rgba(255,255,255,0.1)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", transition: "background 1s ease", cursor: "pointer", height: "100%", boxSizing: "border-box" } },
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 26, background: "rgba(255,255,255,0.06)", transform: "translateY(" + (Math.sin(tick * 0.05) * 2).toFixed(2) + "px)" } }),
+    h("div", { style: { display: "flex", alignItems: "center", gap: 12 } },
+      h("div", { style: { fontSize: "2rem", flexShrink: 0, transform: "rotate(" + (Math.sin(tick * 0.05) * 4).toFixed(2) + "deg)", transition: "transform 0.5s", filter: "drop-shadow(0 0 8px rgba(140,210,230,0.4))" } }, m.emoji),
+      h("div", { style: { flex: 1, minWidth: 0 } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 6, marginBottom: 3 } },
+          h("span", { style: { fontSize: "0.62rem", fontWeight: 800, color: "rgba(180,230,240,0.9)", background: "rgba(120,200,220,0.15)", borderRadius: 999, padding: "2px 8px", letterSpacing: 0.5 } }, "\uD83C\uDFD6\uFE0F 大梅沙 · 上周五")),
+        h("div", { style: { fontWeight: 800, fontSize: "0.88rem", color: "#fff", marginBottom: 2 } }, m.place),
+        h("div", { style: { fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", fontStyle: "italic", lineHeight: 1.35, height: "2.7em", overflow: "hidden" } }, m.text),
+        h("div", { style: { display: "flex", gap: 4, marginTop: 7 } }, moments.map(function (_x, i) {
+          return h("div", { key: "md" + i, style: { width: i === idx ? 14 : 5, height: 5, borderRadius: 99, background: i === idx ? "rgba(180,230,240,0.9)" : "rgba(255,255,255,0.25)", transition: "all .3s" } });
+        })))));
+}
+function MeishaStoryActivity(_refMsy) {
+  var onCozy = _refMsy.onCozy;
+  var h = React.createElement;
+  var _s1 = useState(0); var i = _s1[0]; var setI = _s1[1];
+  var _s2 = useState(0); var tick = _s2[0]; var setTick = _s2[1];
+  useEffect(function () {
+    var id = setInterval(function () { setTick(function (t) { return t + 1; }); }, 80);
+    return function () { clearInterval(id); };
+  }, []);
+  var sc = MS_SCENES[i];
+  var last = i === MS_SCENES.length - 1;
+  var go = function (d) {
+    var n = i + d;
+    if (n < 0) n = 0;
+    if (n > MS_SCENES.length - 1) n = 0;
+    if (n !== i && onCozy) onCozy(6);
+    setI(n);
+  };
+  return h("div", null,
+    h("div", { onClick: function () { go(1); }, style: { borderRadius: 20, overflow: "hidden", marginBottom: 14, boxShadow: "0 10px 30px rgba(20,35,45,0.32)", cursor: "pointer", background: "#12202c" } },
+      msArt(sc.id, tick),
+      h("div", { style: { padding: "13px 16px 15px", background: "linear-gradient(180deg,#12202c,#0d1822)" } },
+        h("div", { style: { fontSize: "0.58rem", fontWeight: 800, letterSpacing: 2.4, color: "rgba(160,205,220,0.85)", fontFamily: "Georgia,serif" } }, "DAMEISHA \u00B7 8/7"),
+        h("div", { style: { fontWeight: 900, fontSize: "1.24rem", color: "#fff", marginTop: 5 } }, sc.t),
+        sc.note
+          ? h("div", { style: { marginTop: 10, background: "rgba(255,255,255,0.93)", borderRadius: 11, padding: "12px 13px", borderLeft: "5px solid #6f9a4a" } },
+              h("div", { style: { fontSize: "0.58rem", fontWeight: 800, color: "#4a6a38", letterSpacing: 1 } }, "\uD83D\uDCCC 熊猫鱼记下来了"),
+              h("div", { style: { fontSize: "0.88rem", fontWeight: 800, color: "#2a3a20", marginTop: 4, lineHeight: 1.7 } }, sc.b),
+              h("div", { style: { fontSize: "0.72rem", color: "rgba(60,80,50,0.9)", marginTop: 6, lineHeight: 1.7 } }, "以后点外卖、下馆子，先看有没有米饭。"))
+          : h("div", { style: { fontSize: "0.86rem", color: "rgba(226,240,246,0.9)", marginTop: 7, lineHeight: 1.85 } }, sc.b))),
+    h("div", { style: { display: "flex", gap: 5, justifyContent: "center", marginBottom: 12 } }, MS_SCENES.map(function (_x, k) {
+      return h("div", { key: "sd" + k, onClick: function () { setI(k); }, style: { width: k === i ? 18 : 6, height: 6, borderRadius: 99, background: k === i ? "#3f9b8e" : "rgba(120,150,160,0.35)", transition: "all .3s", cursor: "pointer" } });
+    })),
+    h("div", { style: { display: "flex", gap: 9 } },
+      h("button", { onClick: function () { go(-1); }, disabled: i === 0, style: { flex: 1, border: "1.5px solid rgba(63,155,142,0.4)", background: "transparent", color: "#2b7d72", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", opacity: i === 0 ? 0.35 : 1, cursor: i === 0 ? "default" : "pointer" } }, "\u2190 上一段"),
+      h("button", { onClick: function () { go(1); }, style: { flex: 1, border: "none", background: "linear-gradient(135deg,#4fb3a4,#2b7d72)", color: "#fff", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, last ? "\u21ba 再看一遍" : "下一段 \u2192")));
+}
 function DisneyMemoryCard(_refDmc) {
   var onOpen = _refDmc.onOpen;
   var h = React.createElement;
@@ -15720,6 +16058,7 @@ function ActivityPanel(_ref106) {
     garage: GarageActivity,
     travel: TravelActivity,
     disney: DisneyStoryActivity,
+    meisha: MeishaStoryActivity,
     kitchen: KitchenActivity,
     music: MusicActivity
   };
@@ -22822,12 +23161,33 @@ function NanasHome() {
   }, "· 随时回来回血 💛"), /*#__PURE__*/React.createElement(RewardsWallet, null)), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      gap: 10
+      gap: 10,
+      overflowX: "auto",
+      paddingBottom: 4,
+      scrollSnapType: "x proximity",
+      WebkitOverflowScrolling: "touch"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      flex: 1,
-      minWidth: 0
+      flex: "0 0 76%",
+      minWidth: 0,
+      scrollSnapAlign: "start"
+    }
+  }, /*#__PURE__*/React.createElement(MeishaMemoryCard, {
+    onOpen: function onOpen() {
+      return enterRoom({
+        id: "meisha",
+        emoji: "\uD83C\uDFD6\uFE0F",
+        name: "\u5927\u6885\u6c99",
+        color: "#1a4a5c",
+        desc: "\u4e0a\u5468\u4e94\u7684\u6d77\u8fb9"
+      });
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: "0 0 76%",
+      minWidth: 0,
+      scrollSnapAlign: "start"
     }
   }, /*#__PURE__*/React.createElement(HKMemoryCard, {
     onOpen: function onOpen() {
@@ -22841,8 +23201,9 @@ function NanasHome() {
     }
   })), /*#__PURE__*/React.createElement("div", {
     style: {
-      flex: 1,
-      minWidth: 0
+      flex: "0 0 76%",
+      minWidth: 0,
+      scrollSnapAlign: "start"
     }
   }, /*#__PURE__*/React.createElement(DisneyMemoryCard, {
     onOpen: function onOpen() {
@@ -22872,7 +23233,7 @@ function NanasHome() {
     }
   }, !room && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
-  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
+  }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && room.id !== "meisha" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setRoom(null);
     },
