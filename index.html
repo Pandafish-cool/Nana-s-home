@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-124";
+var NANA_VER = "v2026.8.2-125";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -15404,6 +15404,87 @@ function MeishaStoryActivity(_refMsy) {
     }
     return f;
   };
+  // 两个小人：熊猫鱼和 Nana，每一段演的不一样
+  var stage = function () {
+    var h2 = React.createElement;
+    var P = "\uD83D\uDC3C", N = "\uD83D\uDC69";
+    var box = { position: "relative", height: 96, marginTop: 12, borderRadius: 12, background: "rgba(255,255,255,0.07)", overflow: "hidden" };
+    var who = function (key, em, left, bottom, extra) {
+      var st = { position: "absolute", left: left + "%", bottom: bottom, fontSize: "1.9rem", lineHeight: 1, transition: "none", filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.3))" };
+      var k2;
+      if (extra) { for (k2 in extra) { if (extra.hasOwnProperty(k2)) st[k2] = extra[k2]; } }
+      return h2("div", { key: key, style: st }, em);
+    };
+    var bub = function (key, txt, left, bottom, op) {
+      return h2("div", { key: key, style: { position: "absolute", left: left + "%", bottom: bottom, background: "rgba(255,255,255," + op.toFixed(2) + ")", color: "#20303a", borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 800, whiteSpace: "nowrap" } }, txt);
+    };
+    var f = [], k, walk, ph, y2, sq, lean;
+    if (sc.id === "sun") {
+      walk = ((T * 0.5) % 120) - 12;
+      f.push(who("p", P, walk, 16, { transform: "translateY(" + (Math.abs(Math.sin(T * 0.16)) * -5).toFixed(1) + "px)" }));
+      f.push(who("n", N, walk + 9, 16, { transform: "translateY(" + (Math.abs(Math.sin(T * 0.16 + 1.6)) * -5).toFixed(1) + "px)" }));
+      f.push(h2("div", { key: "grd", style: { position: "absolute", left: 0, right: 0, bottom: 12, height: 2, background: "rgba(255,255,255,0.14)" } }));
+    } else if (sc.id === "wind") {
+      lean = Math.sin(T * 0.09) * 12;
+      f.push(who("p", P, 34, 18, { transform: "rotate(" + lean.toFixed(1) + "deg)" }));
+      f.push(who("n", N, 48, 18, { transform: "rotate(" + (lean * 1.35).toFixed(1) + "deg)" }));
+      for (k = 0; k < 4; k++) {
+        f.push(h2("div", { key: "w" + k, style: { position: "absolute", left: (((T * 2.2 + k * 31) % 140) - 20) + "%", bottom: 26 + k * 15, width: 30, height: 2, borderRadius: 2, background: "rgba(255,255,255,0.2)" } }));
+      }
+    } else if (sc.id === "yell") {
+      ph = (T % 60) / 60;
+      var up = Math.max(0, Math.sin(ph * Math.PI * 2)) * 16;
+      f.push(h2("div", { key: "wave", style: { position: "absolute", left: -30, right: -30, bottom: -34 + up * 1.5, height: 62, borderRadius: "50% 50% 0 0 / 100% 100% 0 0", background: "rgba(190,236,246,0.4)" } }));
+      f.push(who("p", P, 34, 16 + up * 0.5));
+      f.push(who("n", N, 49, 16 + up, { transform: "rotate(" + (-up).toFixed(1) + "deg)" }));
+      if (up > 6) f.push(bub("b1", "啊啊啊！", 58, 62, Math.min(1, up / 14)));
+    } else if (sc.id === "feet") {
+      var cyc = (T * 0.7) % 170;
+      walk = 92 - cyc;
+      var done = Math.floor((cyc - 10) / 9);
+      for (k = 0; k < 10; k++) {
+        if (k >= done) break;
+        f.push(h2("div", { key: "fp" + k, style: { position: "absolute", left: (88 - k * 9) + "%", bottom: (16 + (k % 2) * 13), width: 7, height: 11, borderRadius: "50% 50% 46% 46%", background: "rgba(255,255,255,0.34)", transform: "rotate(" + (k % 2 ? -12 : 10) + "deg)" } }));
+      }
+      f.push(h2("div", { key: "lapf", style: { position: "absolute", left: -30, right: -30, bottom: -30, height: 54, borderRadius: "50% 50% 0 0 / 100% 100% 0 0", background: "rgba(160,205,220,0.22)", transform: "translateY(" + (Math.sin(T * 0.05) * 5).toFixed(1) + "px)" } }));
+      if (walk > -16 && cyc > 6) {
+        f.push(who("p", P, walk, 20, { opacity: 0.92, transform: "translateY(" + (Math.abs(Math.sin(T * 0.2)) * -4).toFixed(1) + "px)" }));
+        f.push(who("n", N, walk + 9, 20, { opacity: 0.92, transform: "translateY(" + (Math.abs(Math.sin(T * 0.2 + 1.6)) * -4).toFixed(1) + "px)" }));
+      }
+    } else if (sc.id === "chair") {
+      sq = Math.sin(T * 0.12) * 1.6;
+      f.push(h2("div", { key: "ch", style: { position: "absolute", left: "50%", bottom: 2, marginLeft: -22, fontSize: "2.9rem", lineHeight: 1, filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.3))" } }, "\uD83E\uDE91"));
+      f.push(who("p", P, 39 - sq, 36, { fontSize: "1.7rem" }));
+      f.push(who("n", N, 50 + sq, 36, { fontSize: "1.7rem" }));
+      [[8, 60], [84, 54], [16, 20], [80, 18]].forEach(function (e2, m) {
+        f.push(h2("div", { key: "ey" + m, style: { position: "absolute", left: e2[0] + "%", bottom: e2[1], fontSize: "1rem", opacity: (0.25 + 0.5 * (0.5 + 0.5 * Math.sin(T * 0.1 + m * 1.7))).toFixed(2) } }, "\uD83D\uDC40"));
+      });
+    } else if (sc.id === "rice") {
+      var reach = (Math.sin(T * 0.07) * 0.5 + 0.5);
+      f.push(who("p", P, 30, 18));
+      f.push(who("n", N, 56, 18));
+      f.push(h2("div", { key: "bowl", style: { position: "absolute", left: (37 + reach * 15) + "%", bottom: 34, fontSize: "1.5rem", transform: "rotate(" + (reach * 12 - 6).toFixed(1) + "deg)" } }, "\uD83C\uDF5A"));
+      if (reach > 0.82) f.push(bub("b2", "啊——", 60, 66, 0.9));
+    } else if (sc.id === "nap") {
+      lean = 14 + Math.sin(T * 0.03) * 1.5;
+      f.push(who("p", P, 42, 18));
+      f.push(who("n", N, 50, 16, { transform: "rotate(" + lean.toFixed(1) + "deg)", fontSize: "1.7rem" } ));
+      for (k = 0; k < 3; k++) {
+        y2 = ((T * 0.8 + k * 26) % 78);
+        f.push(h2("div", { key: "z" + k, style: { position: "absolute", left: (60 + k * 3) + "%", bottom: 44 + y2 * 0.55, fontSize: (11 + k * 4) + "px", fontWeight: 800, color: "rgba(255,255,255," + (0.6 * (1 - y2 / 78)).toFixed(2) + ")" } }, "z"));
+      }
+    } else if (sc.id === "rest") {
+      var near = Math.sin(T * 0.05) * 2.5;
+      f.push(who("p", P, 42 - near, 18));
+      f.push(who("n", N, 50 + near, 18));
+      for (k = 0; k < 5; k++) {
+        y2 = ((T * 0.9 + k * 19) % 76);
+        f.push(h2("div", { key: "hr" + k, style: { position: "absolute", left: (44 + (k % 3) * 4) + "%", bottom: 44 + y2 * 0.6, fontSize: (10 + (k % 3) * 5) + "px", opacity: (0.85 * (1 - y2 / 76)).toFixed(2), transform: "translateX(" + (Math.sin(T * 0.09 + k) * 8).toFixed(1) + "px)" } }, "\u2764\uFE0F"));
+      }
+      f.push(h2("div", { key: "sh", style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 96, background: "linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0," + (0.1 + 0.28 * (0.5 + 0.5 * Math.sin(T * 0.05))).toFixed(2) + ") 100%)" } }));
+    }
+    return h2("div", { style: box }, f);
+  };
   return h("div", { onClick: function () { go(1); }, style: { minHeight: 470, borderRadius: 18, background: sc.bg, transition: "background 1.1s ease", padding: "20px 18px 18px", boxShadow: "0 10px 34px rgba(10,25,35,0.4)", position: "relative", overflow: "hidden", cursor: "pointer" } },
     h("div", { style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, zIndex: 1, pointerEvents: "none" } }, art()),
     h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 46, background: "rgba(255,255,255,0.07)", borderRadius: "50% 50% 0 0 / 100% 100% 0 0", transform: "translateY(" + (10 + Math.sin(T * 0.04) * 3).toFixed(1) + "px)", zIndex: 1 } }),
@@ -15418,7 +15499,7 @@ function MeishaStoryActivity(_refMsy) {
             h("div", { style: { fontSize: "0.92rem", fontWeight: 800, color: "#2a3a20", marginTop: 5, lineHeight: 1.7 } }, sc.b),
             h("div", { style: { fontSize: "0.74rem", color: "rgba(60,80,50,0.9)", marginTop: 7, lineHeight: 1.7 } }, "以后点外卖、下馆子，先看有没有米饭。"))
         : h("div", { style: { fontSize: "0.9rem", color: "rgba(255,255,255,0.92)", marginTop: 10, lineHeight: 1.85, textShadow: "0 1px 8px rgba(0,0,0,0.4)" } }, sc.b),
-      sc.art ? h("div", { style: { marginTop: 14 } }, msFeet(Math.floor((T % 90) / 9) + 1)) : null,
+      stage(),
       h("div", { style: { display: "flex", gap: 5, marginTop: 18, justifyContent: "center" } }, MS_SCENES.map(function (_x, k2) {
         return h("div", { key: "sd" + k2, onClick: function (e) { e.stopPropagation(); setI(k2); }, style: { width: k2 === i ? 18 : 6, height: 6, borderRadius: 99, background: k2 === i ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.3)", transition: "all .3s", cursor: "pointer" } });
       })),
