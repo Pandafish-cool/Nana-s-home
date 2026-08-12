@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-127";
+var NANA_VER = "v2026.8.2-128";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -15287,8 +15287,8 @@ var MS_SCENES = [
 ];
 
 // ── 大梅沙的九幅小画（照着香港那套：整幅 SVG，人物用 emoji）──
-var MS_P = "\uD83E\uDDCD", MS_N = "\uD83E\uDDCD\u200D\u2640\uFE0F";
-var MS_PW = "\uD83D\uDEB6", MS_NW = "\uD83D\uDEB6\u200D\u2640\uFE0F";
+var MS_P = "\uD83E\uDDCD\u200D\u2640\uFE0F", MS_N = "\uD83E\uDDCD\u200D\u2640\uFE0F";
+var MS_PW = "\uD83D\uDEB6\u200D\u2640\uFE0F", MS_NW = "\uD83D\uDEB6\u200D\u2640\uFE0F";
 var msArt = function (id, T) {
   var h = React.createElement;
   var W = 300, H = 200;
@@ -23377,7 +23377,9 @@ function NanasHome() {
     }
   }), room && activity && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
-      return setActivity(null);
+      var only = ACTIVITIES[room.id] && ACTIVITIES[room.id].length === 1;
+      setActivity(null);
+      if (only) setRoom(null);
     },
     style: {
       background: "none",
@@ -23392,7 +23394,7 @@ function NanasHome() {
       alignItems: "center",
       gap: 4
     }
-  }, "\u2190 Back to ", room.name), /*#__PURE__*/React.createElement("div", {
+  }, "\u2190 ", (ACTIVITIES[room.id] && ACTIVITIES[room.id].length === 1) ? "\u56de\u5c0f\u5c4b" : "Back to " + room.name), /*#__PURE__*/React.createElement("div", {
     style: {
       background: COLORS.white,
       borderRadius: 24,
