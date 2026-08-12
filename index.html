@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-94";
+var NANA_VER = "v2026.8.2-95";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17866,7 +17866,6 @@ var LD_PAGE = [
 // 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
 var LD_BAD_OPT = [
   { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
-  { k: "talk", e: "📞", t: "有空说两句", d: "他一有空就来找你", body: "📟 今天有点长。有空说两句。", ok: "说出去了，他会来找你 📞" },
   { k: "sit", e: "🫖", t: "先不说，坐会儿", d: "谁都不用惊动", sit: 1 }
 ];
 var LD_SIT = [
@@ -18611,7 +18610,12 @@ function LondonRoom(_refLD) {
       setTimeout(function () { setCraveMsg(""); }, 5000);
     });
   };
-  var TABS = full ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]] : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]];
+  // 照片墙还没放真照片之前，去玩只对熊猫鱼开着，别让她看到一堆占位格子
+  var wallReady = (function () { for (var wi = 0; wi < LD_WALL.length; wi++) { if (LD_WALL[wi].f) return true; } return false; })();
+  var TABS = (full
+    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
+    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"]]
+  ).filter(function (t) { return t[0] !== "play" || wallReady || myAuthor === "panda"; });
   var card = function (inner, extra) {
     var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
       boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)" };
