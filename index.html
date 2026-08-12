@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-120";
+var NANA_VER = "v2026.8.2-122";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17969,7 +17969,25 @@ var LD_WALL = [
     tip: "全球最大的乐高店，进门就是这幅用积木拼的地铁线路图，上面那个 UNDERGROUND 圆牌也是积木。不买东西也能逛，二楼有真人大小的地铁车厢。就在剧院区里，看戏前后顺路。" }
 ];
 // 家：Fraser Place, Pan Peninsula
-var LD_HOME_PT = { la: 51.4990, lo: -0.0203 };
+// 家：Fraser Place Canary Wharf，80 Boardwalk Place（Blackwall Basin 边上，不是南码头那侧）
+var LD_ADDR = "80 Boardwalk Place, London E14 5SF";
+var LD_HOME_PT = { la: 51.5072, lo: -0.0070 };
+
+// 8/15 落地那班 + 已经订好的接机车
+var LD_PICKUP = {
+  date: "8 月 15 日",
+  land: "06:30",
+  flight: "CZ5093",
+  airport: "盖特威克南楼 Gatwick South",
+  meet: "07:20",
+  freeTill: "09:20",
+  plate: "SN66 XOR",
+  car: "灰色 · 奔驰 V 级 8 座",
+  driver: "LI MR ZI WEN",
+  via: "携程用车 · 方舟旅行",
+  order: "1128150083368905",
+  perks: ["中文客服", "提拿行李", "免费等 120 分钟"]
+};
 // 泰晤士河中心线，西到东，绕道格斯岛那个大弯
 var LD_THAMES = [
   [-0.232, 51.487], [-0.206, 51.472], [-0.181, 51.484], [-0.152, 51.485],
@@ -18035,7 +18053,7 @@ var LD_ARR_STEP = [
     "落地能上网是第一位的：开国际漫游，或者提前买张 eSIM（Airalo、Ubigi 这类，飞机落地开机就能用）。没网就叫不到车、也联系不上司机。",
     "接机订单截图存到相册，别只留在 App 里。",
     "司机的电话和微信存进通讯录，别临时翻。",
-    "备忘录里写好地址：Fraser Place Canary Wharf, London E14。给司机看这一行就够。",
+    "备忘录里写好地址：Fraser Place Canary Wharf, 80 Boardwalk Place, London E14 5SF。给司机看这一行就够。",
     "充电宝充满。飞十几个小时，落地手机基本没电了。",
     "订接机时把航站楼写成 South Terminal（南楼），别让司机跑去北楼，并且把航班号给司机 —— 让他跟着航班走，延误了也不会白等。",
     "房间从落地前一晚就订好了，落地直接上楼，这件事不用再操心。"
@@ -18737,6 +18755,7 @@ function LondonRoom(_refLD) {
   var _cfe = useState(""); var cfErr = _cfe[0], setCfErr = _cfe[1];
   var _cfs2 = useState(false); var cfBusy = _cfs2[0], setCfBusy = _cfs2[1];
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
+  var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
   var _dcu = useState(false); var dcUp = _dcu[0], setDcUp = _dcu[1];
   var _dce = useState(""); var dcErr = _dce[0], setDcErr = _dce[1];
   var onPickDuckPhoto = function (e) {
@@ -19269,6 +19288,39 @@ function LondonRoom(_refLD) {
         "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
         ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" });
   };
+  // 接机那张卡：放在「接你回家」里当第一块，8/16 中午之后不再显示
+  var pickupCard = function () {
+    var gone = false;
+    try { gone = new Date() > new Date("2026-08-16T12:00:00+01:00"); } catch (_) {}
+    if (gone) return null;
+    var P = LD_PICKUP;
+      var row = function (k, a, b2) {
+        return h("div", { key: k, style: { display: "flex", gap: 9, alignItems: "baseline", padding: "6px 0", borderBottom: "1px dotted rgba(120,90,60,0.22)" } },
+          h("span", { style: { flexShrink: 0, width: 52, fontSize: "0.62rem", fontWeight: 800, color: "rgba(125,90,60,0.9)" } }, a),
+          h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.78rem", fontWeight: 700, color: "#3f3326", lineHeight: 1.6 } }, b2));
+      };
+      return h("div", { style: { background: "linear-gradient(158deg,#eef6f4,#dceceb)", borderRadius: 12, marginBottom: 13, padding: "14px 15px 13px", boxShadow: "0 8px 22px rgba(30,70,66,0.16), inset 0 0 0 3px #f2f9f8, inset 0 0 0 4px rgba(31,111,104,0.35)" } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 9, marginBottom: 9 } },
+          h("span", { style: { fontSize: "1.25rem" } }, "🚐"),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 700, fontSize: "1.02rem", color: "#1a5c56", letterSpacing: "0.4px" } }, "车已经订好了"),
+            h("div", { style: { fontSize: "0.62rem", color: "rgba(60,110,105,0.95)", marginTop: 3, fontWeight: 700 } }, P.date + " · 出了海关就有人举牌等你"))),
+        h("div", { style: { background: "rgba(255,255,255,0.62)", borderRadius: 9, padding: "8px 11px" } },
+          row("a", "落地", P.land + " · " + P.flight + " · " + P.airport),
+          row("b", "上车", P.meet + " 司机就位 · " + P.freeTill + " 前免费等（航班晚点也不用慌）"),
+          row("c", "车牌", P.plate + " · " + P.car),
+          row("d", "司机", P.driver),
+          row("e", "送到", LD_ADDR),
+          h("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", paddingTop: 9 } },
+            P.perks.map(function (x, i) {
+              return h("span", { key: "pk" + i, style: { background: "rgba(31,111,104,0.13)", color: "#1a5c56", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800 } }, x);
+            }))),
+        h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+          h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "📍 家在这儿"),
+          h("a", { href: "https://www.gatwickairport.com/flights/arrivals.html", target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(31,111,104,0.14)", color: "#1a5c56", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "✈️ 查航班")),
+        h("div", { style: { marginTop: 9, fontSize: "0.68rem", color: "rgba(90,110,105,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
+          "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。携程订单号 " + P.order + "，有中文客服。"));
+    };
   var nowTab = h("div", null,
     afterGo ? pagerCard() : null,
     ukCard([
@@ -19305,10 +19357,9 @@ function LondonRoom(_refLD) {
               h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 700, fontSize: "1.02rem", color: "#7d1c22", letterSpacing: "0.4px" } }, "接你回家"),
               h("div", { style: { fontSize: "0.62rem", color: "rgba(130,90,60,0.95)", marginTop: 3, fontWeight: 700, letterSpacing: "0.5px" } }, "LGW SOUTH  ✈  E14 · 盖特威克南楼 → Fraser Place")),
             h("span", { style: { fontSize: "0.72rem", color: "#a1542a", fontWeight: 800, flexShrink: 0 } }, open ? "收起 ▲" : "展开 ▼")),
-          open ? null : h("div", { style: { fontSize: "0.72rem", color: "rgba(100,76,54,0.95)", marginTop: 8, lineHeight: 1.7 } }, "三条路可以走：提前订车 / 落地叫 Uber / 直接去出租车站 🚕")),
+          open ? null : h("div", { style: { fontSize: "0.72rem", color: "rgba(100,76,54,0.95)", marginTop: 8, lineHeight: 1.7 } }, "车已经订好了 · 07:20 司机在到达大厅等你 🚐")),
         open ? h("div", { style: { padding: "0 15px 15px 20px" } },
-          h("div", { key: "sum", style: { background: "rgba(180,53,58,0.09)", borderRadius: 9, padding: "11px 12px", fontSize: "0.78rem", color: "#7d1c22", lineHeight: 1.8, fontWeight: 700, marginBottom: 13 } },
-            "三条路都到得了，看你落地那会儿的状态挑一条：想省心就出发前订好车，想省钱就落地用 App 叫，什么都不想弄就直接走去出租车站。怎么选都不会错。"),
+          pickupCard(),
           // 那天的钟点
           h("div", { key: "clk", style: { background: "rgba(32,48,58,0.06)", borderRadius: 9, padding: "12px 13px", marginBottom: 13 } },
             h("div", { style: { fontWeight: 800, fontSize: "0.8rem", color: "#20303a", marginBottom: 9, fontFamily: "Georgia,'PingFang SC',serif" } }, "🕕 06:30 落地，那天大概是这样"),
@@ -19320,8 +19371,12 @@ function LondonRoom(_refLD) {
                   h("div", { style: { fontWeight: 800, fontSize: "0.76rem", color: "#3a3226" } }, c.n),
                   h("div", { style: { fontSize: "0.72rem", color: "rgba(85,75,60,0.95)", marginTop: 2, lineHeight: 1.7 } }, c.b)));
             })),
-          // 三种走法
-          h("div", { key: "ways" }, LD_ARR_WAY.map(function (w, i) {
+          // 三种走法：车已经订好了，这些收起来当备用
+          h("button", { key: "waytg", onClick: function () { setWayOpen(!wayOpen); }, style: { width: "100%", border: "1px dashed rgba(180,53,58,0.4)", background: "rgba(255,255,255,0.55)", borderRadius: 9, padding: "9px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#a1542a", cursor: "pointer", marginBottom: wayOpen ? 10 : 13 } },
+            wayOpen ? "收起 ▲" : "万一车没来，还有三条路 ▼"),
+          wayOpen ? h("div", { key: "waysum", style: { background: "rgba(180,53,58,0.09)", borderRadius: 9, padding: "11px 12px", fontSize: "0.76rem", color: "#7d1c22", lineHeight: 1.8, fontWeight: 700, marginBottom: 10 } },
+            "正常情况下用不上 —— 车已经订好了。真出了岔子（司机联系不上、航班改期），这三条路都到得了家，别慌。") : null,
+          wayOpen ? h("div", { key: "ways" }, LD_ARR_WAY.map(function (w, i) {
             var hot = false;
             return h("div", { key: "aw" + i, style: { borderLeft: "4px solid " + w.col, background: hot ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.62)", borderRadius: "0 9px 9px 0", padding: "11px 12px", marginBottom: 9 } },
               h("div", { style: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 3 } },
@@ -19331,7 +19386,7 @@ function LondonRoom(_refLD) {
               h("div", { style: { fontSize: "0.64rem", color: "#a1542a", fontWeight: 800, marginTop: 4 } }, "💷 " + w.cost + "　⏱ " + w.time),
               h("div", { style: { fontSize: "0.74rem", color: "rgba(85,75,60,0.96)", marginTop: 5, lineHeight: 1.75 } }, w.how),
               h("div", { style: { fontSize: "0.73rem", color: "rgba(120,95,60,0.95)", marginTop: 5, lineHeight: 1.75, fontStyle: "italic" } }, w.why));
-          })),
+          })) : null,
           // 四步流程
           h("div", { key: "st", style: { marginTop: 14, position: "relative", paddingLeft: 24 } },
             h("div", { style: { position: "absolute", left: 8, top: 10, bottom: 10, width: 3, borderRadius: 2, background: "linear-gradient(180deg,#b4353a,#a1542a,#1f6f68)" } }),
@@ -19356,8 +19411,8 @@ function LondonRoom(_refLD) {
           h("div", { key: "addr", style: { marginTop: 13, background: "#20303a", borderRadius: 9, padding: "11px 13px", textAlign: "center" } },
             h("div", { style: { fontSize: "0.58rem", color: "rgba(255,216,138,0.85)", fontWeight: 800, letterSpacing: 2, fontFamily: "Georgia,serif" } }, "给司机看这一行"),
             h("div", { style: { fontSize: "0.86rem", color: "#fdf0d2", fontWeight: 700, marginTop: 5, lineHeight: 1.6 } }, "Fraser Place Canary Wharf"),
-            h("div", { style: { fontSize: "0.78rem", color: "rgba(253,240,210,0.85)", marginTop: 2 } }, "London E14"),
-            h("a", { href: ldMap("Fraser Place Canary Wharf London"), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
+            h("div", { style: { fontSize: "0.8rem", color: "#fdf0d2", fontWeight: 700, marginTop: 3, lineHeight: 1.6 } }, LD_ADDR),
+            h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
         ) : null);
     })(),
     ukCard([
@@ -20118,7 +20173,7 @@ function LondonRoom(_refLD) {
     // ── 她的伦敦地图（手绘）──
     ukCard([
       screws,
-      ukHead("她的伦敦地图", "猜出来是绿针，去过了盖成金针", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
+      ukHead("Nana 的航海图", "猜出来是绿针，去过了盖成金针", h("span", { style: { fontSize: "1rem" } }, "🗺️")),
       h("div", { key: "mp", style: { background: "#fdf6e6", borderRadius: 10, padding: "6px 5px 4px", position: "relative", backgroundImage: "radial-gradient(circle at 3px 3px, rgba(169,127,46,0.13) 1px, transparent 1.2px)", backgroundSize: "13px 13px", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.22)" } },
         h("svg", { viewBox: "-6 -6 332 186", onClick: tapMap, style: { width: "100%", display: "block", overflow: "visible", cursor: addMode ? "crosshair" : "default" } },
           // 手画的外框
