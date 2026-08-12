@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-130";
+var NANA_VER = "v2026.8.2-131";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18085,6 +18085,12 @@ var ldWeekend = function () {
   var f = function (d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
   return { sat: f(sat), sun: f(sun), satD: sat, sunD: sun };
 };
+// 照片墙的进度按人分开存：熊猫鱼翻过的，不算 nana 翻过
+var ldWKey = function (base) {
+  var a = "";
+  try { a = localStorage.getItem("nana-author") || ""; } catch (_) {}
+  return a ? base + "-" + a : base;
+};
 // 从 JPEG 的 EXIF 里抠经纬度。读不到就返回 null，让人自己在地图上点。
 var nanaExifGps = function (file, cb) {
   try {
@@ -19060,9 +19066,9 @@ function LondonRoom(_refLD) {
   var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _tk2 = useState(null); var task = _tk2[0], setTask = _tk2[1];
   var _ao = useState(false); var astOpen = _ao[0], setAstOpen = _ao[1];
-  var _ws = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-seen") || "[]"); } catch (_) { return []; } });
+  var _ws = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-seen")) || "[]"); } catch (_) { return []; } });
   var wallSeen = _ws[0], setWallSeen = _ws[1];
-  var _wb = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-been") || "[]"); } catch (_) { return []; } });
+  var _wb = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-been")) || "[]"); } catch (_) { return []; } });
   var wallBeen = _wb[0], setWallBeen = _wb[1];
   var _mn = useState([]); var myPins = _mn[0], setMyPins = _mn[1];
   var _ma = useState(false); var addMode = _ma[0], setAddMode = _ma[1];
@@ -19075,7 +19081,7 @@ function LondonRoom(_refLD) {
   var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
   var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
   var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
-  var _wfl = useState(function () { try { return JSON.parse(localStorage.getItem("nana-wall-flip") || "[]"); } catch (_) { return []; } });
+  var _wfl = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-flip")) || "[]"); } catch (_) { return []; } });
   var wallFlip = _wfl[0], setWallFlip = _wfl[1];
   var _sub = useState("wall"); var sub = _sub[0], setSub = _sub[1];
   var _dcs = useState([]); var ducks = _dcs[0], setDucks = _dcs[1];
@@ -19288,20 +19294,20 @@ function LondonRoom(_refLD) {
       ? wallBeen.filter(function (x) { return x !== name; })
       : wallBeen.concat([name]);
     setWallBeen(nx);
-    try { localStorage.setItem("nana-wall-been", JSON.stringify(nx)); } catch (_) {}
+    try { localStorage.setItem(ldWKey("nana-wall-been"), JSON.stringify(nx)); } catch (_) {}
   };
   var flipWall = function (name) {
     if (wallFlip.indexOf(name) >= 0) return;
     var nx = wallFlip.concat([name]);
     setWallFlip(nx);
-    try { localStorage.setItem("nana-wall-flip", JSON.stringify(nx)); } catch (_) {}
+    try { localStorage.setItem(ldWKey("nana-wall-flip"), JSON.stringify(nx)); } catch (_) {}
   };
   var revealWall = function (i, name) {
     setWallPick(i);
     if (wallSeen.indexOf(name) >= 0) return;
     var nx = wallSeen.concat([name]);
     setWallSeen(nx);
-    try { localStorage.setItem("nana-wall-seen", JSON.stringify(nx)); } catch (_) {}
+    try { localStorage.setItem(ldWKey("nana-wall-seen"), JSON.stringify(nx)); } catch (_) {}
   };
   var _ce = useState([]); var calExtra = _ce[0], setCalExtra = _ce[1];
   var _cn = useState(""); var evName = _cn[0], setEvName = _cn[1];
