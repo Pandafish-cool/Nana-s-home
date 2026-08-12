@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-111";
+var NANA_VER = "v2026.8.2-112";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -17805,7 +17805,8 @@ var ldSpyArt = function (hgt, big) {
     h("text", { x: 32, y: 116, fontSize: 8 }, "\u26F4"),
     big ? null : h("text", { x: 100, y: 127, textAnchor: "middle", fontSize: 8.5, fill: "rgba(80,95,100,0.85)", fontFamily: "'Patrick Hand',cursive" }, "\u5fd8\u4e86\u62cd\uff0c\u753b\u7684"));
 };
-var LD_WALL_LIVE = 0;   // 0 = 只有熊猫鱼能看见「去玩」
+// 到点之前「去玩」只有熊猫鱼看得见；北京时间 8 月 13 日零点起对 nana 开放
+var LD_WALL_OPEN = "2026-08-13T00:00:00+08:00";
 // 照片墙的随手感：角度、高度、左右挪一点、问句都换着来
 var LD_TILT  = [-2.6, 1.9, -1.2, 3.1, -3.4, 1.3, -1.8, 2.6, -2.1, 3.6, -1.5, 2.2];
 var LD_PH    = [124, 96, 142, 108, 116, 132, 92, 120, 148, 100, 128, 110];
@@ -18877,8 +18878,7 @@ function LondonRoom(_refLD) {
     });
   };
   // 照片墙还没放真照片之前，去玩只对熊猫鱼开着，别让她看到一堆占位格子
-  // 照片墙还差熊猫鱼的话，写完把 LD_WALL_LIVE 改成 1，去玩才对 nana 开放
-  var wallReady = LD_WALL_LIVE;
+  var wallReady = (function () { try { return new Date() >= new Date(LD_WALL_OPEN); } catch (_) { return true; } })();
   // 出发之后装箱就没用了，挪到最后；安心和吃饭往前提
   var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
   var TABS = (afterGo
