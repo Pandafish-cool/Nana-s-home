@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-116";
+var NANA_VER = "v2026.8.2-117";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18764,6 +18764,45 @@ function LondonRoom(_refLD) {
     setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
+  // 办案手记：案卷详情和任务清单共用同一套
+  var duckNotes = function (k) {
+    var mine = ducks.filter(function (c) { return c.k === k; });
+    if (!mine.length) return null;
+    return h("div", { style: { marginTop: 8, display: "flex", flexDirection: "column", gap: 6 } },
+      mine.map(function (c) {
+        var au = nanaAuthorById(c.a);
+        var own = c.a === myAuthor;
+        return h("div", { key: c.id, style: { background: au.bg, borderRadius: 8, padding: "7px 10px", borderLeft: "3px solid " + au.col } },
+          h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
+            h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: au.col } }, au.e + " " + au.label),
+            own ? h("span", { onClick: function () { delDuck(c); }, style: { marginLeft: "auto", fontSize: "0.58rem", fontWeight: 800, color: dcDel === c.id ? "#c0392b" : "rgba(140,120,95,0.7)", cursor: "pointer" } }, dcDel === c.id ? "再点一下删掉" : "删") : null),
+          c.u ? h("div", { style: { marginTop: 5, background: "#fff", padding: 4, borderRadius: 4, display: "inline-block", boxShadow: "0 4px 11px rgba(60,45,30,0.22)" } },
+            h(NanaCloudImg, { u: c.u, thumb: true, onClick: function () { setWallBig(c.u); }, style: { width: 132, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
+          c.t ? h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: c.u ? 5 : 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t) : null);
+      }));
+  };
+  var duckForm = function (k, inputId) {
+    if (dcOpen !== k) return null;
+    var can = (dcText.trim() || dcPhoto) && !dcBusy && !dcUp;
+    return h("div", { style: { marginTop: 8 } },
+      h("textarea", { value: dcText, onChange: function (e) { setDcText(e.target.value); }, rows: 2, placeholder: "想说什么都行，也可以只传一张照片 · 两个人都看得见",
+        style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.45)", borderRadius: 8, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none", resize: "vertical", lineHeight: 1.7 } }),
+      h("div", { style: { display: "flex", gap: 8, marginTop: 7, alignItems: "center", flexWrap: "wrap" } },
+        dcPhoto
+          ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 10px", boxShadow: "0 4px 11px rgba(60,45,30,0.25)", borderRadius: 3, transform: "rotate(-2deg)" } },
+              h(NanaCloudImg, { u: dcPhoto, thumb: true, style: { width: 66, height: 52, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              h("button", { onClick: function () { nanaSharedPhotoDel(dcPhoto); setDcPhoto(""); }, style: { position: "absolute", right: -7, top: -7, width: 20, height: 20, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "✕"))
+          : h("span", { onClick: function () { if (dcUp) return; try { var el = document.getElementById(inputId); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", cursor: dcUp ? "default" : "pointer", border: "1.5px dashed rgba(169,127,46,0.6)", borderRadius: 999, padding: "6px 12px", color: "#a97f2e", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.7)" } }, dcUp ? "⏫ 传着…" : "📷 传张照片"),
+        h("input", { id: inputId, type: "file", accept: "image/*", onChange: onPickDuckPhoto, style: { display: "none" } }),
+        h("button", { onClick: function () { addDuck(k); }, disabled: !can, style: { marginLeft: "auto", border: "none", borderRadius: 999, padding: "6px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: can ? "pointer" : "default", background: can ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: can ? "#4a3510" : "#fff" } }, dcBusy ? "贴上去…" : "贴上去"),
+        h("button", { onClick: function () { setDcOpen(""); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")),
+      dcErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, dcErr) : null);
+  };
+  var duckBtn = function (k, style) {
+    var n = ducks.filter(function (c) { return c.k === k; });
+    return h("button", { onClick: function () { setDcOpen(dcOpen === k ? "" : k); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: style },
+      n.length ? ((n.filter(function (c) { return c.u; }).length ? "📷 " : "💬 ") + n.length) : "💬 写两句 / 传照片");
+  };
   var toggleBeen = function (name) {
     var nx = wallBeen.indexOf(name) >= 0
       ? wallBeen.filter(function (x) { return x !== name; })
@@ -19856,20 +19895,13 @@ function LondonRoom(_refLD) {
                         style: { flexShrink: 0, width: 96, height: 74, objectFit: "cover", borderRadius: 5, cursor: "pointer", boxShadow: "0 3px 9px rgba(60,45,30,0.25)" } });
                     })))
               : null,
-            // 熊猫鱼后来在任务里补传的照片，也归到这份案卷
-            (function () {
-              var late = ducks.filter(function (c) { return c.k === wallSel.n && c.u && c.a === "panda"; });
-              if (!late.length) return null;
-              return h("div", { style: { marginTop: 12 } },
-                h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "🐼 熊猫鱼后来又补的"),
-                h("div", { style: { display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 } },
-                  late.map(function (c) {
-                    return h("div", { key: c.id, style: { flexShrink: 0, width: 96 } },
-                      h(NanaCloudImg, { u: c.u, thumb: true, onClick: function () { setWallBig(c.u); },
-                        style: { width: 96, height: 74, objectFit: "cover", borderRadius: 5, cursor: "pointer", display: "block", boxShadow: "0 3px 9px rgba(60,45,30,0.25)" } }),
-                      c.t ? h("div", { style: { fontSize: "0.62rem", color: "rgba(100,90,70,0.95)", lineHeight: 1.5, marginTop: 4 } }, c.t) : null);
-                  })));
-            })(),
+            // 办案手记：两个人都能在这份案卷下面写字、传照片
+            h("div", { style: { marginTop: 14, borderTop: "1px dotted rgba(169,127,46,0.5)", paddingTop: 10 } },
+              h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+                h("span", { style: { fontSize: "0.68rem", fontWeight: 800, color: "rgba(110,95,70,0.95)" } }, "🗒 办案手记"),
+                duckBtn(wallSel.n, { marginLeft: "auto", border: "1px dashed rgba(169,127,46,0.55)", background: "transparent", borderRadius: 999, padding: "4px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", color: "#a97f2e" })),
+              duckNotes(wallSel.n),
+              duckForm(wallSel.n, "dcw-photo-input")),
             (function () {
               var been = wallBeen.indexOf(wallSel.n) >= 0;
               return h("button", { onClick: function () { toggleBeen(wallSel.n); }, style: { width: "100%", marginTop: 13, border: been ? "none" : "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 8, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: "pointer", background: been ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(255,255,255,0.6)", color: been ? "#4a3510" : "#b4353a" } },
@@ -20131,34 +20163,9 @@ function LondonRoom(_refLD) {
           h("div", { style: { display: "flex", gap: 8, marginTop: 7, flexWrap: "wrap" } },
             h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", background: "rgba(31,111,104,0.12)", color: "#1f6f68", borderRadius: 999, padding: "4px 11px", fontSize: "0.64rem", fontWeight: 800 } }, "📍 地图"),
             h("button", { onClick: function () { toggleBeen(x.n); }, style: { border: "none", borderRadius: 999, padding: "4px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: been ? "rgba(150,140,120,0.18)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: been ? "#7a7060" : "#4a3510" } }, been ? "撤销" : "✓ 盖章"),
-            h("button", { onClick: function () { setDcOpen(dcOpen === x.n ? "" : x.n); setDcText(""); }, style: { border: "1px dashed rgba(169,127,46,0.55)", background: "transparent", borderRadius: 999, padding: "4px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", color: "#a97f2e" } },
-              mine.length ? ((mine.filter(function (c) { return c.u; }).length ? "📷 " : "💬 ") + mine.length) : "💬 写两句 / 传照片")),
-          // 办案手记：两个人都能写
-          mine.length ? h("div", { style: { marginTop: 8, display: "flex", flexDirection: "column", gap: 6 } },
-            mine.map(function (c) {
-              var au = nanaAuthorById(c.a);
-              var own = c.a === myAuthor;
-              return h("div", { key: c.id, style: { background: au.bg, borderRadius: 8, padding: "7px 10px", borderLeft: "3px solid " + au.col } },
-                h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
-                  h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: au.col } }, au.e + " " + au.label),
-                  own ? h("span", { onClick: function () { delDuck(c); }, style: { marginLeft: "auto", fontSize: "0.58rem", fontWeight: 800, color: dcDel === c.id ? "#c0392b" : "rgba(140,120,95,0.7)", cursor: "pointer" } }, dcDel === c.id ? "再点一下删掉" : "删") : null),
-                c.u ? h("div", { style: { marginTop: 5, background: "#fff", padding: "4px 4px 4px", borderRadius: 4, display: "inline-block", boxShadow: "0 4px 11px rgba(60,45,30,0.22)" } },
-                  h(NanaCloudImg, { u: c.u, thumb: true, onClick: function () { setWallBig(c.u); }, style: { width: 132, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
-                c.t ? h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: c.u ? 5 : 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t) : null);
-            })) : null,
-          dcOpen === x.n ? h("div", { style: { marginTop: 8 } },
-            h("textarea", { value: dcText, onChange: function (e) { setDcText(e.target.value); }, rows: 2, placeholder: "想说什么都行，也可以只传一张照片 · 熊猫鱼也看得见",
-              style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.45)", borderRadius: 8, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none", resize: "vertical", lineHeight: 1.7 } }),
-            h("div", { style: { display: "flex", gap: 8, marginTop: 7, alignItems: "center", flexWrap: "wrap" } },
-              dcPhoto
-                ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 10px", boxShadow: "0 4px 11px rgba(60,45,30,0.25)", borderRadius: 3, transform: "rotate(-2deg)" } },
-                    h(NanaCloudImg, { u: dcPhoto, thumb: true, style: { width: 66, height: 52, objectFit: "cover", display: "block", borderRadius: 2 } }),
-                    h("button", { onClick: function () { nanaSharedPhotoDel(dcPhoto); setDcPhoto(""); }, style: { position: "absolute", right: -7, top: -7, width: 20, height: 20, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "✕"))
-                : h("span", { onClick: function () { if (dcUp) return; try { var el = document.getElementById("dc-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", cursor: dcUp ? "default" : "pointer", border: "1.5px dashed rgba(169,127,46,0.6)", borderRadius: 999, padding: "6px 12px", color: "#a97f2e", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.7)" } }, dcUp ? "⏫ 传着…" : "📷 传张照片"),
-              h("input", { id: "dc-photo-input", type: "file", accept: "image/*", onChange: onPickDuckPhoto, style: { display: "none" } }),
-              h("button", { onClick: function () { addDuck(x.n); }, disabled: (!dcText.trim() && !dcPhoto) || dcBusy || dcUp, style: { marginLeft: "auto", border: "none", borderRadius: 999, padding: "6px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "pointer" : "default", background: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: ((dcText.trim() || dcPhoto) && !dcBusy && !dcUp) ? "#4a3510" : "#fff" } }, dcBusy ? "贴上去…" : "贴上去"),
-              h("button", { onClick: function () { setDcOpen(""); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")),
-            dcErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, dcErr) : null) : null));
+            duckBtn(x.n, { border: "1px dashed rgba(169,127,46,0.55)", background: "transparent", borderRadius: 999, padding: "4px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", color: "#a97f2e" })),
+          duckNotes(x.n),
+          duckForm(x.n, "dc-photo-input")));
     })),
     h("div", { key: "dft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
       "这几件不着急，六个星期够办完了。办不完也没关系，案子不会过期。手记两个人都能写，也都看得见。")
