@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-137";
+var NANA_VER = "v2026.8.2-138";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18527,6 +18527,16 @@ var LD_LIT = [
     { n: "查令十字街 84 号", d: "《查令十字街 84 号》里那家 Marks & Co · 书店早没了，墙上留了一块牌子 · 站两分钟就好", e: "💌", q: "84 Charing Cross Road London" },
     { n: "Cecil Court", d: "夹在两条大街之间的小巷，两边全是旧书店和古版画店 · 据说是对角巷的灵感", e: "🪄", q: "Cecil Court London" }
   ] },
+  { z: "🏛 很美很舒服的博物馆", list: [
+    { n: "Museum of London Docklands", d: "离家最近的一个 —— West India Quay，从楼下走过去十几分钟 · 19 世纪糖仓改的，粗木梁厚砖墙，讲的就是这片码头自己的历史 · 免费 · 下雨天不想走远时最好的答案", e: "⚓", q: "Museum of London Docklands" },
+    { n: "V&A", d: "免费，也是最美的一个 · 三个必看：Cast Courts（两个大厅塞满等身复制品，米开朗基罗的大卫在里面）、中庭花园（有浅水池，夏天能脱鞋坐进去）、Gamble Room —— 世界第一个博物馆餐厅，维多利亚彩瓷从地面糊到天花板，你就在里面吃饭", e: "✨", q: "Victoria and Albert Museum London" },
+    { n: "Tate Britain", d: "不是泰特现代，是 Millbank 那个 · 整个 Clore 厅都是透纳 · 免费，人比泰特现代少一大半，坐着看半小时没人打扰", e: "🎨", q: "Tate Britain London" },
+    { n: "Dulwich Picture Gallery", d: "英国第一座公共画廊，索恩设计，全靠天光 · 南伦敦，人少得不像伦敦，旁边就是公园，有咖啡馆 · 收费 · 「舒服」这个词是为它准备的", e: "🌿", q: "Dulwich Picture Gallery London" },
+    { n: "Leighton House", d: "维多利亚画家的家，里面有个阿拉伯厅 —— 金色马赛克穹顶、喷泉、伊斯兰瓷砖 · 很小，一小时逛完，几乎没人 · 收费不贵", e: "🕌", q: "Leighton House Museum London" },
+    { n: "Queen's House + 国家海事博物馆", d: "都在格林威治，都免费 · Queen's House 里那道郁金香楼梯是英国第一座无支撑螺旋楼梯，还有《阿玛达肖像》 · 去天文台那天顺路，不用另跑一趟", e: "⛵", q: "Queens House Greenwich London" },
+    { n: "Freud Museum", d: "他从维也纳逃出来后最后的家，书房和那张沙发原样保留 · Hampstead，离 Kenwood House 不远，配济慈那天 · 不是每天开，出发前查一下官网", e: "🛋️", q: "Freud Museum London" },
+    { n: "Sir John Soane's Museum", d: "公认伦敦最奇妙的一栋房子 —— 建筑师把一辈子的收藏塞满自家三间连排屋，画室的墙能像书页一样翻开，地下室摆着塞提一世的石棺。免费。\n先说清楚：房间很窄，光线很暗，通道像迷宫，一次只放少量人进去，人多的时候要贴着走。地下那层尤其低矮。\n所以 —— 想去就去，但给自己留退路：只逛地面层和画室，地下室可以不下去；进门先跟工作人员说一声，他们见得多了，随时能带你从最近的门出来。觉得不对劲就走，这地方不值得你难受。", e: "🏚️", q: "Sir John Soanes Museum London" }
+  ] },
   { z: "🫖 一个人去最舒服的（安静、便宜、不用跟谁说话）", list: [
     { n: "Wallace Collection", d: "一座宅邸里的私人收藏，《微笑的骑士》在这儿 · 免费，人极少 · 中庭是玻璃顶餐厅，可以坐一下午没人赶 · 离 Daunt Books 走路十分钟", e: "🖼️", q: "The Wallace Collection London" },
     { n: "Postman's Park", d: "一面瓷砖墙，每块砖记着一个为救人而死的普通人 —— 名字、年份、怎么死的 · 小得像个院子，几乎没人 · 在圣保罗和巴比肯中间", e: "🧱", q: "Postmans Park London" },
@@ -20864,7 +20874,7 @@ function LondonRoom(_refLD) {
             h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, o.e),
             h("div", { style: { flex: 1, minWidth: 0 } },
               h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, o.n, " 📍"),
-              h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.6 } }, o.d)),
+              h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.6, whiteSpace: "pre-line" } }, o.d)),
             h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
         }));
     }));
