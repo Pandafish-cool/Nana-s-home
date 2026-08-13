@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-134";
+var NANA_VER = "v2026.8.2-135";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18383,6 +18383,46 @@ var LD_PARKS = [
   { n: "Victoria Pk", la: 51.5362, lo: -0.0390, r: 11 },
   { n: "Battersea", la: 51.4791, lo: -0.1567, r: 9 }
 ];
+// ── 🎞 片子和它们在伦敦的落点 ──────────────────────────
+// k 是匹配用的关键词，会去比对她在「两个人的电影节」里标过的片名
+var LD_SCREEN = [
+  { f: "哈利波特", k: ["哈利波特", "Harry Potter", "波特"], list: [
+    { n: "国王十字 · 九又四分之三站台", d: "推车嵌在墙上那个 · 工作人员帮忙甩围巾、递魔杖、按快门，全套免费", e: "🧳", q: "Platform 9 3/4 Kings Cross London" },
+    { n: "Leadenhall Market", d: "破釜酒吧和对角巷入口的外景 · 绿金色拱廊，工作日中午最热闹", e: "🏮", q: "Leadenhall Market London" },
+    { n: "千禧桥", d: "《混血王子》开场被食死徒拧断的那座 · 从圣保罗走到泰特现代正好过这座桥", e: "🌉", q: "Millennium Bridge London" },
+    { n: "华纳兄弟影棚 Leavesden", d: "不是取景地，是真的片场 —— 大礼堂、对角巷、禁林都在里面 · Euston 坐火车到 Watford Junction 二十分钟再接驳巴士 · 一定要提前订票", e: "🎬", q: "Warner Bros Studio Tour London Leavesden" }
+  ] },
+  { f: "帕丁顿熊", k: ["帕丁顿", "Paddington"], list: [
+    { n: "帕丁顿车站", d: "站台上有他的铜像和一家小店 · 从 Canary Wharf 坐 Elizabeth line 直达", e: "🧸", q: "Paddington Bear statue Paddington Station London" },
+    { n: "Primrose Hill · Chalcot Crescent", d: "布朗一家那栋房子在这条弯月形的彩色小街上 · 走上 Primrose Hill 能看整个伦敦天际线", e: "🏘️", q: "Chalcot Crescent London" }
+  ] },
+  { f: "诺丁山", k: ["诺丁山", "Notting Hill"], list: [
+    { n: "那扇蓝门", d: "280 Westbourne Park Road · 现在是私人住宅，站门口拍一张就走", e: "🚪", q: "280 Westbourne Park Road London" },
+    { n: "Portobello Road", d: "电影里那条市集街 · 周六古董市集，平日安静好拍", e: "🛍️", q: "Portobello Road Market London" }
+  ] },
+  { f: "BJ 单身日记", k: ["BJ单身日记", "BJ 单身日记", "Bridget Jones", "布里吉特"], list: [
+    { n: "Borough Market · The Globe 楼上", d: "她那间公寓就在市场边这家酒馆楼上 · 楼下就是吃的", e: "🍷", q: "The Globe Tavern Borough Market London" }
+  ] },
+  { f: "真爱至上", k: ["真爱至上", "Love Actually"], list: [
+    { n: "St Luke's Mews", d: "举牌子那场戏就在这条小巷 · 诺丁山附近，粉色房子那条", e: "💌", q: "St Lukes Mews London" }
+  ] },
+  { f: "唐顿庄园", k: ["唐顿", "Downton"], list: [
+    { n: "海克利尔城堡 Highclere", d: "剧里的唐顿庄园本体 · Paddington 坐火车到 Newbury 一小时再打车 · 开放日不固定，出发前一定先在官网查", e: "🏰", q: "Highclere Castle" }
+  ] },
+  { f: "跳出我天地", k: ["跳出我天地", "Billy Elliot"], list: [
+    { n: "皇家歌剧院 Royal Opera House", d: "片尾他考进去的地方 · Covent Garden · 有后台导览，也能只买一张便宜的高层票看一场", e: "🩰", q: "Royal Opera House London" }
+  ] },
+  { f: "007 邦德", k: ["007", "邦德", "Bond", "James Bond", "无暇赴死", "天幕"], list: [
+    { n: "MI6 大楼 · 沃克斯霍尔桥", d: "被炸过好几回的那栋 · 站桥上看最完整", e: "🕶️", q: "SIS Building Vauxhall Cross London" }
+  ] },
+  { f: "神探夏洛克", k: ["夏洛克", "Sherlock", "福尔摩斯"], list: [
+    { n: "North Gower Street · Speedy's", d: "剧里 221B 的实际外景 · 门口那家三明治店还在开", e: "☕", q: "Speedys Cafe North Gower Street London" },
+    { n: "圣巴塞洛缪医院 St Bart's", d: "那场跳楼就在这栋楼前面", e: "🏛️", q: "St Bartholomews Hospital London" }
+  ] },
+  { f: "V 字仇杀队", k: ["V字仇杀队", "V 字仇杀队", "V for Vendetta"], list: [
+    { n: "国会大厦 & 老贝利", d: "片里被炸的两栋 · 老贝利（中央刑事法院）门口那座蒙眼正义女神，抬头能看到", e: "⚖️", q: "Old Bailey London" }
+  ] }
+];
 // ── 📖 书与剧：照着她读的和爱看的排的几条线 ──────────────
 var LD_LIT = [
   { z: "🔍 侦探那条（半天，全在市中心）", list: [
@@ -19130,6 +19170,16 @@ function LondonRoom(_refLD) {
   var _cfs2 = useState(false); var cfBusy = _cfs2[0], setCfBusy = _cfs2[1];
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
+  // 她在「两个人的电影节」里标过的片子，用来挑取景地
+  var _flm = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-films-cache") || "[]"); } catch (_) { return []; } });
+  var myFilms = _flm[0], setMyFilms = _flm[1];
+  useEffect(function () {
+    nanaFilmsList(function (err, rows) {
+      if (err || !rows) return;
+      setMyFilms(rows);
+      try { localStorage.setItem("nana-shared-films-cache", JSON.stringify(rows)); } catch (_) {}
+    });
+  }, []);
   var _dcu = useState(false); var dcUp = _dcu[0], setDcUp = _dcu[1];
   var _dce = useState(""); var dcErr = _dce[0], setDcErr = _dce[1];
   var onPickDuckPhoto = function (e) {
@@ -20772,12 +20822,41 @@ function LondonRoom(_refLD) {
     h("div", { key: "wkft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75 } },
       "火车票提前几天在 Trainline 或 National Rail 上买 Advance，比当天到车站买便宜一半不止。周末常有修路改线，出门前在 National Rail 看一眼当天有没有变。")
   ]);
+  // 她标过的片子 → 取景地；标过的排前面，其余也留着当备选
+  var screenGroups = (function () {
+    var mine = [], rest = [], i, j, hit, f, t;
+    var marked = [];
+    for (i = 0; i < myFilms.length; i++) {
+      f = myFilms[i];
+      if (f && (f.n_want || f.n_seen)) marked.push((f.t || "").toLowerCase());
+    }
+    for (i = 0; i < LD_SCREEN.length; i++) {
+      hit = false;
+      for (j = 0; j < LD_SCREEN[i].k.length && !hit; j++) {
+        t = LD_SCREEN[i].k[j].toLowerCase();
+        for (var m = 0; m < marked.length; m++) { if (marked[m].indexOf(t) >= 0) { hit = true; break; } }
+      }
+      (hit ? mine : rest).push(LD_SCREEN[i]);
+    }
+    var out = [];
+    if (mine.length) {
+      out.push({ z: "🎞 你标过的片子，在伦敦能走到", list: [].concat.apply([], mine.map(function (g) {
+        return g.list.map(function (x) { return { n: x.n, d: "《" + g.f + "》· " + x.d, e: x.e, q: x.q }; });
+      })) });
+    }
+    if (rest.length) {
+      out.push({ z: mine.length ? "🎬 其它片子的伦敦（备选）" : "🎬 从片子走进伦敦", list: [].concat.apply([], rest.map(function (g) {
+        return g.list.map(function (x) { return { n: x.n, d: "《" + g.f + "》· " + x.d, e: x.e, q: x.q }; });
+      })) });
+    }
+    return out;
+  })();
   var litTab = ukCard([
     screws,
     ukHead("书与剧", "英国文学 · 侦探 · 英剧取景 · 文艺影院", h("span", { style: { fontSize: "1rem" } }, "📖")),
     h("div", { key: "litintro", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.72rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8, marginBottom: 4 } },
-      "照着你读的和你爱看的排的五条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。"),
-    zoneRows(LD_LIT)
+      "照着你读的和你爱看的排的几条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。最后那组是按你在电影节里标过的片子挑的取景地。"),
+    zoneRows(LD_LIT.concat(screenGroups))
   ]);
   var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
   var playTab = h("div", null,
