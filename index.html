@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-136";
+var NANA_VER = "v2026.8.2-137";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18031,7 +18031,14 @@ var LD_TRIPS = [
     { n: "Borough Market", d: "美食市场，周六最热闹 · 一个人吃得很过瘾，摊子多半可以只买一份", e: "🧀", q: "Borough Market London" },
     { n: "Camden Market", d: "朋克、涂鸦、街头小吃 · 跟别处完全不是一个伦敦", e: "🎸", q: "Camden Market London" },
     { n: "Columbia Road 花市", d: "只有周日开，一条街全是花 · 早去人少，收摊前最便宜", e: "💐", q: "Columbia Road Flower Market" },
-    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" }
+    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" },
+    { n: "Hampstead Heath + Kenwood House", d: "一整片野草地，不修剪的那种 · Kenwood 是免费的宅邸，里面有伦勃朗自画像和维米尔 · Parliament Hill 山顶看得到整个伦敦 · 配济慈故居正好一天", e: "🌳", q: "Kenwood House Hampstead London" },
+    { n: "Kyoto Garden · Holland Park", d: "公园里一座日式庭园，瀑布、锦鲤，还有孔雀走来走去 · 安静得不像伦敦", e: "🎋", q: "Kyoto Garden Holland Park London" },
+    { n: "小威尼斯 → 卡姆登 运河船", d: "露天甲板，慢慢开过摄政公园和动物园 · 一趟四十来分钟，不闷", e: "🛶", q: "Little Venice London" },
+    { n: "Maltby Street Market", d: "只有周末 · 比 Borough Market 小得多、安静得多，东西一样好 · 铁道拱洞底下那条", e: "🥟", q: "Maltby Street Market London" },
+    { n: "Museum of the Home", d: "一间间复原的英国客厅，从 1600 年一路排到现在 · 免费 · 学文学的人看这个等于看小说布景 · Hoxton 站出来就是", e: "🛋️", q: "Museum of the Home London" },
+    { n: "Barbican Conservatory", d: "藏在艺术中心里的热带温室 · 免费，但只在特定日子开，要提前在官网订", e: "🌴", q: "Barbican Conservatory London" },
+    { n: "God's Own Junkyard", d: "一整个仓库的旧霓虹灯，闪得人睁不开眼 · 只有周末开，在 Walthamstow · 里面有咖啡，进去不要钱", e: "💡", q: "Gods Own Junkyard Walthamstow London" }
   ] },
   { z: "🚄 一小时之内（当天来回很轻松）", list: [
     { n: "牛津 Oxford", d: "Paddington 出发 1 小时 · 基督堂学院是哈利波特食堂的原型", e: "🎓", q: "Oxford UK" },
@@ -18372,7 +18379,7 @@ var LD_WALL = [
   { f: "", sk: 2, sn: "Larry", n: "唐宁街 10 号的 Larry", q: "Downing Street London", la: 51.5034, lo: -0.1276, must: 1,
     more: [],
     say: "",
-    tip: "首相府那扇黑门，门口那只白棕相间的虎斑猫叫 Larry —— 官方头衔是「内阁办公室首席捕鼠官」，2011 年上任，比好几任首相待得都久。唐宁街本身 1989 年就封了，走不进去，只能站在 Whitehall 那道大铁门外往里看。Larry 有时候会溜达到门口，隔着栏杆能看见，看不看得到全看运气 —— 看不到也别失望，它只是又睡了。铁门斜对面就是骑兵卫队阅兵场，工作日 11 点、周日 10 点换岗；边上还有丘吉尔战时办公室。Jubilee 线到 Westminster 出来走五分钟。",
+    tip: "首相府那扇黑门，门口那只白棕相间的虎斑猫叫 Larry —— 官方头衔是「内阁办公室首席捕鼠官」，2011 年上任，比好几任首相待得都久。唐宁街本身 1989 年就封了，走不进去，只能站在 Whitehall 那道大铁门外往里看。Larry 有时候会溜达到门口，隔着栏杆能看见，看不看得到全看运气 —— 看不到也别失望，它只是又睡了。铁门斜对面就是骑兵卫队阅兵场，工作日 11 点、周日 10 点换岗，全程露天。再往前走几步是圣詹姆斯公园，看不到猫就去那儿看鹈鹕。Jubilee 线到 Westminster 出来走五分钟。",
     ldx: 1 },
   { f: "lego-tube", sn: "乐高店", n: "莱斯特广场 · 乐高店", q: "LEGO Store Leicester Square London", la: 51.5105, lo: -0.1310, must: 0,
     more: [],
@@ -18519,6 +18526,13 @@ var LD_LIT = [
     { n: "Foyles · Charing Cross Road", d: "大得像图书馆 · 顶层咖啡馆能坐一下午没人赶", e: "📘", q: "Foyles Charing Cross Road London" },
     { n: "查令十字街 84 号", d: "《查令十字街 84 号》里那家 Marks & Co · 书店早没了，墙上留了一块牌子 · 站两分钟就好", e: "💌", q: "84 Charing Cross Road London" },
     { n: "Cecil Court", d: "夹在两条大街之间的小巷，两边全是旧书店和古版画店 · 据说是对角巷的灵感", e: "🪄", q: "Cecil Court London" }
+  ] },
+  { z: "🫖 一个人去最舒服的（安静、便宜、不用跟谁说话）", list: [
+    { n: "Wallace Collection", d: "一座宅邸里的私人收藏，《微笑的骑士》在这儿 · 免费，人极少 · 中庭是玻璃顶餐厅，可以坐一下午没人赶 · 离 Daunt Books 走路十分钟", e: "🖼️", q: "The Wallace Collection London" },
+    { n: "Postman's Park", d: "一面瓷砖墙，每块砖记着一个为救人而死的普通人 —— 名字、年份、怎么死的 · 小得像个院子，几乎没人 · 在圣保罗和巴比肯中间", e: "🧱", q: "Postmans Park London" },
+    { n: "Wigmore Hall 周一午间音乐会", d: "室内乐，一小时，中午散场 · 票价很低，官网买 · 一个人去毫不突兀，散场正好去隔壁 Daunt Books", e: "🎻", q: "Wigmore Hall London" },
+    { n: "Word on the Water", d: "停在 King's Cross 运河上的一条书船 · 甲板上有时有爵士 · 从大英图书馆出来顺路", e: "⛵", q: "Word on the Water London" },
+    { n: "南岸旧书市", d: "滑铁卢桥底下的旧书摊，天天开，风雨无阻 · 接在看日落那条后面正好 · 便宜的旧平装书一两镑", e: "📚", q: "Southbank Centre Book Market London" }
   ] },
   { z: "🎬 文艺影院那条（挑一个晚上）", list: [
     { n: "BFI Southbank", d: "英国电影协会的家 · 常年放修复的老片 · 里面的 Mediatheque 可以免费坐着看英国影像档案，一个人去正好", e: "🎞️", q: "BFI Southbank London" },
