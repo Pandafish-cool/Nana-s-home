@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-132";
+var NANA_VER = "v2026.8.2-135";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18026,22 +18026,12 @@ var LD_SURVIVE = [
 
 // 去玩
 var LD_TRIPS = [
-  { z: "🚶 走几步就到（30 分钟内）", list: [
-    { n: "格林威治 Greenwich", d: "DLR 十分钟 · 天文台踩本初子午线 · 周末市集", e: "🕰️", q: "Greenwich London" },
-    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸", e: "🚇", q: "Greenwich Foot Tunnel" },
-    { n: "Mudchute 农场", d: "狗岛上的免费农场，有羊驼和小羊", e: "🐑", q: "Mudchute Park and Farm" },
-    { n: "Canary Wharf 屋顶花园", d: "商场顶层的热带植物园，免费，晴天必去", e: "🌴", q: "Crossrail Place Roof Garden" }
-  ] },
-  { z: "🚇 市区（40 分钟内）", list: [
-    { n: "Tower Bridge & 伦敦塔", d: "Jubilee 到 London Bridge，伦敦第一眼", e: "🌉", q: "Tower Bridge London" },
-    { n: "Borough Market", d: "美食市场，周六最热闹，一个人吃得很过瘾", e: "🧀", q: "Borough Market London" },
-    { n: "大英博物馆", d: "免费 · 逛三次都逛不完 · 下雨天首选", e: "🏛️", q: "British Museum" },
-    { n: "Tate Modern", d: "免费现代艺术馆，顶层看圣保罗大教堂", e: "🎨", q: "Tate Modern London" },
-    { n: "Sky Garden", d: "免费登高看全城，需提前网上预约", e: "🌇", q: "Sky Garden London" },
-    { n: "Notting Hill / Portobello", d: "周六古董市集，彩色房子拍照", e: "🏘️", q: "Portobello Road Market" },
-    { n: "Camden Market", d: "朋克、涂鸦、街头小吃", e: "🎸", q: "Camden Market London" },
-    { n: "Columbia Road 花市", d: "只有周日开，一条街全是花", e: "💐", q: "Columbia Road Flower Market" },
-    { n: "Hyde Park / 摄政公园", d: "天气好就去躺着，秋天满地金黄", e: "🌳", q: "Hyde Park London" }
+  { z: "🚇 不出城的时候（市区几个别处没写的）", list: [
+    { n: "Sky Garden", d: "免费登高看全城，需要提前在官网订时段 · 顶层是玻璃花园，下雨天也能看", e: "🌇", q: "Sky Garden London" },
+    { n: "Borough Market", d: "美食市场，周六最热闹 · 一个人吃得很过瘾，摊子多半可以只买一份", e: "🧀", q: "Borough Market London" },
+    { n: "Camden Market", d: "朋克、涂鸦、街头小吃 · 跟别处完全不是一个伦敦", e: "🎸", q: "Camden Market London" },
+    { n: "Columbia Road 花市", d: "只有周日开，一条街全是花 · 早去人少，收摊前最便宜", e: "💐", q: "Columbia Road Flower Market" },
+    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" }
   ] },
   { z: "🚄 一小时之内（当天来回很轻松）", list: [
     { n: "牛津 Oxford", d: "Paddington 出发 1 小时 · 基督堂学院是哈利波特食堂的原型", e: "🎓", q: "Oxford UK" },
@@ -18392,6 +18382,84 @@ var LD_PARKS = [
   { n: "Regent's", la: 51.5313, lo: -0.1560, r: 12 },
   { n: "Victoria Pk", la: 51.5362, lo: -0.0390, r: 11 },
   { n: "Battersea", la: 51.4791, lo: -0.1567, r: 9 }
+];
+// ── 🎞 片子和它们在伦敦的落点 ──────────────────────────
+// k 是匹配用的关键词，会去比对她在「两个人的电影节」里标过的片名
+var LD_SCREEN = [
+  { f: "哈利波特", k: ["哈利波特", "Harry Potter", "波特"], list: [
+    { n: "国王十字 · 九又四分之三站台", d: "推车嵌在墙上那个 · 工作人员帮忙甩围巾、递魔杖、按快门，全套免费", e: "🧳", q: "Platform 9 3/4 Kings Cross London" },
+    { n: "Leadenhall Market", d: "破釜酒吧和对角巷入口的外景 · 绿金色拱廊，工作日中午最热闹", e: "🏮", q: "Leadenhall Market London" },
+    { n: "千禧桥", d: "《混血王子》开场被食死徒拧断的那座 · 从圣保罗走到泰特现代正好过这座桥", e: "🌉", q: "Millennium Bridge London" },
+    { n: "华纳兄弟影棚 Leavesden", d: "不是取景地，是真的片场 —— 大礼堂、对角巷、禁林都在里面 · Euston 坐火车到 Watford Junction 二十分钟再接驳巴士 · 一定要提前订票", e: "🎬", q: "Warner Bros Studio Tour London Leavesden" }
+  ] },
+  { f: "帕丁顿熊", k: ["帕丁顿", "Paddington"], list: [
+    { n: "帕丁顿车站", d: "站台上有他的铜像和一家小店 · 从 Canary Wharf 坐 Elizabeth line 直达", e: "🧸", q: "Paddington Bear statue Paddington Station London" },
+    { n: "Primrose Hill · Chalcot Crescent", d: "布朗一家那栋房子在这条弯月形的彩色小街上 · 走上 Primrose Hill 能看整个伦敦天际线", e: "🏘️", q: "Chalcot Crescent London" }
+  ] },
+  { f: "诺丁山", k: ["诺丁山", "Notting Hill"], list: [
+    { n: "那扇蓝门", d: "280 Westbourne Park Road · 现在是私人住宅，站门口拍一张就走", e: "🚪", q: "280 Westbourne Park Road London" },
+    { n: "Portobello Road", d: "电影里那条市集街 · 周六古董市集，平日安静好拍", e: "🛍️", q: "Portobello Road Market London" }
+  ] },
+  { f: "BJ 单身日记", k: ["BJ单身日记", "BJ 单身日记", "Bridget Jones", "布里吉特"], list: [
+    { n: "Borough Market · The Globe 楼上", d: "她那间公寓就在市场边这家酒馆楼上 · 楼下就是吃的", e: "🍷", q: "The Globe Tavern Borough Market London" }
+  ] },
+  { f: "真爱至上", k: ["真爱至上", "Love Actually"], list: [
+    { n: "St Luke's Mews", d: "举牌子那场戏就在这条小巷 · 诺丁山附近，粉色房子那条", e: "💌", q: "St Lukes Mews London" }
+  ] },
+  { f: "唐顿庄园", k: ["唐顿", "Downton"], list: [
+    { n: "海克利尔城堡 Highclere", d: "剧里的唐顿庄园本体 · Paddington 坐火车到 Newbury 一小时再打车 · 开放日不固定，出发前一定先在官网查", e: "🏰", q: "Highclere Castle" }
+  ] },
+  { f: "跳出我天地", k: ["跳出我天地", "Billy Elliot"], list: [
+    { n: "皇家歌剧院 Royal Opera House", d: "片尾他考进去的地方 · Covent Garden · 有后台导览，也能只买一张便宜的高层票看一场", e: "🩰", q: "Royal Opera House London" }
+  ] },
+  { f: "007 邦德", k: ["007", "邦德", "Bond", "James Bond", "无暇赴死", "天幕"], list: [
+    { n: "MI6 大楼 · 沃克斯霍尔桥", d: "被炸过好几回的那栋 · 站桥上看最完整", e: "🕶️", q: "SIS Building Vauxhall Cross London" }
+  ] },
+  { f: "神探夏洛克", k: ["夏洛克", "Sherlock", "福尔摩斯"], list: [
+    { n: "North Gower Street · Speedy's", d: "剧里 221B 的实际外景 · 门口那家三明治店还在开", e: "☕", q: "Speedys Cafe North Gower Street London" },
+    { n: "圣巴塞洛缪医院 St Bart's", d: "那场跳楼就在这栋楼前面", e: "🏛️", q: "St Bartholomews Hospital London" }
+  ] },
+  { f: "V 字仇杀队", k: ["V字仇杀队", "V 字仇杀队", "V for Vendetta"], list: [
+    { n: "国会大厦 & 老贝利", d: "片里被炸的两栋 · 老贝利（中央刑事法院）门口那座蒙眼正义女神，抬头能看到", e: "⚖️", q: "Old Bailey London" }
+  ] }
+];
+// ── 📖 书与剧：照着她读的和爱看的排的几条线 ──────────────
+var LD_LIT = [
+  { z: "🔍 侦探那条（半天，全在市中心）", list: [
+    { n: "贝克街 221B 博物馆", d: "先从这儿开始 · 屋子小，楼梯陡，一次放一小批人进去", e: "🕵️", q: "Sherlock Holmes Museum London" },
+    { n: "Speedy's Café · North Gower Street", d: "BBC《神探夏洛克》里 221B 的实际外景，就是这家三明治店门口 · 走进去吃个早餐也行", e: "☕", q: "Speedys Cafe North Gower Street London" },
+    { n: "Sherlock Holmes 酒吧", d: "Northumberland Street 10 号 · 楼上照小说复原了一整间起居室，隔着玻璃能看 · 柯南道尔笔下的旅馆就在这条街", e: "🍺", q: "The Sherlock Holmes Pub Northumberland Street London" },
+    { n: "圣巴塞洛缪医院 St Bart's", d: "剧里那场跳楼就在这栋楼前面 · 院里有个小博物馆，安静，几乎没游客", e: "🏛️", q: "St Bartholomews Hospital London" }
+  ] },
+  { z: "📚 英国文学那条（一整天）", list: [
+    { n: "大英图书馆 Treasures 展厅", d: "免费 · 简·奥斯汀的手稿和书桌、勃朗特姐妹的小本子、莎士比亚第一对开本、大宪章，都在同一间屋里 · 就在 St Pancras 隔壁", e: "📜", q: "British Library Treasures Gallery London" },
+    { n: "狄更斯故居博物馆", d: "Doughty Street 48 号 · 他写《雾都孤儿》那三年住这儿 · 收费，一小时够", e: "🖋️", q: "Charles Dickens Museum London" },
+    { n: "布卢姆斯伯里 · Gordon Square", d: "伍尔夫和那帮人住过的几条街 · 广场边墙上一块块蓝牌子，就是路标", e: "🌿", q: "Gordon Square Bloomsbury London" },
+    { n: "Senate House", d: "奥威尔《1984》真理部的原型 · 不用进去，站在 Malet Street 上抬头看那栋白石头楼就懂了", e: "🏢", q: "Senate House University of London" },
+    { n: "济慈故居 Keats House", d: "Hampstead · 他在这园子里写的《夜莺颂》 · 从市中心过去半小时，顺带逛 Hampstead Heath", e: "🌸", q: "Keats House Hampstead London" }
+  ] },
+  { z: "📖 书店那条（半天，一条街走完）", list: [
+    { n: "Daunt Books · Marylebone", d: "爱德华时代的老店，橡木长廊加彩绘玻璃 · 书按国家排，旅行文学在最里面那面墙", e: "📗", q: "Daunt Books Marylebone London" },
+    { n: "Hatchards · Piccadilly", d: "1797 年开的，伦敦最老的书店 · 五层楼，木楼梯", e: "📕", q: "Hatchards Piccadilly London" },
+    { n: "Foyles · Charing Cross Road", d: "大得像图书馆 · 顶层咖啡馆能坐一下午没人赶", e: "📘", q: "Foyles Charing Cross Road London" },
+    { n: "查令十字街 84 号", d: "《查令十字街 84 号》里那家 Marks & Co · 书店早没了，墙上留了一块牌子 · 站两分钟就好", e: "💌", q: "84 Charing Cross Road London" },
+    { n: "Cecil Court", d: "夹在两条大街之间的小巷，两边全是旧书店和古版画店 · 据说是对角巷的灵感", e: "🪄", q: "Cecil Court London" }
+  ] },
+  { z: "🎬 文艺影院那条（挑一个晚上）", list: [
+    { n: "BFI Southbank", d: "英国电影协会的家 · 常年放修复的老片 · 里面的 Mediatheque 可以免费坐着看英国影像档案，一个人去正好", e: "🎞️", q: "BFI Southbank London" },
+    { n: "Prince Charles Cinema", d: "莱斯特广场后面 · 经典片重映，票便宜，周末有通宵马拉松", e: "🍿", q: "Prince Charles Cinema London" },
+    { n: "Curzon Bloomsbury / Soho", d: "艺术院线 · 欧洲片和纪录片多，场次安静", e: "🎥", q: "Curzon Bloomsbury London" },
+    { n: "Electric Cinema · Portobello", d: "诺丁山那条街上 · 沙发座加脚凳，还有床位 · 逛完市集正好去看一场", e: "🛋️", q: "Electric Cinema Portobello Road London" },
+    { n: "Regent Street Cinema", d: "1896 年英国第一次公映电影就在这个厅 · 现在还在放片", e: "🎬", q: "Regent Street Cinema London" }
+  ] },
+  { z: "🎭 英剧和取景地那条（一整天）", list: [
+    { n: "Leadenhall Market", d: "维多利亚时代的绿金色拱廊 · 哈利波特里破釜酒吧的外景 · 工作日中午最热闹，周末几乎没人", e: "🏮", q: "Leadenhall Market London" },
+    { n: "Ye Olde Cheshire Cheese", d: "Fleet Street 上的老酒馆，1667 年重建 · 狄更斯常去 · 里面一层层往下挖，像地窖", e: "🍻", q: "Ye Olde Cheshire Cheese Fleet Street London" },
+    { n: "The Old Curiosity Shop", d: "十六世纪留下来的一栋歪房子 · 名字就来自狄更斯那本书 · 在 LSE 后面那条小街", e: "🏚️", q: "The Old Curiosity Shop Portsmouth Street London" },
+    { n: "Wilton's Music Hall", d: "世界上最老的大型音乐厅之一 · 墙皮斑驳没修，就那么开着 · 有演出就买张票，没有也能进去喝一杯", e: "🎪", q: "Wiltons Music Hall London" },
+    { n: "莎士比亚环球剧场", d: "照原样重建的露天木剧场 · 夏天演出季有站票，几镑钱，站在台下看 · 你在的时候正好是季中", e: "🎭", q: "Shakespeares Globe London" },
+    { n: "格林威治 Old Royal Naval College", d: "无数英剧和电影在这儿拍过 · 广场免费走，Painted Hall 要票 · 离家最近的一个", e: "⛪", q: "Old Royal Naval College Greenwich" }
+  ] }
 ];
 // ── 🛬 落地那天：盖特威克 → Fraser Place ──────────────────
 var LD_ARR_STEP = [
@@ -19102,6 +19170,16 @@ function LondonRoom(_refLD) {
   var _cfs2 = useState(false); var cfBusy = _cfs2[0], setCfBusy = _cfs2[1];
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
+  // 她在「两个人的电影节」里标过的片子，用来挑取景地
+  var _flm = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-films-cache") || "[]"); } catch (_) { return []; } });
+  var myFilms = _flm[0], setMyFilms = _flm[1];
+  useEffect(function () {
+    nanaFilmsList(function (err, rows) {
+      if (err || !rows) return;
+      setMyFilms(rows);
+      try { localStorage.setItem("nana-shared-films-cache", JSON.stringify(rows)); } catch (_) {}
+    });
+  }, []);
   var _dcu = useState(false); var dcUp = _dcu[0], setDcUp = _dcu[1];
   var _dce = useState(""); var dcErr = _dce[0], setDcErr = _dce[1];
   var onPickDuckPhoto = function (e) {
@@ -20679,7 +20757,7 @@ function LondonRoom(_refLD) {
     ]),
     null
   );
-  // 「周末探险」和「随便走走」共用一套清单渲染
+  // 清单渲染：周末探险和书与剧共用
   var zoneRows = function (zones) {
     return h("div", { key: "zs" }, zones.map(function (zone, zi) {
       return h("div", { key: "z" + zi, style: { marginTop: zi ? 14 : 2 } },
@@ -20739,23 +20817,54 @@ function LondonRoom(_refLD) {
   ]);
   var weekTab = ukCard([
     screws,
-    ukHead("侦探的周末探险", "坐上火车就走 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
-    zoneRows([LD_TRIPS[2], LD_TRIPS[3], LD_TRIPS[4]]),
+    ukHead("侦探的周末探险", "坐上火车就走，或者就在城里逛 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
+    zoneRows([LD_TRIPS[1], LD_TRIPS[2], LD_TRIPS[3], LD_TRIPS[0]]),
     h("div", { key: "wkft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75 } },
       "火车票提前几天在 Trainline 或 National Rail 上买 Advance，比当天到车站买便宜一半不止。周末常有修路改线，出门前在 National Rail 看一眼当天有没有变。")
   ]);
-  var walkTab = ukCard([
+  // 她标过的片子 → 取景地；标过的排前面，其余也留着当备选
+  var screenGroups = (function () {
+    var mine = [], rest = [], i, j, hit, f, t;
+    var marked = [];
+    for (i = 0; i < myFilms.length; i++) {
+      f = myFilms[i];
+      if (f && (f.n_want || f.n_seen)) marked.push((f.t || "").toLowerCase());
+    }
+    for (i = 0; i < LD_SCREEN.length; i++) {
+      hit = false;
+      for (j = 0; j < LD_SCREEN[i].k.length && !hit; j++) {
+        t = LD_SCREEN[i].k[j].toLowerCase();
+        for (var m = 0; m < marked.length; m++) { if (marked[m].indexOf(t) >= 0) { hit = true; break; } }
+      }
+      (hit ? mine : rest).push(LD_SCREEN[i]);
+    }
+    var out = [];
+    if (mine.length) {
+      out.push({ z: "🎞 你标过的片子，在伦敦能走到", list: [].concat.apply([], mine.map(function (g) {
+        return g.list.map(function (x) { return { n: x.n, d: "《" + g.f + "》· " + x.d, e: x.e, q: x.q }; });
+      })) });
+    }
+    if (rest.length) {
+      out.push({ z: mine.length ? "🎬 其它片子的伦敦（备选）" : "🎬 从片子走进伦敦", list: [].concat.apply([], rest.map(function (g) {
+        return g.list.map(function (x) { return { n: x.n, d: "《" + g.f + "》· " + x.d, e: x.e, q: x.q }; });
+      })) });
+    }
+    return out;
+  })();
+  var litTab = ukCard([
     screws,
-    ukHead("随便走走", "不用计划，出门就到 · 点一下标记", h("span", { style: { fontSize: "1rem" } }, "🚶")),
-    zoneRows([LD_TRIPS[0], LD_TRIPS[1]])
+    ukHead("书与剧", "英国文学 · 侦探 · 英剧取景 · 文艺影院", h("span", { style: { fontSize: "1rem" } }, "📖")),
+    h("div", { key: "litintro", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.72rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8, marginBottom: 4 } },
+      "照着你读的和你爱看的排的几条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。最后那组是按你在电影节里标过的片子挑的取景地。"),
+    zoneRows(LD_LIT.concat(screenGroups))
   ]);
-  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["week", "🚂 周末探险"], ["walk", "🚶 随便走走"]];
+  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
   var playTab = h("div", null,
     h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
       var on = sub === t[0];
       return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
     })),
-    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "week" ? weekTab : walkTab
+    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab
   );
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
