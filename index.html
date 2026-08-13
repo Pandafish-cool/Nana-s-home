@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-132";
+var NANA_VER = "v2026.8.2-133";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18393,6 +18393,44 @@ var LD_PARKS = [
   { n: "Victoria Pk", la: 51.5362, lo: -0.0390, r: 11 },
   { n: "Battersea", la: 51.4791, lo: -0.1567, r: 9 }
 ];
+// ── 📖 书与剧：照着她读的和爱看的排的几条线 ──────────────
+var LD_LIT = [
+  { z: "🔍 侦探那条（半天，全在市中心）", list: [
+    { n: "贝克街 221B 博物馆", d: "先从这儿开始 · 屋子小，楼梯陡，一次放一小批人进去", e: "🕵️", q: "Sherlock Holmes Museum London" },
+    { n: "Speedy's Café · North Gower Street", d: "BBC《神探夏洛克》里 221B 的实际外景，就是这家三明治店门口 · 走进去吃个早餐也行", e: "☕", q: "Speedys Cafe North Gower Street London" },
+    { n: "Sherlock Holmes 酒吧", d: "Northumberland Street 10 号 · 楼上照小说复原了一整间起居室，隔着玻璃能看 · 柯南道尔笔下的旅馆就在这条街", e: "🍺", q: "The Sherlock Holmes Pub Northumberland Street London" },
+    { n: "圣巴塞洛缪医院 St Bart's", d: "剧里那场跳楼就在这栋楼前面 · 院里有个小博物馆，安静，几乎没游客", e: "🏛️", q: "St Bartholomews Hospital London" }
+  ] },
+  { z: "📚 英国文学那条（一整天）", list: [
+    { n: "大英图书馆 Treasures 展厅", d: "免费 · 简·奥斯汀的手稿和书桌、勃朗特姐妹的小本子、莎士比亚第一对开本、大宪章，都在同一间屋里 · 就在 St Pancras 隔壁", e: "📜", q: "British Library Treasures Gallery London" },
+    { n: "狄更斯故居博物馆", d: "Doughty Street 48 号 · 他写《雾都孤儿》那三年住这儿 · 收费，一小时够", e: "🖋️", q: "Charles Dickens Museum London" },
+    { n: "布卢姆斯伯里 · Gordon Square", d: "伍尔夫和那帮人住过的几条街 · 广场边墙上一块块蓝牌子，就是路标", e: "🌿", q: "Gordon Square Bloomsbury London" },
+    { n: "Senate House", d: "奥威尔《1984》真理部的原型 · 不用进去，站在 Malet Street 上抬头看那栋白石头楼就懂了", e: "🏢", q: "Senate House University of London" },
+    { n: "济慈故居 Keats House", d: "Hampstead · 他在这园子里写的《夜莺颂》 · 从市中心过去半小时，顺带逛 Hampstead Heath", e: "🌸", q: "Keats House Hampstead London" }
+  ] },
+  { z: "📖 书店那条（半天，一条街走完）", list: [
+    { n: "Daunt Books · Marylebone", d: "爱德华时代的老店，橡木长廊加彩绘玻璃 · 书按国家排，旅行文学在最里面那面墙", e: "📗", q: "Daunt Books Marylebone London" },
+    { n: "Hatchards · Piccadilly", d: "1797 年开的，伦敦最老的书店 · 五层楼，木楼梯", e: "📕", q: "Hatchards Piccadilly London" },
+    { n: "Foyles · Charing Cross Road", d: "大得像图书馆 · 顶层咖啡馆能坐一下午没人赶", e: "📘", q: "Foyles Charing Cross Road London" },
+    { n: "查令十字街 84 号", d: "《查令十字街 84 号》里那家 Marks & Co · 书店早没了，墙上留了一块牌子 · 站两分钟就好", e: "💌", q: "84 Charing Cross Road London" },
+    { n: "Cecil Court", d: "夹在两条大街之间的小巷，两边全是旧书店和古版画店 · 据说是对角巷的灵感", e: "🪄", q: "Cecil Court London" }
+  ] },
+  { z: "🎬 文艺影院那条（挑一个晚上）", list: [
+    { n: "BFI Southbank", d: "英国电影协会的家 · 常年放修复的老片 · 里面的 Mediatheque 可以免费坐着看英国影像档案，一个人去正好", e: "🎞️", q: "BFI Southbank London" },
+    { n: "Prince Charles Cinema", d: "莱斯特广场后面 · 经典片重映，票便宜，周末有通宵马拉松", e: "🍿", q: "Prince Charles Cinema London" },
+    { n: "Curzon Bloomsbury / Soho", d: "艺术院线 · 欧洲片和纪录片多，场次安静", e: "🎥", q: "Curzon Bloomsbury London" },
+    { n: "Electric Cinema · Portobello", d: "诺丁山那条街上 · 沙发座加脚凳，还有床位 · 逛完市集正好去看一场", e: "🛋️", q: "Electric Cinema Portobello Road London" },
+    { n: "Regent Street Cinema", d: "1896 年英国第一次公映电影就在这个厅 · 现在还在放片", e: "🎬", q: "Regent Street Cinema London" }
+  ] },
+  { z: "🎭 英剧和取景地那条（一整天）", list: [
+    { n: "Leadenhall Market", d: "维多利亚时代的绿金色拱廊 · 哈利波特里破釜酒吧的外景 · 工作日中午最热闹，周末几乎没人", e: "🏮", q: "Leadenhall Market London" },
+    { n: "Ye Olde Cheshire Cheese", d: "Fleet Street 上的老酒馆，1667 年重建 · 狄更斯常去 · 里面一层层往下挖，像地窖", e: "🍻", q: "Ye Olde Cheshire Cheese Fleet Street London" },
+    { n: "The Old Curiosity Shop", d: "十六世纪留下来的一栋歪房子 · 名字就来自狄更斯那本书 · 在 LSE 后面那条小街", e: "🏚️", q: "The Old Curiosity Shop Portsmouth Street London" },
+    { n: "Wilton's Music Hall", d: "世界上最老的大型音乐厅之一 · 墙皮斑驳没修，就那么开着 · 有演出就买张票，没有也能进去喝一杯", e: "🎪", q: "Wiltons Music Hall London" },
+    { n: "莎士比亚环球剧场", d: "照原样重建的露天木剧场 · 夏天演出季有站票，几镑钱，站在台下看 · 你在的时候正好是季中", e: "🎭", q: "Shakespeares Globe London" },
+    { n: "格林威治 Old Royal Naval College", d: "无数英剧和电影在这儿拍过 · 广场免费走，Painted Hall 要票 · 离家最近的一个", e: "⛪", q: "Old Royal Naval College Greenwich" }
+  ] }
+];
 // ── 🛬 落地那天：盖特威克 → Fraser Place ──────────────────
 var LD_ARR_STEP = [
   { e: "📱", n: "出发前就办好", items: [
@@ -20744,18 +20782,25 @@ function LondonRoom(_refLD) {
     h("div", { key: "wkft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75 } },
       "火车票提前几天在 Trainline 或 National Rail 上买 Advance，比当天到车站买便宜一半不止。周末常有修路改线，出门前在 National Rail 看一眼当天有没有变。")
   ]);
+  var litTab = ukCard([
+    screws,
+    ukHead("书与剧", "英国文学 · 侦探 · 英剧取景 · 文艺影院", h("span", { style: { fontSize: "1rem" } }, "📖")),
+    h("div", { key: "litintro", style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.72rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.8, marginBottom: 4 } },
+      "照着你读的和你爱看的排的五条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。"),
+    zoneRows(LD_LIT)
+  ]);
   var walkTab = ukCard([
     screws,
     ukHead("随便走走", "不用计划，出门就到 · 点一下标记", h("span", { style: { fontSize: "1rem" } }, "🚶")),
     zoneRows([LD_TRIPS[0], LD_TRIPS[1]])
   ]);
-  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["week", "🚂 周末探险"], ["walk", "🚶 随便走走"]];
+  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"], ["walk", "🚶 随便走走"]];
   var playTab = h("div", null,
     h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
       var on = sub === t[0];
       return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
     })),
-    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "week" ? weekTab : walkTab
+    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : sub === "week" ? weekTab : walkTab
   );
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
