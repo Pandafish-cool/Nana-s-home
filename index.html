@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-135";
+var NANA_VER = "v2026.8.2-138";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18031,7 +18031,14 @@ var LD_TRIPS = [
     { n: "Borough Market", d: "美食市场，周六最热闹 · 一个人吃得很过瘾，摊子多半可以只买一份", e: "🧀", q: "Borough Market London" },
     { n: "Camden Market", d: "朋克、涂鸦、街头小吃 · 跟别处完全不是一个伦敦", e: "🎸", q: "Camden Market London" },
     { n: "Columbia Road 花市", d: "只有周日开，一条街全是花 · 早去人少，收摊前最便宜", e: "💐", q: "Columbia Road Flower Market" },
-    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" }
+    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" },
+    { n: "Hampstead Heath + Kenwood House", d: "一整片野草地，不修剪的那种 · Kenwood 是免费的宅邸，里面有伦勃朗自画像和维米尔 · Parliament Hill 山顶看得到整个伦敦 · 配济慈故居正好一天", e: "🌳", q: "Kenwood House Hampstead London" },
+    { n: "Kyoto Garden · Holland Park", d: "公园里一座日式庭园，瀑布、锦鲤，还有孔雀走来走去 · 安静得不像伦敦", e: "🎋", q: "Kyoto Garden Holland Park London" },
+    { n: "小威尼斯 → 卡姆登 运河船", d: "露天甲板，慢慢开过摄政公园和动物园 · 一趟四十来分钟，不闷", e: "🛶", q: "Little Venice London" },
+    { n: "Maltby Street Market", d: "只有周末 · 比 Borough Market 小得多、安静得多，东西一样好 · 铁道拱洞底下那条", e: "🥟", q: "Maltby Street Market London" },
+    { n: "Museum of the Home", d: "一间间复原的英国客厅，从 1600 年一路排到现在 · 免费 · 学文学的人看这个等于看小说布景 · Hoxton 站出来就是", e: "🛋️", q: "Museum of the Home London" },
+    { n: "Barbican Conservatory", d: "藏在艺术中心里的热带温室 · 免费，但只在特定日子开，要提前在官网订", e: "🌴", q: "Barbican Conservatory London" },
+    { n: "God's Own Junkyard", d: "一整个仓库的旧霓虹灯，闪得人睁不开眼 · 只有周末开，在 Walthamstow · 里面有咖啡，进去不要钱", e: "💡", q: "Gods Own Junkyard Walthamstow London" }
   ] },
   { z: "🚄 一小时之内（当天来回很轻松）", list: [
     { n: "牛津 Oxford", d: "Paddington 出发 1 小时 · 基督堂学院是哈利波特食堂的原型", e: "🎓", q: "Oxford UK" },
@@ -18214,6 +18221,76 @@ var ldHomeRoom = function () {
   return null;
 };
 // 照片墙的随手感：角度、高度、左右挪一点、问句都换着来
+// 唐宁街 10 号那扇黑门，和门口那只猫
+var ldLarryArt = function (hgt, big) {
+  var h = React.createElement;
+  var T = (Date.now() / 90) | 0;
+  var tail = Math.sin(T * 0.09) * 16;
+  var blink = (T % 70) < 4;
+  var step = Math.sin(T * 0.045) * 5;
+  return h("svg", { viewBox: "0 0 200 130", preserveAspectRatio: "xMidYMid slice",
+      style: { width: "100%", height: hgt, display: "block", borderRadius: 2, background: "linear-gradient(170deg,#2b2f36,#1b1f25)" } },
+    // 砖墙
+    h("rect", { x: 0, y: 0, width: 200, height: 112, fill: "#23262c" }),
+    [0, 1, 2, 3, 4, 5, 6, 7].map(function (r) {
+      return h("line", { key: "br" + r, x1: 0, y1: 8 + r * 13, x2: 200, y2: 8 + r * 13, stroke: "rgba(255,255,255,0.05)", strokeWidth: 1 });
+    }),
+    // 门框
+    h("rect", { x: 66, y: 20, width: 68, height: 92, fill: "#111418" }),
+    h("rect", { x: 62, y: 16, width: 76, height: 6, fill: "#3a3f47" }),
+    // 扇形气窗
+    h("path", { d: "M72 34 q28 -16 56 0 Z", fill: "#f2d488", opacity: 0.9 }),
+    [0, 1, 2, 3].map(function (k) {
+      return h("line", { key: "fl" + k, x1: 100, y1: 34, x2: 74 + k * 17, y2: 24 + Math.abs(k - 1.5) * 5, stroke: "#111418", strokeWidth: 1 });
+    }),
+    // 黑门
+    h("rect", { x: 72, y: 36, width: 56, height: 76, rx: 1, fill: "#0d1013", stroke: "#41474f", strokeWidth: 1.4 }),
+    h("rect", { x: 78, y: 44, width: 19, height: 26, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 103, y: 44, width: 19, height: 26, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 78, y: 78, width: 19, height: 28, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 103, y: 78, width: 19, height: 28, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    // 门牌 10 · 狮头门环 · 信箱
+    h("text", { x: 100, y: 46, fontSize: 13, textAnchor: "middle", fill: "#f0f2f4", fontFamily: "Georgia,serif", fontWeight: "bold" }, "10"),
+    h("circle", { cx: 100, cy: 62, r: 4.6, fill: "none", stroke: "#c9a24a", strokeWidth: 1.8 }),
+    h("rect", { x: 88, y: 72, width: 24, height: 4, rx: 1, fill: "#c9a24a" }),
+    // 台阶
+    h("rect", { x: 58, y: 110, width: 84, height: 6, fill: "#8d8f8c" }),
+    h("rect", { x: 0, y: 116, width: 200, height: 14, fill: "#4a4d52" }),
+    // 门口的警察
+    h("g", { key: "cop" },
+      h("ellipse", { cx: 44, cy: 112, rx: 7, ry: 2, fill: "rgba(0,0,0,0.3)" }),
+      h("rect", { x: 38, y: 82, width: 12, height: 28, rx: 4, fill: "#161b26" }),
+      h("circle", { cx: 44, cy: 78, r: 5.4, fill: "#f0d3b8" }),
+      h("path", { d: "M38.6 76 q5.4 -9 10.8 0 Z", fill: "#0f1420" }),
+      h("rect", { x: 38.6, y: 74.6, width: 10.8, height: 2.6, fill: "#0f1420" })),
+    // Larry：白棕虎斑，坐在台阶上，尾巴一直甩
+    h("g", { transform: "translate(" + (140 + step).toFixed(1) + " 0)" },
+      h("ellipse", { cx: 0, cy: 111, rx: 11, ry: 2.6, fill: "rgba(0,0,0,0.32)" }),
+      h("path", { d: "M8 106 q" + (12 + tail * 0.4) + " " + (-4 + tail) + " " + (6 + tail * 0.5) + " " + (-16 + tail * 0.6),
+        fill: "none", stroke: "#e8e2d8", strokeWidth: 4.2, strokeLinecap: "round" }),
+      h("path", { d: "M-9 110 q-2 -18 9 -18 q11 0 9 18 Z", fill: "#f2ece2" }),
+      h("path", { d: "M2 92 q9 -1 8 8 q-1 6 -8 8 Z", fill: "#b9977a", opacity: 0.85 }),
+      h("circle", { cx: 0, cy: 87, r: 8.4, fill: "#f5f0e8" }),
+      h("path", { d: "M4 80 q7 -2 6 6 Z", fill: "#b9977a" }),
+      h("path", { d: "M-7.4 81.6 l-1.6 -7 l6 3.4 Z", fill: "#f5f0e8", stroke: "#c9b9a4", strokeWidth: 0.8 }),
+      h("path", { d: "M7.4 81.6 l1.6 -7 l-6 3.4 Z", fill: "#f5f0e8", stroke: "#c9b9a4", strokeWidth: 0.8 }),
+      blink
+        ? h("g", { stroke: "#3a3128", strokeWidth: 1.2, strokeLinecap: "round" },
+            h("line", { x1: -4.6, y1: 87, x2: -1.4, y2: 87 }),
+            h("line", { x1: 1.4, y1: 87, x2: 4.6, y2: 87 }))
+        : h("g", null,
+            h("ellipse", { cx: -3, cy: 86.6, rx: 1.7, ry: 2.1, fill: "#2f6b46" }),
+            h("ellipse", { cx: 3, cy: 86.6, rx: 1.7, ry: 2.1, fill: "#2f6b46" }),
+            h("circle", { cx: -3, cy: 86.6, r: 0.7, fill: "#0d1013" }),
+            h("circle", { cx: 3, cy: 86.6, r: 0.7, fill: "#0d1013" })),
+      h("path", { d: "M0 90 l-1.4 1.4 h2.8 Z", fill: "#d98f96" }),
+      h("g", { stroke: "rgba(240,235,225,0.75)", strokeWidth: 0.6, strokeLinecap: "round" },
+        h("line", { x1: -5, y1: 90, x2: -12, y2: 88.6 }),
+        h("line", { x1: -5, y1: 91.4, x2: -12, y2: 92.6 }),
+        h("line", { x1: 5, y1: 90, x2: 12, y2: 88.6 }),
+        h("line", { x1: 5, y1: 91.4, x2: 12, y2: 92.6 }))),
+    big ? null : h("text", { x: 100, y: 127, textAnchor: "middle", fontSize: 8.5, fill: "rgba(220,225,232,0.85)", fontFamily: "'Patrick Hand',cursive" }, "\u6ca1\u62cd\u5230\uff0c\u753b\u7684"));
+};
 var LD_TILT  = [-2.6, 1.9, -1.2, 3.1, -3.4, 1.3, -1.8, 2.6, -2.1, 3.6, -1.5, 2.2];
 var LD_PH    = [124, 96, 142, 108, 116, 132, 92, 120, 148, 100, 128, 110];
 var LD_NUDGE = [0, 3, -2, 2, -4, 1, 3, -3, 0, 2, -2, 1];
@@ -18299,6 +18376,11 @@ var LD_WALL = [
     more: [],
     say: "Kingsman 里那个神秘机构，就在这附近。",
     tip: "整条街是一个弧线，两边楼是同一套石头立面。橱窗做得比店里还认真，光看不买也值。Kingsman 里那家裁缝店是隔壁 Savile Row 11 号的 Huntsman，从摄政街拐过去三分钟，店还在营业，橱窗随便看，进去也没人赶你。往南接皮卡迪利广场，往北到牛津圆环。" },
+  { f: "", sk: 2, sn: "Larry", n: "唐宁街 10 号的 Larry", q: "Downing Street London", la: 51.5034, lo: -0.1276, must: 1,
+    more: [],
+    say: "",
+    tip: "首相府那扇黑门，门口那只白棕相间的虎斑猫叫 Larry —— 官方头衔是「内阁办公室首席捕鼠官」，2011 年上任，比好几任首相待得都久。唐宁街本身 1989 年就封了，走不进去，只能站在 Whitehall 那道大铁门外往里看。Larry 有时候会溜达到门口，隔着栏杆能看见，看不看得到全看运气 —— 看不到也别失望，它只是又睡了。铁门斜对面就是骑兵卫队阅兵场，工作日 11 点、周日 10 点换岗，全程露天。再往前走几步是圣詹姆斯公园，看不到猫就去那儿看鹈鹕。Jubilee 线到 Westminster 出来走五分钟。",
+    ldx: 1 },
   { f: "lego-tube", sn: "乐高店", n: "莱斯特广场 · 乐高店", q: "LEGO Store Leicester Square London", la: 51.5105, lo: -0.1310, must: 0,
     more: [],
     say: "",
@@ -18444,6 +18526,23 @@ var LD_LIT = [
     { n: "Foyles · Charing Cross Road", d: "大得像图书馆 · 顶层咖啡馆能坐一下午没人赶", e: "📘", q: "Foyles Charing Cross Road London" },
     { n: "查令十字街 84 号", d: "《查令十字街 84 号》里那家 Marks & Co · 书店早没了，墙上留了一块牌子 · 站两分钟就好", e: "💌", q: "84 Charing Cross Road London" },
     { n: "Cecil Court", d: "夹在两条大街之间的小巷，两边全是旧书店和古版画店 · 据说是对角巷的灵感", e: "🪄", q: "Cecil Court London" }
+  ] },
+  { z: "🏛 很美很舒服的博物馆", list: [
+    { n: "Museum of London Docklands", d: "离家最近的一个 —— West India Quay，从楼下走过去十几分钟 · 19 世纪糖仓改的，粗木梁厚砖墙，讲的就是这片码头自己的历史 · 免费 · 下雨天不想走远时最好的答案", e: "⚓", q: "Museum of London Docklands" },
+    { n: "V&A", d: "免费，也是最美的一个 · 三个必看：Cast Courts（两个大厅塞满等身复制品，米开朗基罗的大卫在里面）、中庭花园（有浅水池，夏天能脱鞋坐进去）、Gamble Room —— 世界第一个博物馆餐厅，维多利亚彩瓷从地面糊到天花板，你就在里面吃饭", e: "✨", q: "Victoria and Albert Museum London" },
+    { n: "Tate Britain", d: "不是泰特现代，是 Millbank 那个 · 整个 Clore 厅都是透纳 · 免费，人比泰特现代少一大半，坐着看半小时没人打扰", e: "🎨", q: "Tate Britain London" },
+    { n: "Dulwich Picture Gallery", d: "英国第一座公共画廊，索恩设计，全靠天光 · 南伦敦，人少得不像伦敦，旁边就是公园，有咖啡馆 · 收费 · 「舒服」这个词是为它准备的", e: "🌿", q: "Dulwich Picture Gallery London" },
+    { n: "Leighton House", d: "维多利亚画家的家，里面有个阿拉伯厅 —— 金色马赛克穹顶、喷泉、伊斯兰瓷砖 · 很小，一小时逛完，几乎没人 · 收费不贵", e: "🕌", q: "Leighton House Museum London" },
+    { n: "Queen's House + 国家海事博物馆", d: "都在格林威治，都免费 · Queen's House 里那道郁金香楼梯是英国第一座无支撑螺旋楼梯，还有《阿玛达肖像》 · 去天文台那天顺路，不用另跑一趟", e: "⛵", q: "Queens House Greenwich London" },
+    { n: "Freud Museum", d: "他从维也纳逃出来后最后的家，书房和那张沙发原样保留 · Hampstead，离 Kenwood House 不远，配济慈那天 · 不是每天开，出发前查一下官网", e: "🛋️", q: "Freud Museum London" },
+    { n: "Sir John Soane's Museum", d: "公认伦敦最奇妙的一栋房子 —— 建筑师把一辈子的收藏塞满自家三间连排屋，画室的墙能像书页一样翻开，地下室摆着塞提一世的石棺。免费。\n先说清楚：房间很窄，光线很暗，通道像迷宫，一次只放少量人进去，人多的时候要贴着走。地下那层尤其低矮。\n所以 —— 想去就去，但给自己留退路：只逛地面层和画室，地下室可以不下去；进门先跟工作人员说一声，他们见得多了，随时能带你从最近的门出来。觉得不对劲就走，这地方不值得你难受。", e: "🏚️", q: "Sir John Soanes Museum London" }
+  ] },
+  { z: "🫖 一个人去最舒服的（安静、便宜、不用跟谁说话）", list: [
+    { n: "Wallace Collection", d: "一座宅邸里的私人收藏，《微笑的骑士》在这儿 · 免费，人极少 · 中庭是玻璃顶餐厅，可以坐一下午没人赶 · 离 Daunt Books 走路十分钟", e: "🖼️", q: "The Wallace Collection London" },
+    { n: "Postman's Park", d: "一面瓷砖墙，每块砖记着一个为救人而死的普通人 —— 名字、年份、怎么死的 · 小得像个院子，几乎没人 · 在圣保罗和巴比肯中间", e: "🧱", q: "Postmans Park London" },
+    { n: "Wigmore Hall 周一午间音乐会", d: "室内乐，一小时，中午散场 · 票价很低，官网买 · 一个人去毫不突兀，散场正好去隔壁 Daunt Books", e: "🎻", q: "Wigmore Hall London" },
+    { n: "Word on the Water", d: "停在 King's Cross 运河上的一条书船 · 甲板上有时有爵士 · 从大英图书馆出来顺路", e: "⛵", q: "Word on the Water London" },
+    { n: "南岸旧书市", d: "滑铁卢桥底下的旧书摊，天天开，风雨无阻 · 接在看日落那条后面正好 · 便宜的旧平装书一两镑", e: "📚", q: "Southbank Centre Book Market London" }
   ] },
   { z: "🎬 文艺影院那条（挑一个晚上）", list: [
     { n: "BFI Southbank", d: "英国电影协会的家 · 常年放修复的老片 · 里面的 Mediatheque 可以免费坐着看英国影像档案，一个人去正好", e: "🎞️", q: "BFI Southbank London" },
@@ -20458,7 +20557,7 @@ function LondonRoom(_refLD) {
                 h("div", { style: { fontFamily: LDHAND, fontSize: "0.78rem", color: "rgba(120,95,55,0.95)" } }, "\u7ffb\u5f00\u770b\u770b"));
               var front = h("div", { style: Object.assign({}, faceBase, { transform: "rotateY(180deg)", background: "#fff", padding: "6px 6px 20px" }) },
                 x.sk
-                  ? ldSpyArt(ph, 0)
+                  ? (x.sk === 2 ? ldLarryArt(ph, 0) : ldSpyArt(ph, 0))
                   : (x.cu
                     ? h(NanaCloudImg, { u: x.cu, thumb: true, style: { width: "100%", height: ph, objectFit: "cover", display: "block", borderRadius: 2 } })
                     : (x.f
@@ -20513,7 +20612,7 @@ function LondonRoom(_refLD) {
         h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
           h("div", { style: { padding: 9 } },
             wallSel.sk
-              ? h("div", { style: { borderRadius: 6, overflow: "hidden" } }, ldSpyArt(210, 1))
+              ? h("div", { style: { borderRadius: 6, overflow: "hidden" } }, (wallSel.sk === 2 ? ldLarryArt(210, 1) : ldSpyArt(210, 1)))
               : (wallSel.cu
                 ? h(NanaCloudImg, { u: wallSel.cu, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
                 : (wallSel.f
@@ -20775,7 +20874,7 @@ function LondonRoom(_refLD) {
             h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, o.e),
             h("div", { style: { flex: 1, minWidth: 0 } },
               h("a", { href: ldMap(o.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", fontWeight: 800, fontSize: "0.8rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, o.n, " 📍"),
-              h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.6 } }, o.d)),
+              h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", marginTop: 2, lineHeight: 1.6, whiteSpace: "pre-line" } }, o.d)),
             h("button", { onClick: function () { cycleSpot(id); }, style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: c.bg, color: c.col } }, c.txt));
         }));
     }));
