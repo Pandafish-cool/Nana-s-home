@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-133";
+var NANA_VER = "v2026.8.2-134";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18026,22 +18026,12 @@ var LD_SURVIVE = [
 
 // 去玩
 var LD_TRIPS = [
-  { z: "🚶 走几步就到（30 分钟内）", list: [
-    { n: "格林威治 Greenwich", d: "DLR 十分钟 · 天文台踩本初子午线 · 周末市集", e: "🕰️", q: "Greenwich London" },
-    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸", e: "🚇", q: "Greenwich Foot Tunnel" },
-    { n: "Mudchute 农场", d: "狗岛上的免费农场，有羊驼和小羊", e: "🐑", q: "Mudchute Park and Farm" },
-    { n: "Canary Wharf 屋顶花园", d: "商场顶层的热带植物园，免费，晴天必去", e: "🌴", q: "Crossrail Place Roof Garden" }
-  ] },
-  { z: "🚇 市区（40 分钟内）", list: [
-    { n: "Tower Bridge & 伦敦塔", d: "Jubilee 到 London Bridge，伦敦第一眼", e: "🌉", q: "Tower Bridge London" },
-    { n: "Borough Market", d: "美食市场，周六最热闹，一个人吃得很过瘾", e: "🧀", q: "Borough Market London" },
-    { n: "大英博物馆", d: "免费 · 逛三次都逛不完 · 下雨天首选", e: "🏛️", q: "British Museum" },
-    { n: "Tate Modern", d: "免费现代艺术馆，顶层看圣保罗大教堂", e: "🎨", q: "Tate Modern London" },
-    { n: "Sky Garden", d: "免费登高看全城，需提前网上预约", e: "🌇", q: "Sky Garden London" },
-    { n: "Notting Hill / Portobello", d: "周六古董市集，彩色房子拍照", e: "🏘️", q: "Portobello Road Market" },
-    { n: "Camden Market", d: "朋克、涂鸦、街头小吃", e: "🎸", q: "Camden Market London" },
-    { n: "Columbia Road 花市", d: "只有周日开，一条街全是花", e: "💐", q: "Columbia Road Flower Market" },
-    { n: "Hyde Park / 摄政公园", d: "天气好就去躺着，秋天满地金黄", e: "🌳", q: "Hyde Park London" }
+  { z: "🚇 不出城的时候（市区几个别处没写的）", list: [
+    { n: "Sky Garden", d: "免费登高看全城，需要提前在官网订时段 · 顶层是玻璃花园，下雨天也能看", e: "🌇", q: "Sky Garden London" },
+    { n: "Borough Market", d: "美食市场，周六最热闹 · 一个人吃得很过瘾，摊子多半可以只买一份", e: "🧀", q: "Borough Market London" },
+    { n: "Camden Market", d: "朋克、涂鸦、街头小吃 · 跟别处完全不是一个伦敦", e: "🎸", q: "Camden Market London" },
+    { n: "Columbia Road 花市", d: "只有周日开，一条街全是花 · 早去人少，收摊前最便宜", e: "💐", q: "Columbia Road Flower Market" },
+    { n: "格林威治步行隧道", d: "从 Island Gardens 走到泰晤士河底，穿到对岸格林威治 · 免费，全程有电梯", e: "🚇", q: "Greenwich Foot Tunnel" }
   ] },
   { z: "🚄 一小时之内（当天来回很轻松）", list: [
     { n: "牛津 Oxford", d: "Paddington 出发 1 小时 · 基督堂学院是哈利波特食堂的原型", e: "🎓", q: "Oxford UK" },
@@ -20717,7 +20707,7 @@ function LondonRoom(_refLD) {
     ]),
     null
   );
-  // 「周末探险」和「随便走走」共用一套清单渲染
+  // 清单渲染：周末探险和书与剧共用
   var zoneRows = function (zones) {
     return h("div", { key: "zs" }, zones.map(function (zone, zi) {
       return h("div", { key: "z" + zi, style: { marginTop: zi ? 14 : 2 } },
@@ -20777,8 +20767,8 @@ function LondonRoom(_refLD) {
   ]);
   var weekTab = ukCard([
     screws,
-    ukHead("侦探的周末探险", "坐上火车就走 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
-    zoneRows([LD_TRIPS[2], LD_TRIPS[3], LD_TRIPS[4]]),
+    ukHead("侦探的周末探险", "坐上火车就走，或者就在城里逛 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
+    zoneRows([LD_TRIPS[1], LD_TRIPS[2], LD_TRIPS[3], LD_TRIPS[0]]),
     h("div", { key: "wkft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75 } },
       "火车票提前几天在 Trainline 或 National Rail 上买 Advance，比当天到车站买便宜一半不止。周末常有修路改线，出门前在 National Rail 看一眼当天有没有变。")
   ]);
@@ -20789,18 +20779,13 @@ function LondonRoom(_refLD) {
       "照着你读的和你爱看的排的五条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。"),
     zoneRows(LD_LIT)
   ]);
-  var walkTab = ukCard([
-    screws,
-    ukHead("随便走走", "不用计划，出门就到 · 点一下标记", h("span", { style: { fontSize: "1rem" } }, "🚶")),
-    zoneRows([LD_TRIPS[0], LD_TRIPS[1]])
-  ]);
-  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"], ["walk", "🚶 随便走走"]];
+  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
   var playTab = h("div", null,
     h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
       var on = sub === t[0];
       return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
     })),
-    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : sub === "week" ? weekTab : walkTab
+    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab
   );
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
