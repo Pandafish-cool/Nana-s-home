@@ -7779,8 +7779,9 @@ var nanaHardFail = function (err) {
   var st = err && err.st;
   return st >= 400 && st < 500 && st !== 408 && st !== 429;
 };
-// 一口气下 145KB 在这条链路上很容易断，改成一块一块拿（每块 64KB，单独超时、单独重试）
-var NANA_CHUNK = 65536, NANA_CHUNK_MS = 7000;
+// 一块一块拿（单独超时、单独重试）。块太小的话来回握手的开销比传数据还贵，
+// 跨境链路上 64KB/7 秒经常还没连上就超时了，加大到 192KB / 14 秒。
+var NANA_CHUNK = 196608, NANA_CHUNK_MS = 10000;
 var nanaFetchRange = function (u, start, end, cb) {
   var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
   var late = false;
@@ -7827,7 +7828,8 @@ var nanaCloudFetch = function (u, cb) {
   var step = function (tries) {
     nanaFetchRange(u, got, got + NANA_CHUNK - 1, function (err, buf, tot) {
       if (err) {
-        if (nanaHardFail(err) || tries <= 1) return cb(err);
+        // 第一块就拿不到，说明不是「大文件传一半断了」，磨下去没意义 —— 交回上层改用整包
+        if (got === 0 || nanaHardFail(err) || tries <= 1) return cb(err);
         return setTimeout(function () { step(tries - 1); }, 600);
       }
       if (tot === -2) return done(buf);                       // 不支持 Range，一次就拿全了
@@ -7836,16 +7838,44 @@ var nanaCloudFetch = function (u, cb) {
       if (tot >= 0) total = tot;
       if (total < 0 || got >= total) return done(nanaJoin(parts, got));
       if (parts.length > 200) return cb(new Error("too many chunks"));
-      step(2);
+      step(3);
     });
   };
-  step(2);
+  step(3);
 };
+// 分块是为了跨境断流，但有的网关就是不好好处理 Range —— 兜底再来一次整包 GET。
+var nanaCloudFetchPlain = function (u, cb) {
+  var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  var late = false;
+  var timer = ctrl ? setTimeout(function () { late = true; try { ctrl.abort(); } catch (_) {} }, 30000) : null;
+  try {
+    fetch(u, { cache: "default", signal: ctrl ? ctrl.signal : undefined }).then(function (r) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (!r || !r.ok) { var he = new Error("HTTP " + (r && r.status)); he.st = r ? r.status : 0; throw he; }
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      if (!nanaJpegOk(buf)) return cb(new Error("truncated"));
+      var fr = new FileReader();
+      fr.onload = function () { cb(null, String(fr.result)); };
+      fr.onerror = function () { cb(fr.error || new Error("read")); };
+      fr.readAsDataURL(new Blob([buf], { type: "image/jpeg" }));
+    })["catch"](function (e) {
+      if (timer) clearTimeout(timer);
+      if (late) { var te = new Error("timeout"); te.to = true; return cb(te); }
+      cb(e);
+    });
+  } catch (e) { if (timer) clearTimeout(timer); cb(e); }
+};
+// 顺序：分块 → 整包 →（再来一轮）分块 → 整包。整包很早就轮到，不用干等分块磨完。
 var nanaCloudFetchRetry = function (u, tries, cb) {
   nanaCloudFetch(u, function (err, d) {
     if (!err && d) return cb(null, d);
-    if (nanaHardFail(err) || tries <= 1) return cb(err || new Error("fail"));
-    setTimeout(function () { nanaCloudFetchRetry(u, tries - 1, cb); }, 1200);
+    if (nanaHardFail(err)) return cb(err);
+    nanaCloudFetchPlain(u, function (e2, d2) {
+      if (!e2 && d2) return cb(null, d2);
+      if (nanaHardFail(e2) || tries <= 1) return cb(err || e2 || new Error("fail"));
+      setTimeout(function () { nanaCloudFetchRetry(u, tries - 1, cb); }, 1200);
+    });
   });
 };
 // 之前存过的可能是截断的白图，清一次让它们重下
@@ -7884,6 +7914,8 @@ function NanaCloudImg(_refCI) {
   var _n = useState(0); var nonce = _n[0], setNonce = _n[1];
   var _dd = useState(false); var dead = _dd[0], setDead = _dd[1];
   var _ot = useState(false); var onlyThumb = _ot[0], setOnlyThumb = _ot[1];
+  // 自己怎么下都下不来的时候，把地址直接交给 <img>，让浏览器自己去拿
+  var _dr = useState(false); var direct = _dr[0], setDirect = _dr[1];
   useEffect(function () {
     setDead(false);
     var t = (thumb && nanaNoThumb().indexOf(u) < 0) ? nanaThumbUrl(u) : null;
@@ -7892,7 +7924,7 @@ function NanaCloudImg(_refCI) {
   useEffect(function () {
     if (!want) return;
     var on = true, shown = false;
-    setSrc(null); setOnlyThumb(false);
+    setSrc(null); setOnlyThumb(false); setDirect(false);
     // 看大图时，先把本机已经存着的缩略图顶上去，不让画面空着
     if (want === u && !thumb) {
       var tu = nanaThumbUrl(u);
@@ -7904,15 +7936,18 @@ function NanaCloudImg(_refCI) {
     nanaCloudGet(want, function (data) {
       if (!on) return;
       if (data) { shown = true; setSrc(data); setOnlyThumb(false); return; }
+      // 看大图时本机没存过：立刻让浏览器自己去拉原图顶上，别干等我们分块下完。
+      // 我们这边照样在后台下载校验，下好了再换成验证过的那份。
+      if (want === u && !thumb) setDirect(true);
       nanaCloudFetchRetry(want, 2, function (err, d) {
         if (!on) return;
-        if (!err && d) { nanaCloudPut(want, d); shown = true; setSrc(d); setOnlyThumb(false); return; }
+        if (!err && d) { nanaCloudPut(want, d); shown = true; setSrc(d); setOnlyThumb(false); setDirect(false); return; }
         if (want !== u) { nanaMarkNoThumb(u); setWant(u); return; }   // 缩略图不行就退回原图
+        // 原图我们自己下不动 —— 交给浏览器直接加载，别让人只能看缩略图
+        if (!nanaHardFail(err)) { setDirect(true); return; }
         if (shown) return;                // 缩略图已经撑着，别动它
-        // 服务器答了但图是残的（或 4xx）：别再把白图放出来，给可点重试的占位。
-        var m = String((err && err.message) || "");
-        if (m === "truncated" || m.indexOf("HTTP") === 0 || (err && err.to)) { setDead(true); return; }
-        setSrc(want);                     // fetch 本身用不了，交给 img 标签试
+        // 4xx：这地址是真没有，给可点重试的占位
+        setDead(true);
       });
     });
     return function () { on = false; };
@@ -7927,11 +7962,17 @@ function NanaCloudImg(_refCI) {
     onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setNonce(nonce + 1); },
     style: Object.assign({}, style, { cursor: "pointer" })
   });
+  if (direct) return h("img", {
+    key: "direct|" + u + "|" + nonce, src: u, alt: "", decoding: "async",
+    onLoad: function () { try { nanaCloudGrab(u); } catch (_) {} },
+    onError: function () { setDirect(false); if (!src) setDead(true); },
+    onClick: onClick, style: style
+  });
   if (!src) return h("div", { onClick: onClick, style: Object.assign({ background: "#efe6dc", display: "flex", alignItems: "center", justifyContent: "center", color: "#b8a894", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "1px" }, style) }, "···");
   if (onlyThumb && !thumb) {
     return h("div", { style: { position: "relative", display: "inline-block", lineHeight: 0 } },
       h("img", { key: want + "|" + nonce, src: src, alt: "", decoding: "async", onClick: onClick, style: style }),
-      h("div", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setNonce(nonce + 1); },
+      h("div", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setDirect(true); setNonce(nonce + 1); },
         style: { position: "absolute", left: 0, right: 0, bottom: 0, background: "rgba(20,26,32,0.72)", color: "#ffe6b0", fontSize: "0.66rem", fontWeight: 800, textAlign: "center", padding: "6px 8px", cursor: "pointer", borderRadius: "0 0 8px 8px" } },
         "只有缩略图 · 点一下重试原图"));
   }
@@ -8120,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-139";
+var NANA_VER = "v2026.8.2-140";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
