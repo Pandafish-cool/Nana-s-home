@@ -8120,7 +8120,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-135";
+var NANA_VER = "v2026.8.2-136";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18214,6 +18214,76 @@ var ldHomeRoom = function () {
   return null;
 };
 // 照片墙的随手感：角度、高度、左右挪一点、问句都换着来
+// 唐宁街 10 号那扇黑门，和门口那只猫
+var ldLarryArt = function (hgt, big) {
+  var h = React.createElement;
+  var T = (Date.now() / 90) | 0;
+  var tail = Math.sin(T * 0.09) * 16;
+  var blink = (T % 70) < 4;
+  var step = Math.sin(T * 0.045) * 5;
+  return h("svg", { viewBox: "0 0 200 130", preserveAspectRatio: "xMidYMid slice",
+      style: { width: "100%", height: hgt, display: "block", borderRadius: 2, background: "linear-gradient(170deg,#2b2f36,#1b1f25)" } },
+    // 砖墙
+    h("rect", { x: 0, y: 0, width: 200, height: 112, fill: "#23262c" }),
+    [0, 1, 2, 3, 4, 5, 6, 7].map(function (r) {
+      return h("line", { key: "br" + r, x1: 0, y1: 8 + r * 13, x2: 200, y2: 8 + r * 13, stroke: "rgba(255,255,255,0.05)", strokeWidth: 1 });
+    }),
+    // 门框
+    h("rect", { x: 66, y: 20, width: 68, height: 92, fill: "#111418" }),
+    h("rect", { x: 62, y: 16, width: 76, height: 6, fill: "#3a3f47" }),
+    // 扇形气窗
+    h("path", { d: "M72 34 q28 -16 56 0 Z", fill: "#f2d488", opacity: 0.9 }),
+    [0, 1, 2, 3].map(function (k) {
+      return h("line", { key: "fl" + k, x1: 100, y1: 34, x2: 74 + k * 17, y2: 24 + Math.abs(k - 1.5) * 5, stroke: "#111418", strokeWidth: 1 });
+    }),
+    // 黑门
+    h("rect", { x: 72, y: 36, width: 56, height: 76, rx: 1, fill: "#0d1013", stroke: "#41474f", strokeWidth: 1.4 }),
+    h("rect", { x: 78, y: 44, width: 19, height: 26, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 103, y: 44, width: 19, height: 26, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 78, y: 78, width: 19, height: 28, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    h("rect", { x: 103, y: 78, width: 19, height: 28, fill: "none", stroke: "#2a3038", strokeWidth: 1.2 }),
+    // 门牌 10 · 狮头门环 · 信箱
+    h("text", { x: 100, y: 46, fontSize: 13, textAnchor: "middle", fill: "#f0f2f4", fontFamily: "Georgia,serif", fontWeight: "bold" }, "10"),
+    h("circle", { cx: 100, cy: 62, r: 4.6, fill: "none", stroke: "#c9a24a", strokeWidth: 1.8 }),
+    h("rect", { x: 88, y: 72, width: 24, height: 4, rx: 1, fill: "#c9a24a" }),
+    // 台阶
+    h("rect", { x: 58, y: 110, width: 84, height: 6, fill: "#8d8f8c" }),
+    h("rect", { x: 0, y: 116, width: 200, height: 14, fill: "#4a4d52" }),
+    // 门口的警察
+    h("g", { key: "cop" },
+      h("ellipse", { cx: 44, cy: 112, rx: 7, ry: 2, fill: "rgba(0,0,0,0.3)" }),
+      h("rect", { x: 38, y: 82, width: 12, height: 28, rx: 4, fill: "#161b26" }),
+      h("circle", { cx: 44, cy: 78, r: 5.4, fill: "#f0d3b8" }),
+      h("path", { d: "M38.6 76 q5.4 -9 10.8 0 Z", fill: "#0f1420" }),
+      h("rect", { x: 38.6, y: 74.6, width: 10.8, height: 2.6, fill: "#0f1420" })),
+    // Larry：白棕虎斑，坐在台阶上，尾巴一直甩
+    h("g", { transform: "translate(" + (140 + step).toFixed(1) + " 0)" },
+      h("ellipse", { cx: 0, cy: 111, rx: 11, ry: 2.6, fill: "rgba(0,0,0,0.32)" }),
+      h("path", { d: "M8 106 q" + (12 + tail * 0.4) + " " + (-4 + tail) + " " + (6 + tail * 0.5) + " " + (-16 + tail * 0.6),
+        fill: "none", stroke: "#e8e2d8", strokeWidth: 4.2, strokeLinecap: "round" }),
+      h("path", { d: "M-9 110 q-2 -18 9 -18 q11 0 9 18 Z", fill: "#f2ece2" }),
+      h("path", { d: "M2 92 q9 -1 8 8 q-1 6 -8 8 Z", fill: "#b9977a", opacity: 0.85 }),
+      h("circle", { cx: 0, cy: 87, r: 8.4, fill: "#f5f0e8" }),
+      h("path", { d: "M4 80 q7 -2 6 6 Z", fill: "#b9977a" }),
+      h("path", { d: "M-7.4 81.6 l-1.6 -7 l6 3.4 Z", fill: "#f5f0e8", stroke: "#c9b9a4", strokeWidth: 0.8 }),
+      h("path", { d: "M7.4 81.6 l1.6 -7 l-6 3.4 Z", fill: "#f5f0e8", stroke: "#c9b9a4", strokeWidth: 0.8 }),
+      blink
+        ? h("g", { stroke: "#3a3128", strokeWidth: 1.2, strokeLinecap: "round" },
+            h("line", { x1: -4.6, y1: 87, x2: -1.4, y2: 87 }),
+            h("line", { x1: 1.4, y1: 87, x2: 4.6, y2: 87 }))
+        : h("g", null,
+            h("ellipse", { cx: -3, cy: 86.6, rx: 1.7, ry: 2.1, fill: "#2f6b46" }),
+            h("ellipse", { cx: 3, cy: 86.6, rx: 1.7, ry: 2.1, fill: "#2f6b46" }),
+            h("circle", { cx: -3, cy: 86.6, r: 0.7, fill: "#0d1013" }),
+            h("circle", { cx: 3, cy: 86.6, r: 0.7, fill: "#0d1013" })),
+      h("path", { d: "M0 90 l-1.4 1.4 h2.8 Z", fill: "#d98f96" }),
+      h("g", { stroke: "rgba(240,235,225,0.75)", strokeWidth: 0.6, strokeLinecap: "round" },
+        h("line", { x1: -5, y1: 90, x2: -12, y2: 88.6 }),
+        h("line", { x1: -5, y1: 91.4, x2: -12, y2: 92.6 }),
+        h("line", { x1: 5, y1: 90, x2: 12, y2: 88.6 }),
+        h("line", { x1: 5, y1: 91.4, x2: 12, y2: 92.6 }))),
+    big ? null : h("text", { x: 100, y: 127, textAnchor: "middle", fontSize: 8.5, fill: "rgba(220,225,232,0.85)", fontFamily: "'Patrick Hand',cursive" }, "\u6ca1\u62cd\u5230\uff0c\u753b\u7684"));
+};
 var LD_TILT  = [-2.6, 1.9, -1.2, 3.1, -3.4, 1.3, -1.8, 2.6, -2.1, 3.6, -1.5, 2.2];
 var LD_PH    = [124, 96, 142, 108, 116, 132, 92, 120, 148, 100, 128, 110];
 var LD_NUDGE = [0, 3, -2, 2, -4, 1, 3, -3, 0, 2, -2, 1];
@@ -18299,6 +18369,11 @@ var LD_WALL = [
     more: [],
     say: "Kingsman 里那个神秘机构，就在这附近。",
     tip: "整条街是一个弧线，两边楼是同一套石头立面。橱窗做得比店里还认真，光看不买也值。Kingsman 里那家裁缝店是隔壁 Savile Row 11 号的 Huntsman，从摄政街拐过去三分钟，店还在营业，橱窗随便看，进去也没人赶你。往南接皮卡迪利广场，往北到牛津圆环。" },
+  { f: "", sk: 2, sn: "Larry", n: "唐宁街 10 号的 Larry", q: "Downing Street London", la: 51.5034, lo: -0.1276, must: 1,
+    more: [],
+    say: "",
+    tip: "首相府那扇黑门，门口那只白棕相间的虎斑猫叫 Larry —— 官方头衔是「内阁办公室首席捕鼠官」，2011 年上任，比好几任首相待得都久。唐宁街本身 1989 年就封了，走不进去，只能站在 Whitehall 那道大铁门外往里看。Larry 有时候会溜达到门口，隔着栏杆能看见，看不看得到全看运气 —— 看不到也别失望，它只是又睡了。铁门斜对面就是骑兵卫队阅兵场，工作日 11 点、周日 10 点换岗；边上还有丘吉尔战时办公室。Jubilee 线到 Westminster 出来走五分钟。",
+    ldx: 1 },
   { f: "lego-tube", sn: "乐高店", n: "莱斯特广场 · 乐高店", q: "LEGO Store Leicester Square London", la: 51.5105, lo: -0.1310, must: 0,
     more: [],
     say: "",
@@ -20458,7 +20533,7 @@ function LondonRoom(_refLD) {
                 h("div", { style: { fontFamily: LDHAND, fontSize: "0.78rem", color: "rgba(120,95,55,0.95)" } }, "\u7ffb\u5f00\u770b\u770b"));
               var front = h("div", { style: Object.assign({}, faceBase, { transform: "rotateY(180deg)", background: "#fff", padding: "6px 6px 20px" }) },
                 x.sk
-                  ? ldSpyArt(ph, 0)
+                  ? (x.sk === 2 ? ldLarryArt(ph, 0) : ldSpyArt(ph, 0))
                   : (x.cu
                     ? h(NanaCloudImg, { u: x.cu, thumb: true, style: { width: "100%", height: ph, objectFit: "cover", display: "block", borderRadius: 2 } })
                     : (x.f
@@ -20513,7 +20588,7 @@ function LondonRoom(_refLD) {
         h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
           h("div", { style: { padding: 9 } },
             wallSel.sk
-              ? h("div", { style: { borderRadius: 6, overflow: "hidden" } }, ldSpyArt(210, 1))
+              ? h("div", { style: { borderRadius: 6, overflow: "hidden" } }, (wallSel.sk === 2 ? ldLarryArt(210, 1) : ldSpyArt(210, 1)))
               : (wallSel.cu
                 ? h(NanaCloudImg, { u: wallSel.cu, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })
                 : (wallSel.f
