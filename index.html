@@ -18477,6 +18477,35 @@ var LD_PICKUP = {
   order: "1128150083368905",
   perks: ["中文客服", "提拿行李", "免费等 120 分钟"]
 };
+// ── 🌗 落地第一晚：只在 8/15 当天出现，第二天自己消失 ──────────
+// 通宵飞过来，伦敦晚上 7 点她身体里是凌晨 2 点。这一天唯一要做成的事是别在傍晚睡着。
+var LD_N1_DAY = "2026-08-15";
+var LD_N1_NEXT = "2026-08-16";
+var LD_N1_SUN = "20:20";
+var LD_N1 = [
+  { e: "🛏️", h: "到家 · 想睡就睡一会儿", f: 0, u: 900,
+    d: "闹钟定 90 分钟，别过下午 3 点。过了 3 点再睡，这一周的作息都会跟着乱。" },
+  { e: "🛒", h: "18:00 去买今晚吃的", f: 900, u: 1140,
+    d: "Canada Place 的 M&S Food 或 Waitrose，走 12 分钟。买热的、煮过的 —— 三明治沙拉那类先别碰。今天周六商场关得早，别拖到八点以后。Boots 在同一层，顺路补吸入器。" },
+  { e: "🌅", h: "19:30 下楼绕 Poplar Dock 一圈", f: 1140, u: 1260, key: 1,
+    d: "出门就是，一圈二十分钟，全是水和小帆船，路灯很亮。今天日落大约 " + LD_N1_SUN + "，这会儿出去正好赶上最后一段光。傍晚的光是把生物钟拨过来最管用的东西 —— 什么都不用做，走走就行。" },
+  { e: "🌙", h: "21:30 躺下", f: 1260, u: 1620,
+    d: "第一晚睡不着很正常。躺着也算数。" }
+];
+var LD_N1_NO = [
+  "别一落地就钻地铁进城、进博物馆 —— 闷，人多，今天不值得冒这个险。",
+  "楼下 Billingsgate 鱼市只有清晨四点到八点开，晚上是黑的，别白跑。",
+  "下雨的话，把水边那一圈换成 Crossrail Place 屋顶花园，走 11 分钟，半露天，一点不闷。"
+];
+var ldDay = function (tz) {
+  try { return new Date().toLocaleDateString("en-CA", { timeZone: tz }); } catch (_) { return ""; }
+};
+var ldN1On = function () {
+  var d = ldDay("Europe/London");
+  if (d === LD_N1_DAY) return true;
+  if (d === LD_N1_NEXT && ldHour("Europe/London") < 3) return true;   // 熬到后半夜也还在
+  return false;
+};
 // 泰晤士河中心线，西到东，绕道格斯岛那个大弯
 var LD_THAMES = [
   [-0.232, 51.487], [-0.206, 51.472], [-0.181, 51.484], [-0.152, 51.485],
@@ -20180,7 +20209,49 @@ function LondonRoom(_refLD) {
         h("div", { style: { marginTop: 9, fontSize: "0.68rem", color: "rgba(90,110,105,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
           "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。等超过十分钟就直接打上面那个电话，他是中国人，说中文就行。携程订单号 " + P.order + "。"));
     };
+  // ── 🌗 落地第一晚 ──
+  var n1Card = function () {
+    var d = ldDay("Europe/London");
+    var mins = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
+    if (d === LD_N1_NEXT) mins += 1440;                        // 过了午夜接着往后算
+    var cur = -1, i;
+    for (i = 0; i < LD_N1.length; i++) { if (mins >= LD_N1[i].f && mins < LD_N1[i].u) { cur = i; break; } }
+    return h("div", { style: { background: "linear-gradient(158deg,#12403c,#0b2e2c)", borderRadius: 12, marginBottom: 13, position: "relative", overflow: "hidden", boxShadow: "0 10px 26px rgba(10,40,38,0.34)" } },
+      // 天顶那一层很淡的星
+      h("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 18% 22%, rgba(255,255,255,0.5) 1px, transparent 1.2px), radial-gradient(circle at 72% 14%, rgba(255,255,255,0.4) 1px, transparent 1.2px), radial-gradient(circle at 46% 8%, rgba(255,255,255,0.3) 1px, transparent 1.2px)", pointerEvents: "none" } }),
+      h("div", { style: { padding: "15px 16px 14px" } },
+        h("div", { style: { display: "flex", alignItems: "center", gap: 9 } },
+          h("span", { style: { fontSize: "1.2rem" } }, "🌗"),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 700, fontSize: "1rem", color: "#f6e7c8", letterSpacing: "0.4px" } }, "落地第一天"),
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(214,232,226,0.8)", marginTop: 3 } }, "伦敦 " + lonT + " · 今天不用玩")),
+          h("span", { style: { background: "rgba(246,231,200,0.14)", color: "#f0dcae", borderRadius: 999, padding: "3px 9px", fontSize: "0.56rem", fontWeight: 800, flexShrink: 0 } }, "只有今天")),
+        h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.07)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#f3e3bf", lineHeight: 1.7 } },
+          "你等于通宵了。这会儿伦敦的钟和你身体里的钟差着七个小时 —— 今天唯一要做成的事，是别在傍晚睡着。"),
+        h("div", { style: { marginTop: 12 } }, LD_N1.map(function (s, si) {
+          var now = si === cur, past = cur >= 0 && si < cur;
+          return h("div", { key: "n1" + si, style: { display: "flex", gap: 10, opacity: past ? 0.42 : 1, marginBottom: si === LD_N1.length - 1 ? 0 : 10 } },
+            h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, width: 22 } },
+              h("span", { style: { fontSize: "1rem", lineHeight: 1 } }, s.e),
+              si === LD_N1.length - 1 ? null : h("div", { style: { flex: 1, width: 2, marginTop: 5, background: "rgba(246,231,200,0.22)", borderRadius: 2 } })),
+            h("div", { style: { flex: 1, minWidth: 0, background: now ? "rgba(246,231,200,0.14)" : "none", borderRadius: 9, padding: now ? "8px 10px" : "0 0 2px", marginTop: now ? -6 : 0 } },
+              h("div", { style: { display: "flex", alignItems: "center", gap: 7 } },
+                h("span", { style: { fontWeight: 800, fontSize: "0.84rem", color: s.key ? "#ffd98a" : "#f0e4cb" } }, s.h),
+                now ? h("span", { style: { background: "#e8b84b", color: "#3a2a06", borderRadius: 999, padding: "1px 7px", fontSize: "0.54rem", fontWeight: 800, flexShrink: 0 } }, "现在") : null),
+              h("div", { style: { fontSize: "0.71rem", color: "rgba(216,231,224,0.9)", lineHeight: 1.75, marginTop: 4 } }, s.d)));
+        })),
+        h("div", { style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(246,231,200,0.24)" } },
+          LD_N1_NO.map(function (t, ti) {
+            return h("div", { key: "no" + ti, style: { fontSize: "0.69rem", color: "rgba(206,224,217,0.86)", lineHeight: 1.75, marginBottom: ti === LD_N1_NO.length - 1 ? 0 : 5 } }, "· " + t);
+          })),
+        h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+          h("a", { href: ldMap("Poplar Dock Marina London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#3a2a06", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "⛵ 楼下那圈水"),
+          h("a", { href: ldMap("Waitrose Canada Place Canary Wharf"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(246,231,200,0.16)", color: "#f0dcae", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "🛒 买吃的")),
+        h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
+          "这张明天就没了。今天做不到也没关系 —— 睡过头了就睡过头了，不用补，不用说。")));
+  };
   var nowTab = h("div", null,
+    ldN1On() ? n1Card() : null,
     afterGo ? pagerCard() : null,
     ukCard([
       screws,
