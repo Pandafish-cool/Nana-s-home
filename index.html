@@ -19908,12 +19908,7 @@ function LondonRoom(_refLD) {
 
       screws,
       ukHead("按一下，家里就知道", "不用组织语言，按哪个都行",
-        LD_LETTER_HINT ? ldPostBox(!!newLetter, 26) : h("span", { style: { fontSize: "1rem" } }, "📟")),
-      // 门口的信箱：有信才多一行小字，没信就只是个安静的小邮筒立在标题旁边
-      LD_LETTER_HINT && newLetter ? h("div", { key: "pbx", style: { display: "flex", alignItems: "center", gap: 7, marginBottom: 10, marginTop: -3 } },
-        h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#b03a2e" } }, "门口有信"),
-        h("span", { style: { fontSize: "0.66rem", color: "rgba(120,105,85,0.9)" } }, "· 游乐场 › 阅读室 › 221B"),
-        h("button", { onClick: hushLetters, style: { marginLeft: "auto", border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.6rem", color: "rgba(155,140,115,0.8)", cursor: "pointer", padding: 0, flexShrink: 0 } }, "收起信箱")) : null,
+        LD_LETTER_HINT ? ldPostBox(!!newLetter, 30) : h("span", { style: { fontSize: "1rem" } }, "📟")),
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
