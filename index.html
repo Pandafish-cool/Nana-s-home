@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-142";
+var NANA_VER = "v2026.8.2-143";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18253,6 +18253,8 @@ var ldSpyArt = function (hgt, big) {
 };
 // 北京时间 8/13 零点起，「去玩」对 nana 开放
 var LD_WALL_OPEN = "2026-08-13T00:00:00+08:00";
+// 来信提醒：先不开。想开就改成 1（只在真的有信时出现一次，看过即消失，没有小红点和未读数）
+var LD_LETTER_HINT = 0;
 // 落地那一刻起，伦敦这间房就是首页 —— 她一开小屋就在伦敦，不用先绕一圈
 var LD_LAND_AT = "2026-08-15T06:00:00+01:00";
 var ldLanded = function () { try { return new Date() >= new Date(LD_LAND_AT); } catch (_) { return false; } };
@@ -19311,6 +19313,56 @@ function LondonRoom(_refLD) {
   var _cfs2 = useState(false); var cfBusy = _cfs2[0], setCfBusy = _cfs2[1];
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
+  // 自己加的呼叫按钮
+  var _pgs = useState([]); var myPg = _pgs[0], setMyPg = _pgs[1];
+  var _pgo = useState(false); var pgOpen = _pgo[0], setPgOpen = _pgo[1];
+  var _pgt = useState(""); var pgT = _pgt[0], setPgT = _pgt[1];
+  var _pgd = useState(null); var pgDel = _pgd[0], setPgDel = _pgd[1];
+  // 来信提醒：只在真的有信的时候出现一次，看过就没了，也可以永久关掉
+  var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
+  var letters = _lt[0], setLetters = _lt[1];
+  var _lq = useState(function () { try { return localStorage.getItem(ldWKey("nana-letter-quiet")) === "1"; } catch (_) { return false; } });
+  var letterQuiet = _lq[0], setLetterQuiet = _lq[1];
+  var _lm = useState(function () { try { return localStorage.getItem(ldWKey("nana-letter-seen")) || ""; } catch (_) { return ""; } });
+  var letterSeen = _lm[0], setLetterSeen = _lm[1];
+  useEffect(function () {
+    if (!LD_LETTER_HINT) return;
+    nanaSharedList(function (err, rows) { if (!err && rows) setLetters(rows); });
+  }, []);
+  var newLetter = (function () {
+    if (!LD_LETTER_HINT || letterQuiet || !myAuthor) return null;
+    for (var i = 0; i < letters.length; i++) {
+      var n = letters[i];
+      if (n && n.author && n.author !== myAuthor) {
+        return (n.id && n.id !== letterSeen) ? n : null;
+      }
+    }
+    return null;
+  })();
+  var markLetterSeen = function () {
+    if (!newLetter) return;
+    setLetterSeen(newLetter.id);
+    try { localStorage.setItem(ldWKey("nana-letter-seen"), newLetter.id); } catch (_) {}
+  };
+  var hushLetters = function () {
+    setLetterQuiet(true);
+    try { localStorage.setItem(ldWKey("nana-letter-quiet"), "1"); } catch (_) {}
+  };
+  var addPg = function () {
+    var t = pgT.trim();
+    if (!t) return;
+    var id = "pg-" + Date.now() + Math.floor(Math.random() * 90);
+    var row = { id: id, t: t };
+    setMyPg(function (o) { return o.concat([row]); });
+    setPgT(""); setPgOpen(false);
+    nanaPackAdd({ id: id, who: JSON.stringify({ pg: 1, t: t }) }, function () {});
+  };
+  var delPg = function (x) {
+    if (pgDel !== x.id) { setPgDel(x.id); setTimeout(function () { setPgDel(null); }, 2600); return; }
+    setPgDel(null);
+    setMyPg(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaPackDel(x.id, function () {});
+  };
   // 她在「两个人的电影节」里标过的片子，用来挑取景地
   var _flm = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-films-cache") || "[]"); } catch (_) { return []; } });
   var myFilms = _flm[0], setMyFilms = _flm[1];
@@ -19563,12 +19615,17 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [];
+      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [];
       (rows || []).forEach(function (r) {
         if (r.id && r.id.indexOf("x-") === 0) {
           var o = null;
           try { o = JSON.parse(r.who); } catch (_) { o = null; }
           ex.push(o && typeof o === "object" ? { id: r.id, t: o.t || "", done: !!o.done, g: o.g || "" } : { id: r.id, t: r.who || "", done: false, g: "" });
+        }
+        else if (r.id && r.id.indexOf("pg-") === 0) {
+          var go2 = null;
+          try { go2 = JSON.parse(r.who); } catch (_) { go2 = null; }
+          if (go2 && go2.pg && go2.t) pgl.push({ id: r.id, t: go2.t });
         }
         else if (r.id && r.id.indexOf("cf-") === 0) {
           var fo = null;
@@ -19599,6 +19656,8 @@ function LondonRoom(_refLD) {
       setDucks(dcs);
       cfl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setCfs(cfl);
+      pgl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+      setMyPg(pgl);
       ex.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setPacked(m); setExtras(ex); ldSavePack(m);
       try { localStorage.setItem("nana-pack-extra", JSON.stringify(ex)); } catch (_) {}
@@ -19813,6 +19872,13 @@ function LondonRoom(_refLD) {
 
       screws,
       ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
+      // 只有真的来信了才出现这一条；看过就没了，也可以永远关掉。不做小红点，不做未读数。
+      newLetter ? h("div", { key: "nl", style: { background: "rgba(240,196,106,0.16)", border: "1px solid rgba(200,150,50,0.35)", borderRadius: 10, padding: "11px 12px", marginBottom: 11 } },
+        h("div", { style: { fontSize: "0.84rem", fontWeight: 800, color: "#8a6a2a" } }, "📮 门口有信"),
+        h("div", { style: { fontSize: "0.72rem", color: "rgba(110,95,70,0.95)", marginTop: 4, lineHeight: 1.7 } }, "在 游乐场 › 阅读室 › 🏠 221B。不急着看，也不用回。"),
+        h("div", { style: { display: "flex", gap: 8, marginTop: 9, alignItems: "center" } },
+          h("button", { onClick: markLetterSeen, style: { border: "none", borderRadius: 999, padding: "6px 14px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510" } }, "知道了"),
+          h("button", { onClick: hushLetters, style: { marginLeft: "auto", border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "以后不用提醒我"))) : null,
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
@@ -19825,6 +19891,27 @@ function LondonRoom(_refLD) {
             h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
           isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
       })),
+      // 自己加的那几个
+      myPg.length ? h("div", { key: "mypg" }, myPg.map(function (x, i) {
+        var busy = pageBusy === x.id;
+        return h("div", { key: x.id, style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 9 } },
+          h("button", { onClick: function () { sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" }); }, disabled: !!pageBusy,
+            style: { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.4)", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
+            h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, "💛"),
+            h("span", { style: { flex: 1, minWidth: 0 } },
+              h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t),
+              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, "你自己加的"))),
+          h("button", { onClick: function () { delPg(x); }, style: { flexShrink: 0, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", color: pgDel === x.id ? "#c0392b" : "rgba(150,135,110,0.8)", cursor: "pointer", padding: "6px 4px" } }, pgDel === x.id ? "再点删掉" : "删"));
+      })) : null,
+      pgOpen
+        ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
+            h("div", { style: { fontSize: "0.72rem", color: "#a97f2e", fontWeight: 800, marginBottom: 8 } }, "想按一下就说的那句话"),
+            h("input", { value: pgT, onChange: function (e) { setPgT(e.target.value); }, placeholder: "比如 今天走了两万步 / 想吃火锅了",
+              style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 8, padding: "9px 10px", fontFamily: "inherit", fontSize: "0.8rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none" } }),
+            h("div", { style: { display: "flex", gap: 8, marginTop: 9 } },
+              h("button", { onClick: addPg, disabled: !pgT.trim(), style: { border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: pgT.trim() ? "pointer" : "default", background: pgT.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: pgT.trim() ? "#4a3510" : "#fff" } }, "加上"),
+              h("button", { onClick: function () { setPgOpen(false); setPgT(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")))
+        : h("button", { key: "pga", onClick: function () { setPgOpen(true); }, style: { width: "100%", marginBottom: 9, border: "1.5px dashed rgba(169,127,46,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 10, padding: "11px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#a97f2e", cursor: "pointer" } }, "＋ 加一个自己的"),
       badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
         sitMode
           ? h("div", null,
