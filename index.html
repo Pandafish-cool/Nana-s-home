@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-143";
+var NANA_VER = "v2026.8.2-144";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19317,7 +19317,8 @@ function LondonRoom(_refLD) {
   var _pgs = useState([]); var myPg = _pgs[0], setMyPg = _pgs[1];
   var _pgo = useState(false); var pgOpen = _pgo[0], setPgOpen = _pgo[1];
   var _pgt = useState(""); var pgT = _pgt[0], setPgT = _pgt[1];
-  var _pgd = useState(null); var pgDel = _pgd[0], setPgDel = _pgd[1];
+  var _pgw = useState(null); var pgSwipe = _pgw[0], setPgSwipe = _pgw[1];
+  var pgTouch = useRef({});
   // 来信提醒：只在真的有信的时候出现一次，看过就没了，也可以永久关掉
   var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
   var letters = _lt[0], setLetters = _lt[1];
@@ -19330,10 +19331,12 @@ function LondonRoom(_refLD) {
     nanaSharedList(function (err, rows) { if (!err && rows) setLetters(rows); });
   }, []);
   var newLetter = (function () {
-    if (!LD_LETTER_HINT || letterQuiet || !myAuthor) return null;
+    var me = "";
+    try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+    if (!LD_LETTER_HINT || letterQuiet || !me) return null;
     for (var i = 0; i < letters.length; i++) {
       var n = letters[i];
-      if (n && n.author && n.author !== myAuthor) {
+      if (n && n.author && n.author !== me) {
         return (n.id && n.id !== letterSeen) ? n : null;
       }
     }
@@ -19357,9 +19360,8 @@ function LondonRoom(_refLD) {
     setPgT(""); setPgOpen(false);
     nanaPackAdd({ id: id, who: JSON.stringify({ pg: 1, t: t }) }, function () {});
   };
+  // 左滑露出来的那一下就是确认了，不再问第二遍
   var delPg = function (x) {
-    if (pgDel !== x.id) { setPgDel(x.id); setTimeout(function () { setPgDel(null); }, 2600); return; }
-    setPgDel(null);
     setMyPg(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
@@ -19894,14 +19896,33 @@ function LondonRoom(_refLD) {
       // 自己加的那几个
       myPg.length ? h("div", { key: "mypg" }, myPg.map(function (x, i) {
         var busy = pageBusy === x.id;
-        return h("div", { key: x.id, style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 9 } },
-          h("button", { onClick: function () { sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" }); }, disabled: !!pageBusy,
-            style: { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.4)", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
+        var open = pgSwipe === x.id;
+        return h("div", { key: x.id, style: { position: "relative", overflow: "hidden", borderRadius: 10, marginBottom: 9 } },
+          h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setPgSwipe(null); delPg(x); },
+            style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 78, border: "none", background: "#cf5a55", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "删掉"),
+          h("div", {
+            onTouchStart: function (e) {
+              var t = e.touches && e.touches[0];
+              pgTouch.current = { x: t ? t.clientX : 0, y: t ? t.clientY : 0, moved: false };
+            },
+            onTouchMove: function (e) {
+              var t = e.touches && e.touches[0]; if (!t) return;
+              var dx = t.clientX - pgTouch.current.x, dy = t.clientY - pgTouch.current.y;
+              if (Math.abs(dx) < Math.abs(dy)) return;          // 竖着滑是在翻页，别抢
+              if (Math.abs(dx) > 8) pgTouch.current.moved = true;
+              if (dx < -26) setPgSwipe(x.id);
+              else if (dx > 26) setPgSwipe(null);
+            },
+            onClick: function () {
+              if (pgTouch.current.moved) { pgTouch.current.moved = false; return; }
+              if (open) { setPgSwipe(null); return; }            // 露着删掉的时候，点一下先收回去
+              if (!pageBusy) sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" });
+            },
+            style: { position: "relative", display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.4)", background: "#fffaf0", borderRadius: 10, padding: "12px 13px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
             h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, "💛"),
             h("span", { style: { flex: 1, minWidth: 0 } },
               h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t),
-              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, "你自己加的"))),
-          h("button", { onClick: function () { delPg(x); }, style: { flexShrink: 0, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", color: pgDel === x.id ? "#c0392b" : "rgba(150,135,110,0.8)", cursor: "pointer", padding: "6px 4px" } }, pgDel === x.id ? "再点删掉" : "删"));
+              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, "你自己加的 · 想删就往左划"))));
       })) : null,
       pgOpen
         ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
