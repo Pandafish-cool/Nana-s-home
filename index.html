@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-144";
+var NANA_VER = "v2026.8.2-145";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8606,6 +8606,17 @@ function ReadingRoomActivity(_refRR) {
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
   var _sup = useState(function () { var d = nanaReadShDraft(); return Array.isArray(d.ps) ? d.ps : []; }); var sharedDraftPs = _sup[0], setSharedDraftPs = _sup[1];
   var _sug = useState(false); var sharedUploading = _sug[0], setSharedUploading = _sug[1];
+  // 真的翻到 221B 这一页了，门口那个信箱的旗子才落下
+  useEffect(function () {
+    if (tab !== "shared" || !myAuthor || !sharedNotes.length) return;
+    for (var i = 0; i < sharedNotes.length; i++) {
+      var n = sharedNotes[i];
+      if (n && n.author && n.author !== myAuthor) {
+        try { localStorage.setItem("nana-letter-seen-" + myAuthor, n.id); } catch (_) {}
+        return;
+      }
+    }
+  }, [tab, myAuthor, sharedNotes]);
   useEffect(function () {
     try {
       if (!sharedDraft && !sharedDraftPs.length) localStorage.removeItem("nana-shared-draft");
@@ -18254,7 +18265,7 @@ var ldSpyArt = function (hgt, big) {
 // 北京时间 8/13 零点起，「去玩」对 nana 开放
 var LD_WALL_OPEN = "2026-08-13T00:00:00+08:00";
 // 来信提醒：先不开。想开就改成 1（只在真的有信时出现一次，看过即消失，没有小红点和未读数）
-var LD_LETTER_HINT = 0;
+var LD_LETTER_HINT = 1;
 // 落地那一刻起，伦敦这间房就是首页 —— 她一开小屋就在伦敦，不用先绕一圈
 var LD_LAND_AT = "2026-08-15T06:00:00+01:00";
 var ldLanded = function () { try { return new Date() >= new Date(LD_LAND_AT); } catch (_) { return false; } };
@@ -18550,6 +18561,26 @@ var LD_SCREEN = [
     { n: "国会大厦 & 老贝利", d: "片里被炸的两栋 · 老贝利（中央刑事法院）门口那座蒙眼正义女神，抬头能看到", e: "⚖️", q: "Old Bailey London" }
   ] }
 ];
+// 门口的信箱：英式邮筒。有信就露出一角，没信就安静地立在那儿，不说话。
+var ldPostBox = function (hasMail, w) {
+  var h = React.createElement;
+  var W = w || 58;
+  var red = "#c0392b";
+  var red2 = "#9c2b21";
+  return h("svg", { viewBox: "0 0 64 76", style: { width: W, height: Math.round(W * 76 / 64), display: "block", flexShrink: 0 } },
+    h("ellipse", { cx: 32, cy: 72, rx: 17, ry: 3, fill: "rgba(0,0,0,0.14)" }),
+    h("rect", { x: 15, y: 20, width: 34, height: 50, rx: 4, fill: red }),
+    h("rect", { x: 15, y: 20, width: 11, height: 50, rx: 4, fill: "rgba(255,255,255,0.12)" }),
+    h("path", { d: "M15 24 q17 -14 34 0 Z", fill: red2 }),
+    h("ellipse", { cx: 32, cy: 22, rx: 17, ry: 5.4, fill: red2 }),
+    h("rect", { x: 22, y: 31, width: 20, height: 4.4, rx: 2.2, fill: "#241c1a" }),
+    h("rect", { x: 15, y: 52, width: 34, height: 3.4, fill: red2 }),
+    h("text", { x: 32, y: 65, textAnchor: "middle", fontSize: 7, fill: "rgba(255,255,255,0.75)", fontFamily: "Georgia,serif", fontWeight: "bold", letterSpacing: 0.6 }, "221B"),
+    hasMail ? h("g", { style: { transformOrigin: "32px 26px", animation: "mpBob 2.6s ease-in-out infinite" } },
+      h("g", { transform: "rotate(-9 32 26)" },
+        h("rect", { x: 20, y: 18, width: 24, height: 15, rx: 1.6, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 1 }),
+        h("path", { d: "M20 19 L32 27 L44 19", fill: "none", stroke: "#c8b48e", strokeWidth: 1 }))) : null);
+};
 // ── 📖 书与剧：照着她读的和爱看的排的几条线 ──────────────
 var LD_LIT = [
   { z: "🔍 侦探那条（半天，全在市中心）", list: [
@@ -19873,14 +19904,8 @@ function LondonRoom(_refLD) {
     return ukCard([
 
       screws,
-      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
-      // 只有真的来信了才出现这一条；看过就没了，也可以永远关掉。不做小红点，不做未读数。
-      newLetter ? h("div", { key: "nl", style: { background: "rgba(240,196,106,0.16)", border: "1px solid rgba(200,150,50,0.35)", borderRadius: 10, padding: "11px 12px", marginBottom: 11 } },
-        h("div", { style: { fontSize: "0.84rem", fontWeight: 800, color: "#8a6a2a" } }, "📮 门口有信"),
-        h("div", { style: { fontSize: "0.72rem", color: "rgba(110,95,70,0.95)", marginTop: 4, lineHeight: 1.7 } }, "在 游乐场 › 阅读室 › 🏠 221B。不急着看，也不用回。"),
-        h("div", { style: { display: "flex", gap: 8, marginTop: 9, alignItems: "center" } },
-          h("button", { onClick: markLetterSeen, style: { border: "none", borderRadius: 999, padding: "6px 14px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510" } }, "知道了"),
-          h("button", { onClick: hushLetters, style: { marginLeft: "auto", border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "以后不用提醒我"))) : null,
+      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行",
+        LD_LETTER_HINT ? ldPostBox(!!newLetter, 30) : h("span", { style: { fontSize: "1rem" } }, "📟")),
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
