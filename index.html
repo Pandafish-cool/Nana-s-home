@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-148";
+var NANA_VER = "v2026.8.2-149";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18054,7 +18054,35 @@ var LD_GO = [
   { dist: "到站走 11 分钟", n: "Elizabeth line（Canary Wharf 站）", d: "新线，车厢宽敞明亮有空调 · 到市中心 Tottenham Court Road 只要八分钟", e: "🚆", q: "Canary Wharf Elizabeth Line Station", open: 0 },
   { dist: "到码头走 16 分钟", n: "Uber Boat（Canary Wharf Pier）", d: "全程露天甲板，看着河进城 · 刷交通卡，比地铁贵一点但值", e: "⛴️", q: "Canary Wharf Pier London", open: 1 },
   { dist: "到站走 12 分钟", n: "Jubilee line（Canary Wharf 站）", d: "最快但是深隧道 · 赶时间才坐，不舒服就换上面三种", e: "🚇", q: "Canary Wharf Station London", open: 0 },
-  { dist: "DLR 站旁边就有站牌", n: "双层巴士上层前排", d: "慢，但一路看街景，随时能下车 · 刷卡，要按铃", e: "🚌", q: "Blackwall DLR Station London", open: 0 }
+  { dist: "DLR 站旁边就有站牌", n: "15 路 · 终点站在楼下", d: "一趟车不换乘直达特拉法加广场，中途过塔桥、圣保罗、舰队街 · 全程地面，坐上层最前排 · 详见下面那张线路", e: "🚌", q: "Blackwall Station Bus Stop London E14", open: 0 }
+];
+// 🚌 15 路：终点站就在楼下，一趟车不换乘到市中心，全程地面
+var LD_B15_FACT = [["10–12 分钟", "一班"], ["05:25–01:14", "运营"], ["38–75 分钟", "到终点"], ["£1.75", "一程"]];
+var LD_B15 = [
+  { n: "Blackwall", t: "起点 · 你家楼下", me: 1,
+    d: "站牌就在 DLR 站那儿，走 2 分钟。终点站上车一般有座，还能占到上层最前排。" },
+  { n: "Poplar", t: "换 DLR 的地方",
+    d: "去 Canary Wharf、去格林威治方向都从这儿换。" },
+  { n: "Limehouse", t: "老船坞区",
+    d: "运河和老仓库，狄更斯写过这一带。这儿也能换火车。" },
+  { n: "Aldgate", t: "东伦敦的门口",
+    d: "往北就是砖巷 Brick Lane 一带，周日市集最热闹。" },
+  { n: "Tower Hill", t: "伦敦塔 · 塔桥",
+    d: "下车就是伦敦塔，塔桥在旁边。这一站什么时候下都不亏。" },
+  { n: "Cannon Street", t: "金融城",
+    d: "老城区。工作日中午最有意思，周末空得像片场。" },
+  { n: "St Paul's", t: "圣保罗大教堂",
+    d: "下车抬头就是。旁边千禧桥走过去就是泰特现代。" },
+  { n: "Aldwych · 舰队街", t: "这一站是给你的", key: 1,
+    d: "往北两步是查令十字街的旧书店和 Cecil Court 那条小巷；Somerset House 就在路边；再走走是 Sir John Soane's。" },
+  { n: "Trafalgar Square", t: "终点 · 市中心", me: 2,
+    d: "国家美术馆、国家肖像馆都免费。西区剧院和 Covent Garden 都在走路范围里。" }
+];
+var LD_B15_TIP = [
+  "公交上车刷一次就行，下车不用刷 —— 跟 DLR 正好相反，这点最容易搞混。",
+  "一小时内换公交免费（Hopper），一天最多扣 £5.25。不收现金，刷银行卡或手机。",
+  "远远看见车要挥手，不然可能不停；下车提前按铃。",
+  "比地铁慢，DLR 转 Elizabeth line 二十分钟能到的，它要走四十分钟往上。但全程在地面，有窗，能看见外面。"
 ];
 var LD_MED = [
   { dist: "走 12 分钟 · 950m", n: "先找 Boots 的药剂师", d: "轻症免费咨询，不用预约。柜台后面的药也是问他们拿", e: "💊", q: "Boots Canary Wharf" },
@@ -20827,6 +20855,35 @@ function LondonRoom(_refLD) {
     card([head("🛒 买东西", "超市、药店、中超"), h("div", { key: "s" }, LD_SHOP.map(linkRow))]),
     card([head("🌬️ 想透口气", "全是露天或半露天的地方"), h("div", { key: "a" }, LD_AIR.map(linkRow))]),
     card([head("🚇 怎么出门", "按闷不闷排的，最上面最开阔"), h("div", { key: "g" }, LD_GO.map(linkRow))]),
+    // ── 🚌 15 路 ──
+    card([
+      head("🚌 15 路 · 从楼下直达市中心", "终点站就在你家楼下 · 一趟车不用换 · 全程地面，有窗"),
+      h("div", { key: "f", style: { display: "flex", gap: 6, marginBottom: 11 } }, LD_B15_FACT.map(function (x, i) {
+        return h("div", { key: "bf" + i, style: { flex: 1, background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "7px 4px", textAlign: "center" } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.72rem", color: "#1a5c56" } }, x[0]),
+          h("div", { style: { fontSize: "0.58rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, x[1]));
+      })),
+      h("div", { key: "l" }, LD_B15.map(function (x, i) {
+        var last = i === LD_B15.length - 1;
+        return h("div", { key: "b15" + i, style: { display: "flex", gap: 10 } },
+          h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", width: 14, flexShrink: 0 } },
+            h("div", { style: { width: x.me ? 11 : 7, height: x.me ? 11 : 7, borderRadius: "50%", marginTop: 4, flexShrink: 0,
+              background: x.me ? "#d99b31" : (x.key ? "#1f6f68" : "rgba(31,111,104,0.45)"),
+              boxShadow: x.me ? "0 0 0 3px rgba(217,155,49,0.25)" : "none" } }),
+            last ? null : h("div", { style: { flex: 1, width: 2, background: "rgba(31,111,104,0.28)", marginTop: 3 } })),
+          h("div", { style: { flex: 1, minWidth: 0, paddingBottom: last ? 0 : 11 } },
+            h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, flexWrap: "wrap" } },
+              h("span", { style: { fontWeight: 800, fontSize: "0.84rem", color: x.me ? "#a9701a" : UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n),
+              h("span", { style: { fontSize: "0.66rem", fontWeight: 800, color: x.key ? "#1f6f68" : "rgba(120,108,84,0.95)" } }, x.t)),
+            h("div", { style: { fontSize: "0.71rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.7, marginTop: 3 } }, x.d)));
+      })),
+      h("div", { key: "t", style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(169,127,46,0.4)" } },
+        LD_B15_TIP.map(function (t, i) {
+          return h("div", { key: "bt" + i, style: { fontSize: "0.71rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.75, marginBottom: i === LD_B15_TIP.length - 1 ? 0 : 6 } }, "· " + t);
+        })),
+      h("a", { key: "m", href: ldMap("Blackwall Station Bus Stop London E14"), target: "_blank", rel: "noopener",
+        style: { display: "block", marginTop: 11, textAlign: "center", textDecoration: "none", background: "rgba(31,111,104,0.13)", color: "#1a5c56", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "📍 楼下那个站牌")
+    ]),
     card([head("🏥 不舒服的时候", "从轻到重，照着往下走"), h("div", { key: "m" }, LD_MED.map(linkRow))])
   );
   // ── 🍬 糖罐 ──
