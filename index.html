@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-141";
+var NANA_VER = "v2026.8.2-142";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18442,7 +18442,9 @@ var LD_PICKUP = {
   freeTill: "09:20",
   plate: "DH18 HLM",
   car: "黑色 · 奔驰 · 豪华 8 座",
-  driver: "HUANG MR KAI · 金牌司机",
+  driver: "黄凯 HUANG KAI · 金牌司机",
+  tel: "+44 7518 732140",
+  telRaw: "+447518732140",
   via: "携程用车 · 方舟旅行",
   order: "1128150083368905",
   perks: ["中文客服", "提拿行李", "免费等 120 分钟"]
@@ -19873,16 +19875,18 @@ function LondonRoom(_refLD) {
           row("b", "上车", P.meet + " 司机就位 · " + P.freeTill + " 前免费等（航班晚点也不用慌）"),
           row("c", "车牌", P.plate + " · " + P.car),
           row("d", "司机", P.driver),
+          row("t", "电话", h("a", { href: "tel:" + P.telRaw, style: { color: "#1a5c56", fontWeight: 800, textDecoration: "none", borderBottom: "1px dashed rgba(26,92,86,0.5)" } }, P.tel + " 📞")),
           row("e", "送到", LD_ADDR),
           h("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", paddingTop: 9 } },
             P.perks.map(function (x, i) {
               return h("span", { key: "pk" + i, style: { background: "rgba(31,111,104,0.13)", color: "#1a5c56", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800 } }, x);
             }))),
-        h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+        h("a", { href: "tel:" + P.telRaw, style: { display: "block", marginTop: 11, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#4fb3a4,#2b7d72)", color: "#fff", borderRadius: 10, padding: "12px 0", fontSize: "0.86rem", fontWeight: 800, boxShadow: "0 5px 14px rgba(43,125,114,0.35)" } }, "📞 打给司机 黄凯"),
+        h("div", { style: { display: "flex", gap: 8, marginTop: 8 } },
           h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "📍 家在这儿"),
           h("a", { href: "https://www.gatwickairport.com/flights/arrivals.html", target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(31,111,104,0.14)", color: "#1a5c56", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "✈️ 查航班")),
         h("div", { style: { marginTop: 9, fontSize: "0.68rem", color: "rgba(90,110,105,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
-          "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。携程订单号 " + P.order + "，有中文客服。"));
+          "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。等超过十分钟就直接打上面那个电话，他是中国人，说中文就行。携程订单号 " + P.order + "。"));
     };
   var nowTab = h("div", null,
     afterGo ? pagerCard() : null,
