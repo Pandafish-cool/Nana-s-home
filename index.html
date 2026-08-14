@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-145";
+var NANA_VER = "v2026.8.2-146";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18485,12 +18485,18 @@ var LD_N1_SUN = "20:20";
 var LD_N1 = [
   { e: "🛏️", h: "到家 · 想睡就睡一会儿", f: 0, u: 900,
     d: "闹钟定 90 分钟，别过下午 3 点。过了 3 点再睡，这一周的作息都会跟着乱。" },
-  { e: "🛒", h: "18:00 去买今晚吃的", f: 900, u: 1140,
-    d: "Canada Place 的 M&S Food 或 Waitrose，走 12 分钟。买热的、煮过的 —— 三明治沙拉那类先别碰。今天周六商场关得早，别拖到八点以后。Boots 在同一层，顺路补吸入器。" },
-  { e: "🌅", h: "19:30 下楼绕 Poplar Dock 一圈", f: 1140, u: 1260, key: 1,
-    d: "出门就是，一圈二十分钟，全是水和小帆船，路灯很亮。今天日落大约 " + LD_N1_SUN + "，这会儿出去正好赶上最后一段光。傍晚的光是把生物钟拨过来最管用的东西 —— 什么都不用做，走走就行。" },
+  { e: "🚈", h: "17:30 坐 DLR 去买吃的", f: 900, u: 1110, key: 1,
+    d: "顺便把交通摸一遍 —— 今天试一次，比看十遍地图管用。楼下 Blackwall 站走 2 分钟，坐一站到 Poplar，同一个站台换去 Canary Wharf 方向，再一站就是 West India Quay，出站就是 Canada Place：Waitrose、M&S Food、Boots 全在里面。买热的、煮过的，三明治沙拉那类先别碰。今天周六商场关得早，别拖到八点以后。" },
+  { e: "🌅", h: "19:00 走回来 · 绕 Poplar Dock 一圈", f: 1110, u: 1260, key: 1,
+    d: "回程别坐车了，走回来 —— 一路认认路，最后绕楼下那圈水一圈，二十分钟，全是小帆船，路灯很亮。今天日落大约 " + LD_N1_SUN + "，这个点正好赶上最后一段光。傍晚的光是把生物钟拨过来最管用的东西，什么都不用做，走走就行。" },
   { e: "🌙", h: "21:30 躺下", f: 1260, u: 1620,
     d: "第一晚睡不着很正常。躺着也算数。" }
+];
+// 第一次坐车要知道的三件事
+var LD_N1_TR = [
+  { t: "不用买 Oyster", d: "银行卡或手机直接刷就行。进站出站刷同一张，别换来换去。" },
+  { t: "DLR 很多站没有闸机", d: "得自己找站台上那个黄色读卡器，上车前刷一下，下车再刷一下。忘了刷会被当逃票 —— 第一次坐最容易漏的就是这个。" },
+  { t: "回家认 Blackwall，不是 Canary Wharf", d: "Canary Wharf 是商场那站。你家在 Blackwall，Poplar 换车。DLR 全程高架露天，不闷，坐第一排，前面没有司机室。" }
 ];
 var LD_N1_NO = [
   "别一落地就钻地铁进城、进博物馆 —— 闷，人多，今天不值得冒这个险。",
@@ -18628,6 +18634,8 @@ var ldPostBox = function (hasMail, w) {
 
 // ── 🍬 糖罐：远程唯一解决不了的那件事，先攒着 ──────────────
 // 一颗糖 = 一个亲亲。按住越久那颗越大。9/26 回来倒出来。
+// 糖罐：先不开。想开就改成 1
+var LD_JAR_ON = 0;
 var LD_JAR_FULL = 48;                       // 画得下这么多，再多就是满罐
 var LD_JAR_KEEP = 400;                      // 一行里最多留这么多条，够两个人塞六周
 var LD_CANDY_COL = [
@@ -20240,13 +20248,20 @@ function LondonRoom(_refLD) {
                 now ? h("span", { style: { background: "#e8b84b", color: "#3a2a06", borderRadius: 999, padding: "1px 7px", fontSize: "0.54rem", fontWeight: 800, flexShrink: 0 } }, "现在") : null),
               h("div", { style: { fontSize: "0.71rem", color: "rgba(216,231,224,0.9)", lineHeight: 1.75, marginTop: 4 } }, s.d)));
         })),
+        h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.06)", borderRadius: 9, padding: "11px 12px" } },
+          h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#ffd98a", marginBottom: 8 } }, "🚈 第一次坐车，记这三条就够"),
+          LD_N1_TR.map(function (x, xi) {
+            return h("div", { key: "tr" + xi, style: { marginBottom: xi === LD_N1_TR.length - 1 ? 0 : 8 } },
+              h("div", { style: { fontWeight: 800, fontSize: "0.75rem", color: "#f0e4cb" } }, "· " + x.t),
+              h("div", { style: { fontSize: "0.69rem", color: "rgba(216,231,224,0.88)", lineHeight: 1.72, marginTop: 2, paddingLeft: 11 } }, x.d));
+          })),
         h("div", { style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(246,231,200,0.24)" } },
           LD_N1_NO.map(function (t, ti) {
             return h("div", { key: "no" + ti, style: { fontSize: "0.69rem", color: "rgba(206,224,217,0.86)", lineHeight: 1.75, marginBottom: ti === LD_N1_NO.length - 1 ? 0 : 5 } }, "· " + t);
           })),
         h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
           h("a", { href: ldMap("Poplar Dock Marina London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#3a2a06", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "⛵ 楼下那圈水"),
-          h("a", { href: ldMap("Waitrose Canada Place Canary Wharf"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(246,231,200,0.16)", color: "#f0dcae", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "🛒 买吃的")),
+          h("a", { href: ldMap("Blackwall DLR Station London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(246,231,200,0.16)", color: "#f0dcae", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "🚈 楼下那个站")),
         h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
           "这张明天就没了。今天做不到也没关系 —— 睡过头了就睡过头了，不用补，不用说。")));
   };
@@ -20864,7 +20879,7 @@ function LondonRoom(_refLD) {
   // ── 安心 ──
   var careTab = h("div", null,
     pagerCard(),
-    jarCard(),
+    LD_JAR_ON ? jarCard() : null,
     // ── 哮喘（默认收着，急救那句留在外面）──
     ukCard([
       screws,
