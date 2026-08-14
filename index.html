@@ -18562,11 +18562,12 @@ var LD_SCREEN = [
   ] }
 ];
 // 门口的信箱：英式邮筒。有信就露出一角，没信就安静地立在那儿，不说话。
-var ldPostBox = function (hasMail) {
+var ldPostBox = function (hasMail, w) {
   var h = React.createElement;
+  var W = w || 58;
   var red = hasMail ? "#c0392b" : "#8d8480";
   var red2 = hasMail ? "#9c2b21" : "#746c69";
-  return h("svg", { viewBox: "0 0 64 76", style: { width: 58, height: 69, display: "block", flexShrink: 0 } },
+  return h("svg", { viewBox: "0 0 64 76", style: { width: W, height: Math.round(W * 76 / 64), display: "block", flexShrink: 0 } },
     h("ellipse", { cx: 32, cy: 72, rx: 17, ry: 3, fill: "rgba(0,0,0,0.14)" }),
     h("rect", { x: 15, y: 20, width: 34, height: 50, rx: 4, fill: red }),
     h("rect", { x: 15, y: 20, width: 11, height: 50, rx: 4, fill: "rgba(255,255,255,0.12)" }),
@@ -19906,18 +19907,13 @@ function LondonRoom(_refLD) {
     return ukCard([
 
       screws,
-      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行", h("span", { style: { fontSize: "1rem" } }, "📟")),
-      // 门口的信箱：有信就露一封出来，没信就是个空箱子。不做小红点，不做未读数。
-      LD_LETTER_HINT ? h("div", { key: "pbx", style: { display: "flex", alignItems: "center", gap: 13, background: newLetter ? "rgba(192,57,43,0.07)" : "rgba(150,140,120,0.06)", border: "1px solid " + (newLetter ? "rgba(192,57,43,0.22)" : "rgba(150,140,120,0.18)"), borderRadius: 12, padding: "10px 13px", marginBottom: 11 } },
-        ldPostBox(!!newLetter),
-        h("div", { style: { flex: 1, minWidth: 0 } },
-          newLetter
-            ? h("div", null,
-                h("div", { style: { fontSize: "0.86rem", fontWeight: 800, color: "#b03a2e" } }, "门口有信"),
-                h("div", { style: { fontSize: "0.71rem", color: "rgba(110,95,70,0.95)", marginTop: 4, lineHeight: 1.7 } }, "在 游乐场 › 阅读室 › 🏠 221B。不急着看，也不用回。"),
-                h("div", { style: { marginTop: 8 } },
-                  h("button", { onClick: hushLetters, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", color: "rgba(150,135,110,0.85)", cursor: "pointer", padding: 0 } }, "以后不用摆这个信箱")))
-            : h("div", { style: { fontSize: "0.72rem", color: "rgba(140,130,110,0.8)", lineHeight: 1.7, fontFamily: LDHAND } }, "信箱空着 —— 空着也挺好。"))) : null,
+      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行",
+        LD_LETTER_HINT ? ldPostBox(!!newLetter, 26) : h("span", { style: { fontSize: "1rem" } }, "📟")),
+      // 门口的信箱：有信才多一行小字，没信就只是个安静的小邮筒立在标题旁边
+      LD_LETTER_HINT && newLetter ? h("div", { key: "pbx", style: { display: "flex", alignItems: "center", gap: 7, marginBottom: 10, marginTop: -3 } },
+        h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#b03a2e" } }, "门口有信"),
+        h("span", { style: { fontSize: "0.66rem", color: "rgba(120,105,85,0.9)" } }, "· 游乐场 › 阅读室 › 221B"),
+        h("button", { onClick: hushLetters, style: { marginLeft: "auto", border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.6rem", color: "rgba(155,140,115,0.8)", cursor: "pointer", padding: 0, flexShrink: 0 } }, "收起信箱")) : null,
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
