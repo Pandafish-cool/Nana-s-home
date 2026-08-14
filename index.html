@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-147";
+var NANA_VER = "v2026.8.2-148";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18484,26 +18484,33 @@ var LD_N1_NEXT = "2026-08-16";
 var LD_N1_SUN = "20:20";
 var LD_N1 = [
   { e: "🛏️", h: "到家 · 睡到 13:30 为止", f: 0, u: 810,
-    d: "闹钟一定要定。回来先睡，但 13:30 必须醒 —— 今天最大的风险不是累，是出门前睡过头。醒了先冲个澡，人会清醒一大截。" },
-  { e: "🚈", h: "14:30 提早出门", f: 810, u: 900, key: 1,
-    d: "第一次坐车别赶时间，宁可早到二十分钟。楼下 Blackwall 站走 2 分钟，一站到 Poplar 换车。DLR 全程高架露天，不闷，坐第一排 —— 无人驾驶，前面没有司机室，视野最好。" },
-  { e: "🧋", h: "15:00 见朋友 · 之后跟着走就行", f: 900, u: 1200,
-    d: "今天不用自己规划去哪儿，跟着朋友转最省力。见到人、在外面、有光 —— 这一天其实已经成了，剩下的都是附赠的。" },
-  { e: "🌅", h: "20:20 前后 · 找个开阔地方站十分钟", f: 1200, u: 1290,
-    d: "今天日落大约 " + LD_N1_SUN + "。那会儿要是还在外面，随便找个空一点的地方待一会儿；要是已经到家了，下楼绕 Poplar Dock 一圈，二十分钟。傍晚这段光是把生物钟拨过来最管用的东西。" },
-  { e: "🌙", h: "21:30 之后 · 到家就躺下", f: 1290, u: 1620,
-    d: "见完朋友容易兴奋，反而更难睡。躺着也算数。" }
+    d: "闹钟一定要定。醒了冲个澡，人会清醒一大截。" },
+  { e: "🧋", h: "15:00 见朋友 · 跟着走就行", f: 810, u: 1020,
+    d: "今天不用自己规划，跟着朋友转最省力。见到人、在外面、有光 —— 倒时差最难的那段就这么过去了。" },
+  { e: "🚶", h: "17:00 到家先在楼下走一圈", f: 1020, u: 1060,
+    d: "不用换鞋不用带东西，出门左右各走两百米就行。认三样：Blackwall 站口（走 2 分钟）、Poplar Dock 那片水、马路对面的 Billingsgate 鱼市。就是让脚先记住家在哪。" },
+  { e: "🚈", h: "17:40 坐一趟 DLR 去 Canary Wharf", f: 1060, u: 1085, key: 1,
+    d: "Blackwall 上车，一站到 Poplar，同一个站台换 Canary Wharf 方向，再一站 West India Quay，出站就是 Canada Place。十分钟不到，全程高架露天。\n在 Poplar 站台多站两分钟 —— 看清楚回来该站哪一边、屏幕上写什么。等下要用。" },
+  { e: "🛒", h: "18:00 把要用的几个地方认全", f: 1085, u: 1140,
+    d: "Waitrose 和 M&S Food 买今晚的热食和明天早饭；Boots 药店记清楚在哪一层，真需要的时候不用找；顺便知道几个商场是连通的，下雨天能一路不淋雨。" },
+  { e: "🎯", h: "19:00 自己原路坐回来", f: 1140, u: 1200, key: 1,
+    d: "这一趟才是今晚真正的练习 —— 去的时候心里有底不算数，自己走回来才算。West India Quay → Poplar → Blackwall，上车前先确认方向。\n出站看见楼的那一下，这个城市就有一块是你的了。" },
+  { e: "🌅", h: "20:00 绕 Poplar Dock 一圈", f: 1200, u: 1290,
+    d: "东西放下、饭吃了，再下楼走那圈水，二十分钟。今天日落大约 " + LD_N1_SUN + "，正好赶上。傍晚这段光是把生物钟拨过来最管用的东西。" },
+  { e: "🌙", h: "21:30 躺下", f: 1290, u: 1620,
+    d: "第一晚睡不着很正常。躺着也算数。" }
 ];
-// 第一次坐车要知道的三件事
+// 记住三个站名，基本就丢不了
 var LD_N1_TR = [
-  { t: "不用买 Oyster", d: "银行卡或手机直接刷就行。进站出站刷同一张，别换来换去。" },
-  { t: "DLR 很多站没有闸机", d: "得自己找站台上那个黄色读卡器，上车前刷一下，下车再刷一下。忘了刷会被当逃票 —— 第一次坐最容易漏的就是这个。" },
-  { t: "回家认 Blackwall，不是 Canary Wharf", d: "Canary Wharf 是商场那站。你家在 Blackwall，Poplar 换车。晚上回来看清楚方向再上车。" }
+  { t: "Blackwall", d: "你家那站。出站走 2 分钟到楼下。" },
+  { t: "Poplar", d: "换乘那站。去哪儿基本都从这儿换，同一个站台换对面。" },
+  { t: "Canary Wharf", d: "商场那站。买东西、买药、吃饭都在这一片。" }
 ];
 var LD_N1_NO = [
-  "别硬撑。见完朋友容易忘了时间，可你今天等于通宵了 —— 累了就说要回去，这不扫兴。",
-  "回程实在累就直接叫车，别为了省钱硬换乘。第一天不值得。",
-  "出门前先把回家那趟查好（Citymapper 或 Google 地图），玩到晚上就不用临时想。"
+  "刷银行卡或手机就行，不用买 Oyster。DLR 很多站没有闸机 —— 站台上那个黄色读卡器，上车前刷一下，下车再刷一下，忘了会被当逃票。",
+  "真绕晕了：地图里搜 Blackwall DLR。从 Canary Wharf 那一带走回来也就二十来分钟，全程有路灯和人。",
+  "Canary Wharf 这一片是伦敦晚上最安全的地方之一 —— 灯亮、人多、有保安巡逻。不想走了就叫车，别硬撑。",
+  "上面每一条都可以跳过。今天太累就什么都不做，这张卡片不记账。"
 ];
 var ldDay = function (tz) {
   try { return new Date().toLocaleDateString("en-CA", { timeZone: tz }); } catch (_) { return ""; }
@@ -20234,10 +20241,10 @@ function LondonRoom(_refLD) {
           h("span", { style: { fontSize: "1.2rem" } }, "🌗"),
           h("div", { style: { flex: 1, minWidth: 0 } },
             h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 700, fontSize: "1rem", color: "#f6e7c8", letterSpacing: "0.4px" } }, "落地第一天"),
-            h("div", { style: { fontSize: "0.66rem", color: "rgba(214,232,226,0.8)", marginTop: 3 } }, "伦敦 " + lonT + " · 今天有人约，轻松点")),
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(214,232,226,0.8)", marginTop: 3 } }, "伦敦 " + lonT + " · 今晚把家周围摸熟")),
           h("span", { style: { background: "rgba(246,231,200,0.14)", color: "#f0dcae", borderRadius: 999, padding: "3px 9px", fontSize: "0.56rem", fontWeight: 800, flexShrink: 0 } }, "只有今天")),
         h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.07)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#f3e3bf", lineHeight: 1.7 } },
-          "你等于通宵了，身体里的钟还差着七个小时。好在下午有人约 —— 见到人、在外面、有光，倒时差最难的那段自己就过去了。今天只有一件事要守住：别在出门前睡过头。"),
+          "今天你等于通宵了。下午有人陪，最难的那段有人替你扛过去。晚上回来这几个小时不用玩 —— 就把家周围和那趟车自己走一遍。明天再出门的时候，你会知道自己在哪。"),
         h("div", { style: { marginTop: 12 } }, LD_N1.map(function (s, si) {
           var now = si === cur, past = cur >= 0 && si < cur;
           return h("div", { key: "n1" + si, style: { display: "flex", gap: 10, opacity: past ? 0.42 : 1, marginBottom: si === LD_N1.length - 1 ? 0 : 10 } },
@@ -20248,10 +20255,10 @@ function LondonRoom(_refLD) {
               h("div", { style: { display: "flex", alignItems: "center", gap: 7 } },
                 h("span", { style: { fontWeight: 800, fontSize: "0.84rem", color: s.key ? "#ffd98a" : "#f0e4cb" } }, s.h),
                 now ? h("span", { style: { background: "#e8b84b", color: "#3a2a06", borderRadius: 999, padding: "1px 7px", fontSize: "0.54rem", fontWeight: 800, flexShrink: 0 } }, "现在") : null),
-              h("div", { style: { fontSize: "0.71rem", color: "rgba(216,231,224,0.9)", lineHeight: 1.75, marginTop: 4 } }, s.d)));
+              h("div", { style: { fontSize: "0.71rem", color: "rgba(216,231,224,0.9)", lineHeight: 1.75, marginTop: 4, whiteSpace: "pre-line" } }, s.d)));
         })),
         h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.06)", borderRadius: 9, padding: "11px 12px" } },
-          h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#ffd98a", marginBottom: 8 } }, "🚈 第一次坐车，记这三条就够"),
+          h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#ffd98a", marginBottom: 8 } }, "🚈 记住这三个站名，基本就丢不了"),
           LD_N1_TR.map(function (x, xi) {
             return h("div", { key: "tr" + xi, style: { marginBottom: xi === LD_N1_TR.length - 1 ? 0 : 8 } },
               h("div", { style: { fontWeight: 800, fontSize: "0.75rem", color: "#f0e4cb" } }, "· " + x.t),
