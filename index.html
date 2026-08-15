@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-153";
+var NANA_VER = "v2026.8.2-154";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19482,8 +19482,11 @@ function LondonHarbour(_refHB) {
             h("div", { style: { fontSize: "0.58rem", fontWeight: 800, color: "rgba(255,216,138,0.92)", letterSpacing: "0.5px" } }, "家里"),
             h("div", { style: { fontSize: "1.12rem", fontWeight: 800, color: "rgba(255,255,255,0.86)", letterSpacing: "1px", fontFamily: "Georgia,serif", fontVariantNumeric: "tabular-nums", lineHeight: 1.15 } }, strip.gz)),
           h("span", { style: { fontSize: "1.3rem", flexShrink: 0, lineHeight: 1 } }, "\uD83C\uDFE1"))),
+      strip.here || strip.home ? h("div", { style: { marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.12)" } },
+        strip.here ? h("div", { style: { fontSize: "0.74rem", color: "rgba(255,255,255,0.94)", lineHeight: 1.6, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, strip.here) : null,
+        strip.home ? h("div", { style: { fontSize: "0.72rem", color: "rgba(226,240,246,0.72)", lineHeight: 1.6, marginTop: 3, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "🏡 " + strip.home) : null) : null,
       h("a", { href: strip.map, target: "_blank", rel: "noopener",
-        style: { display: "flex", alignItems: "center", gap: 5, marginTop: 6, textDecoration: "none" } },
+        style: { display: "flex", alignItems: "center", gap: 5, marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.12)", textDecoration: "none" } },
         h("span", { style: { fontSize: "0.6rem", flexShrink: 0 } }, "📍"),
         h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.6rem", color: "rgba(226,240,246,0.82)", letterSpacing: "0.2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, strip.addr),
         h("span", { style: { fontSize: "0.58rem", color: "rgba(255,216,138,0.8)", fontWeight: 800, flexShrink: 0 } }, "地图 ›"))) : null,
@@ -20442,21 +20445,7 @@ function LondonRoom(_refLD) {
     arrCard(),
     afterGo ? pagerCard() : null,
     ldN1On() ? n1Card() : null,
-    ukCard([
-      screws,
-      h("div", { key: "cl", style: { display: "flex", gap: 9 } },
-        bigClock("l", "Europe/London", "LONDON", "Canary Wharf", "brassL"),
-        bigClock("g", "Asia/Shanghai", "HOME", "这个家", "brassG")),
-      h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 7, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2a4f4a", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
-      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(80,105,98,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
-      h("div", { key: "boat", style: { position: "relative", height: 30, marginTop: 6, overflow: "hidden" } },
-        h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 22, overflow: "hidden" } },
-          h("div", { style: { width: "200%", height: "100%", animation: "ldWave 11s linear infinite" } },
-            h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
-              h("path", { d: "M0 28 Q75 8 150 28 T300 28 T450 28 T600 28 T750 28 T900 28 T1050 28 T1200 28 V50 H0 Z", fill: "rgba(31,111,104,0.18)" }),
-              h("path", { d: "M0 36 Q75 18 150 36 T300 36 T450 36 T600 36 T750 36 T900 36 T1050 36 T1200 36 V50 H0 Z", fill: "rgba(31,111,104,0.3)" })))),
-        h("div", { style: { position: "absolute", left: "50%", bottom: 10, marginLeft: -10, fontSize: "1.05rem", animation: "ldBob 3.4s ease-in-out infinite" } }, "⛵"))
-    ]),
+
 
     ukCard([
       screws,
@@ -21607,7 +21596,7 @@ function LondonRoom(_refLD) {
       foot: "从本初子午线 0° 到家里 113°E",
       hello: ldLanded() ? ldHello(lonH) : null,
       sm: ldLanded(),
-      strip: { lon: lonT, gz: gzT, hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0, addr: LD_ADDR, map: ldMap("Fraser Place Canary Wharf " + LD_ADDR) }
+      strip: { lon: lonT, gz: gzT, hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0, here: ldPick(LD_HERE, lonH), home: ldPick(LD_HOME, gzH), addr: LD_ADDR, map: ldMap("Fraser Place Canary Wharf " + LD_ADDR) }
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
