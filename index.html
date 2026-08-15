@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-157";
+var NANA_VER = "v2026.8.2-158";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19666,12 +19666,10 @@ function LondonRoom(_refLD) {
     var t = pgT.trim();
     if (!t) return;
     var id = "pg-" + Date.now() + Math.floor(Math.random() * 90);
-    var me = "";
-    try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
-    var row = { id: id, t: t, a: me };
+    var row = { id: id, t: t };
     setMyPg(function (o) { return o.concat([row]); });
     setPgT(""); setPgOpen(false);
-    nanaPackAdd({ id: id, who: JSON.stringify({ pg: 1, t: t, a: me }) }, function () {});
+    nanaPackAdd({ id: id, who: JSON.stringify({ pg: 1, t: t }) }, function () {});
   };
   // 左滑露出来的那一下就是确认了，不再问第二遍
   var delPg = function (x) {
@@ -19945,7 +19943,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("pg-") === 0) {
           var go2 = null;
           try { go2 = JSON.parse(r.who); } catch (_) { go2 = null; }
-          if (go2 && go2.pg && go2.t) pgl.push({ id: r.id, t: go2.t, a: go2.a || "" });
+          if (go2 && go2.pg && go2.t) pgl.push({ id: r.id, t: go2.t });
         }
         else if (r.id && r.id.indexOf("cf-") === 0) {
           var fo = null;
@@ -20216,20 +20214,16 @@ function LondonRoom(_refLD) {
       // 自己加的那几个
       myPg.length ? h("div", { key: "mypg" }, myPg.map(function (x, i) {
         var busy = pageBusy === x.id;
-        var mine = !x.a || x.a === myAuthor;                     // 没记作者的是早先加的，当自己的算
-        var whoLab = x.a === "nana" ? "Nana" : "熊猫鱼";
-        var col = mine ? "#a97f2e" : (x.a === "nana" ? "#c4577f" : "#2f7f76");
-        var open = mine && pgSwipe === x.id;
+        var open = pgSwipe === x.id;
         return h("div", { key: x.id, style: { position: "relative", overflow: "hidden", borderRadius: 10, marginBottom: 9 } },
-          mine ? h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setPgSwipe(null); delPg(x); },
-            style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 78, border: "none", background: "#cf5a55", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "删掉") : null,
+          h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setPgSwipe(null); delPg(x); },
+            style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 78, border: "none", background: "#cf5a55", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "删掉"),
           h("div", {
             onTouchStart: function (e) {
               var t = e.touches && e.touches[0];
               pgTouch.current = { x: t ? t.clientX : 0, y: t ? t.clientY : 0, moved: false };
             },
             onTouchMove: function (e) {
-              if (!mine) return;                                  // 对方加的，别让划出删掉
               var t = e.touches && e.touches[0]; if (!t) return;
               var dx = t.clientX - pgTouch.current.x, dy = t.clientY - pgTouch.current.y;
               if (Math.abs(dx) < Math.abs(dy)) return;          // 竖着滑是在翻页，别抢
@@ -20242,12 +20236,11 @@ function LondonRoom(_refLD) {
               if (open) { setPgSwipe(null); return; }            // 露着删掉的时候，点一下先收回去
               if (!pageBusy) sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" });
             },
-            style: { position: "relative", display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid " + col + "66", background: "#fffaf0", borderRadius: 10, padding: "12px 13px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
-            h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, mine ? "💛" : (x.a === "nana" ? "🌸" : "🐼")),
+            style: { position: "relative", display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.4)", background: "#fffaf0", borderRadius: 10, padding: "12px 13px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
+            h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, "💛"),
             h("span", { style: { flex: 1, minWidth: 0 } },
-              h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : x.t),
-              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } },
-                mine ? "你自己加的 · 想删就往左划" : (whoLab + " 加的 · 你也可以按")))));
+              h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t),
+              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, "想删就往左划"))));
       })) : null,
       pgOpen
         ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
