@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-150";
+var NANA_VER = "v2026.8.2-151";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18312,9 +18312,8 @@ var LD_LETTER_HINT = 1;
 // 落地那一刻起，伦敦这间房就是首页 —— 她一开小屋就在伦敦，不用先绕一圈
 var LD_LAND_AT = "2026-08-15T06:00:00+01:00";
 var ldLanded = function () {
-  // 熊猫鱼这边提前切成伦敦首页，方便先看；nana 那边还是落地那一刻才变
-  try { if (localStorage.getItem("nana-author") === "panda") return true; } catch (_) {}
-  try { return new Date() >= new Date(LD_LAND_AT); } catch (_) { return false; }
+  // 两个人现在都直接进伦敦首页，不再等落地那一刻
+  return true;
 };
 var ldHomeRoom = function () {
   if (!ldLanded()) return null;
