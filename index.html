@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-151";
+var NANA_VER = "v2026.8.2-152";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19315,7 +19315,7 @@ var ldHello = function (lonHour) {
 function LondonHarbour(_refHB) {
   var h = React.createElement;
   var sk = _refHB.sk, frac = _refHB.frac, isDay = _refHB.isDay, title = _refHB.title, sub = _refHB.sub, foot = _refHB.foot, eyebrow = _refHB.eyebrow;
-  var hello = _refHB.hello, sm = _refHB.sm;
+  var hello = _refHB.hello, sm = _refHB.sm, strip = _refHB.strip;
   var _ec = useState(0); var eyeBoost = _ec[0], setEyeBoost = _ec[1];
   var _tt = useState(""); var toot = _tt[0], setToot = _tt[1];
   var _hi = useState(0); var hi = _hi[0], setHi = _hi[1];
@@ -19432,6 +19432,21 @@ function LondonHarbour(_refHB) {
         h("div", { style: { width: "200%", height: "100%", animation: "ldWave 6s linear infinite" } },
           h("svg", { viewBox: "0 0 1200 30", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
             h("path", { d: "M0 16 Q60 4 120 16 T240 16 T360 16 T480 16 T600 16 T720 16 T840 16 T960 16 T1080 16 T1200 16 V30 H0 Z", fill: "rgba(255,255,255,0.2)" }))))),
+    // 两个时间 + 家的地址：抬眼就看得见，地址点一下开地图
+    strip ? h("div", { style: { position: "relative", zIndex: 4, background: "rgba(8,26,40,0.82)", borderTop: "1px solid rgba(255,255,255,0.14)", padding: "9px 14px 8px" } },
+      h("div", { style: { display: "flex", alignItems: "center", gap: 10 } },
+        h("div", { style: { flex: 1, minWidth: 0, display: "flex", alignItems: "baseline", gap: 7 } },
+          h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "rgba(255,216,138,0.92)", letterSpacing: "0.5px", flexShrink: 0 } }, "伦敦"),
+          h("span", { style: { fontSize: "1.12rem", fontWeight: 800, color: "#fff", letterSpacing: "1px", fontFamily: "Georgia,serif", fontVariantNumeric: "tabular-nums" } }, strip.lon)),
+        h("div", { style: { width: 1, height: 20, background: "rgba(255,255,255,0.2)", flexShrink: 0 } }),
+        h("div", { style: { flex: 1, minWidth: 0, display: "flex", alignItems: "baseline", gap: 7, justifyContent: "flex-end" } },
+          h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "rgba(255,216,138,0.92)", letterSpacing: "0.5px", flexShrink: 0 } }, "家里"),
+          h("span", { style: { fontSize: "1.12rem", fontWeight: 800, color: "rgba(255,255,255,0.86)", letterSpacing: "1px", fontFamily: "Georgia,serif", fontVariantNumeric: "tabular-nums" } }, strip.gz))),
+      h("a", { href: strip.map, target: "_blank", rel: "noopener",
+        style: { display: "flex", alignItems: "center", gap: 5, marginTop: 6, textDecoration: "none" } },
+        h("span", { style: { fontSize: "0.6rem", flexShrink: 0 } }, "📍"),
+        h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.6rem", color: "rgba(226,240,246,0.82)", letterSpacing: "0.2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, strip.addr),
+        h("span", { style: { fontSize: "0.58rem", color: "rgba(255,216,138,0.8)", fontWeight: 800, flexShrink: 0 } }, "地图 ›"))) : null,
     // 海鸥
     h("div", { style: { position: "absolute", left: 0, top: "36%", fontSize: "0.72rem", opacity: 0.75, animation: "ldGull 19s linear infinite", pointerEvents: "none", zIndex: 3 } }, "🕊️"),
     h("div", { style: { position: "absolute", left: 0, top: "26%", fontSize: "0.6rem", opacity: 0.55, animation: "ldGull 27s linear infinite", animationDelay: "-11s", pointerEvents: "none", zIndex: 3 } }, "🕊️"),
@@ -21551,7 +21566,8 @@ function LondonRoom(_refLD) {
       sub: "Canary Wharf 港 · Fraser Place 号船舱 \u2693",
       foot: "从本初子午线 0° 到家里 113°E",
       hello: ldLanded() ? ldHello(lonH) : null,
-      sm: ldLanded()
+      sm: ldLanded(),
+      strip: { lon: lonT, gz: gzT, addr: LD_ADDR, map: ldMap("Fraser Place Canary Wharf " + LD_ADDR) }
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
