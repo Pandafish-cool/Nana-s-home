@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-155";
+var NANA_VER = "v2026.8.2-156";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19408,16 +19408,16 @@ function LondonHarbour(_refHB) {
       })),
     // 文字（下面垫一层压暗，白天浅色天空也看得清）
     h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: "62%", background: "linear-gradient(180deg,rgba(8,26,40,0.5),rgba(8,26,40,0.2) 55%,rgba(8,26,40,0))", zIndex: 2, pointerEvents: "none" } }),
-    h("div", { style: { position: "relative", zIndex: 3, padding: sm ? "17px 15px 0" : "30px 16px 0" } },
+    h("div", { style: { position: "relative", zIndex: 3, padding: sm ? "13px 15px 0" : "30px 16px 0" } },
       h("div", { style: { color: "#ffd86a", fontWeight: 800, fontSize: "0.58rem", letterSpacing: 3, fontFamily: "Georgia,serif", textShadow: "0 1px 6px rgba(0,0,0,0.5)" } }, eyebrow),
       hello
-        ? h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.14rem", marginTop: 3, minHeight: "1.6rem", letterSpacing: "0.4px", textShadow: "0 2px 12px rgba(0,0,0,0.6)", opacity: hf ? 1 : 0, transition: "opacity 0.34s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } }, hello[hi])
+        ? h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.12rem", marginTop: 2, minHeight: "1.45rem", letterSpacing: "0.4px", textShadow: "0 2px 12px rgba(0,0,0,0.6)", opacity: hf ? 1 : 0, transition: "opacity 0.34s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } }, hello[hi])
         : h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.2rem", marginTop: 3, letterSpacing: "1px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title),
       hello ? h("div", { style: { color: "rgba(255,255,255,0.9)", fontWeight: 800, fontSize: "0.68rem", marginTop: 1, letterSpacing: "0.5px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title) : null,
-      h("div", { style: { color: "rgba(240,250,252,0.95)", fontSize: "0.63rem", marginTop: 3, lineHeight: 1.5, textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, sub),
-      foot ? h("div", { style: { color: "rgba(255,216,138,0.9)", fontSize: "0.57rem", marginTop: 2, fontFamily: "Georgia,serif", letterSpacing: "0.3px", textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, foot) : null),
+      h("div", { style: { color: "rgba(240,250,252,0.95)", fontSize: "0.63rem", marginTop: 2, lineHeight: 1.45, textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, sub),
+      foot ? h("div", { style: { color: "rgba(255,216,138,0.9)", fontSize: "0.57rem", marginTop: 1, fontFamily: "Georgia,serif", letterSpacing: "0.3px", textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, foot) : null),
     // 天际线
-    h("svg", { viewBox: "0 0 400 130", preserveAspectRatio: "xMidYMax slice", style: { display: "block", width: "100%", height: sm ? 70 : 128, marginTop: sm ? 0 : 6, position: "relative", zIndex: 2 } },
+    h("svg", { viewBox: "0 0 400 130", preserveAspectRatio: "xMidYMax slice", style: { display: "block", width: "100%", height: sm ? 88 : 128, marginTop: sm ? 0 : 6, position: "relative", zIndex: 2 } },
       // 塔桥
       h("g", { fill: lit ? "#0d1c33" : "rgba(16,38,58,0.82)" },
         h("path", { d: "M22 130 V72 L30 58 L38 72 V130 Z" }),
@@ -19455,14 +19455,14 @@ function LondonHarbour(_refHB) {
       h("rect", { x: 316, y: 12, width: 2, height: 8, fill: "#e35b5b" }),
       h("circle", { cx: 317, cy: 12, r: 2.4, fill: "#ff6b6b", style: { animation: "ldTwinkle 1.6s ease-in-out infinite" } })),
     // 河
-    h("div", { style: { position: "relative", zIndex: 2, height: 34, marginTop: -6, background: lit ? "linear-gradient(180deg,#12314a,#0b1f31)" : "linear-gradient(180deg,#2e7f86,#1c5a63)", overflow: "hidden" } },
-      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 17, overflow: "hidden" } },
+    h("div", { style: { position: "relative", zIndex: 2, height: 27, marginTop: -6, background: lit ? "linear-gradient(180deg,#12314a,#0b1f31)" : "linear-gradient(180deg,#2e7f86,#1c5a63)", overflow: "hidden" } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 13, overflow: "hidden" } },
         h("div", { style: { width: "200%", height: "100%", animation: "ldWave 9s linear infinite" } },
           h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
             h("path", { d: "M0 26 Q75 8 150 26 T300 26 T450 26 T600 26 T750 26 T900 26 T1050 26 T1200 26 V50 H0 Z", fill: "rgba(255,255,255,0.14)" })))),
-      h("div", { onClick: function () { say("🚢 呜——！"); }, style: { position: "absolute", top: 2, fontSize: "1rem", animation: "ldSail 24s linear infinite", cursor: "pointer" } }, "🚢"),
-      h("div", { onClick: function () { say("⛵ 顺风！"); }, style: { position: "absolute", top: 11, fontSize: "0.85rem", animation: "ldSail 15s linear infinite", animationDelay: "-7s", cursor: "pointer" } }, "⛵"),
-      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 11, overflow: "hidden" } },
+      h("div", { onClick: function () { say("🚢 呜——！"); }, style: { position: "absolute", top: 0, fontSize: "0.9rem", animation: "ldSail 24s linear infinite", cursor: "pointer" } }, "🚢"),
+      h("div", { onClick: function () { say("⛵ 顺风！"); }, style: { position: "absolute", top: 8, fontSize: "0.78rem", animation: "ldSail 15s linear infinite", animationDelay: "-7s", cursor: "pointer" } }, "⛵"),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, overflow: "hidden" } },
         h("div", { style: { width: "200%", height: "100%", animation: "ldWave 6s linear infinite" } },
           h("svg", { viewBox: "0 0 1200 30", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
             h("path", { d: "M0 16 Q60 4 120 16 T240 16 T360 16 T480 16 T600 16 T720 16 T840 16 T960 16 T1080 16 T1200 16 V30 H0 Z", fill: "rgba(255,255,255,0.2)" }))))),
