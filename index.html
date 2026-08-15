@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-158";
+var NANA_VER = "v2026.8.2-159";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20238,9 +20238,7 @@ function LondonRoom(_refLD) {
             },
             style: { position: "relative", display: "flex", alignItems: "center", gap: 11, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.4)", background: "#fffaf0", borderRadius: 10, padding: "12px 13px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
             h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, "💛"),
-            h("span", { style: { flex: 1, minWidth: 0 } },
-              h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t),
-              h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, "想删就往左划"))));
+            h("span", { style: { flex: 1, minWidth: 0, fontWeight: 800, fontSize: "0.9rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t)));
       })) : null,
       pgOpen
         ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
