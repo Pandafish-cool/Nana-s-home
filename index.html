@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-159";
+var NANA_VER = "v2026.8.2-160";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18703,6 +18703,77 @@ var ldCandy = function (key, cx, cy, sz, ci, rot, anim) {
 };
 // 玻璃罐 + 糖堆。n 是总数，justIn 为真时最上面那颗会弹一下
 // 🕰 大本钟：钟面上的针按伦敦当前时间走
+// 🏠 家里那栋小房子：她按一下，这边就亮一下
+var ldHouse = function (lit, hold, mail, w) {
+  var h = React.createElement;
+  var W = w || 210;
+  var dim = lit === "dim";
+  var on = function (k) { return lit === k ? 1 : (hold === k ? 0.88 : 0); };
+  // 门口那盏灯从来不全灭 —— 灯一直给她留着
+  var doorOn = dim ? 0.1 : Math.max(on("door"), on("knock"), mail ? 0.42 : 0.24);
+  var glow = "#ffdf9a", glow2 = "#f6c96a";
+  var wall = dim ? "#2f4658" : "#3c5a6e", wall2 = dim ? "#26394a" : "#31495b";
+  var roof = dim ? "#5a3f44" : "#6f4c52";
+  var winBox = function (key, x, y, ww, hh2) {
+    var o = on(key);
+    return h("g", { key: key },
+      h("rect", { x: x, y: y, width: ww, height: hh2, rx: 1.5, fill: "#1b2c39" }),
+      h("rect", { x: x, y: y, width: ww, height: hh2, rx: 1.5, fill: glow, opacity: o, style: { transition: "opacity 0.85s linear" } }),
+      h("ellipse", { cx: x + ww / 2, cy: y + hh2 / 2, rx: ww * 1.5, ry: hh2 * 1.4, fill: glow2, opacity: o * 0.28, style: { transition: "opacity 0.85s linear" } }),
+      h("rect", { x: x + ww / 2 - 0.5, y: y, width: 1, height: hh2, fill: wall2, opacity: 0.8 }),
+      h("rect", { x: x, y: y + hh2 / 2 - 0.5, width: ww, height: 1, fill: wall2, opacity: 0.8 }));
+  };
+  return h("svg", { viewBox: "0 0 200 128", style: { width: W, height: Math.round(W * 128 / 200), display: "block", margin: "0 auto" } },
+    // 夜色底
+    h("rect", { x: 0, y: 0, width: 200, height: 128, rx: 10, fill: dim ? "#16232e" : "#1b2c3a" }),
+    // 几颗星
+    [[26, 20], [58, 12], [168, 18], [140, 9], [12, 40]].map(function (q, i) {
+      return h("circle", { key: "st" + i, cx: q[0], cy: q[1], r: i % 2 ? 0.9 : 1.3, fill: "#fff", opacity: dim ? 0.28 : 0.5 });
+    }),
+    // 烟：亮完之后冒一会儿
+    (lit && !dim) ? h("g", null, [0, 1, 2].map(function (i) {
+      return h("circle", { key: "sm" + i, cx: 134, cy: 20, r: 3 + i * 0.6, fill: "rgba(255,255,255,0.5)",
+        style: { transformBox: "fill-box", transformOrigin: "center", animation: "mpSmoke 2.2s ease-out infinite", animationDelay: (i * 0.6) + "s" } });
+    })) : null,
+    // 烟囱
+    h("rect", { x: 128, y: 22, width: 13, height: 22, rx: 1.5, fill: roof }),
+    h("rect", { x: 126, y: 21, width: 17, height: 4, rx: 1.5, fill: dim ? "#6b4b50" : "#82595f" }),
+    // 屋顶
+    h("path", { d: "M42 50 L100 16 L158 50 Z", fill: roof }),
+    h("path", { d: "M42 50 L100 16 L158 50 Z", fill: "rgba(255,255,255,0.07)" }),
+    // 墙
+    h("rect", { x: 52, y: 48, width: 96, height: 62, rx: 3, fill: wall }),
+    h("rect", { x: 52, y: 48, width: 26, height: 62, fill: "rgba(255,255,255,0.05)" }),
+    // 楼上两扇窗
+    winBox("live", 64, 58, 20, 16),
+    winBox("up", 116, 58, 20, 16),
+    // 门 + 门口那盏灯
+    h("rect", { x: 88, y: 78, width: 24, height: 32, rx: 2, fill: "#5a3f36" }),
+    h("rect", { x: 88, y: 78, width: 24, height: 32, rx: 2, fill: glow, opacity: doorOn * 0.55, style: { transition: "opacity 0.85s linear" } }),
+    h("circle", { cx: 106, cy: 95, r: 1.4, fill: "#d9b063" }),
+    h("circle", { cx: 100, cy: 74, r: 3.2, fill: "#2a3b47" }),
+    h("circle", { cx: 100, cy: 74, r: 2.4, fill: glow, opacity: doorOn, style: { transition: "opacity 0.85s linear" } }),
+    h("ellipse", { cx: 100, cy: 96, rx: 26, ry: 20, fill: glow2, opacity: doorOn * 0.22, style: { transition: "opacity 0.85s linear" } }),
+    // 敲门：门环晃一下
+    h("g", { style: (lit === "knock" || hold === "knock") ? { transformBox: "fill-box", transformOrigin: "center top", animation: "hsKnock 0.5s ease-in-out 3" } : null },
+      h("circle", { cx: 94, cy: 88, r: 2.2, fill: "none", stroke: "#c9a05e", strokeWidth: 1.1 })),
+    // 窗台上的猫：平时趴着，敲门时抬头
+    h("g", { transform: "translate(140 74)" },
+      h("ellipse", { cx: 0, cy: 2, rx: 7, ry: 3.4, fill: dim ? "#5b6b76" : "#e0d3c2" }),
+      h("g", { style: (lit === "knock") ? { transformBox: "fill-box", transformOrigin: "center bottom", animation: "hsCat 0.6s ease-out both" } : null },
+        h("circle", { cx: -5, cy: -1.5, r: 3.4, fill: dim ? "#5b6b76" : "#e0d3c2" }),
+        h("path", { d: "M-8 -3.6 l1.2 -2.6 l1.8 1.8 Z", fill: dim ? "#5b6b76" : "#e0d3c2" }),
+        h("path", { d: "M-2 -3.6 l1.2 -2.6 l1.8 1.8 Z", fill: dim ? "#5b6b76" : "#e0d3c2" })),
+      h("path", { d: "M7 1 q5 -1 4 -5", fill: "none", stroke: dim ? "#5b6b76" : "#e0d3c2", strokeWidth: 2, strokeLinecap: "round" })),
+    // 221B 有新的信，门口那盏灯就一直亮着
+    mail ? h("circle", { cx: 100, cy: 74, r: 5.5, fill: glow, opacity: 0.3, style: { animation: "mpBob 3s ease-in-out infinite" } }) : null,
+    // 地面和小路
+    h("rect", { x: 0, y: 108, width: 200, height: 20, fill: dim ? "#1d3129" : "#25423a" }),
+    h("path", { d: "M92 110 L88 128 L112 128 L108 110 Z", fill: dim ? "#2d4a40" : "#3a5c50" }),
+    [[26, 116], [46, 121], [160, 117], [178, 122]].map(function (q, i) {
+      return h("path", { key: "bu" + i, d: "M" + q[0] + " " + q[1] + " q4 -7 8 0 Z", fill: dim ? "#24382f" : "#2f5145" });
+    }));
+};
 var ldBigBen = function (hh, mm, w) {
   var h = React.createElement;
   var W = w || 30;
@@ -18889,11 +18960,20 @@ var LD_ARR_WAY = [
 ];
 // 一键呼叫：三种，都会变成 221B 里的 BB 机来信
 var LD_PAGE = [
-  { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠" },
-  { k: "good", e: "☀️", t: "今天还不错", sub: "就是想说一声", body: "📟 今天还不错。就是想说一声。", ok: "说过了，那边高兴 ☀️" },
-  { k: "knock", e: "🚪", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🚪" },
-  { k: "bad", e: "🌧️", t: "今天有点长", sub: "就这么一句，不用回", pick: 1 }
+  { k: "home", e: "🏠", t: "到家了", sub: "门锁好了", body: "📟 到家了，门锁好了。", ok: "家里知道了 🏠", win: "door" },
+  { k: "good", e: "☀️", t: "今天还不错", sub: "就是想说一声", body: "📟 今天还不错。就是想说一声。", ok: "说过了，那边高兴 ☀️", win: "live" },
+  { k: "knock", e: "🚪", t: "敲一下门", sub: "没什么事，敲一下而已", body: "📟 敲一下门，没别的事。", ok: "敲过了 🚪", win: "knock" },
+  { k: "bad", e: "🌧️", t: "今天有点长", sub: "就这么一句，不用回", pick: 1, win: "dim" }
 ];
+// 按下去之后从窗户里飘出来的那句话 —— 熊猫鱼提前写好的，每次随机一条
+var LD_BACK_SAY = {
+  home: ["门锁好了就行。这边的灯给你留着。", "到家了就好。别急着收拾，先坐下。", "听见了。今晚不用再管别的事了。"],
+  good: ["那就好。这句我收着了。", "知道了。今天也算数。", "好。那我这边也放心一点。"],
+  knock: ["听见了。门开着，随时。", "在的。什么都不用说。", "咚。这边也敲了一下回你。"],
+  bad: ["不用说话。灯我调暗了，坐一会儿。", "知道了。什么都不用做。", "在这儿。你先歇着。"]
+};
+// 按完「到家了」浮出来的三格，点不点都行，自己会淡掉
+var LD_SAFE = ["门锁了", "窗关了", "吸入器在包里"];
 // 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
 var LD_BAD_OPT = [
   { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
@@ -19536,6 +19616,13 @@ function LondonRoom(_refLD) {
   var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
   var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
+  // 🏠 家里的灯：按住 → 那扇窗慢慢亮 → 松手亮满 → 窗里飘出一句话
+  var _hl = useState(""); var pgLit = _hl[0], setPgLit = _hl[1];
+  var _hh2 = useState(""); var pgHold = _hh2[0], setPgHold = _hh2[1];
+  var _hs = useState(""); var pgSay = _hs[0], setPgSay = _hs[1];
+  var _hsf = useState(false); var pgSafe = _hsf[0], setPgSafe = _hsf[1];
+  var _hsd = useState([]); var pgSafeOn = _hsd[0], setPgSafeOn = _hsd[1];
+  var pgDown = useRef(0);
   var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _tk2 = useState(null); var task = _tk2[0], setTask = _tk2[1];
   var _ao = useState(false); var astOpen = _ao[0], setAstOpen = _ao[1];
@@ -20036,6 +20123,26 @@ function LondonRoom(_refLD) {
     n[id] = nx; setSpots(n);
     try { localStorage.setItem(ldWKey("nana-london-spots"), JSON.stringify(n)); } catch (_) {}
   };
+  var holdOn = function (p) { pgDown.current = Date.now(); setPgHold(p.win || ""); };
+  var holdOff = function (p, ok) {
+    if (!pgDown.current) return;
+    pgDown.current = 0;
+    setPgHold("");
+    if (!ok) return;                                   // 手指划走了就不算
+    setPgLit(p.win || "");
+    var bank = LD_BACK_SAY[p.k];
+    if (bank && bank.length) {
+      var line = bank[Math.floor(Math.random() * bank.length)];
+      setPgSay(line);
+      setTimeout(function () { setPgSay(""); }, 9000);
+    }
+    if (p.k === "home") {
+      setPgSafeOn([]); setPgSafe(true);
+      setTimeout(function () { setPgSafe(false); }, 26000);
+    }
+    if (p.pick) { setBadOpen(true); setSitMode(null); return; }
+    sendPage(p);
+  };
   var sendPage = function (p) {
     if (pageBusy) return;
     if (!myAuthor) { setPageMsg("先去 221B 选一下你是谁"); return; }
@@ -20197,18 +20304,41 @@ function LondonRoom(_refLD) {
     return ukCard([
 
       screws,
-      ukHead("按一下，家里就知道", "不用组织语言，按哪个都行",
+      ukHead("按住，家里就亮一下", "不用组织语言，按住哪个都行",
         LD_LETTER_HINT ? ldPostBox(!!newLetter, 30) : h("span", { style: { fontSize: "1rem" } }, "📟")),
+      // 家里那栋房子
+      h("div", { key: "hs", style: { marginBottom: 10 } },
+        ldHouse(pgLit, pgHold, !!newLetter, 240),
+        h("div", { style: { minHeight: 34, marginTop: 7 } },
+          pgSay ? h("div", { key: "say" + pgSay, style: { textAlign: "center", animation: "hsSay 9s ease-out both" } },
+            h("span", { style: { display: "inline-block", background: "rgba(31,111,104,0.1)", color: "#255f58", borderRadius: 10, padding: "8px 13px", fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.55, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, pgSay)) : null)),
+      // 到家之后浮出来的三格，点不点都行
+      pgSafe ? h("div", { key: "safe", style: { display: "flex", gap: 6, marginBottom: 10, animation: "hsChip 26s ease-out both" } },
+        LD_SAFE.map(function (t, si) {
+          var done = pgSafeOn.indexOf(si) >= 0;
+          return h("button", { key: "sf" + si, onClick: function () {
+              setPgSafeOn(function (o) { return o.indexOf(si) >= 0 ? o.filter(function (y) { return y !== si; }) : o.concat([si]); });
+            },
+            style: { flex: 1, border: "1px solid " + (done ? "rgba(31,111,104,0.5)" : "rgba(169,127,46,0.35)"), background: done ? "rgba(31,111,104,0.12)" : "rgba(255,255,255,0.6)", borderRadius: 9, padding: "8px 4px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: done ? "#1a5c56" : "rgba(120,105,80,0.95)", cursor: "pointer" } },
+            (done ? "✓ " : "") + t);
+        })) : null,
       h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
         var isPick = !!p.pick;
-        return h("button", { key: "pg" + i, onClick: function () { if (isPick) { setBadOpen(!badOpen); setSitMode(null); } else { sendPage(p); } }, disabled: !!pageBusy,
-          style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + "44", background: "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1 } },
+        var holding = pgHold === p.win && pgHold !== "";
+        return h("button", { key: "pg" + i,
+          onPointerDown: function () { if (!pageBusy) holdOn(p); },
+          onPointerUp: function () { holdOff(p, true); },
+          onPointerCancel: function () { holdOff(p, false); },
+          onPointerLeave: function () { holdOff(p, false); },
+          onContextMenu: function (e) { e.preventDefault(); },
+          disabled: !!pageBusy,
+          style: { width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "left", marginBottom: 9, border: "1.5px solid " + col + (holding ? "aa" : "44"), background: holding ? "rgba(255,247,225,0.95)" : "rgba(255,255,255,0.72)", borderRadius: 10, padding: "12px 13px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: holding ? "scale(0.985)" : "scale(1)", transition: "background 0.3s ease, transform 0.2s ease, border-color 0.3s ease", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } },
           h("span", { style: { fontSize: "1.4rem", flexShrink: 0 } }, p.e),
           h("span", { style: { flex: 1, minWidth: 0 } },
             h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.9rem", color: col } }, busy ? "寄出去中…" : p.t),
-            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, p.sub)),
+            h("span", { style: { display: "block", fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, holding ? "别松手…" : p.sub)),
           isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.72rem" } }, badOpen ? "▲" : "▼") : null);
       })),
       // 自己加的那几个
@@ -21583,7 +21713,12 @@ function LondonRoom(_refLD) {
       "@keyframes swS1{0%{opacity:0;transform:translate(0,0) scale(.4)}30%{opacity:.95}100%{opacity:0;transform:translate(13px,-15px) scale(.2)}}" +
       "@keyframes swS2{0%{opacity:0;transform:translate(0,0) scale(.4)}30%{opacity:.95}100%{opacity:0;transform:translate(-7px,-20px) scale(.2)}}" +
       "@keyframes swS3{0%{opacity:0;transform:translate(0,0) scale(.4)}30%{opacity:.95}100%{opacity:0;transform:translate(8px,-19px) scale(.2)}}" +
-      "@keyframes swPop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}"),
+      "@keyframes swPop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}" +
+      // 家里那栋房子：敲门、猫抬头、窗里飘出来的那句话
+      "@keyframes hsKnock{0%,100%{transform:rotate(0)}30%{transform:rotate(-16deg)}60%{transform:rotate(10deg)}}" +
+      "@keyframes hsCat{0%{transform:translateY(0)}45%{transform:translateY(-4px)}100%{transform:translateY(-2px)}}" +
+      "@keyframes hsSay{0%{opacity:0;transform:translateY(8px)}18%{opacity:1;transform:translateY(0)}84%{opacity:1}100%{opacity:0;transform:translateY(-4px)}}" +
+      "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}"),
     h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
