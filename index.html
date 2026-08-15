@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-149";
+var NANA_VER = "v2026.8.2-150";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18311,7 +18311,11 @@ var LD_WALL_OPEN = "2026-08-13T00:00:00+08:00";
 var LD_LETTER_HINT = 1;
 // 落地那一刻起，伦敦这间房就是首页 —— 她一开小屋就在伦敦，不用先绕一圈
 var LD_LAND_AT = "2026-08-15T06:00:00+01:00";
-var ldLanded = function () { try { return new Date() >= new Date(LD_LAND_AT); } catch (_) { return false; } };
+var ldLanded = function () {
+  // 熊猫鱼这边提前切成伦敦首页，方便先看；nana 那边还是落地那一刻才变
+  try { if (localStorage.getItem("nana-author") === "panda") return true; } catch (_) {}
+  try { return new Date() >= new Date(LD_LAND_AT); } catch (_) { return false; }
+};
 var ldHomeRoom = function () {
   if (!ldLanded()) return null;
   try { for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === "london") return ROOMS[i]; } } catch (_) {}
@@ -18507,6 +18511,7 @@ var LD_PICKUP = {
 };
 // ── 🌗 落地第一晚：只在 8/15 当天出现，第二天自己消失 ──────────
 // 通宵飞过来，伦敦晚上 7 点她身体里是凌晨 2 点。这一天唯一要做成的事是别在傍晚睡着。
+var LD_PICK_DONE = "2026-08-15T13:00:00+01:00";   // 接机卡片自动收起的时刻
 var LD_N1_DAY = "2026-08-15";
 var LD_N1_NEXT = "2026-08-16";
 var LD_N1_SUN = "20:20";
@@ -20302,29 +20307,11 @@ function LondonRoom(_refLD) {
         h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
           "这张明天就没了。今天哪一条没做到都没关系 —— 不用补，不用说。")));
   };
-  var nowTab = h("div", null,
-    ldN1On() ? n1Card() : null,
-    afterGo ? pagerCard() : null,
-    ukCard([
-      screws,
-      h("div", { key: "cl", style: { display: "flex", gap: 9 } },
-        bigClock("l", "Europe/London", "LONDON", "Canary Wharf", "brassL"),
-        bigClock("g", "Asia/Shanghai", "HOME", "这个家", "brassG")),
-      h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 7, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2a4f4a", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
-      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(80,105,98,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
-      h("div", { key: "boat", style: { position: "relative", height: 30, marginTop: 6, overflow: "hidden" } },
-        h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 22, overflow: "hidden" } },
-          h("div", { style: { width: "200%", height: "100%", animation: "ldWave 11s linear infinite" } },
-            h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
-              h("path", { d: "M0 28 Q75 8 150 28 T300 28 T450 28 T600 28 T750 28 T900 28 T1050 28 T1200 28 V50 H0 Z", fill: "rgba(31,111,104,0.18)" }),
-              h("path", { d: "M0 36 Q75 18 150 36 T300 36 T450 36 T600 36 T750 36 T900 36 T1050 36 T1200 36 V50 H0 Z", fill: "rgba(31,111,104,0.3)" })))),
-        h("div", { style: { position: "absolute", left: "50%", bottom: 10, marginLeft: -10, fontSize: "1.05rem", animation: "ldBob 3.4s ease-in-out infinite" } }, "⛵"))
-    ]),
-    // ── 🛬 落地那天 ──
-    (function () {
-      var arrivedBy = new Date(LD_DEPART + "T00:00:00+08:00");
-      arrivedBy.setDate(arrivedBy.getDate() + 3);
-      var past = new Date() > arrivedBy;
+  // ── 🛬 接你回家（落地那天）──
+  var arrCard = function () {
+      // 到了伦敦时间下午一点，人早就到家了，这张自己收起来（还能手动点开）
+      var past = false;
+      try { past = new Date() >= new Date(LD_PICK_DONE); } catch (_) {}
       var open = arrOpen === null ? !past : arrOpen;
       var pill = function (t, bg, col) {
         return h("span", { style: { background: bg, color: col, borderRadius: 999, padding: "2px 9px", fontSize: "0.56rem", fontWeight: 800, marginLeft: 6, whiteSpace: "nowrap" } }, t);
@@ -20396,7 +20383,27 @@ function LondonRoom(_refLD) {
             h("div", { style: { fontSize: "0.8rem", color: "#fdf0d2", fontWeight: 700, marginTop: 3, lineHeight: 1.6 } }, LD_ADDR),
             h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
         ) : null);
-    })(),
+  };
+  var nowTab = h("div", null,
+    arrCard(),
+    afterGo ? pagerCard() : null,
+    ldN1On() ? n1Card() : null,
+    ukCard([
+      screws,
+      h("div", { key: "cl", style: { display: "flex", gap: 9 } },
+        bigClock("l", "Europe/London", "LONDON", "Canary Wharf", "brassL"),
+        bigClock("g", "Asia/Shanghai", "HOME", "这个家", "brassG")),
+      h("div", { key: "c3", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 7, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#2a4f4a", lineHeight: 1.65, textAlign: "center" } }, ldPick(LD_HOME, gzH)),
+      h("div", { key: "c4", style: { textAlign: "center", fontSize: "0.75rem", color: "rgba(80,105,98,0.95)", marginTop: 9, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
+      h("div", { key: "boat", style: { position: "relative", height: 30, marginTop: 6, overflow: "hidden" } },
+        h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 22, overflow: "hidden" } },
+          h("div", { style: { width: "200%", height: "100%", animation: "ldWave 11s linear infinite" } },
+            h("svg", { viewBox: "0 0 1200 50", preserveAspectRatio: "none", style: { width: "100%", height: "100%", display: "block" } },
+              h("path", { d: "M0 28 Q75 8 150 28 T300 28 T450 28 T600 28 T750 28 T900 28 T1050 28 T1200 28 V50 H0 Z", fill: "rgba(31,111,104,0.18)" }),
+              h("path", { d: "M0 36 Q75 18 150 36 T300 36 T450 36 T600 36 T750 36 T900 36 T1050 36 T1200 36 V50 H0 Z", fill: "rgba(31,111,104,0.3)" })))),
+        h("div", { style: { position: "absolute", left: "50%", bottom: 10, marginLeft: -10, fontSize: "1.05rem", animation: "ldBob 3.4s ease-in-out infinite" } }, "⛵"))
+    ]),
+
     ukCard([
       screws,
     h("div", { key: "astro", style: { background: "linear-gradient(160deg,#1b2a48,#26375c)", borderRadius: 9, padding: "12px 12px 10px", position: "relative", overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(201,162,82,0.45)" } },
