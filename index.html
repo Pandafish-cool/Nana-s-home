@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-165";
+var NANA_VER = "v2026.8.2-166";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8336,13 +8336,18 @@ var nanaImgWatcher = function (onGiveUp) {
   };
 };
 var nanaImgWatch = nanaImgWatcher(function (el) { nanaImgFallback({ target: el }); });
+// 声音和照片共用 pu 这一列，靠扩展名分开；时长写在 #d= 后面
+var nanaIsVo = function (u) { return /\.(m4a|aac|webm|ogg|mp4)(#|\?|$)/i.test(String(u || "")); };
+var nanaVoSecs = function (u) { var m = String(u || "").match(/#d=(\d+)/); return m ? (+m[1]) : 0; };
 var nanaPuList = function (pu) {
   if (!pu) return [];
   if (typeof pu === "string" && pu.charAt(0) === "[") {
     try { var a = JSON.parse(pu); return Array.isArray(a) ? a : []; } catch (_) { return []; }
   }
   return [pu];
-};
+};var nanaPuPics = function (pu) { return nanaPuList(pu).filter(function (u) { return !nanaIsVo(u); }); };
+var nanaPuVo = function (pu) { var l = nanaPuList(pu).filter(nanaIsVo); return l.length ? l[0] : ""; };
+
 var nanaSharedPhotoDel = function (pu) {
   try {
     var t = nanaThumbUrl(pu);
@@ -8742,10 +8747,89 @@ function ReadingRoomActivity(_refRR) {
   };
   useEffect(function () { if (myAuthor) loadShared(); }, [myAuthor]);
   useEffect(function () { if (tab === "shared" && myAuthor && !sharedLoading) loadShared(); }, [tab]);
+  // 🎙 在信里说一句：按住录，松手上传，附在这封信上
+  var _rv1 = useState(false); var shRec = _rv1[0], setShRec = _rv1[1];
+  var _rv2 = useState(0); var shSec = _rv2[0], setShSec = _rv2[1];
+  var _rv3 = useState(false); var shVoUp = _rv3[0], setShVoUp = _rv3[1];
+  var _rv4 = useState(""); var shVo = _rv4[0], setShVo = _rv4[1];        // 草稿上挂着的那段
+  var _rv5 = useState(""); var shPlay = _rv5[0], setShPlay = _rv5[1];
+  var _rv6 = useState(""); var shLoad = _rv6[0], setShLoad = _rv6[1];
+  var shMR = useRef(null), shChunks = useRef([]), shTimer = useRef(null), shT0 = useRef(0), shAud = useRef(null);
+  var shStopTimer = function () { if (shTimer.current) { clearInterval(shTimer.current); shTimer.current = null; } };
+  var shRecStart = function () {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+      setSharedErr("这个浏览器录不了音，换 Safari 试试"); return;
+    }
+    var fmt = nanaVoMime();
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var mr;
+      try { mr = fmt && fmt.m ? new MediaRecorder(stream, { mimeType: fmt.m }) : new MediaRecorder(stream); }
+      catch (_) { mr = new MediaRecorder(stream); }
+      shChunks.current = [];
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) shChunks.current.push(e.data); };
+      mr.onstop = function () {
+        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+        var secs = Math.round((Date.now() - shT0.current) / 1000);
+        shStopTimer(); setShRec(false); setShSec(0);
+        if (secs < 1) { setSharedErr("太短了，再按久一点"); return; }
+        var blob = new Blob(shChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
+        setShVoUp(true);
+        var id = "vo" + Date.now() + Math.floor(Math.random() * 900);
+        nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
+          setShVoUp(false);
+          if (err || !url) { setSharedErr("声音没传上去，再试一次"); return; }
+          setShVo(url + "#d=" + secs);
+          setSharedErr(null);
+        });
+      };
+      shMR.current = mr; shT0.current = Date.now(); mr.start();
+      setShRec(true); setShSec(0); setSharedErr(null);
+      shStopTimer();
+      shTimer.current = setInterval(function () {
+        var n = Math.round((Date.now() - shT0.current) / 1000);
+        setShSec(n);
+        if (n >= 180) shRecStop();
+      }, 250);
+    })["catch"](function () { setSharedErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); });
+  };
+  var shRecStop = function () {
+    try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); } catch (_) { shStopTimer(); setShRec(false); }
+  };
+  var shVoHit = function (key, u) {
+    if (shPlay === key) { try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {} setShPlay(""); return; }
+    try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {}
+    setShPlay(""); setShLoad(key);
+    nanaVoGet(u, function (err, src) {
+      setShLoad("");
+      if (err || !src) { setSharedErr("这段没读出来，等信号好一点再试"); return; }
+      try {
+        var a2 = new Audio(src);
+        a2.onended = function () { setShPlay(""); shAud.current = null; };
+        a2.onerror = function () { setShPlay(""); shAud.current = null; };
+        shAud.current = a2; setShPlay(key);
+        a2.play()["catch"](function () { setShPlay(""); shAud.current = null; });
+      } catch (_) {}
+    });
+  };
+  var shVoBar = function (key, u, tone) {
+    var on = shPlay === key, ld = shLoad === key;
+    var secs = nanaVoSecs(u);
+    var mm = Math.floor(secs / 60) + ":" + (secs % 60 < 10 ? "0" : "") + (secs % 60);
+    return h("div", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); shVoHit(key, u); },
+      style: { display: "flex", alignItems: "center", gap: 9, background: "rgba(255,255,255,0.72)", border: "1.5px solid " + (on ? "rgba(31,111,104,0.55)" : "rgba(180,150,140,0.4)"), borderRadius: 999, padding: "7px 13px 7px 8px", cursor: "pointer", position: "relative", zIndex: 1 } },
+      h("span", { style: { width: 24, height: 24, borderRadius: "50%", background: on ? "#1f6f68" : (tone || "#c8871a"), color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.64rem", flexShrink: 0 } }, ld ? "…" : (on ? "❙❙" : "▶")),
+      h("span", { style: { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 2, height: 13 } },
+        [6, 11, 5, 13, 8, 12, 6, 10, 14, 7, 11, 5, 9, 13, 6, 11].map(function (hh2, bi) {
+          return h("span", { key: "vb" + bi, style: { flex: 1, height: hh2, borderRadius: 2, background: on ? "#2f9e8f" : "rgba(170,140,120,0.5)", animation: on ? ("swPop 1.1s ease-in-out infinite " + (bi * 0.05) + "s") : "none" } });
+        })),
+      h("span", { style: { fontSize: "0.66rem", fontWeight: 800, color: "rgba(120,100,90,0.95)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, mm));
+  };
+  useEffect(function () { return function () { shStopTimer(); try { if (shAud.current) shAud.current.pause(); } catch (_) {} }; }, []);
   var postShared = function () {
-    var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftPs.length) || sharedPosting) return;
+    var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftPs.length && !shVo) || sharedPosting) return;
     var dt = new Date();
-    var puVal = sharedDraftPs.length === 0 ? null : sharedDraftPs.length === 1 ? sharedDraftPs[0] : JSON.stringify(sharedDraftPs);
+    var all = sharedDraftPs.concat(shVo ? [shVo] : []);
+    var puVal = all.length === 0 ? null : all.length === 1 ? all[0] : JSON.stringify(all);
     var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: myAuthor, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: t, th: writeTheme, pu: puVal };
     setSharedPosting(true);
     nanaSharedAdd(note, function (err) {
@@ -8753,7 +8837,11 @@ function ReadingRoomActivity(_refRR) {
       if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
       setSharedErr(null);
       setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); return next; });
-      setSharedDraft(""); setSharedDraftPs([]); if (onCozy) onCozy(5);
+      if (shVo) {                                        // 同一段声音也进「短波」那个架子
+        var ts = dt.getTime();
+        nanaPackAdd({ id: "vo-" + ts + Math.floor(Math.random() * 90), who: JSON.stringify({ vo: 1, u: shVo, d: nanaVoSecs(shVo), a: myAuthor, ts: ts }) }, function () {});
+      }
+      setSharedDraft(""); setSharedDraftPs([]); setShVo(""); if (onCozy) onCozy(5);
     });
   };
   var delShared = function (id) {
@@ -8763,7 +8851,7 @@ function ReadingRoomActivity(_refRR) {
     for (var di = 0; di < sharedNotes.length; di++) { if (sharedNotes[di].id === id) { target = sharedNotes[di]; break; } }
     nanaSharedDel(id, function (err) {
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
-      if (target && target.pu) nanaPuList(target.pu).forEach(function (u) { nanaSharedPhotoDel(u); });
+      if (target && target.pu) nanaPuPics(target.pu).forEach(function (u) { nanaSharedPhotoDel(u); });
       setSharedNotes(function (prev) { var next = prev.filter(function (x) { return x.id !== id; }); saveSharedCache(next); return next; });
     });
   };
@@ -8908,8 +8996,20 @@ function ReadingRoomActivity(_refRR) {
               sharedDraftPs.length >= 3
                 ? h("span", { style: { display: "inline-flex", alignItems: "center", gap: 5, border: "1.5px dashed rgba(180,150,140,0.4)", borderRadius: 999, padding: "6px 13px", color: "rgba(150,120,110,0.7)", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.5)" } }, "📷 3/3 贴满啦")
                 : h("span", { onClick: function () { try { var el = document.getElementById("sh-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
-              h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }))),
-          h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length) || sharedPosting || sharedUploading, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length) && !sharedPosting && !sharedUploading) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
+              h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }),
+              h("span", {
+                onPointerDown: function () { if (!shRec && !shVoUp && !shVo) shRecStart(); },
+                onPointerUp: function () { if (shRec) shRecStop(); },
+                onPointerCancel: function () { if (shRec) shRecStop(); },
+                onPointerLeave: function () { if (shRec) shRecStop(); },
+                onContextMenu: function (e) { e.preventDefault(); },
+                style: { display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 8, cursor: "pointer", border: "1.5px dashed " + (shRec ? "rgba(200,60,70,0.7)" : "rgba(140,160,210,0.6)"), borderRadius: 999, padding: "6px 13px", color: shRec ? "#b4353a" : "#5b73a8", fontWeight: 800, fontSize: "0.68rem", background: shRec ? "rgba(200,60,70,0.08)" : "rgba(255,255,255,0.75)", userSelect: "none", WebkitUserSelect: "none", touchAction: "pan-y" } },
+                shVoUp ? "⏫ 声音在传…" : (shRec ? ("● " + Math.floor(shSec / 60) + ":" + (shSec % 60 < 10 ? "0" : "") + (shSec % 60) + " 松手") : (shVo ? "🎙 已经录好一段" : "🎙 按住说一句"))),
+              shVo ? h("div", { style: { position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 8, marginTop: 9 } },
+                h("div", { style: { flex: 1, minWidth: 0 } }, shVoBar("draft", shVo, "#5b73a8")),
+                h("button", { onClick: function () { setShVo(""); if (shPlay === "draft") { try { if (shAud.current) shAud.current.pause(); } catch (_) {} setShPlay(""); } },
+                  style: { flexShrink: 0, border: "none", background: "none", color: "rgba(150,120,110,0.85)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "重录")) : null)),
+          h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length && !shVo) || sharedPosting || sharedUploading || shVoUp || shRec, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, (String(sharedErr).indexOf("照片") >= 0 ? "" : "信没送到贝克街 😢 ") + sharedErr),
         h("div", { style: { marginTop: 32 } },
           sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
@@ -8919,7 +9019,7 @@ function ReadingRoomActivity(_refRR) {
             var a = nanaAuthorById(n.author);
             var mine = n.author === myAuthor;
             if (n.th === "call") {
-              var pusC = nanaPuList(n.pu);
+              var pusC = nanaPuPics(n.pu);
               return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.6 : -0.6) + "deg)", marginBottom: 24 } },
                 h("div", { style: { background: "linear-gradient(180deg,#ffe98a,#ffd24a)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: "0 10px 26px rgba(220,160,40,0.4)", position: "relative" } },
                   h("div", { style: { position: "absolute", right: 24, top: -16, textAlign: "center", transform: "rotate(10deg)", pointerEvents: "none" } },
@@ -8930,7 +9030,7 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { color: "#0f8a80", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 2, whiteSpace: "nowrap" } }, "CALL · 小呼叫"),
                     h("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#ff5a3c", boxShadow: "0 0 7px rgba(255,90,60,0.95)", flexShrink: 0 } }),
                     h("div", { style: { marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 } },
-                      h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuList(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
+                      h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuPics(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                       mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.18)" : "rgba(255,255,255,0.65)", color: sharedDelId === n.id ? "#d05050" : "#a8842a", fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下挂断" : "✕") : null)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "8px 0 7px" } },
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
@@ -8948,7 +9048,8 @@ function ReadingRoomActivity(_refRR) {
                       var isTpl = ln.indexOf("📟") === 0 || ln.indexOf("收到回封小信") >= 0;
                       return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: isTpl ? "0.74rem" : "0.84rem", fontWeight: isTpl ? 700 : 800, color: isTpl ? "rgba(35,97,125,0.55)" : "#124b66", lineHeight: 1.9, wordBreak: "break-word" } }, ln || "\u00A0");
                     })) : null,
-                    h("div", { style: { fontSize: "0.66rem", color: "rgba(35,97,125,0.45)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌")),
+                    h("div", { style: { fontSize: "0.66rem", color: "rgba(35,97,125,0.45)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌"),
+                    (function () { var vu = nanaPuVo(n.pu); return vu ? h("div", { style: { marginTop: 8 } }, shVoBar(n.id, vu, "#127a92")) : null; })()),
                   pusC.length ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10, margin: "10px 0 2px" } },
                     pusC.map(function (u, pi) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
@@ -8965,10 +9066,10 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
                     h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
-                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuList(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
+                    h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuPics(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                     mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
                 (function () {
-                  var pus = nanaPuList(n.pu);
+                  var pus = nanaPuPics(n.pu);
                   if (!pus.length) return null;
                   var single = pus.length === 1;
                   return h("div", { style: { position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", gap: 10, margin: "6px 0 4px" } },
@@ -8978,6 +9079,7 @@ function ReadingRoomActivity(_refRR) {
                     }));
                 })(),
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
+                (function () { var vu = nanaPuVo(n.pu); return vu ? h("div", { style: { position: "relative", zIndex: 1, marginTop: 8, marginRight: 26 } }, shVoBar(n.id, vu, a.col)) : null; })(),
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
           })));
     })() : tab === "note" ? h("div", null,
