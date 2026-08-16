@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-175";
+var NANA_VER = "v2026.8.2-177";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18321,7 +18321,7 @@ var LD_MART = [
   { dist: "连走带坐约 25 分钟", n: "龙凤行 Loon Fung", d: "唐人街大中超 · 老干妈火锅料都有", e: "🏮", q: "Loon Fung Supermarket Chinatown London" },
   { dist: "送到楼下", n: "Starry Mart 网购", d: "亚洲食品网上下单送到公寓", e: "📦", u: "https://starrymart.co.uk" }
 ];
-// 楼下：以 Fraser Place（80 Boardwalk Place，Blackwall Basin 边上）为原点
+// 楼下：以 Fraser Place（80 Boardwalk Road，Blackwall Basin 边上）为原点
 var LD_NEAR = [
   { dist: "走 2 分钟 · 100m", n: "Blackwall DLR", d: "出楼右转就是站 · 高架露天，无人驾驶，坐第一排像自己开火车", e: "🚈", q: "Blackwall DLR Station London", open: 1 },
   { dist: "出门就是", n: "Poplar Dock 内港", d: "楼下这一圈水面停满小帆船 · 绕一圈二十分钟，晚上路灯很亮", e: "⛵", q: "Poplar Dock Marina London", open: 1 },
@@ -18783,9 +18783,11 @@ var LD_WALL = [
     say: "",
     tip: "全球最大的乐高店，进门就是这幅用积木拼的地铁线路图，上面那个 UNDERGROUND 圆牌也是积木。不买东西也能逛，二楼有真人大小的地铁车厢。就在剧院区里，看戏前后顺路。" }
 ];
-// 家：Fraser Place，80 Boardwalk Place
-// 家：Fraser Place Canary Wharf，80 Boardwalk Place（Blackwall Basin 边上，不是南码头那侧）
-var LD_ADDR = "80 Boardwalk Place, London E14 5SF";
+// 家：Fraser Place，80 Boardwalk Road
+// 报地名一定要说 Fraser Place —— 附近另有一栋叫 Boardwalk Place 的公寓，说错会被放到别家门口
+var LD_ADDR = "Fraser Place, 80 Boardwalk Road, London E14 5SF";
+var LD_ADDR_TIP = "跟司机说 Fraser Place，别说 Boardwalk Place —— 那是另一栋楼。";
+var LD_ADDR_Q = "Fraser Place Canary Wharf, 80 Boardwalk Road, London E14 5SF";   // 搜地图用这串
 var LD_HOME_PT = { la: 51.5072, lo: -0.0070 };
 
 // 8/15 落地那班 + 已经订好的接机车
@@ -19220,7 +19222,7 @@ var LD_ARR_STEP = [
     "落地能上网是第一位的：开国际漫游，或者提前买张 eSIM（Airalo、Ubigi 这类，飞机落地开机就能用）。没网就叫不到车、也联系不上司机。",
     "接机订单截图存到相册，别只留在 App 里。",
     "司机的电话和微信存进通讯录，别临时翻。",
-    "备忘录里写好地址：Fraser Place Canary Wharf, 80 Boardwalk Place, London E14 5SF。给司机看这一行就够。",
+    "备忘录里写好地址：Fraser Place, 80 Boardwalk Road, London E14 5SF。给司机看这一行就够，报地名说 Fraser Place —— 别说 Boardwalk Place，那是另一栋楼。",
     "充电宝充满。飞十几个小时，落地手机基本没电了。",
     "订接机时把航站楼写成 South Terminal（南楼），别让司机跑去北楼，并且把航班号给司机 —— 让他跟着航班走，延误了也不会白等。",
     "房间从落地前一晚就订好了，落地直接上楼，这件事不用再操心。"
@@ -20839,13 +20841,14 @@ function LondonRoom(_refLD) {
           row("d", "司机", P.driver),
           row("t", "电话", h("a", { href: "tel:" + P.telRaw, style: { color: "#1a5c56", fontWeight: 800, textDecoration: "none", borderBottom: "1px dashed rgba(26,92,86,0.5)" } }, P.tel + " 📞")),
           row("e", "送到", LD_ADDR),
+          row("w", "报地名", LD_ADDR_TIP),
           h("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", paddingTop: 9 } },
             P.perks.map(function (x, i) {
               return h("span", { key: "pk" + i, style: { background: "rgba(31,111,104,0.13)", color: "#1a5c56", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800 } }, x);
             }))),
         h("a", { href: "tel:" + P.telRaw, style: { display: "block", marginTop: 11, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#4fb3a4,#2b7d72)", color: "#fff", borderRadius: 10, padding: "12px 0", fontSize: "0.86rem", fontWeight: 800, boxShadow: "0 5px 14px rgba(43,125,114,0.35)" } }, "📞 打给司机 黄凯"),
         h("div", { style: { display: "flex", gap: 8, marginTop: 8 } },
-          h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "📍 家在这儿"),
+          h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "📍 家在这儿"),
           h("a", { href: "https://www.gatwickairport.com/flights/arrivals.html", target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(31,111,104,0.14)", color: "#1a5c56", borderRadius: 8, padding: "9px 0", fontSize: "0.74rem", fontWeight: 800 } }, "✈️ 查航班")),
         h("div", { style: { marginTop: 9, fontSize: "0.68rem", color: "rgba(90,110,105,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
           "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。等超过十分钟就直接打上面那个电话，他是中国人，说中文就行。携程订单号 " + P.order + "。"));
@@ -20893,7 +20896,7 @@ function LondonRoom(_refLD) {
             return h("div", { key: "no" + ti, style: { fontSize: "0.69rem", color: "rgba(206,224,217,0.86)", lineHeight: 1.75, marginBottom: ti === LD_N1_NO.length - 1 ? 0 : 5 } }, "· " + t);
           })),
         h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
-          h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#3a2a06", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "📍 回家的路"),
+          h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#3a2a06", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "📍 回家的路"),
           h("a", { href: ldMap("Blackwall DLR Station London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(246,231,200,0.16)", color: "#f0dcae", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "🚈 楼下那个站")),
         h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
           "这张明天就没了。今天哪一条没做到都没关系 —— 不用补，不用说。")));
@@ -20972,7 +20975,7 @@ function LondonRoom(_refLD) {
             h("div", { style: { fontSize: "0.58rem", color: "rgba(255,216,138,0.85)", fontWeight: 800, letterSpacing: 2, fontFamily: "Georgia,serif" } }, "给司机看这一行"),
             h("div", { style: { fontSize: "0.86rem", color: "#fdf0d2", fontWeight: 700, marginTop: 5, lineHeight: 1.6 } }, "Fraser Place Canary Wharf"),
             h("div", { style: { fontSize: "0.8rem", color: "#fdf0d2", fontWeight: 700, marginTop: 3, lineHeight: 1.6 } }, LD_ADDR),
-            h("a", { href: ldMap("Fraser Place Canary Wharf " + LD_ADDR), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
+            h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
         ) : null);
   };
   var nowTab = h("div", null,
@@ -21431,7 +21434,7 @@ function LondonRoom(_refLD) {
   var liveTab = h("div", null,
     ukCard([
       screws,
-      ukHead("楼下", "Boardwalk Place · Blackwall Basin 一带 · 走路能到的都在这", h("span", { style: { fontSize: "1rem" } }, "🏠")),
+      ukHead("楼下", "Boardwalk Road · Blackwall Basin 一带 · 走路能到的都在这", h("span", { style: { fontSize: "1rem" } }, "🏠")),
       h("div", { key: "n0", style: { fontSize: "0.68rem", color: "rgba(120,105,78,0.9)", lineHeight: 1.7, marginBottom: 9, background: "rgba(169,127,46,0.1)", borderRadius: 7, padding: "8px 10px" } },
         "距离和步行时间是按公寓那一带估的，实际走可能差个两三分钟。走过一遍觉得不对，跟熊猫鱼说就行。"),
       h("div", { key: "n" }, LD_NEAR.map(linkRow))
@@ -22200,7 +22203,7 @@ function LondonRoom(_refLD) {
       foot: "从本初子午线 0° 到家里 113°E",
       hello: ldLanded() ? ldHello(lonH) : null,
       sm: ldLanded(),
-      strip: { lon: lonT, gz: gzT, hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0, here: ldPick(LD_HERE, lonH), home: ldPick(LD_HOME, gzH), addr: LD_ADDR, map: ldMap("Fraser Place Canary Wharf " + LD_ADDR) }
+      strip: { lon: lonT, gz: gzT, hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0, here: ldPick(LD_HERE, lonH), home: ldPick(LD_HOME, gzH), addr: LD_ADDR, map: ldMap(LD_ADDR_Q) }
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
