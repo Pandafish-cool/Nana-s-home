@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-163";
+var NANA_VER = "v2026.8.2-164";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19031,7 +19031,7 @@ var LD_BACK_SAY = {
 };
 // 按完「到家了」浮出来的三格，点不点都行，自己会淡掉
 var LD_SAFE = ["门锁了", "窗关了", "吸入器在包里"];
-// ── 🎙 家里的声音：想到什么录什么，随时点开就有，不用等谁在线 ──────
+// ── 📻 短波：想到什么录什么，随时能调到，不用等谁在线 ──────────
 var LD_VO_HINT = [
   "念错了也别重录 —— 念错的那一下才是你。",
   "不想说话就录点动静：猫、雨、厨房、有人在旁边打字。",
@@ -21225,7 +21225,7 @@ function LondonRoom(_refLD) {
     ]),
     card([head("🏥 不舒服的时候", "从轻到重，照着往下走"), h("div", { key: "m" }, LD_MED.map(linkRow))])
   );
-  // ── 🎙 家里的声音 ──
+  // ── 📻 短波 ──
   var voCard = function (readOnly) {
     var mine = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
     var mmss = function (n) { var m2 = Math.floor(n / 60), s2 = n % 60; return m2 + ":" + (s2 < 10 ? "0" : "") + s2; };
@@ -21233,8 +21233,8 @@ function LondonRoom(_refLD) {
     var hint = LD_VO_HINT[(voList.length + LD_VO_HINT.length) % LD_VO_HINT.length];
     return ukCard([
       screws,
-      ukHead("家里的声音", readOnly ? "点开就有人在 · 录在「安心」那一页" : "点开就有人在 · 不用等谁上线",
-        h("span", { style: { fontSize: "1rem" } }, "🎙")),
+      ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在 · 不用等谁上线",
+        h("span", { style: { fontSize: "1rem" } }, "\uD83D\uDCFB")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
         h("button", {
@@ -21256,7 +21256,7 @@ function LondonRoom(_refLD) {
       voList.length === 0 ? null : null),
       voList.length === 0
         ? h("div", { key: "vz", style: { textAlign: "center", fontSize: "0.72rem", color: "rgba(120,108,84,0.9)", lineHeight: 1.8, padding: "6px 0 2px" } },
-            readOnly ? "还没有。录在「安心」那一页。" : "还一段都没有。按住上面那条，说什么都行。")
+            readOnly ? "这个频率上还没有东西。录在「安心」那一页。" : "这个频率上还没有东西。按住上面那条，说什么都行。")
         : h("div", { key: "vl" }, voList.map(function (x) {
             var on = voPlay === x.id, ld = voLoad === x.id, ask = voDel === x.id;
             return h("div", { key: x.id, style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 9 } },
