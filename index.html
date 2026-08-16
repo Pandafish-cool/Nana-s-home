@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-167";
+var NANA_VER = "v2026.8.2-168";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8382,6 +8382,15 @@ var nanaAirmailStripe = function (ctx, x, y, w, hgt, colors) {
   ctx.restore();
 };
 // 信纸主题（分享图配色）
+// 把两个 emoji 铺成一张很淡的包装纸，垫在横线底下
+var nanaPat = function (a, b, size, op) {
+  var sz = size || 54, o = op || 0.1, f = Math.round(sz * 0.30);
+  var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + sz + "' height='" + sz + "'>"
+    + "<text x='2' y='" + Math.round(sz * 0.34) + "' font-size='" + f + "' opacity='" + o + "'>" + a + "</text>"
+    + "<text x='" + Math.round(sz * 0.52) + "' y='" + Math.round(sz * 0.88) + "' font-size='" + Math.round(f * 0.85) + "' opacity='" + (o * 0.8) + "'>" + (b || a) + "</text>"
+    + "</svg>";
+  return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
+};
 var NANA_LETTER_THEMES = [
   { id: "air", name: "航空信笺", e: "💌", css: "linear-gradient(160deg,#fffdf6,#ffeade)",
     out1: "#f7ebe9", out2: "#f1e4ee", p1: "#fffdf6", p2: "#fff6ec",
@@ -8430,7 +8439,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🐟", stampBg: "#fff8ee", stampBd: "rgba(235,170,110,0.85)", wm: "🐾", wmA: 0.1,
     tapeA: "rgba(255,185,120,0.6)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#efa055", "#fffaf2", "#8a6a4a", "#fffaf2"],
-    wash1: "rgba(255,200,150,0.32)", wash2: "rgba(235,215,190,0.28)", footE: "🐈" },
+    wash1: "rgba(255,200,150,0.32)", wash2: "rgba(235,215,190,0.28)", footE: "🐈" , pat: nanaPat("🐾", "🐟", 56, 0.09) },
   { id: "sea", name: "海盐信笺", e: "🌊", css: "linear-gradient(160deg,#eef8ff,#d3ecfa)",
     out1: "#e6f2f8", out2: "#d9ebf4", p1: "#f8fdff", p2: "#e8f5fc",
     line: "rgba(110,165,205,0.35)", margin: "rgba(80,155,210,0.5)",
@@ -8486,15 +8495,16 @@ var NANA_LETTER_THEMES = [
     stamp: "🦴", stampBg: "#fffaf0", stampBd: "rgba(215,170,110,0.85)", wm: "🐾", wmA: 0.1,
     tapeA: "rgba(240,200,140,0.6)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#d8a15c", "#fffbf3", "#8a6a4a", "#fffbf3"],
-    wash1: "rgba(250,215,165,0.3)", wash2: "rgba(230,210,180,0.28)", footE: "🐕" },
-  { id: "bcat", name: "黑猫信笺", e: "🐈‍⬛", css: "linear-gradient(160deg,#2b2b33,#17171d)",
-    out1: "#16161c", out2: "#24242c", p1: "#2a2a33", p2: "#1d1d24",
-    line: "rgba(200,190,170,0.22)", margin: "rgba(230,190,110,0.45)",
-    header: "#ffd88a", date: "rgba(215,205,190,0.85)", text: "#efeae0", foot: "rgba(215,205,190,0.8)",
-    stamp: "🐾", stampBg: "#33333d", stampBd: "rgba(220,190,120,0.8)", wm: "🐈‍⬛", wmA: 0.14,
-    tapeA: "rgba(220,190,120,0.5)", tapeB: "rgba(255,255,255,0.35)",
-    stripes: ["#d8b060", "#2a2a33", "#8a8a98", "#2a2a33"],
-    wash1: "rgba(200,170,100,0.18)", wash2: "rgba(120,120,150,0.2)", footE: "🌙" },
+    wash1: "rgba(250,215,165,0.3)", wash2: "rgba(230,210,180,0.28)", footE: "🐕" , pat: nanaPat("🐾", "🦴", 56, 0.1) },
+  { id: "mcat", name: "奶油猫信笺", e: "🐱", css: "linear-gradient(160deg,#f6fffb,#dff4ec)",
+    out1: "#eaf6f1", out2: "#dff0e8", p1: "#fbfffd", p2: "#eefaf5",
+    line: "rgba(130,185,170,0.3)", margin: "rgba(110,190,170,0.45)",
+    header: "#2f8a7a", date: "rgba(100,150,140,0.9)", text: "#3f5f58", foot: "rgba(100,150,140,0.85)",
+    stamp: "🐟", stampBg: "#f7fffc", stampBd: "rgba(120,200,180,0.8)", wm: "🐾", wmA: 0.09,
+    tapeA: "rgba(150,225,205,0.5)", tapeB: "rgba(255,255,255,0.85)",
+    stripes: ["#7ecbb6", "#fbfffd", "#f0a8b8", "#fbfffd"],
+    wash1: "rgba(165,230,210,0.28)", wash2: "rgba(255,215,225,0.26)", footE: "🐱",
+    pat: nanaPat("🐾", "🐟", 56, 0.1) },
   { id: "tube", name: "地铁信笺", e: "🚇", css: "linear-gradient(160deg,#fdfdfb,#e8eef6)",
     out1: "#eef1f5", out2: "#e2e8f0", p1: "#ffffff", p2: "#f2f6fa",
     line: "rgba(120,140,175,0.3)", margin: "rgba(200,16,46,0.55)",
@@ -8502,7 +8512,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🚇", stampBg: "#ffffff", stampBd: "rgba(200,60,70,0.8)", wm: "🚇", wmA: 0.08,
     tapeA: "rgba(200,60,70,0.45)", tapeB: "rgba(255,255,255,0.85)",
     stripes: ["#c8102e", "#ffffff", "#10069f", "#ffffff"],
-    wash1: "rgba(180,200,230,0.3)", wash2: "rgba(240,200,200,0.22)", footE: "🎫" },
+    wash1: "rgba(180,200,230,0.3)", wash2: "rgba(240,200,200,0.22)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) },
   { id: "box", name: "电话亭信笺", e: "☎️", css: "linear-gradient(160deg,#fff4f2,#f6d6d2)",
     out1: "#f6e4e1", out2: "#f0d6d2", p1: "#fffaf8", p2: "#fbe6e2",
     line: "rgba(200,120,110,0.32)", margin: "rgba(181,34,34,0.6)",
@@ -8510,7 +8520,7 @@ var NANA_LETTER_THEMES = [
     stamp: "📞", stampBg: "#fff7f5", stampBd: "rgba(200,90,85,0.85)", wm: "☎️", wmA: 0.09,
     tapeA: "rgba(215,90,85,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b52222", "#fffaf8", "#e8c860", "#fffaf8"],
-    wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" },
+    wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" , pat: nanaPat("☎️", "📮", 58, 0.07) },
   { id: "tea", name: "下午茶信笺", e: "🫖", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
     out1: "#f5eef0", out2: "#eee2e8", p1: "#fffdfa", p2: "#f8eff3",
     line: "rgba(190,155,175,0.32)", margin: "rgba(175,130,155,0.5)",
@@ -8518,7 +8528,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🍰", stampBg: "#fffaf7", stampBd: "rgba(205,160,180,0.8)", wm: "🫖", wmA: 0.09,
     tapeA: "rgba(225,175,195,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#c08aa4", "#fffdfa", "#9ab08a", "#fffdfa"],
-    wash1: "rgba(240,200,215,0.3)", wash2: "rgba(215,225,205,0.26)", footE: "🫖" },
+    wash1: "rgba(240,200,215,0.3)", wash2: "rgba(215,225,205,0.26)", footE: "🫖" , pat: nanaPat("🫖", "🍰", 56, 0.08) },
   { id: "bus", name: "巴士信笺", e: "🚌", css: "linear-gradient(160deg,#fff6f4,#ffdfd8)",
     out1: "#f8e8e4", out2: "#f4dbd5", p1: "#fffbf9", p2: "#ffeae4",
     line: "rgba(210,130,110,0.32)", margin: "rgba(205,60,45,0.55)",
@@ -8526,7 +8536,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🚏", stampBg: "#fff8f6", stampBd: "rgba(215,105,85,0.85)", wm: "🚌", wmA: 0.09,
     tapeA: "rgba(235,120,95,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#c33a28", "#fffbf9", "#2b3a52", "#fffbf9"],
-    wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" }
+    wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" , pat: nanaPat("🚌", "🚏", 58, 0.07) }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
@@ -8968,7 +8978,7 @@ function ReadingRoomActivity(_refRR) {
   var pickWriteTheme = function (id) { setWriteTheme(id); try { localStorage.setItem("nana-note-theme", id); } catch (_) {} };
   var paperStyle = function (t) {
     return {
-      background: "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
+      background: "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), " + (t.pat ? (t.pat + ", ") : "") + "radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
       borderRadius: 10, border: "1px solid " + (t.id === "night" ? "rgba(150,140,215,0.5)" : "rgba(228,178,158,0.55)"), boxShadow: "0 12px 26px rgba(90,65,80,0.22), inset 0 0 0 1px rgba(255,255,255," + (t.id === "night" ? "0.08" : "0.6") + ")", overflow: "hidden"
     };
   };
