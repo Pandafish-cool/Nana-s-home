@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-177";
+var NANA_VER = "v2026.8.2-178";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8881,6 +8881,8 @@ function ReadingRoomActivity(_refRR) {
   var _rv5 = useState(""); var shPlay = _rv5[0], setShPlay = _rv5[1];
   var _rv6 = useState(""); var shLoad = _rv6[0], setShLoad = _rv6[1];
   var shMR = useRef(null), shChunks = useRef([]), shTimer = useRef(null), shT0 = useRef(0), shAud = useRef(null);
+  var shKeep = useRef(true), shY0 = useRef(0);
+  var _rv7 = useState(false); var shCancel = _rv7[0], setShCancel = _rv7[1];
   var shStopTimer = function () { if (shTimer.current) { clearInterval(shTimer.current); shTimer.current = null; } };
   var shRecStart = function () {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
@@ -8897,7 +8899,8 @@ function ReadingRoomActivity(_refRR) {
       mr.onstop = function () {
         try { micStop(); } catch (_) {}
         var secs = Math.round((Date.now() - shT0.current) / 1000);
-        shStopTimer(); setShRec(false); setShSec(0);
+        shStopTimer(); setShRec(false); setShSec(0); setShCancel(false);
+        if (!shKeep.current) return;                       // 上滑取消 / 划走 / 被打断：扔掉
         if (secs < 1) { setSharedErr("太短了，再按久一点"); return; }
         var blob = new Blob(shChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
         if (!blob.size || blob.size < 900) { setSharedErr("没录到声音，再试一次"); return; }
@@ -8910,8 +8913,8 @@ function ReadingRoomActivity(_refRR) {
           setSharedErr(null);
         });
       };
-      shMR.current = mr; shT0.current = Date.now(); mr.start();
-      setShRec(true); setShSec(0); setSharedErr(null);
+      shMR.current = mr; shT0.current = Date.now(); shKeep.current = true; mr.start();
+      setShRec(true); setShSec(0); setShCancel(false); setSharedErr(null);
       shStopTimer();
       shTimer.current = setInterval(function () {
         var n = Math.round((Date.now() - shT0.current) / 1000);
@@ -8920,8 +8923,10 @@ function ReadingRoomActivity(_refRR) {
       }, 250);
     });
   };
-  var shRecStop = function () {
-    try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); } catch (_) { shStopTimer(); setShRec(false); }
+  var shRecStop = function (keep) {
+    shKeep.current = !!keep;
+    try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); }
+    catch (_) { shStopTimer(); setShRec(false); setShCancel(false); }
   };
   var shVoHit = function (key, u) {
     if (shPlay === key) { try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {} setShPlay(""); return; }
@@ -9138,13 +9143,19 @@ function ReadingRoomActivity(_refRR) {
                 : h("span", { onClick: function () { try { var el = document.getElementById("sh-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: "pointer", border: "1.5px dashed rgba(210,140,140,0.55)", borderRadius: 999, padding: "6px 13px", color: "#b06a62", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)" } }, sharedUploading ? "⏫ 传照片中…" : (sharedDraftPs.length ? "📷 再贴一张（" + sharedDraftPs.length + "/3）" : "📷 贴张照片（最多 3 张）")),
               h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }),
               h("span", {
-                onPointerDown: function () { if (!shRec && !shVoUp && !shVo) shRecStart(); },
-                onPointerUp: function () { if (shRec) shRecStop(); },
-                onPointerCancel: function () { if (shRec) shRecStop(); },
-                onPointerLeave: function () { if (shRec) shRecStop(); },
+                onPointerDown: function (e) {
+                  if (shRec || shVoUp || shVo) return;
+                  shY0.current = (e && e.clientY) || 0;
+                  try { if (e && e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {}
+                  shRecStart();
+                },
+                onPointerMove: function (e) { if (shRec && e && shY0.current) setShCancel((shY0.current - e.clientY) > 44); },
+                onPointerUp: function () { if (shRec) shRecStop(!shCancel); },
+                onPointerCancel: function () { if (shRec) shRecStop(false); },
+                onPointerLeave: function () { if (shRec) shRecStop(false); },
                 onContextMenu: function (e) { e.preventDefault(); },
                 style: { display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 8, cursor: "pointer", border: "1.5px dashed " + (shRec ? "rgba(200,60,70,0.7)" : "rgba(140,160,210,0.6)"), borderRadius: 999, padding: "6px 13px", color: shRec ? "#b4353a" : "#5b73a8", fontWeight: 800, fontSize: "0.68rem", background: shRec ? "rgba(200,60,70,0.08)" : "rgba(255,255,255,0.75)", userSelect: "none", WebkitUserSelect: "none", touchAction: "pan-y" } },
-                shVoUp ? "⏫ 声音在传…" : (shRec ? ("● " + Math.floor(shSec / 60) + ":" + (shSec % 60 < 10 ? "0" : "") + (shSec % 60) + " 松手") : (shVo ? "🎙 已经录好一段" : "🎙 按住说一句"))),
+                shVoUp ? "⏫ 声音在传…" : (shRec ? (shCancel ? "松开就取消" : ("● " + Math.floor(shSec / 60) + ":" + (shSec % 60 < 10 ? "0" : "") + (shSec % 60) + " 松手 · 上滑取消")) : (shVo ? "🎙 已经录好一段" : "🎙 按住说一句"))),
               shVo ? h("div", { style: { position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 8, marginTop: 9 } },
                 h("div", { style: { flex: 1, minWidth: 0 } }, shVoBar("draft", shVo, "#5b73a8")),
                 h("button", { onClick: function () { setShVo(""); if (shPlay === "draft") { try { if (shAud.current) shAud.current.pause(); } catch (_) {} setShPlay(""); } },
@@ -19942,6 +19953,8 @@ function LondonRoom(_refLD) {
   var _vld = useState(""); var voLoad = _vld[0], setVoLoad = _vld[1];
   var _vdel = useState(null); var voDel = _vdel[0], setVoDel = _vdel[1];
   var voMR = useRef(null), voChunks = useRef([]), voTimer = useRef(null), voT0 = useRef(0), voAud = useRef(null);
+  var voKeep = useRef(true), voY0 = useRef(0);
+  var _vcx = useState(false); var voCancel = _vcx[0], setVoCancel = _vcx[1];
   var VO_MAX = 180;                                                          // 三分钟够录一段雨声了
   var stopVoTimer = function () { if (voTimer.current) { clearInterval(voTimer.current); voTimer.current = null; } };
   var voStart = function () {
@@ -19960,7 +19973,8 @@ function LondonRoom(_refLD) {
       mr.onstop = function () {
         try { micStop(); } catch (_) {}
         var secs = Math.round((Date.now() - voT0.current) / 1000);
-        stopVoTimer(); setVoRec(""); setVoSec(0);
+        stopVoTimer(); setVoRec(""); setVoSec(0); setVoCancel(false);
+        if (!voKeep.current) return;                       // 上滑取消 / 划走 / 被系统打断：直接扔掉
         if (secs < 1) { setVoErr("太短了，再按久一点"); return; }
         var blob = new Blob(voChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
         if (!blob.size || blob.size < 900) { setVoErr("没录到声音，再试一次"); return; }
@@ -19968,8 +19982,9 @@ function LondonRoom(_refLD) {
       };
       voMR.current = mr;
       voT0.current = Date.now();
+      voKeep.current = true;
       mr.start();
-      setVoRec("on"); setVoSec(0);
+      setVoRec("on"); setVoSec(0); setVoCancel(false);
       stopVoTimer();
       voTimer.current = setInterval(function () {
         var n = Math.round((Date.now() - voT0.current) / 1000);
@@ -19978,8 +19993,10 @@ function LondonRoom(_refLD) {
       }, 250);
     });
   };
-  var voStop = function () {
-    try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); } catch (_) { stopVoTimer(); setVoRec(""); }
+  var voStop = function (keep) {
+    voKeep.current = !!keep;
+    try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); }
+    catch (_) { stopVoTimer(); setVoRec(""); setVoCancel(false); }
   };
   var voSave = function (blob, secs, fmt) {
     setVoUp("on");
@@ -21486,21 +21503,31 @@ function LondonRoom(_refLD) {
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
         h("button", {
-          onPointerDown: function () { if (!voRec && !voUp) voStart(); },
-          onPointerUp: function () { if (voRec) voStop(); },
-          onPointerCancel: function () { if (voRec) voStop(); },
-          onPointerLeave: function () { if (voRec) voStop(); },
+          onPointerDown: function (e) {
+            if (voRec || voUp) return;
+            voY0.current = (e && e.clientY) || 0;
+            // 把指针锁在按钮上：手指滑出去也还能收到 move，行为跟触屏一致
+            try { if (e && e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {}
+            voStart();
+          },
+          onPointerMove: function (e) {
+            if (!voRec || !e || !voY0.current) return;
+            setVoCancel((voY0.current - e.clientY) > 44);     // 往上推一截就是要取消
+          },
+          onPointerUp: function () { if (voRec) voStop(!voCancel); },
+          onPointerCancel: function () { if (voRec) voStop(false); },
+          onPointerLeave: function () { if (voRec) voStop(false); },
           onContextMenu: function (e) { e.preventDefault(); },
           disabled: !!voUp,
-          style: { width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, border: "1.5px solid " + (recing ? "rgba(180,53,58,0.75)" : "rgba(169,127,46,0.5)"), background: recing ? "rgba(180,53,58,0.1)" : "rgba(255,255,255,0.6)", borderRadius: 12, padding: "14px 0 12px", fontFamily: "inherit", cursor: "pointer", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none", opacity: uping ? 0.6 : 1 } },
+          style: { width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, border: "1.5px solid " + (recing ? (voCancel ? "rgba(140,40,45,0.85)" : "rgba(180,53,58,0.75)") : "rgba(169,127,46,0.5)"), background: recing ? (voCancel ? "rgba(140,40,45,0.16)" : "rgba(180,53,58,0.1)") : "rgba(255,255,255,0.6)", borderRadius: 12, padding: "14px 0 12px", fontFamily: "inherit", cursor: "pointer", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none", opacity: uping ? 0.6 : 1 } },
           h("span", { style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 3, height: 20 } },
             [8, 14, 6, 18, 10, 16, 7, 13, 19, 9, 15, 7, 12, 17, 8, 14].map(function (hh2, bi) {
               return h("span", { key: "rw" + bi, style: { width: 3, height: recing ? hh2 : 5, borderRadius: 2, background: recing ? "#b4353a" : "rgba(169,127,46,0.45)", transition: "height 0.25s ease", animation: recing ? ("swPop 0.9s ease-in-out infinite " + (bi * 0.05) + "s") : "none" } });
             })),
-          h("span", { style: { fontWeight: 800, fontSize: "0.88rem", color: recing ? "#b4353a" : "#a97f2e" } },
-            uping ? "寄出去中…" : (recing ? ("● " + mmss(voSec) + " · 松手就寄出去") : "按住说一句")),
+          h("span", { style: { fontWeight: 800, fontSize: "0.88rem", color: (recing && voCancel) ? "#8d2b30" : (recing ? "#b4353a" : "#a97f2e") } },
+            uping ? "寄出去中…" : (recing ? (voCancel ? "松开就取消，不会寄出去" : ("● " + mmss(voSec) + " · 松手寄出")) : "按住说一句")),
           h("span", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.55, padding: "0 14px", textAlign: "center" } },
-            recing ? "最长三分钟" : hint)),
+            recing ? (voCancel ? "手指移回来就还能寄" : "手指往上推一点可以取消 · 最长三分钟") : hint)),
         h("div", { style: { display: "flex", alignItems: "center", gap: 6, marginTop: 8 } },
           h("span", { style: { fontSize: "0.62rem", color: "rgba(140,125,100,0.9)", flexShrink: 0 } }, "收音"),
           [["call", "通话模式"], ["raw", "原声"]].map(function (m) {
