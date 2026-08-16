@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-183";
+var NANA_VER = "v2026.8.2-184";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8281,10 +8281,9 @@ var nanaMicDrop = function () {
   try { if (NANA_MIC.stop) NANA_MIC.stop(); } catch (_) {}
   NANA_MIC.stream = null; NANA_MIC.stop = null; NANA_MIC.mode = "";
 };
-var nanaMicIdle = function () {
-  try { if (NANA_MIC.timer) clearTimeout(NANA_MIC.timer); } catch (_) {}
-  NANA_MIC.timer = setTimeout(nanaMicDrop, 45000);
-};
+// 录完立刻放掉：只要麦克风还开着，iOS 就把声音输出切到听筒并压低，
+// 放录音几乎听不见，状态栏那个橙点也一直亮着。留着它省一次权限弹窗，不值。
+var nanaMicIdle = function () { nanaMicDrop(); };
 try {
   document.addEventListener("visibilitychange", function () { if (document.hidden) nanaMicDrop(); });
 } catch (_) {}
@@ -8963,6 +8962,7 @@ function ReadingRoomActivity(_refRR) {
   var shVoHit = function (key, u) {
     if (shPlay === key) { try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {} setShPlay(""); return; }
     try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {}
+    try { nanaMicDrop(); } catch (_) {}
     setShPlay(""); setShLoad(key);
     nanaVoGet(u, function (err, src) {
       setShLoad("");
@@ -20083,6 +20083,7 @@ function LondonRoom(_refLD) {
       setVoPlay(""); return;
     }
     try { if (voAud.current) { voAud.current.pause(); voAud.current = null; } } catch (_) {}
+    try { nanaMicDrop(); } catch (_) {}                                          // 麦克风开着就放不响
     setVoPlay(""); setVoLoad(x.id); setVoErr("");
     var grab = x.local ? function (u, cb2) { cb2(null, x.local); } : nanaVoGet;   // 刚录的本地就能放
     grab(x.u, function (err, src) {
