@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-164";
+var NANA_VER = "v2026.8.2-165";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21233,7 +21233,7 @@ function LondonRoom(_refLD) {
     var hint = LD_VO_HINT[(voList.length + LD_VO_HINT.length) % LD_VO_HINT.length];
     return ukCard([
       screws,
-      ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在 · 不用等谁上线",
+      ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在",
         h("span", { style: { fontSize: "1rem" } }, "\uD83D\uDCFB")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
@@ -21276,7 +21276,7 @@ function LondonRoom(_refLD) {
                 ask ? "真删" : "⋯") : null);
           })),
       h("div", { key: "vf", style: { marginTop: 10, paddingTop: 10, borderTop: "1px dashed rgba(169,127,46,0.4)", fontSize: "0.68rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.75 } },
-        "听过一次就存在手机里了，之后没网也能放。听多少次都行，那边不会知道。")
+        "听过一次就存在手机里了，之后没网也能放。")
     ]);
   };
   // ── 🍬 糖罐 ──
