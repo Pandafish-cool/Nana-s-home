@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-173";
+var NANA_VER = "v2026.8.2-174";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8266,6 +8266,12 @@ var nanaVoGet = function (u, cb) {
 // 再叠一层只会削顶失真和啃字 —— 试过两版，都比不加还差。想再试就把这个改成 1。
 var NANA_MIC_FX = 0;
 var NANA_GATE_ON = 0.045, NANA_GATE_OFF = 0.022, NANA_GATE_LO = 0.05;
+// 两种开麦方式，自己在「短波」里切，录一句对比着听
+// call = 通话模式（回声消除 + 降噪 + 自动增益）。戴蓝牙耳机时 iOS 会走耳机那一路，还会压成窄带
+// raw  = 原声，什么都不要求，一般走手机自己的麦，宽带
+var nanaMicMode = function () {
+  try { return localStorage.getItem("nana-mic-mode") === "raw" ? "raw" : "call"; } catch (_) { return "call"; }
+};
 var nanaMicOpen = function (cb) {
   var chain = function (raw) {
     var ctx = null, out = raw, tick = null;
@@ -8318,6 +8324,7 @@ var nanaMicOpen = function (cb) {
       cb(e);
     });
   };
+  if (nanaMicMode() === "raw") return go(true, false);
   go({ echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }, true);
 };
 // 录音格式：iPhone 给 m4a，安卓 Chrome 只有 webm —— 两边都是 iPhone，走第一个
@@ -20070,6 +20077,7 @@ function LondonRoom(_refLD) {
   var _jfly = useState([]); var jFly = _jfly[0], setJFly = _jfly[1];   // 正在飞进去的那几颗
   var _jin = useState(0); var jIn = _jin[0], setJIn = _jin[1];         // 刚落进去，糖堆弹一下
   var _jls = useState(false); var jList = _jls[0], setJList = _jls[1]; // 倒出来看
+  var _vmc = useState(function () { return nanaMicMode(); }); var voMic = _vmc[0], setVoMic = _vmc[1];
   var _jhd = useState(false); var jHeld = _jhd[0], setJHeld = _jhd[1];
   var jHold = useRef(0);
   useEffect(function () {
@@ -21490,7 +21498,18 @@ function LondonRoom(_refLD) {
             uping ? "寄出去中…" : (recing ? ("● " + mmss(voSec) + " · 松手就寄出去") : "按住说一句")),
           h("span", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.55, padding: "0 14px", textAlign: "center" } },
             recing ? "最长三分钟" : hint)),
-      voList.length === 0 ? null : null),
+        h("div", { style: { display: "flex", alignItems: "center", gap: 6, marginTop: 8 } },
+          h("span", { style: { fontSize: "0.62rem", color: "rgba(140,125,100,0.9)", flexShrink: 0 } }, "收音"),
+          [["call", "通话模式"], ["raw", "原声"]].map(function (m) {
+            var on = voMic === m[0];
+            return h("button", { key: m[0], onClick: function () {
+                setVoMic(m[0]);
+                try { localStorage.setItem("nana-mic-mode", m[0]); } catch (_) {}
+              },
+              style: { flex: 1, border: "1px solid " + (on ? "rgba(31,111,104,0.55)" : "rgba(169,127,46,0.3)"), background: on ? "rgba(31,111,104,0.11)" : "rgba(255,255,255,0.55)", borderRadius: 999, padding: "6px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: on ? "#1a5c56" : "rgba(130,115,90,0.95)", cursor: "pointer" } }, m[1]);
+          })),
+        h("div", { style: { fontSize: "0.63rem", color: "rgba(110,100,78,0.85)", lineHeight: 1.6, marginTop: 5 } },
+          voMic === "raw" ? "不做任何处理，一般走手机自己的麦。戴耳机觉得不对就用这个。" : "iPhone 自带的通话降噪。戴蓝牙耳机时会走耳机的麦，还会压成窄带。")),
       voList.length === 0
         ? h("div", { key: "vz", style: { textAlign: "center", fontSize: "0.72rem", color: "rgba(120,108,84,0.9)", lineHeight: 1.8, padding: "6px 0 2px" } },
             readOnly ? "这个频率上还没有东西。录在「安心」那一页。" : "这个频率上还没有东西。按住上面那条，说什么都行。")
