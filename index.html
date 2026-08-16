@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-178";
+var NANA_VER = "v2026.8.2-179";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8272,6 +8272,30 @@ var NANA_GATE_ON = 0.045, NANA_GATE_OFF = 0.022, NANA_GATE_LO = 0.05;
 var nanaMicMode = function () {
   try { return localStorage.getItem("nana-mic-mode") === "raw" ? "raw" : "call"; } catch (_) { return "call"; }
 };
+// 麦克风留着复用：每次录完就关，iOS 下次会重新问一遍权限。
+// 录完 45 秒没人再用才真的释放；页面切到后台也立刻释放。
+var NANA_MIC = { stream: null, stop: null, timer: null, mode: "" };
+var nanaMicDrop = function () {
+  try { if (NANA_MIC.timer) clearTimeout(NANA_MIC.timer); } catch (_) {}
+  NANA_MIC.timer = null;
+  try { if (NANA_MIC.stop) NANA_MIC.stop(); } catch (_) {}
+  NANA_MIC.stream = null; NANA_MIC.stop = null; NANA_MIC.mode = "";
+};
+var nanaMicIdle = function () {
+  try { if (NANA_MIC.timer) clearTimeout(NANA_MIC.timer); } catch (_) {}
+  NANA_MIC.timer = setTimeout(nanaMicDrop, 45000);
+};
+try {
+  document.addEventListener("visibilitychange", function () { if (document.hidden) nanaMicDrop(); });
+} catch (_) {}
+var nanaMicLive = function () {
+  try {
+    if (!NANA_MIC.stream) return false;
+    var ts = NANA_MIC.stream.getAudioTracks ? NANA_MIC.stream.getAudioTracks() : [];
+    for (var i = 0; i < ts.length; i++) { if (ts[i].readyState === "live") return true; }
+    return false;
+  } catch (_) { return false; }
+};
 var nanaMicOpen = function (cb) {
   var chain = function (raw) {
     var ctx = null, out = raw, tick = null;
@@ -8312,11 +8336,14 @@ var nanaMicOpen = function (cb) {
         if (dest.stream && dest.stream.getAudioTracks().length) out = dest.stream;
       }
     } catch (_) { out = raw; }
-    cb(null, out, function () {
+    NANA_MIC.stream = out;
+    NANA_MIC.mode = nanaMicMode();
+    NANA_MIC.stop = function () {
       try { if (tick) clearInterval(tick); } catch (_) {}
       try { raw.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
       try { if (ctx && ctx.close) ctx.close(); } catch (_) {}
-    });
+    };
+    cb(null, out, nanaMicIdle);
   };
   var go = function (c, again) {
     navigator.mediaDevices.getUserMedia({ audio: c }).then(chain)["catch"](function (e) {
@@ -8324,6 +8351,9 @@ var nanaMicOpen = function (cb) {
       cb(e);
     });
   };
+  try { if (NANA_MIC.timer) { clearTimeout(NANA_MIC.timer); NANA_MIC.timer = null; } } catch (_) {}
+  if (nanaMicLive() && NANA_MIC.mode === nanaMicMode()) return cb(null, NANA_MIC.stream, nanaMicIdle);
+  nanaMicDrop();
   if (nanaMicMode() === "raw") return go(true, false);
   go({ echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }, true);
 };
@@ -8881,7 +8911,8 @@ function ReadingRoomActivity(_refRR) {
   var _rv5 = useState(""); var shPlay = _rv5[0], setShPlay = _rv5[1];
   var _rv6 = useState(""); var shLoad = _rv6[0], setShLoad = _rv6[1];
   var shMR = useRef(null), shChunks = useRef([]), shTimer = useRef(null), shT0 = useRef(0), shAud = useRef(null);
-  var shKeep = useRef(true), shY0 = useRef(0);
+  var shKeep = useRef(true), shY0 = useRef(0), shArm = useRef(null);
+  var shDisarm = function () { try { if (shArm.current) clearTimeout(shArm.current); } catch (_) {} shArm.current = null; };
   var _rv7 = useState(false); var shCancel = _rv7[0], setShCancel = _rv7[1];
   var shStopTimer = function () { if (shTimer.current) { clearInterval(shTimer.current); shTimer.current = null; } };
   var shRecStart = function () {
@@ -9144,15 +9175,20 @@ function ReadingRoomActivity(_refRR) {
               h("input", { id: "sh-photo-input", type: "file", accept: "image/*", onChange: onPickSharedPhoto, style: { display: "none" } }),
               h("span", {
                 onPointerDown: function (e) {
-                  if (shRec || shVoUp || shVo) return;
+                  if (shRec || shVoUp || shVo || shArm.current) return;
                   shY0.current = (e && e.clientY) || 0;
                   try { if (e && e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {}
-                  shRecStart();
+                  shArm.current = setTimeout(function () { shArm.current = null; shRecStart(); }, 400);
                 },
-                onPointerMove: function (e) { if (shRec && e && shY0.current) setShCancel((shY0.current - e.clientY) > 44); },
-                onPointerUp: function () { if (shRec) shRecStop(!shCancel); },
-                onPointerCancel: function () { if (shRec) shRecStop(false); },
-                onPointerLeave: function () { if (shRec) shRecStop(false); },
+                onPointerMove: function (e) {
+                  if (!e || !shY0.current) return;
+                  var dy = shY0.current - e.clientY;
+                  if (shArm.current) { if (Math.abs(dy) > 10) shDisarm(); return; }
+                  if (shRec) setShCancel(dy > 44);
+                },
+                onPointerUp: function () { if (shArm.current) { shDisarm(); return; } if (shRec) shRecStop(!shCancel); },
+                onPointerCancel: function () { shDisarm(); if (shRec) shRecStop(false); },
+                onPointerLeave: function () { shDisarm(); if (shRec) shRecStop(false); },
                 onContextMenu: function (e) { e.preventDefault(); },
                 style: { display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 8, cursor: "pointer", border: "1.5px dashed " + (shRec ? "rgba(200,60,70,0.7)" : "rgba(140,160,210,0.6)"), borderRadius: 999, padding: "6px 13px", color: shRec ? "#b4353a" : "#5b73a8", fontWeight: 800, fontSize: "0.68rem", background: shRec ? "rgba(200,60,70,0.08)" : "rgba(255,255,255,0.75)", userSelect: "none", WebkitUserSelect: "none", touchAction: "pan-y" } },
                 shVoUp ? "⏫ 声音在传…" : (shRec ? (shCancel ? "松开就取消" : ("● " + Math.floor(shSec / 60) + ":" + (shSec % 60 < 10 ? "0" : "") + (shSec % 60) + " 松手 · 上滑取消")) : (shVo ? "🎙 已经录好一段" : "🎙 按住说一句"))),
@@ -19953,7 +19989,8 @@ function LondonRoom(_refLD) {
   var _vld = useState(""); var voLoad = _vld[0], setVoLoad = _vld[1];
   var _vdel = useState(null); var voDel = _vdel[0], setVoDel = _vdel[1];
   var voMR = useRef(null), voChunks = useRef([]), voTimer = useRef(null), voT0 = useRef(0), voAud = useRef(null);
-  var voKeep = useRef(true), voY0 = useRef(0);
+  var voKeep = useRef(true), voY0 = useRef(0), voArm = useRef(null);
+  var voDisarm = function () { try { if (voArm.current) clearTimeout(voArm.current); } catch (_) {} voArm.current = null; };
   var _vcx = useState(false); var voCancel = _vcx[0], setVoCancel = _vcx[1];
   var VO_MAX = 180;                                                          // 三分钟够录一段雨声了
   var stopVoTimer = function () { if (voTimer.current) { clearInterval(voTimer.current); voTimer.current = null; } };
@@ -21504,19 +21541,22 @@ function LondonRoom(_refLD) {
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
         h("button", {
           onPointerDown: function (e) {
-            if (voRec || voUp) return;
+            if (voRec || voUp || voArm.current) return;
             voY0.current = (e && e.clientY) || 0;
             // 把指针锁在按钮上：手指滑出去也还能收到 move，行为跟触屏一致
             try { if (e && e.currentTarget && e.currentTarget.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {}
-            voStart();
+            // 按住 0.4 秒才真的开录 —— 蹭一下、滑一下页面都不会启动，也不会去要麦克风权限
+            voArm.current = setTimeout(function () { voArm.current = null; voStart(); }, 400);
           },
           onPointerMove: function (e) {
-            if (!voRec || !e || !voY0.current) return;
-            setVoCancel((voY0.current - e.clientY) > 44);     // 往上推一截就是要取消
+            if (!e || !voY0.current) return;
+            var dy = voY0.current - e.clientY;
+            if (voArm.current) { if (Math.abs(dy) > 10) voDisarm(); return; }   // 还没开录就动了 = 在滑页面
+            if (voRec) setVoCancel(dy > 44);                                    // 往上推一截就是要取消
           },
-          onPointerUp: function () { if (voRec) voStop(!voCancel); },
-          onPointerCancel: function () { if (voRec) voStop(false); },
-          onPointerLeave: function () { if (voRec) voStop(false); },
+          onPointerUp: function () { if (voArm.current) { voDisarm(); return; } if (voRec) voStop(!voCancel); },
+          onPointerCancel: function () { voDisarm(); if (voRec) voStop(false); },
+          onPointerLeave: function () { voDisarm(); if (voRec) voStop(false); },
           onContextMenu: function (e) { e.preventDefault(); },
           disabled: !!voUp,
           style: { width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, border: "1.5px solid " + (recing ? (voCancel ? "rgba(140,40,45,0.85)" : "rgba(180,53,58,0.75)") : "rgba(169,127,46,0.5)"), background: recing ? (voCancel ? "rgba(140,40,45,0.16)" : "rgba(180,53,58,0.1)") : "rgba(255,255,255,0.6)", borderRadius: 12, padding: "14px 0 12px", fontFamily: "inherit", cursor: "pointer", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none", opacity: uping ? 0.6 : 1 } },
