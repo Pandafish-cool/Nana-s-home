@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-162";
+var NANA_VER = "v2026.8.2-163";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18904,17 +18904,19 @@ var ldSugarJar = function (n, w, justIn, shake, lid) {
       // 罐子上的纸标签
       h("path", { d: "M70 44 q6 10 0 20", stroke: "rgba(255,255,255,0.35)", strokeWidth: 2, fill: "none", strokeLinecap: "round" })));
 };
-// 「8 月 23 日 03:14 · 广州」—— 按放糖那个人当时的当地时间
-var ldSwWhen = function (ts, who) {
+// 「8 月 23 日 03:14」—— 按那个人当时的当地时间；withCity 决定要不要跟上城市名
+var ldSwWhen = function (ts, who, noCity) {
   try {
     var tz = who === "nana" ? "Europe/London" : "Asia/Shanghai";
     var d = new Date(ts);
     var s = d.toLocaleString("en-GB", { timeZone: tz, month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
     var p = s.split(",");
     var md = (p[0] || "").trim().split("/");
-    return (+md[1]) + " 月 " + (+md[0]) + " 日 " + (p[1] || "").trim() + " · " + (who === "nana" ? "伦敦" : "广州");
+    var out = (+md[1]) + " 月 " + (+md[0]) + " 日 " + (p[1] || "").trim();
+    return noCity ? out : (out + " · " + (who === "nana" ? "伦敦" : "广州"));
   } catch (_) { return ""; }
 };
+var ldWho = function (a) { return a === "nana" ? "\uD83C\uDF38" : "\uD83D\uDC3C"; };   // 🌸 / 🐼
 
 // ── 📖 书与剧：照着她读的和爱看的排的几条线 ──────────────
 var LD_LIT = [
@@ -21231,7 +21233,7 @@ function LondonRoom(_refLD) {
     var hint = LD_VO_HINT[(voList.length + LD_VO_HINT.length) % LD_VO_HINT.length];
     return ukCard([
       screws,
-      ukHead("家里的声音", readOnly ? "想到什么录什么 · 录在「安心」里" : "想到什么录什么 · 随时点开就有",
+      ukHead("家里的声音", readOnly ? "点开就有人在 · 录在「安心」那一页" : "点开就有人在 · 不用等谁上线",
         h("span", { style: { fontSize: "1rem" } }, "🎙")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
@@ -21266,7 +21268,8 @@ function LondonRoom(_refLD) {
                     [7, 12, 5, 15, 9, 14, 6, 11, 16, 8, 13, 6, 10, 15, 7, 12, 9, 14].map(function (hh2, bi) {
                       return h("span", { key: "bw" + bi, style: { flex: 1, height: hh2, borderRadius: 2, background: on ? "#2f9e8f" : "rgba(169,127,46,0.38)", animation: on ? ("swPop 1.1s ease-in-out infinite " + (bi * 0.05) + "s") : "none" } });
                     })),
-                  h("span", { style: { display: "block", fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", marginTop: 4 } }, x.ts ? ldSwWhen(x.ts, x.a) : "")),
+                  h("span", { style: { display: "block", fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", marginTop: 4 } },
+                    (x.a ? ldWho(x.a) + " " : "") + (x.ts ? ldSwWhen(x.ts, x.a, 1) : ""))),
                 h("span", { style: { fontSize: "0.7rem", fontWeight: 800, color: "rgba(110,100,78,0.95)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, mmss(x.d))),
               (!readOnly && mine && x.a === mine) ? h("button", { onClick: function () { if (ask) voDrop(x); else setVoDel(x.id); },
                 style: { flexShrink: 0, border: "none", background: ask ? "#cf5a55" : "none", color: ask ? "#fff" : "rgba(150,130,105,0.75)", borderRadius: 8, padding: ask ? "8px 10px" : "8px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } },
