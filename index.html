@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-180";
+var NANA_VER = "v2026.8.2-181";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8939,7 +8939,7 @@ function ReadingRoomActivity(_refRR) {
         var id = "vo" + Date.now() + Math.floor(Math.random() * 900);
         nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
           setShVoUp(false);
-          if (err || !url) { setSharedErr("声音没传上去，再试一次"); return; }
+          if (err || !url) { setSharedErr("声音没传上去：" + String((err && err.message) || err || "不知道为什么") + " · 再按一次试试"); return; }
           setShVo(url + "#d=" + secs);
           setSharedErr(null);
         });
@@ -20049,17 +20049,33 @@ function LondonRoom(_refLD) {
     var mark = function (patch) {
       setVoList(function (o) { return o.map(function (x) { return x.id === rid ? Object.assign({}, x, patch) : x; }); });
     };
-    var push = function () {
+    var why = function (e) {
+      var m2 = String((e && e.message) || e || "");
+      if (!m2) return "不知道为什么";
+      if (m2.indexOf("超时") >= 0) return "超时 · 网太慢";
+      if (m2.indexOf("HTTP") >= 0) return m2;
+      if (/Failed to fetch|NetworkError|Load failed/i.test(m2)) return "连不上服务器";
+      return m2.slice(0, 40);
+    };
+    var push = function (tries) {
       mark({ up: 1, bad: 0 });
       nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
-        if (err || !url) { mark({ up: 0, bad: 1, retry: push }); return; }
+        if (err || !url) {
+          if (tries > 1) { setTimeout(function () { push(tries - 1); }, 1500); return; }   // 自己先重试两次
+          mark({ up: 0, bad: 1, why: "音频没传上去 · " + why(err), retry: function () { push(3); } });
+          return;
+        }
         nanaPackAdd({ id: rid, who: JSON.stringify({ vo: 1, u: url, d: secs, a: me, ts: ts }) }, function (e2) {
-          if (e2) { mark({ up: 0, bad: 1, retry: push }); return; }
-          mark({ u: url, up: 0, bad: 0, retry: null });
+          if (e2) {
+            if (tries > 1) { setTimeout(function () { push(tries - 1); }, 1500); return; }
+            mark({ up: 0, bad: 1, why: "目录没写上 · " + why(e2), retry: function () { push(3); } });
+            return;
+          }
+          mark({ u: url, up: 0, bad: 0, why: "", retry: null });
         });
       });
     };
-    push();
+    push(3);
   };
   var voDrop = function (x) {
     setVoDel(null);
@@ -21608,7 +21624,7 @@ function LondonRoom(_refLD) {
                     })),
                   h("span", { style: { display: "block", fontSize: "0.64rem", color: x.bad ? "#b4353a" : "rgba(110,100,78,0.9)", marginTop: 4 } },
                     (x.a ? ldWho(x.a) + " " : "") + (x.ts ? ldSwWhen(x.ts, x.a, 1) : "")
-                      + (x.up ? "　· 寄出去中…" : (x.bad ? "　· 没寄出去" : "")))),
+                      + (x.up ? "　· 寄出去中…" : (x.bad ? ("　· " + (x.why || "没寄出去")) : "")))),
                 h("span", { style: { fontSize: "0.7rem", fontWeight: 800, color: "rgba(110,100,78,0.95)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, mmss(x.d))),
               (x.bad && x.retry) ? h("button", { onClick: function () { x.retry(); },
                 style: { flexShrink: 0, border: "none", background: "rgba(180,53,58,0.14)", color: "#b4353a", borderRadius: 8, padding: "8px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "重试") : null,
