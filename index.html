@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-170";
+var NANA_VER = "v2026.8.2-171";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8258,6 +8258,40 @@ var nanaVoGet = function (u, cb) {
       })["catch"](function (e) { if (tm) clearTimeout(tm); cb(e); });
     } catch (err) { cb(err); }
   });
+};
+// 开麦：明确要语音模式（回声消除 / 降噪 / 自动增益），再串一条高通 + 压缩 + 提音量，
+// 不然 iPhone 给的是没做语音优化的那路，人声远、环境声反而大
+var nanaMicOpen = function (cb) {
+  var chain = function (raw) {
+    var ctx = null, out = raw;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC && raw.getAudioTracks && raw.getAudioTracks().length) {
+        ctx = new AC();
+        try { if (ctx.state === "suspended" && ctx.resume) ctx.resume(); } catch (_) {}
+        var src = ctx.createMediaStreamSource(raw);
+        var hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 85;   // 去掉低频轰隆
+        var cp = ctx.createDynamicsCompressor();
+        cp.threshold.value = -34; cp.knee.value = 20; cp.ratio.value = 6;
+        cp.attack.value = 0.003; cp.release.value = 0.25;                                   // 小声的抬起来
+        var g = ctx.createGain(); g.gain.value = 2.4;
+        var dest = ctx.createMediaStreamDestination();
+        src.connect(hp); hp.connect(cp); cp.connect(g); g.connect(dest);
+        if (dest.stream && dest.stream.getAudioTracks().length) out = dest.stream;
+      }
+    } catch (_) { out = raw; }
+    cb(null, out, function () {
+      try { raw.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+      try { if (ctx && ctx.close) ctx.close(); } catch (_) {}
+    });
+  };
+  var go = function (c, again) {
+    navigator.mediaDevices.getUserMedia({ audio: c }).then(chain)["catch"](function (e) {
+      if (again) return go(true, false);
+      cb(e);
+    });
+  };
+  go({ echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 }, true);
 };
 // 录音格式：iPhone 给 m4a，安卓 Chrome 只有 webm —— 两边都是 iPhone，走第一个
 var nanaVoMime = function () {
@@ -8819,18 +8853,20 @@ function ReadingRoomActivity(_refRR) {
       setSharedErr("这个浏览器录不了音，换 Safari 试试"); return;
     }
     var fmt = nanaVoMime();
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    nanaMicOpen(function (mErr, stream, micStop) {
+      if (mErr || !stream) { setSharedErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); return; }
       var mr;
       try { mr = fmt && fmt.m ? new MediaRecorder(stream, { mimeType: fmt.m }) : new MediaRecorder(stream); }
       catch (_) { mr = new MediaRecorder(stream); }
       shChunks.current = [];
       mr.ondataavailable = function (e) { if (e.data && e.data.size) shChunks.current.push(e.data); };
       mr.onstop = function () {
-        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+        try { micStop(); } catch (_) {}
         var secs = Math.round((Date.now() - shT0.current) / 1000);
         shStopTimer(); setShRec(false); setShSec(0);
         if (secs < 1) { setSharedErr("太短了，再按久一点"); return; }
         var blob = new Blob(shChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
+        if (!blob.size || blob.size < 900) { setSharedErr("没录到声音，再试一次"); return; }
         setShVoUp(true);
         var id = "vo" + Date.now() + Math.floor(Math.random() * 900);
         nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
@@ -8848,7 +8884,7 @@ function ReadingRoomActivity(_refRR) {
         setShSec(n);
         if (n >= 180) shRecStop();
       }, 250);
-    })["catch"](function () { setSharedErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); });
+    });
   };
   var shRecStop = function () {
     try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); } catch (_) { shStopTimer(); setShRec(false); }
@@ -19878,18 +19914,20 @@ function LondonRoom(_refLD) {
       setVoErr("这个浏览器录不了音，换 Safari 试试"); return;
     }
     var fmt = nanaVoMime();
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    nanaMicOpen(function (mErr, stream, micStop) {
+      if (mErr || !stream) { setVoErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); return; }
       var mr;
       try { mr = fmt && fmt.m ? new MediaRecorder(stream, { mimeType: fmt.m }) : new MediaRecorder(stream); }
       catch (_) { mr = new MediaRecorder(stream); }
       voChunks.current = [];
       mr.ondataavailable = function (e) { if (e.data && e.data.size) voChunks.current.push(e.data); };
       mr.onstop = function () {
-        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+        try { micStop(); } catch (_) {}
         var secs = Math.round((Date.now() - voT0.current) / 1000);
         stopVoTimer(); setVoRec(""); setVoSec(0);
         if (secs < 1) { setVoErr("太短了，再按久一点"); return; }
         var blob = new Blob(voChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
+        if (!blob.size || blob.size < 900) { setVoErr("没录到声音，再试一次"); return; }
         voSave(blob, secs, fmt);
       };
       voMR.current = mr;
@@ -19902,7 +19940,7 @@ function LondonRoom(_refLD) {
         setVoSec(n);
         if (n >= VO_MAX) voStop();
       }, 250);
-    })["catch"](function () { setVoErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); });
+    });
   };
   var voStop = function () {
     try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); } catch (_) { stopVoTimer(); setVoRec(""); }
