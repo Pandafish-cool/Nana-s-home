@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-172";
+var NANA_VER = "v2026.8.2-173";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8261,14 +8261,17 @@ var nanaVoGet = function (u, cb) {
 };
 // 开麦：明确要语音模式（回声消除 / 降噪 / 自动增益），再串一条高通 + 压缩 + 提音量，
 // 不然 iPhone 给的是没做语音优化的那路，人声远、环境声反而大
-// 噪声门的三个数：开门、关门、关到多小。嫌环境音多就把 ON/OFF 调大，嫌吃字就调小
+// 自己那套滤波 / 噪声门 / 压缩：默认不用。
+// iPhone 在收到下面那组约束之后已经跑了自家的语音链路（贴嘴的麦 + 降噪 + 自动增益），
+// 再叠一层只会削顶失真和啃字 —— 试过两版，都比不加还差。想再试就把这个改成 1。
+var NANA_MIC_FX = 0;
 var NANA_GATE_ON = 0.045, NANA_GATE_OFF = 0.022, NANA_GATE_LO = 0.05;
 var nanaMicOpen = function (cb) {
   var chain = function (raw) {
     var ctx = null, out = raw, tick = null;
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
-      if (AC && raw.getAudioTracks && raw.getAudioTracks().length) {
+      if (NANA_MIC_FX && AC && raw.getAudioTracks && raw.getAudioTracks().length) {
         ctx = new AC();
         try { if (ctx.state === "suspended" && ctx.resume) ctx.resume(); } catch (_) {}
         var src = ctx.createMediaStreamSource(raw);
