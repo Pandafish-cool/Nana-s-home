@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-171";
+var NANA_VER = "v2026.8.2-172";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8261,26 +8261,50 @@ var nanaVoGet = function (u, cb) {
 };
 // 开麦：明确要语音模式（回声消除 / 降噪 / 自动增益），再串一条高通 + 压缩 + 提音量，
 // 不然 iPhone 给的是没做语音优化的那路，人声远、环境声反而大
+// 噪声门的三个数：开门、关门、关到多小。嫌环境音多就把 ON/OFF 调大，嫌吃字就调小
+var NANA_GATE_ON = 0.045, NANA_GATE_OFF = 0.022, NANA_GATE_LO = 0.05;
 var nanaMicOpen = function (cb) {
   var chain = function (raw) {
-    var ctx = null, out = raw;
+    var ctx = null, out = raw, tick = null;
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (AC && raw.getAudioTracks && raw.getAudioTracks().length) {
         ctx = new AC();
         try { if (ctx.state === "suspended" && ctx.resume) ctx.resume(); } catch (_) {}
         var src = ctx.createMediaStreamSource(raw);
-        var hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 85;   // 去掉低频轰隆
+        // 只留人声那一段：低频的轰隆和高频的嘶声都砍掉
+        var hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 120;
+        var lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 7500;
+        // 噪声门：说话的时候开，不说话就关下去 —— 旁边人说话大多落在门槛以下
+        var gate = ctx.createGain(); gate.gain.value = NANA_GATE_LO;
+        var an = ctx.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0.4;
+        var buf = new Uint8Array(an.fftSize);
+        var openTill = 0;
+        tick = setInterval(function () {
+          try {
+            an.getByteTimeDomainData(buf);
+            var sum = 0, i, v;
+            for (i = 0; i < buf.length; i++) { v = (buf[i] - 128) / 128; sum += v * v; }
+            var rms = Math.sqrt(sum / buf.length);
+            var now = ctx.currentTime, t = Date.now();
+            if (rms > NANA_GATE_ON) openTill = t + 280;                       // 开了先保持一下，别一个字一个字地抖
+            var open = t < openTill || rms > NANA_GATE_OFF;
+            gate.gain.setTargetAtTime(open ? 1 : NANA_GATE_LO, now, open ? 0.012 : 0.09);
+          } catch (_) {}
+        }, 25);
+        // 门后面再轻轻压一下，别让忽大忽小太明显
         var cp = ctx.createDynamicsCompressor();
-        cp.threshold.value = -34; cp.knee.value = 20; cp.ratio.value = 6;
-        cp.attack.value = 0.003; cp.release.value = 0.25;                                   // 小声的抬起来
-        var g = ctx.createGain(); g.gain.value = 2.4;
+        cp.threshold.value = -24; cp.knee.value = 12; cp.ratio.value = 4;
+        cp.attack.value = 0.004; cp.release.value = 0.2;
+        var g = ctx.createGain(); g.gain.value = 1.7;
         var dest = ctx.createMediaStreamDestination();
-        src.connect(hp); hp.connect(cp); cp.connect(g); g.connect(dest);
+        src.connect(hp); hp.connect(lp); lp.connect(an); lp.connect(gate);
+        gate.connect(cp); cp.connect(g); g.connect(dest);
         if (dest.stream && dest.stream.getAudioTracks().length) out = dest.stream;
       }
     } catch (_) { out = raw; }
     cb(null, out, function () {
+      try { if (tick) clearInterval(tick); } catch (_) {}
       try { raw.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
       try { if (ctx && ctx.close) ctx.close(); } catch (_) {}
     });
