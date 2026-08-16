@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-168";
+var NANA_VER = "v2026.8.2-169";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8407,7 +8407,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🌙", stampBg: "#2e2a55", stampBd: "rgba(190,180,240,0.8)", wm: "✦", wmA: 0.16,
     tapeA: "rgba(160,150,240,0.55)", tapeB: "rgba(255,255,255,0.35)",
     stripes: ["#8a7ad0", "#262252", "#e0c060", "#262252"],
-    wash1: "rgba(140,120,220,0.28)", wash2: "rgba(90,140,220,0.22)", footE: "🌠" },
+    wash1: "rgba(140,120,220,0.28)", wash2: "rgba(90,140,220,0.22)", footE: "🌠" , rule: "dot" },
   { id: "mint", name: "薄荷信笺", e: "🌿", css: "linear-gradient(160deg,#f0fbf3,#d8f2e0)",
     out1: "#e9f4ec", out2: "#dceee4", p1: "#fbfffc", p2: "#eefaf1",
     line: "rgba(120,180,150,0.35)", margin: "rgba(90,185,140,0.5)",
@@ -8415,7 +8415,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🍀", stampBg: "#f6fdf8", stampBd: "rgba(110,190,150,0.8)", wm: "🌿", wmA: 0.1,
     tapeA: "rgba(120,210,170,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#6cc79a", "#fbfffc", "#e8c860", "#fbfffc"],
-    wash1: "rgba(150,225,185,0.32)", wash2: "rgba(190,230,200,0.3)", footE: "🍃" },
+    wash1: "rgba(150,225,185,0.32)", wash2: "rgba(190,230,200,0.3)", footE: "🍃" , rule: "grid" },
   { id: "peach", name: "蜜桃信笺", e: "🍑", css: "linear-gradient(160deg,#fff3ec,#ffdfcf)",
     out1: "#f9ece5", out2: "#f6e0d5", p1: "#fffaf4", p2: "#ffefe2",
     line: "rgba(230,160,120,0.38)", margin: "rgba(235,140,95,0.55)",
@@ -8431,7 +8431,7 @@ var NANA_LETTER_THEMES = [
     stamp: "☕", stampBg: "#fbf6ec", stampBd: "rgba(190,150,105,0.85)", wm: "☕", wmA: 0.08,
     tapeA: "rgba(210,170,120,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b98a5a", "#fdf9f2", "#7a5a3a", "#fdf9f2"],
-    wash1: "rgba(215,180,135,0.3)", wash2: "rgba(240,220,190,0.3)", footE: "🥐" },
+    wash1: "rgba(215,180,135,0.3)", wash2: "rgba(240,220,190,0.3)", footE: "🥐" , rule: "dot" },
   { id: "cat", name: "好好信笺", e: "🐈", css: "linear-gradient(160deg,#fff6ec,#ffe2c2)",
     out1: "#f8ecdd", out2: "#f4e2cc", p1: "#fffaf2", p2: "#ffeeda",
     line: "rgba(225,165,100,0.35)", margin: "rgba(230,150,70,0.55)",
@@ -8447,7 +8447,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🐚", stampBg: "#f4fbff", stampBd: "rgba(120,180,225,0.8)", wm: "🌊", wmA: 0.09,
     tapeA: "rgba(130,195,240,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#6aaede", "#f8fdff", "#e8c860", "#f8fdff"],
-    wash1: "rgba(150,205,245,0.3)", wash2: "rgba(190,225,245,0.28)", footE: "⛵" },
+    wash1: "rgba(150,205,245,0.3)", wash2: "rgba(190,225,245,0.28)", footE: "⛵" , rule: "grid" },
   { id: "call", name: "呼叫信笺", e: "📟", css: "linear-gradient(160deg,#fffbe8,#ffe9a8)",
     out1: "#f8f0d8", out2: "#f4e6c2", p1: "#fffdf0", p2: "#fff3cf",
     line: "rgba(200,150,60,0.38)", margin: "rgba(220,70,50,0.6)",
@@ -8463,7 +8463,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🍒", stampBg: "#fff6f6", stampBd: "rgba(225,125,135,0.85)", wm: "🍒", wmA: 0.09,
     tapeA: "rgba(255,140,150,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#e06070", "#fffafa", "#f0b040", "#fffafa"],
-    wash1: "rgba(255,170,175,0.32)", wash2: "rgba(255,205,200,0.3)", footE: "🍰" },
+    wash1: "rgba(255,170,175,0.32)", wash2: "rgba(255,205,200,0.3)", footE: "🍰" , rule: "dot" },
   { id: "berry", name: "薰衣草信笺", e: "🫐", css: "linear-gradient(160deg,#f6f1ff,#e4d8fb)",
     out1: "#efe8f8", out2: "#e6dcf4", p1: "#fbf8ff", p2: "#f0e8fc",
     line: "rgba(150,125,205,0.35)", margin: "rgba(140,100,210,0.5)",
@@ -8471,7 +8471,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🦋", stampBg: "#f9f5ff", stampBd: "rgba(160,130,220,0.8)", wm: "🫐", wmA: 0.09,
     tapeA: "rgba(180,150,235,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#9a7ad0", "#fbf8ff", "#e8a0c0", "#fbf8ff"],
-    wash1: "rgba(190,165,240,0.3)", wash2: "rgba(220,205,245,0.3)", footE: "💜" },
+    wash1: "rgba(190,165,240,0.3)", wash2: "rgba(220,205,245,0.3)", footE: "💜" , rule: "grid" },
   { id: "dusk", name: "黄昏信笺", e: "🌅", css: "linear-gradient(160deg,#ffe9d6,#f3c8d8)",
     out1: "#f8e4d4", out2: "#f2d3d8", p1: "#fff6ec", p2: "#f9dfe2",
     line: "rgba(215,130,120,0.35)", margin: "rgba(220,105,90,0.5)",
@@ -8479,7 +8479,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🌇", stampBg: "#fff4ea", stampBd: "rgba(230,140,110,0.85)", wm: "🌅", wmA: 0.1,
     tapeA: "rgba(250,160,120,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#ef9068", "#fff6ec", "#b880c8", "#fff6ec"],
-    wash1: "rgba(255,180,140,0.32)", wash2: "rgba(220,160,200,0.28)", footE: "🌆" },
+    wash1: "rgba(255,180,140,0.32)", wash2: "rgba(220,160,200,0.28)", footE: "🌆" , rule: "none" },
   { id: "mist", name: "雾灰信笺", e: "🌫️", css: "linear-gradient(160deg,#f4f4f2,#dedfdb)",
     out1: "#ececea", out2: "#e2e3df", p1: "#fafaf8", p2: "#ebecea",
     line: "rgba(140,145,140,0.35)", margin: "rgba(120,130,125,0.5)",
@@ -8495,7 +8495,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🦴", stampBg: "#fffaf0", stampBd: "rgba(215,170,110,0.85)", wm: "🐾", wmA: 0.1,
     tapeA: "rgba(240,200,140,0.6)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#d8a15c", "#fffbf3", "#8a6a4a", "#fffbf3"],
-    wash1: "rgba(250,215,165,0.3)", wash2: "rgba(230,210,180,0.28)", footE: "🐕" , pat: nanaPat("🐾", "🦴", 56, 0.1) },
+    wash1: "rgba(250,215,165,0.3)", wash2: "rgba(230,210,180,0.28)", footE: "🐕" , pat: nanaPat("🐾", "🦴", 56, 0.1) , rule: "dot" },
   { id: "mcat", name: "奶油猫信笺", e: "🐱", css: "linear-gradient(160deg,#f6fffb,#dff4ec)",
     out1: "#eaf6f1", out2: "#dff0e8", p1: "#fbfffd", p2: "#eefaf5",
     line: "rgba(130,185,170,0.3)", margin: "rgba(110,190,170,0.45)",
@@ -8504,7 +8504,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(150,225,205,0.5)", tapeB: "rgba(255,255,255,0.85)",
     stripes: ["#7ecbb6", "#fbfffd", "#f0a8b8", "#fbfffd"],
     wash1: "rgba(165,230,210,0.28)", wash2: "rgba(255,215,225,0.26)", footE: "🐱",
-    pat: nanaPat("🐾", "🐟", 56, 0.1) },
+    pat: nanaPat("🐾", "🐟", 56, 0.1) , rule: "grid" },
   { id: "tube", name: "地铁信笺", e: "🚇", css: "linear-gradient(160deg,#fdfdfb,#e8eef6)",
     out1: "#eef1f5", out2: "#e2e8f0", p1: "#ffffff", p2: "#f2f6fa",
     line: "rgba(120,140,175,0.3)", margin: "rgba(200,16,46,0.55)",
@@ -8512,7 +8512,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🚇", stampBg: "#ffffff", stampBd: "rgba(200,60,70,0.8)", wm: "🚇", wmA: 0.08,
     tapeA: "rgba(200,60,70,0.45)", tapeB: "rgba(255,255,255,0.85)",
     stripes: ["#c8102e", "#ffffff", "#10069f", "#ffffff"],
-    wash1: "rgba(180,200,230,0.3)", wash2: "rgba(240,200,200,0.22)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) },
+    wash1: "rgba(180,200,230,0.3)", wash2: "rgba(240,200,200,0.22)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) , rule: "grid" },
   { id: "box", name: "电话亭信笺", e: "☎️", css: "linear-gradient(160deg,#fff4f2,#f6d6d2)",
     out1: "#f6e4e1", out2: "#f0d6d2", p1: "#fffaf8", p2: "#fbe6e2",
     line: "rgba(200,120,110,0.32)", margin: "rgba(181,34,34,0.6)",
@@ -8520,7 +8520,7 @@ var NANA_LETTER_THEMES = [
     stamp: "📞", stampBg: "#fff7f5", stampBd: "rgba(200,90,85,0.85)", wm: "☎️", wmA: 0.09,
     tapeA: "rgba(215,90,85,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b52222", "#fffaf8", "#e8c860", "#fffaf8"],
-    wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" , pat: nanaPat("☎️", "📮", 58, 0.07) },
+    wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" , pat: nanaPat("☎️", "📮", 58, 0.07) , rule: "dot" },
   { id: "tea", name: "下午茶信笺", e: "🫖", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
     out1: "#f5eef0", out2: "#eee2e8", p1: "#fffdfa", p2: "#f8eff3",
     line: "rgba(190,155,175,0.32)", margin: "rgba(175,130,155,0.5)",
@@ -8528,7 +8528,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🍰", stampBg: "#fffaf7", stampBd: "rgba(205,160,180,0.8)", wm: "🫖", wmA: 0.09,
     tapeA: "rgba(225,175,195,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#c08aa4", "#fffdfa", "#9ab08a", "#fffdfa"],
-    wash1: "rgba(240,200,215,0.3)", wash2: "rgba(215,225,205,0.26)", footE: "🫖" , pat: nanaPat("🫖", "🍰", 56, 0.08) },
+    wash1: "rgba(240,200,215,0.3)", wash2: "rgba(215,225,205,0.26)", footE: "🫖" , pat: nanaPat("🫖", "🍰", 56, 0.08) , rule: "none" },
   { id: "bus", name: "巴士信笺", e: "🚌", css: "linear-gradient(160deg,#fff6f4,#ffdfd8)",
     out1: "#f8e8e4", out2: "#f4dbd5", p1: "#fffbf9", p2: "#ffeae4",
     line: "rgba(210,130,110,0.32)", margin: "rgba(205,60,45,0.55)",
@@ -8976,9 +8976,21 @@ function ReadingRoomActivity(_refRR) {
   var _wt = useState(function () { try { return localStorage.getItem("nana-note-theme") || "air"; } catch (_) { return "air"; } });
   var writeTheme = _wt[0], setWriteTheme = _wt[1];
   var pickWriteTheme = function (id) { setWriteTheme(id); try { localStorage.setItem("nana-note-theme", id); } catch (_) {} };
+    // 纸面：横线 / 方格 / 点阵 / 空白
+  var ruleBg = function (t) {
+    var r = t.rule || "line";
+    if (r === "none") return "";
+    if (r === "dot") return "radial-gradient(circle at 1.6px 1.6px, " + t.line + " 1.35px, transparent 1.55px) 0 0 / 21px 21px, ";
+    if (r === "grid") return "repeating-linear-gradient(180deg, transparent 0 25px, " + t.line + " 25px 26px), repeating-linear-gradient(90deg, transparent 0 25px, " + t.line + " 25px 26px), ";
+    return "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), ";
+  };
+  var marginBg = function (t) {
+    if ((t.rule || "line") !== "line") return "";
+    return "linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), ";
+  };
   var paperStyle = function (t) {
     return {
-      background: "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), " + (t.pat ? (t.pat + ", ") : "") + "radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
+      background: ruleBg(t) + marginBg(t) + (t.pat ? (t.pat + ", ") : "") + "radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
       borderRadius: 10, border: "1px solid " + (t.id === "night" ? "rgba(150,140,215,0.5)" : "rgba(228,178,158,0.55)"), boxShadow: "0 12px 26px rgba(90,65,80,0.22), inset 0 0 0 1px rgba(255,255,255," + (t.id === "night" ? "0.08" : "0.6") + ")", overflow: "hidden"
     };
   };
