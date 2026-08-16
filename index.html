@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-160";
+var NANA_VER = "v2026.8.2-161";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8214,6 +8214,61 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
       cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
     })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
+};
+// ── 🎙 声音：上传到和照片同一个桶，听过一次就存本机，之后离线也能放 ──
+var nanaVoUpload = function (blob, id, ext, mime, cb) {
+  try {
+    var path = "notes/" + id + "." + (ext || "m4a");
+    var uctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var utimer = uctrl ? setTimeout(function () { try { uctrl.abort(); } catch (_) {} }, 40000) : null;
+    fetch(NANA_SYNC.url + "/storage/v1/object/" + path, {
+      method: "POST",
+      headers: { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": mime || "audio/mp4", "x-upsert": "true" },
+      body: blob,
+      signal: uctrl ? uctrl.signal : undefined
+    }).then(function (res) {
+      if (utimer) clearTimeout(utimer);
+      if (!res.ok) return cb(new Error("HTTP " + res.status));
+      cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
+    })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
+  } catch (err) { cb(err); }
+};
+// 拿一段声音：先看本机，没有再下，下完存起来。返回能直接丢进 <audio> 的 dataURL
+var nanaVoGet = function (u, cb) {
+  if (!u) return cb(new Error("no url"));
+  nanaCloudGet(u, function (hit) {
+    if (hit) return cb(null, hit, 1);
+    try {
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var tm = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 30000) : null;
+      fetch(u, { cache: "default", signal: ctrl ? ctrl.signal : undefined }).then(function (r) {
+        if (tm) clearTimeout(tm);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.blob();
+      }).then(function (b) {
+        if (!b || !b.size) throw new Error("empty");
+        var fr = new FileReader();
+        fr.onload = function () {
+          var d = String(fr.result);
+          if (b.size < 3500000) nanaCloudPut(u, d);
+          cb(null, d, 0);
+        };
+        fr.onerror = function () { cb(fr.error || new Error("read")); };
+        fr.readAsDataURL(b);
+      })["catch"](function (e) { if (tm) clearTimeout(tm); cb(e); });
+    } catch (err) { cb(err); }
+  });
+};
+// 录音格式：iPhone 给 m4a，安卓 Chrome 只有 webm —— 两边都是 iPhone，走第一个
+var nanaVoMime = function () {
+  try {
+    if (typeof MediaRecorder === "undefined") return null;
+    var list = [["audio/mp4", "m4a"], ["audio/aac", "aac"], ["audio/webm;codecs=opus", "webm"], ["audio/webm", "webm"], ["audio/ogg;codecs=opus", "ogg"]];
+    for (var i = 0; i < list.length; i++) {
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(list[i][0])) return { m: list[i][0], e: list[i][1] };
+    }
+    return { m: "", e: "m4a" };
+  } catch (_) { return null; }
 };
 // Service Worker 是缓存优先（为了秒开），代价是永远慢一个版本。
 // 这里开门几秒后拿几个字节的 version.txt 比一下，有新版就换掉缓存里的页面再重载一次。
@@ -18974,6 +19029,14 @@ var LD_BACK_SAY = {
 };
 // 按完「到家了」浮出来的三格，点不点都行，自己会淡掉
 var LD_SAFE = ["门锁了", "窗关了", "吸入器在包里"];
+// ── 🎙 家里的声音：常驻的几段，随时点开就有，不用等谁在线 ──────
+var LD_VO_SLOT = [
+  { k: "here", e: "🫂", t: "我在", d: "就一句。十秒钟的事，但对面三点钟醒过来的时候最管用。" },
+  { k: "book", e: "📖", t: "念一段你在读的书", d: "念错了也别重录 —— 念错的那一下才是你。" },
+  { k: "room", e: "🐈", t: "家里的动静", d: "猫、雨、厨房、有人在旁边打字。不用说话，把手机放着录两分钟。" },
+  { k: "night", e: "🌙", t: "睡不着的时候听这个", d: "慢一点，小声一点。听的人可能听到一半就睡着了。" },
+  { k: "free", e: "🎙", t: "随便说说", d: "今天发生了什么，或者什么都没发生。" }
+];
 // 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
 var LD_BAD_OPT = [
   { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
@@ -19623,6 +19686,97 @@ function LondonRoom(_refLD) {
   var _hsf = useState(false); var pgSafe = _hsf[0], setPgSafe = _hsf[1];
   var _hsd = useState([]); var pgSafeOn = _hsd[0], setPgSafeOn = _hsd[1];
   var pgDown = useRef(0);
+  // 🎙 家里的声音
+  var _vo = useState([]); var voList = _vo[0], setVoList = _vo[1];
+  var _vrec = useState(""); var voRec = _vrec[0], setVoRec = _vrec[1];      // 正在录的那一格
+  var _vsec = useState(0); var voSec = _vsec[0], setVoSec = _vsec[1];
+  var _vup = useState(""); var voUp = _vup[0], setVoUp = _vup[1];           // 正在上传的那一格
+  var _verr = useState(""); var voErr = _verr[0], setVoErr = _verr[1];
+  var _vpl = useState(""); var voPlay = _vpl[0], setVoPlay = _vpl[1];       // 正在放的那一条
+  var _vld = useState(""); var voLoad = _vld[0], setVoLoad = _vld[1];
+  var _vdel = useState(null); var voDel = _vdel[0], setVoDel = _vdel[1];
+  var voMR = useRef(null), voChunks = useRef([]), voTimer = useRef(null), voT0 = useRef(0), voAud = useRef(null);
+  var VO_MAX = 180;                                                          // 三分钟够录一段雨声了
+  var stopVoTimer = function () { if (voTimer.current) { clearInterval(voTimer.current); voTimer.current = null; } };
+  var voStart = function (slot) {
+    setVoErr("");
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+      setVoErr("这个浏览器录不了音，换 Safari 试试"); return;
+    }
+    var fmt = nanaVoMime();
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var mr;
+      try { mr = fmt && fmt.m ? new MediaRecorder(stream, { mimeType: fmt.m }) : new MediaRecorder(stream); }
+      catch (_) { mr = new MediaRecorder(stream); }
+      voChunks.current = [];
+      mr.ondataavailable = function (e) { if (e.data && e.data.size) voChunks.current.push(e.data); };
+      mr.onstop = function () {
+        try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (_) {}
+        var secs = Math.round((Date.now() - voT0.current) / 1000);
+        stopVoTimer(); setVoRec(""); setVoSec(0);
+        if (secs < 1) { setVoErr("太短了，再按久一点"); return; }
+        var blob = new Blob(voChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
+        voSave(slot, blob, secs, fmt);
+      };
+      voMR.current = mr;
+      voT0.current = Date.now();
+      mr.start();
+      setVoRec(slot.k); setVoSec(0);
+      stopVoTimer();
+      voTimer.current = setInterval(function () {
+        var n = Math.round((Date.now() - voT0.current) / 1000);
+        setVoSec(n);
+        if (n >= VO_MAX) voStop();
+      }, 250);
+    })["catch"](function () { setVoErr("拿不到麦克风 —— 在设置里给这个网页开一下权限"); });
+  };
+  var voStop = function () {
+    try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); } catch (_) { stopVoTimer(); setVoRec(""); }
+  };
+  var voSave = function (slot, blob, secs, fmt) {
+    setVoUp(slot.k);
+    var id = "vo" + Date.now() + Math.floor(Math.random() * 900);
+    nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
+      if (err || !url) { setVoUp(""); setVoErr("没传上去，换个网再试一次"); return; }
+      var rid = "vo-" + Date.now() + Math.floor(Math.random() * 90);
+      var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+      var row = { id: rid, k: slot.k, t: slot.t, e: slot.e, u: url, d: secs, a: me };
+      setVoList(function (o) { return o.concat([row]); });
+      setVoUp("");
+      try { nanaCloudPut(url, ""); } catch (_) {}
+      nanaPackAdd({ id: rid, who: JSON.stringify({ vo: 1, k: slot.k, t: slot.t, e: slot.e, u: url, d: secs, a: me }) }, function (e2) {
+        if (e2) { setVoErr("存目录的时候出错了，刷新看看在不在"); }
+      });
+    });
+  };
+  var voDrop = function (x) {
+    setVoDel(null);
+    setVoList(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaPackDel(x.id, function () {});
+  };
+  var voHit = function (x) {
+    if (voPlay === x.id) {                                   // 再点一下就停
+      try { if (voAud.current) { voAud.current.pause(); voAud.current = null; } } catch (_) {}
+      setVoPlay(""); return;
+    }
+    try { if (voAud.current) { voAud.current.pause(); voAud.current = null; } } catch (_) {}
+    setVoPlay(""); setVoLoad(x.id); setVoErr("");
+    nanaVoGet(x.u, function (err, src) {
+      setVoLoad("");
+      if (err || !src) { setVoErr("这段没读出来，等信号好一点再试"); return; }
+      try {
+        var a2 = new Audio(src);
+        a2.onended = function () { setVoPlay(""); voAud.current = null; };
+        a2.onerror = function () { setVoPlay(""); voAud.current = null; setVoErr("放不出来…"); };
+        voAud.current = a2;
+        setVoPlay(x.id);
+        a2.play()["catch"](function () { setVoPlay(""); voAud.current = null; setVoErr("点一下再试（浏览器要一次点击才让放声音）"); });
+      } catch (_) { setVoErr("放不出来…"); }
+    });
+  };
+  useEffect(function () {
+    return function () { stopVoTimer(); try { if (voAud.current) voAud.current.pause(); } catch (_) {} };
+  }, []);
   var _st = useState(null); var sitMode = _st[0], setSitMode = _st[1];
   var _tk2 = useState(null); var task = _tk2[0], setTask = _tk2[1];
   var _ao = useState(false); var astOpen = _ao[0], setAstOpen = _ao[1];
@@ -20015,9 +20169,14 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [], jr = { panda: [], nana: [] };
+      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [], vol = [], jr = { panda: [], nana: [] };
       (rows || []).forEach(function (r) {
-        if (r.id && r.id.indexOf("sw-") === 0) {
+        if (r.id && r.id.indexOf("vo-") === 0) {
+          var vo = null;
+          try { vo = JSON.parse(r.who); } catch (_) { vo = null; }
+          if (vo && vo.vo && vo.u) vol.push({ id: r.id, k: vo.k || "free", t: vo.t || "一段声音", e: vo.e || "🎙", u: vo.u, d: vo.d || 0, a: vo.a || "" });
+        }
+        else if (r.id && r.id.indexOf("sw-") === 0) {
           var so = null;
           try { so = JSON.parse(r.who); } catch (_) { so = null; }
           if (so && so.sw && so.a && jr[so.a]) jr[so.a] = (so.c || []).slice();
@@ -20063,6 +20222,8 @@ function LondonRoom(_refLD) {
       setCfs(cfl);
       pgl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setMyPg(pgl);
+      vol.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+      setVoList(vol);
       setJar(function (old) {
         // 自己这边刚放进去还没写成功的，别被服务器的旧数据抹掉
         var mine = (old && myAuthor && old[myAuthor]) || [];
@@ -21062,6 +21223,57 @@ function LondonRoom(_refLD) {
     ]),
     card([head("🏥 不舒服的时候", "从轻到重，照着往下走"), h("div", { key: "m" }, LD_MED.map(linkRow))])
   );
+  // ── 🎙 家里的声音 ──
+  var voCard = function () {
+    var mine = (function () { try { return localStorage.getItem("nana-author") || ""; } catch (_) { return ""; } })();
+    var byK = {};
+    voList.forEach(function (x) { (byK[x.k] = byK[x.k] || []).push(x); });
+    var mmss = function (n) { var m2 = Math.floor(n / 60), s2 = n % 60; return m2 + ":" + (s2 < 10 ? "0" : "") + s2; };
+    return ukCard([
+      screws,
+      ukHead("家里的声音", "随时点开就有 · 不用等谁在线", h("span", { style: { fontSize: "1rem" } }, "🎙")),
+      voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
+      h("div", { key: "vl" }, LD_VO_SLOT.map(function (sl, si) {
+        var got = byK[sl.k] || [];
+        var recing = voRec === sl.k, uping = voUp === sl.k;
+        return h("div", { key: "vs" + si, style: { marginBottom: si === LD_VO_SLOT.length - 1 ? 0 : 11, paddingBottom: si === LD_VO_SLOT.length - 1 ? 0 : 11, borderBottom: si === LD_VO_SLOT.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+            h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, sl.e),
+            h("span", { style: { flex: 1, minWidth: 0, fontWeight: 800, fontSize: "0.86rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, sl.t),
+            got.length ? h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#1a5c56", background: "rgba(31,111,104,0.12)", borderRadius: 999, padding: "2px 8px", flexShrink: 0 } }, got.length + " 段") : null),
+          // 已经录好的，点一下就放
+          got.map(function (x, xi) {
+            var on = voPlay === x.id, ld = voLoad === x.id, ask = voDel === x.id;
+            return h("div", { key: x.id, style: { display: "flex", alignItems: "center", gap: 8, marginTop: 8 } },
+              h("button", { onClick: function () { voHit(x); },
+                style: { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 9, textAlign: "left", border: "1.5px solid " + (on ? "rgba(31,111,104,0.6)" : "rgba(169,127,46,0.35)"), background: on ? "rgba(31,111,104,0.1)" : "rgba(255,255,255,0.66)", borderRadius: 10, padding: "9px 11px", fontFamily: "inherit", cursor: "pointer" } },
+                h("span", { style: { width: 26, height: 26, borderRadius: "50%", background: on ? "#1f6f68" : "rgba(169,127,46,0.85)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.72rem", flexShrink: 0 } }, ld ? "…" : (on ? "❙❙" : "▶")),
+                h("span", { style: { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 3, height: 16 } },
+                  [7, 12, 5, 15, 9, 14, 6, 11, 16, 8, 13, 6, 10, 15, 7, 12].map(function (hh2, bi) {
+                    return h("span", { key: "bw" + bi, style: { flex: 1, height: hh2, borderRadius: 2, background: on ? "#2f9e8f" : "rgba(169,127,46,0.4)", animation: on ? ("swPop 1.1s ease-in-out infinite " + (bi * 0.06) + "s") : "none" } });
+                  })),
+                h("span", { style: { fontSize: "0.68rem", fontWeight: 800, color: "rgba(110,100,78,0.95)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, mmss(x.d))),
+              (mine && x.a === mine) ? h("button", { onClick: function () { if (ask) voDrop(x); else setVoDel(x.id); },
+                style: { flexShrink: 0, border: "none", background: ask ? "#cf5a55" : "none", color: ask ? "#fff" : "rgba(150,130,105,0.8)", borderRadius: 8, padding: ask ? "7px 10px" : "7px 6px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } },
+                ask ? "真删" : "⋯") : null);
+          }),
+          // 录一段
+          h("div", { style: { marginTop: 8 } },
+            h("button", {
+              onPointerDown: function () { if (!voRec && !voUp) voStart(sl); },
+              onPointerUp: function () { if (voRec === sl.k) voStop(); },
+              onPointerCancel: function () { if (voRec === sl.k) voStop(); },
+              onPointerLeave: function () { if (voRec === sl.k) voStop(); },
+              onContextMenu: function (e) { e.preventDefault(); },
+              disabled: !!voUp || (!!voRec && voRec !== sl.k),
+              style: { width: "100%", border: "1.5px dashed " + (recing ? "rgba(180,53,58,0.7)" : "rgba(169,127,46,0.45)"), background: recing ? "rgba(180,53,58,0.09)" : "rgba(255,255,255,0.45)", borderRadius: 10, padding: "9px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", color: recing ? "#b4353a" : "#a97f2e", cursor: "pointer", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none", opacity: (voUp && voUp !== sl.k) ? 0.45 : 1 } },
+              uping ? "寄出去中…" : (recing ? ("● 在录 " + mmss(voSec) + " · 松手就寄出去") : (got.length ? "＋ 再录一段" : "按住录一段"))),
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(110,100,78,0.85)", lineHeight: 1.6, marginTop: 5 } }, sl.d)));
+      })),
+      h("div", { key: "vf", style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(169,127,46,0.4)", fontSize: "0.68rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.75 } },
+        "听过一次就存在手机里了，之后没网也能放。听多少次都行，那边不会知道。")
+    ]);
+  };
   // ── 🍬 糖罐 ──
   var jarCard = function () {
     var backLeft = Math.max(0, Math.ceil((new Date(LD_BACK + "T12:00:00+01:00") - new Date()) / 86400000));
@@ -21121,6 +21333,7 @@ function LondonRoom(_refLD) {
   // ── 安心 ──
   var careTab = h("div", null,
     pagerCard(),
+    voCard(),
     LD_JAR_ON ? jarCard() : null,
     // ── 哮喘（默认收着，急救那句留在外面）──
     ukCard([
