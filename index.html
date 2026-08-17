@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-184";
+var NANA_VER = "v2026.8.2-185";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19959,6 +19959,7 @@ function LondonRoom(_refLD) {
   var _at = useState(function () { return LD_ASTRO[Math.floor(Math.random() * LD_ASTRO.length)]; });
   var astro = _at[0], setAstro = _at[1];
   var _ar = useState(null); var arrOpen = _ar[0], setArrOpen = _ar[1];
+  var _n1o = useState(false); var n1Open = _n1o[0], setN1Open = _n1o[1];
   var _wp = useState(null); var wallPick = _wp[0], setWallPick = _wp[1];
   var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
@@ -20931,7 +20932,7 @@ function LondonRoom(_refLD) {
           "找不到人就在到达大厅站着别走远，司机会来找你 —— 免费等到 " + P.freeTill + "，不用赶。等超过十分钟就直接打上面那个电话，他是中国人，说中文就行。携程订单号 " + P.order + "。"));
     };
   // ── 🌗 落地第一晚 ──
-  var n1Card = function () {
+  var n1Card = function (cal) {
     var d = ldDay("Europe/London");
     var mins = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
     if (d === LD_N1_NEXT) mins += 1440;                        // 过了午夜接着往后算
@@ -20945,11 +20946,13 @@ function LondonRoom(_refLD) {
           h("span", { style: { fontSize: "1.2rem" } }, "🌗"),
           h("div", { style: { flex: 1, minWidth: 0 } },
             h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 700, fontSize: "1rem", color: "#f6e7c8", letterSpacing: "0.4px" } }, "落地第一天"),
-            h("div", { style: { fontSize: "0.66rem", color: "rgba(214,232,226,0.8)", marginTop: 3 } }, "伦敦 " + lonT + " · 今晚把家周围摸熟")),
-          h("span", { style: { background: "rgba(246,231,200,0.14)", color: "#f0dcae", borderRadius: 999, padding: "3px 9px", fontSize: "0.56rem", fontWeight: 800, flexShrink: 0 } }, "只有今天")),
-        h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.07)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#f3e3bf", lineHeight: 1.7 } },
+            h("div", { style: { fontSize: "0.66rem", color: "rgba(214,232,226,0.8)", marginTop: 3 } }, cal ? "8 月 15 日 · 那天的安排" : ("伦敦 " + lonT + " · 今晚把家周围摸熟"))),
+          cal
+            ? h("span", { onClick: function () { setN1Open(!n1Open); }, style: { background: "rgba(246,231,200,0.14)", color: "#f0dcae", borderRadius: 999, padding: "4px 11px", fontSize: "0.6rem", fontWeight: 800, flexShrink: 0, cursor: "pointer" } }, n1Open ? "收起 ▲" : "展开 ▼")
+            : h("span", { style: { background: "rgba(246,231,200,0.14)", color: "#f0dcae", borderRadius: 999, padding: "3px 9px", fontSize: "0.56rem", fontWeight: 800, flexShrink: 0 } }, "只有今天")),
+        (cal && !n1Open) ? null : h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.07)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#f3e3bf", lineHeight: 1.7 } },
           "今天你等于通宵了。下午有人陪，最难的那段有人替你扛过去。晚上回来这几个小时不用玩 —— 就把家周围和那趟车自己走一遍。明天再出门的时候，你会知道自己在哪。"),
-        h("div", { style: { marginTop: 12 } }, LD_N1.map(function (s, si) {
+        (cal && !n1Open) ? null : h("div", { style: { marginTop: 12 } }, LD_N1.map(function (s, si) {
           var now = si === cur, past = cur >= 0 && si < cur;
           return h("div", { key: "n1" + si, style: { display: "flex", gap: 10, opacity: past ? 0.42 : 1, marginBottom: si === LD_N1.length - 1 ? 0 : 10 } },
             h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, width: 22 } },
@@ -20961,22 +20964,22 @@ function LondonRoom(_refLD) {
                 now ? h("span", { style: { background: "#e8b84b", color: "#3a2a06", borderRadius: 999, padding: "1px 7px", fontSize: "0.54rem", fontWeight: 800, flexShrink: 0 } }, "现在") : null),
               h("div", { style: { fontSize: "0.71rem", color: "rgba(216,231,224,0.9)", lineHeight: 1.75, marginTop: 4, whiteSpace: "pre-line" } }, s.d)));
         })),
-        h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.06)", borderRadius: 9, padding: "11px 12px" } },
+        (cal && !n1Open) ? null : h("div", { style: { marginTop: 12, background: "rgba(255,255,255,0.06)", borderRadius: 9, padding: "11px 12px" } },
           h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#ffd98a", marginBottom: 8 } }, "🚈 记住这三个站名，基本就丢不了"),
           LD_N1_TR.map(function (x, xi) {
             return h("div", { key: "tr" + xi, style: { marginBottom: xi === LD_N1_TR.length - 1 ? 0 : 8 } },
               h("div", { style: { fontWeight: 800, fontSize: "0.75rem", color: "#f0e4cb" } }, "· " + x.t),
               h("div", { style: { fontSize: "0.69rem", color: "rgba(216,231,224,0.88)", lineHeight: 1.72, marginTop: 2, paddingLeft: 11 } }, x.d));
           })),
-        h("div", { style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(246,231,200,0.24)" } },
+        (cal && !n1Open) ? null : h("div", { style: { marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(246,231,200,0.24)" } },
           LD_N1_NO.map(function (t, ti) {
             return h("div", { key: "no" + ti, style: { fontSize: "0.69rem", color: "rgba(206,224,217,0.86)", lineHeight: 1.75, marginBottom: ti === LD_N1_NO.length - 1 ? 0 : 5 } }, "· " + t);
           })),
-        h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+        (cal && !n1Open) ? null : h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
           h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#3a2a06", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "📍 回家的路"),
           h("a", { href: ldMap("Blackwall DLR Station London"), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: "rgba(246,231,200,0.16)", color: "#f0dcae", borderRadius: 8, padding: "10px 0", fontSize: "0.75rem", fontWeight: 800 } }, "🚈 楼下那个站")),
-        h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
-          "这张明天就没了。今天哪一条没做到都没关系 —— 不用补，不用说。")));
+        (cal && !n1Open) ? null : h("div", { style: { marginTop: 10, fontSize: "0.66rem", color: "rgba(200,220,213,0.7)", lineHeight: 1.7, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive" } },
+          "哪一条没做到都没关系 —— 不用补，不用说。")));
   };
   // ── 🛬 接你回家（落地那天）──
   var arrCard = function () {
@@ -21056,9 +21059,7 @@ function LondonRoom(_refLD) {
         ) : null);
   };
   var nowTab = h("div", null,
-    arrCard(),
     afterGo ? pagerCard() : null,
-    ldN1On() ? n1Card() : null,
 
 
     ukCard([
@@ -21358,6 +21359,7 @@ function LondonRoom(_refLD) {
           h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.42rem", color: UK_INK, background: "linear-gradient(180deg,transparent 64%,rgba(255,214,120,0.75) 64%)", padding: "0 4px" } }, ldMD(calSel))),
         h("div", { style: { fontSize: "0.78rem", color: "rgba(110,100,78,0.9)", marginTop: 4, fontFamily: LDSCRAWL } }, (selEv.length || selRun.length) ? "这天能做的事 ✏️" : "日历上没写死的活动"),
         h("div", { style: { marginTop: 8, borderTop: "2px dotted rgba(169,127,46,0.5)" } })),
+      calSel === LD_N1_DAY ? h("div", { key: "d815", style: { marginBottom: 4 } }, arrCard(), n1Card(1)) : null,
       selEv.length ? h("div", { key: "de" }, selEv.map(function (x, i) { return detailCard(x, i, 0); })) : null,
       selRun.length ? h("div", { key: "dr" }, selRun.map(function (x, i) { return detailCard(x, "r" + i, 1); })) : null,
       (function () {
