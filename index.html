@@ -19916,8 +19916,8 @@ function LondonHarbour(_refHB) {
           ? h("div", null, strip.today.list.map(function (x, i) {
               return h("div", { key: "td" + i, style: { display: "flex", alignItems: "center", gap: 7, marginTop: i ? 4 : 0 } },
                 h("span", { style: { fontSize: "0.85rem", flexShrink: 0, width: 18, textAlign: "center" } }, x.e),
-                h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.76rem", fontWeight: 700, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, x.n),
-                x.tm ? h("span", { style: { fontSize: "0.62rem", color: "rgba(214,232,226,0.8)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, x.tm) : null);
+                h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.76rem", fontWeight: 700, color: x.past ? "rgba(255,255,255,0.5)" : "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, x.n),
+                x.tm ? h("span", { style: { fontSize: "0.62rem", color: x.past ? "rgba(214,232,226,0.45)" : "rgba(214,232,226,0.85)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, x.tm) : null);
             }))
           : h("div", { style: { fontSize: "0.72rem", color: "rgba(226,240,246,0.85)", lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, strip.today.empty)) : null,
       h("a", { href: strip.map, target: "_blank", rel: "noopener",
@@ -21291,12 +21291,33 @@ function LondonRoom(_refLD) {
   var inStay = function (ds) { return ds >= LD_DEPART && ds <= LD_BACK; };
   var selEv = calSel ? dayEvents(calSel) : [];
   var selRun = calSel ? dayRuns(calSel) : [];
-  // 顶卡上的「今天」：日历里今天那几件事，最多摆两条
+  // 顶卡上的「今天」：按时间排，接下来要发生的排最前，摆三条
+  var evMin = function (tm) {
+    var t = String(tm || "");
+    if (t.indexOf("全天") === 0) return -1;          // 「全天 · 日落约 19:00」不算定点
+    var m = t.match(/(\d{1,2}):(\d{2})/);
+    return m ? ((+m[1]) * 60 + (+m[2])) : -1;
+  };
+  var evTag = function (tm) {
+    var t = String(tm || "");
+    if (t.indexOf("全天") === 0) return "全天";
+    var m = t.match(/(\d{1,2}):(\d{2})/);
+    return m ? m[0] : "";
+  };
   var todayCard = (function () {
     var dt = ldDate(todayStr);
     var all = (dayEvents(todayStr) || []).concat(dayRuns(todayStr) || []);
-    var list = all.slice(0, 2).map(function (x) {
-      return { e: x.e || "📌", n: x.n || "", tm: (x.tm && String(x.tm).indexOf("全天") < 0) ? String(x.tm).split(" ")[0] : "" };
+    var nowM = (parseInt(lonT.slice(0, 2), 10) || 0) * 60 + (parseInt(lonT.slice(3, 5), 10) || 0);
+    // 0 = 待会儿就开始的，1 = 全天/没定点的，2 = 今天已经过去的
+    var rank = function (m) { return m < 0 ? 1 : (m >= nowM ? 0 : 2); };
+    var sorted = all.map(function (x, i) { return { x: x, m: evMin(x.tm), i: i }; }).sort(function (a, b) {
+      var ra = rank(a.m), rb = rank(b.m);
+      if (ra !== rb) return ra - rb;
+      if (ra === 1) return a.i - b.i;               // 没定点的保持原来的顺序
+      return a.m - b.m;
+    });
+    var list = sorted.slice(0, 3).map(function (w) {
+      return { e: w.x.e || "📌", n: w.x.n || "", tm: evTag(w.x.tm), past: rank(w.m) === 2 };
     });
     var empty = "今天没写死的安排 —— 想干嘛干嘛。";
     if (!all.length && dt && dt.getDay() !== 0 && dt.getDay() !== 6) {
