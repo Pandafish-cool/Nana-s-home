@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-188";
+var NANA_VER = "v2026.8.2-189";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20748,9 +20748,10 @@ function LondonRoom(_refLD) {
   var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
   // 去玩并进日历：先只给熊猫鱼看，nana 那边还是原来的样子
   var ldMerged = myAuthor === "panda";
+  var LD_CAL_NAME = ldMerged ? "🎡 游玩记" : "📅 日历";
   var TABS = (afterGo
-    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"], ["pack", "🧳 装箱"]]
-    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
+    ? [["now", "⏰ 此刻"], ["cal", LD_CAL_NAME], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"], ["pack", "🧳 装箱"]]
+    : [["now", "⏰ 此刻"], ["cal", LD_CAL_NAME], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
   ).filter(function (t) { return t[0] !== "play" || (!ldMerged && wallReady); });
   var card = function (inner, extra) {
     var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
@@ -22091,11 +22092,12 @@ function LondonRoom(_refLD) {
           : h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } }))) : null,
     // ── Nana 自己拍的 ──
     (function () {
-      var withP = herShots;
+      // 221B 信里的照片只进日历，这张卡还是只放地图针和任务手记
+      var withP = herShots.filter(function (x) { return x.kind !== "note"; });
       if (!withP.length) return null;
       return ukCard([
         screws,
-        ukHead("Nana 的伦敦", "地图上加的 · 任务里传的 · 221B 信里贴的，都收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
+        ukHead("Nana 的伦敦", "你自己拍的 · 任务里传的也会收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             var nc = pcOf(x.u).length;
