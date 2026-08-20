@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-187";
+var NANA_VER = "v2026.8.2-188";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20148,7 +20148,8 @@ function LondonRoom(_refLD) {
   var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
   var _wfl = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-flip")) || "[]"); } catch (_) { return []; } });
   var wallFlip = _wfl[0], setWallFlip = _wfl[1];
-  var _sub = useState("cal"); var sub = _sub[0], setSub = _sub[1];
+  var _sub = useState(function () { try { return localStorage.getItem("nana-author") === "panda" ? "cal" : "wall"; } catch (_) { return "wall"; } });
+  var sub = _sub[0], setSub = _sub[1];
   var _dcs = useState([]); var ducks = _dcs[0], setDucks = _dcs[1];
   var _dco = useState(""); var dcOpen = _dco[0], setDcOpen = _dco[1];
   var _dct = useState(""); var dcText = _dct[0], setDcText = _dct[1];
@@ -20745,11 +20746,12 @@ function LondonRoom(_refLD) {
   var wallReady = (function () { try { return new Date() >= new Date(LD_WALL_OPEN); } catch (_) { return true; } })();
   // 出发之后装箱就没用了，挪到最后；安心和吃饭往前提
   var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
-  // 去玩并进日历了，主导航少一格
+  // 去玩并进日历：先只给熊猫鱼看，nana 那边还是原来的样子
+  var ldMerged = myAuthor === "panda";
   var TABS = (afterGo
-    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["pack", "🧳 装箱"]]
-    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"]]
-  );
+    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"], ["pack", "🧳 装箱"]]
+    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
+  ).filter(function (t) { return t[0] !== "play" || (!ldMerged && wallReady); });
   var card = function (inner, extra) {
     var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
       boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)" };
@@ -21343,9 +21345,9 @@ function LondonRoom(_refLD) {
   // 哪些案卷地点她已经传过照片了
   var shotAt = {};
   (function () { for (var i = 0; i < herShots.length; i++) { shotAt[herShots[i].n] = 1; } })();
-  // 那天她拍了什么：按 id 里的时间戳挂回日历
+  // 那天她发了什么：按 id 里的时间戳挂回日历（先只给熊猫鱼看）
   var dayShots = function (ds) {
-    if (!ds) return [];
+    if (!ds || myAuthor !== "panda") return [];
     return herShots.filter(function (x) { return ldStampDay(x.id) === ds; })
       .sort(function (a, b) { return ldStampMs(a.id) - ldStampMs(b.id); });
   };
@@ -21496,10 +21498,12 @@ function LondonRoom(_refLD) {
                            : (stay ? h("span", { style: { opacity: 0 } }, "·") : null)));
         })),
       h("div", { key: "lg", style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 11, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)" } },
-        [["📷", "去了 · 有照片"], ["🎟️", "票买好了"], ["🎉", "节庆"], ["🎭", "看戏"], ["💐", "市集"], ["🌆", "博物馆夜场"], ["📌", "自己加的"], ["📍", "今天"]].map(function (kv, i) {
-          return h("div", { key: "lg" + i, style: { display: "flex", alignItems: "center", gap: 3, fontSize: "0.62rem", color: "rgba(110,100,78,0.92)", fontFamily: LDHAND } },
-            h("span", { style: { fontSize: "0.72rem" } }, kv[0]), h("span", { style: { fontFamily: LDSCRAWL, fontSize: "0.86rem" } }, kv[1]));
-        }))
+        (myAuthor === "panda" ? [["📷", "她发了照片"]] : [])
+          .concat([["🎟️", "票买好了"], ["🎉", "节庆"], ["🎭", "看戏"], ["💐", "市集"], ["🌆", "博物馆夜场"], ["📌", "自己加的"], ["📍", "今天"]])
+          .map(function (kv, i) {
+            return h("div", { key: "lg" + i, style: { display: "flex", alignItems: "center", gap: 3, fontSize: "0.62rem", color: "rgba(110,100,78,0.92)", fontFamily: LDHAND } },
+              h("span", { style: { fontSize: "0.72rem" } }, kv[0]), h("span", { style: { fontFamily: LDSCRAWL, fontSize: "0.86rem" } }, kv[1]));
+          }))
     ]),
     // 选中那天的详情
     calSel ? ukCard([
@@ -22367,16 +22371,18 @@ function LondonRoom(_refLD) {
       "照着你读的和你爱看的排的几条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。最后那组是按你在电影节里标过的片子挑的取景地。"),
     zoneRows(LD_LIT.concat(screenGroups))
   ]);
-  // 去玩并进日历了：日历是第一页，别的几栏挂在同一行分栏里
-  var LD_SUB = [["cal", "📅 日历"], ["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]]
-    .filter(function (t) { return t[0] === "cal" || wallReady || myAuthor === "panda"; });
-  var calTab = h("div", null,
-    h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
-      var on = sub === t[0];
-      return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
-    })),
-    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : sub === "week" ? weekTab : calBody
-  );
+  // 合并版：日历排第一，去玩那几栏挂在同一行分栏里
+  var LD_SUB = (ldMerged ? [["cal", "📅 日历"]] : []).concat(
+    [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]]);
+  var subNav = h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
+    var on = sub === t[0];
+    return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
+  }));
+  var subBody = sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
+  var playTab = h("div", null, subNav, subBody);
+  var calTab = ldMerged
+    ? h("div", null, subNav, sub === "cal" ? calBody : subBody)
+    : calBody;
   // 点开一张她拍的照片：日历里和去玩里都会用到，所以挂在最外面
   var shotModal = (function () {
       if (!myPick) return null;
@@ -22459,7 +22465,7 @@ function LondonRoom(_refLD) {
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
     })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab,
+    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : tab === "play" ? playTab : calTab,
     shotModal,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(48,140,132,0.3)" } },
