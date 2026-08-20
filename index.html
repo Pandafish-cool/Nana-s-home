@@ -18503,6 +18503,19 @@ var ldToday = function () {
   var p = new Date(d.toLocaleString("en-US", { timeZone: "Europe/London" }));
   return new Date(p.getFullYear(), p.getMonth(), p.getDate());
 };
+// mp- / dc- 的 id 里带着按下那一刻的时间戳，用它把照片挂回日历的那一天
+var ldStampMs = function (id) { var m = String(id || "").match(/-(\d{13})/); return m ? (+m[1]) : 0; };
+var ldStampDay = function (id) {
+  var t = ldStampMs(id); if (!t) return "";
+  try {
+    var p = new Date(new Date(t).toLocaleString("en-US", { timeZone: "Europe/London" }));
+    return p.getFullYear() + "-" + ("0" + (p.getMonth() + 1)).slice(-2) + "-" + ("0" + p.getDate()).slice(-2);
+  } catch (_) { return ""; }
+};
+var ldStampHM = function (id) {
+  var t = ldStampMs(id); if (!t) return "";
+  try { return new Date(t).toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour12: false, hour: "2-digit", minute: "2-digit" }); } catch (_) { return ""; }
+};
 // 最近的那个周末（周六、周日）
 var ldWeekend = function () {
   var t = ldToday(), dow = t.getDay();
@@ -20135,7 +20148,7 @@ function LondonRoom(_refLD) {
   var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
   var _wfl = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-flip")) || "[]"); } catch (_) { return []; } });
   var wallFlip = _wfl[0], setWallFlip = _wfl[1];
-  var _sub = useState("wall"); var sub = _sub[0], setSub = _sub[1];
+  var _sub = useState("cal"); var sub = _sub[0], setSub = _sub[1];
   var _dcs = useState([]); var ducks = _dcs[0], setDucks = _dcs[1];
   var _dco = useState(""); var dcOpen = _dco[0], setDcOpen = _dco[1];
   var _dct = useState(""); var dcText = _dct[0], setDcText = _dct[1];
@@ -20732,10 +20745,11 @@ function LondonRoom(_refLD) {
   var wallReady = (function () { try { return new Date() >= new Date(LD_WALL_OPEN); } catch (_) { return true; } })();
   // 出发之后装箱就没用了，挪到最后；安心和吃饭往前提
   var afterGo = (function () { try { return new Date() >= new Date(LD_DEPART + "T00:00:00+01:00"); } catch (_) { return false; } })();
+  // 去玩并进日历了，主导航少一格
   var TABS = (afterGo
-    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"], ["pack", "🧳 装箱"]]
-    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["play", "🎡 去玩"]]
-  ).filter(function (t) { return t[0] !== "play" || wallReady || myAuthor === "panda"; });
+    ? [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"], ["pack", "🧳 装箱"]]
+    : [["now", "⏰ 此刻"], ["cal", "📅 日历"], ["live", "🏠 楼下"], ["pack", "🧳 装箱"], ["care", "🫂 安心"], ["eat", "🍜 吃饭"]]
+  );
   var card = function (inner, extra) {
     var st = { background: "linear-gradient(158deg,#fdf5e3,#f4e8ce)", borderRadius: 11, padding: "15px 15px 14px", marginBottom: 13, position: "relative",
       boxShadow: "0 8px 22px rgba(45,60,72,0.16), inset 0 0 0 3px #fdf5e3, inset 0 0 0 4px rgba(169,127,46,0.42)" };
@@ -21299,6 +21313,32 @@ function LondonRoom(_refLD) {
 
   var ldFmtD = function (dt) { return dt.getFullYear() + "-" + ("0" + (dt.getMonth() + 1)).slice(-2) + "-" + ("0" + dt.getDate()).slice(-2); };
   var todayStr = ldFmtD(ldToday());
+  var wallShown = LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; }).concat(
+    cfs.map(function (c) {
+      return { cu: c.u, cid: c.id, n: c.n, sn: c.n, q: c.n + " London", la: c.la, lo: c.lo, must: c.must, say: c.say, tip: "", more: [] };
+    }));
+  // 她拍的照片有两个来源：自己在地图上加的针，和任务里传的
+  var herShots = (function () {
+    var out = [], i, j, c, w;
+    for (i = 0; i < myPins.length; i++) { if (myPins[i].u) out.push({ kind: "pin", id: myPins[i].id, n: myPins[i].n, say: myPins[i].say, u: myPins[i].u, la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" }); }
+    for (j = 0; j < ducks.length; j++) {
+      c = ducks[j];
+      if (!c.u || c.a !== "nana") continue;
+      w = null;
+      for (i = 0; i < wallShown.length; i++) { if (wallShown[i].n === c.k) w = wallShown[i]; }
+      out.push({ kind: "duck", id: c.id, n: c.k, say: c.t, u: c.u, la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
+    }
+    return out;
+  })();
+  // 哪些案卷地点她已经传过照片了
+  var shotAt = {};
+  (function () { for (var i = 0; i < herShots.length; i++) { shotAt[herShots[i].n] = 1; } })();
+  // 那天她拍了什么：按 id 里的时间戳挂回日历
+  var dayShots = function (ds) {
+    if (!ds) return [];
+    return herShots.filter(function (x) { return ldStampDay(x.id) === ds; })
+      .sort(function (a, b) { return ldStampMs(a.id) - ldStampMs(b.id); });
+  };
   // 某天有哪些事
   var dayEvents = function (ds) {
     var dt = ldDate(ds); if (!dt) return [];
@@ -21329,6 +21369,8 @@ function LondonRoom(_refLD) {
       if (x.last) { var nx = new Date(dt.getTime()); nx.setDate(dt.getDate() + 7); if (nx.getMonth() === dt.getMonth()) return; }
       rest.push(x.e);
     });
+    // 那天真去了、还拍了照片的，贴在最前面
+    if (dayShots(ds).length) hot.unshift("📷");
     return hot.concat(rest).slice(0, 2);
   };
   var MONTHS = [{ y: 2026, m: 7, n: "8 月" }, { y: 2026, m: 8, n: "9 月" }];
@@ -21405,7 +21447,7 @@ function LondonRoom(_refLD) {
         x.q ? h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 10px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 打开地图") : null,
         x.own ? h("button", { onClick: function () { delEvent(x); }, style: { border: "none", background: "none", color: evDel === x.id ? "#c0392b" : "rgba(150,120,90,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.6rem", cursor: "pointer", padding: 0 } }, evDel === x.id ? "再点一下删掉" : "删掉") : null));
   };
-  var calTab = h("div", null,
+  var calBody = h("div", null,
     ukCard([
       washi("t1", "rgba(120,190,180,0.85)", "13%", -7),
       washi("t2", "rgba(240,190,120,0.85)", "63%", 6),
@@ -21444,7 +21486,7 @@ function LondonRoom(_refLD) {
                            : (stay ? h("span", { style: { opacity: 0 } }, "·") : null)));
         })),
       h("div", { key: "lg", style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 11, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)" } },
-        [["🎟️", "票买好了"], ["🎉", "节庆"], ["🎭", "看戏"], ["💐", "市集"], ["🌆", "博物馆夜场"], ["📌", "自己加的"], ["📍", "今天"]].map(function (kv, i) {
+        [["📷", "去了 · 有照片"], ["🎟️", "票买好了"], ["🎉", "节庆"], ["🎭", "看戏"], ["💐", "市集"], ["🌆", "博物馆夜场"], ["📌", "自己加的"], ["📍", "今天"]].map(function (kv, i) {
           return h("div", { key: "lg" + i, style: { display: "flex", alignItems: "center", gap: 3, fontSize: "0.62rem", color: "rgba(110,100,78,0.92)", fontFamily: LDHAND } },
             h("span", { style: { fontSize: "0.72rem" } }, kv[0]), h("span", { style: { fontFamily: LDSCRAWL, fontSize: "0.86rem" } }, kv[1]));
         }))
@@ -21459,6 +21501,25 @@ function LondonRoom(_refLD) {
         h("div", { style: { fontSize: "0.78rem", color: "rgba(110,100,78,0.9)", marginTop: 4, fontFamily: LDSCRAWL } }, (selEv.length || selRun.length) ? "这天能做的事 ✏️" : "日历上没写死的活动"),
         h("div", { style: { marginTop: 8, borderTop: "2px dotted rgba(169,127,46,0.5)" } })),
       calSel === LD_N1_DAY ? h("div", { key: "d815", style: { marginBottom: 4 } }, arrCard(), n1Card(1)) : null,
+      // 这天真去了哪儿 —— 她自己拍的照片，按时间排
+      (function () {
+        var sh = dayShots(calSel);
+        if (!sh.length) return null;
+        return h("div", { key: "dsh", style: { marginBottom: 13, background: "rgba(31,111,104,0.07)", border: "1px dashed rgba(31,111,104,0.3)", borderRadius: 10, padding: "10px 11px" } },
+          h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, marginBottom: 8 } },
+            h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56" } }, "📷 这天去了这儿"),
+            h("span", { style: { fontSize: "0.62rem", color: "rgba(110,100,78,0.9)" } }, sh.length + " 张 · 点开能说话")),
+          h("div", { style: { display: "flex", gap: 9, overflowX: "auto", paddingBottom: 3 } },
+            sh.map(function (x) {
+              var nc = pcOf(x.u).length;
+              return h("div", { key: "ds" + x.id, onClick: function () { setMyPick(x.id); setPcT(""); },
+                style: { position: "relative", flexShrink: 0, width: 108, background: "#fff", padding: "5px 5px 19px", borderRadius: 3, boxShadow: "0 5px 13px rgba(60,45,30,0.22)", cursor: "pointer" } },
+                h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 82, objectFit: "cover", display: "block", borderRadius: 2 } }),
+                h("span", { style: { position: "absolute", left: 6, top: 6, background: "rgba(20,30,36,0.62)", color: "#fff", borderRadius: 999, padding: "1px 6px", fontSize: "0.56rem", fontWeight: 800 } }, ldStampHM(x.id)),
+                nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)" } }, "💬 " + nc) : null,
+                h("div", { style: { position: "absolute", left: 3, right: 3, bottom: 3, textAlign: "center", fontFamily: LDHAND, fontSize: "0.78rem", color: "#3a3226", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, x.n));
+            })));
+      })(),
       selEv.length ? h("div", { key: "de" }, selEv.map(function (x, i) { return detailCard(x, i, 0); })) : null,
       selRun.length ? h("div", { key: "dr" }, selRun.map(function (x, i) { return detailCard(x, "r" + i, 1); })) : null,
       (function () {
@@ -21883,26 +21944,6 @@ function LondonRoom(_refLD) {
   };
   var wantN = 0, doneN = 0;
   for (var sk in spots) { if (spots[sk] === "want") wantN++; if (spots[sk] === "done") doneN++; }
-  var wallShown = LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; }).concat(
-    cfs.map(function (c) {
-      return { cu: c.u, cid: c.id, n: c.n, sn: c.n, q: c.n + " London", la: c.la, lo: c.lo, must: c.must, say: c.say, tip: "", more: [] };
-    }));
-  // 她拍的照片有两个来源：自己在地图上加的针，和任务里传的
-  var herShots = (function () {
-    var out = [], i, j, c, w;
-    for (i = 0; i < myPins.length; i++) { if (myPins[i].u) out.push({ kind: "pin", id: myPins[i].id, n: myPins[i].n, say: myPins[i].say, u: myPins[i].u, la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" }); }
-    for (j = 0; j < ducks.length; j++) {
-      c = ducks[j];
-      if (!c.u || c.a !== "nana") continue;
-      w = null;
-      for (i = 0; i < wallShown.length; i++) { if (wallShown[i].n === c.k) w = wallShown[i]; }
-      out.push({ kind: "duck", id: c.id, n: c.k, say: c.t, u: c.u, la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
-    }
-    return out;
-  })();
-  // 哪些案卷地点她已经传过照片了
-  var shotAt = {};
-  (function () { for (var i = 0; i < herShots.length; i++) { shotAt[herShots[i].n] = 1; } })();
   var wallSel = wallPick === null ? null : wallShown[wallPick];
   var wallSection = h("div", null,
     ukCard([
@@ -22051,29 +22092,6 @@ function LondonRoom(_refLD) {
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
           }))
       ]);
-    })(),
-    (function () {
-      if (!myPick) return null;
-      var x = null, i;
-      for (i = 0; i < herShots.length; i++) { if (herShots[i].id === myPick) x = herShots[i]; }
-      if (!x) return null;
-      return h("div", { onClick: function () { setMyPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
-        h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
-          x.u ? h("div", { style: { padding: 9 } },
-            h(NanaCloudImg, { u: x.u, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })) : null,
-          h("div", { style: { padding: "4px 16px 18px" } },
-            h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
-              h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
-              h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
-            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
-            photoTalk(x.u),
-            h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
-              h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
-              h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
-            x.kind === "duck"
-              ? h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } }, "这张是在「你的任务」里传的，要撤到那边去撤")
-              : h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
-                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
     })(),
     // ── 她的伦敦地图（手绘）──
     ukCard([
@@ -22339,14 +22357,40 @@ function LondonRoom(_refLD) {
       "照着你读的和你爱看的排的几条线，每条都顺路串得起来，一天一条不赶。挑哪条都行，也可以只去其中一站。最后那组是按你在电影节里标过的片子挑的取景地。"),
     zoneRows(LD_LIT.concat(screenGroups))
   ]);
-  var LD_SUB = [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
-  var playTab = h("div", null,
+  // 去玩并进日历了：日历是第一页，别的几栏挂在同一行分栏里
+  var LD_SUB = [["cal", "📅 日历"], ["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]]
+    .filter(function (t) { return t[0] === "cal" || wallReady || myAuthor === "panda"; });
+  var calTab = h("div", null,
     h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
       var on = sub === t[0];
       return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } }, t[1]);
     })),
-    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab
+    sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : sub === "week" ? weekTab : calBody
   );
+  // 点开一张她拍的照片：日历里和去玩里都会用到，所以挂在最外面
+  var shotModal = (function () {
+      if (!myPick) return null;
+      var x = null, i;
+      for (i = 0; i < herShots.length; i++) { if (herShots[i].id === myPick) x = herShots[i]; }
+      if (!x) return null;
+      return h("div", { onClick: function () { setMyPick(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "rgba(20,26,32,0.9)", display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 18px", cursor: "pointer" } },
+        h("div", { onClick: function (e) { e.stopPropagation(); }, style: { background: "linear-gradient(158deg,#fdf6e8,#f4e7cd)", borderRadius: 12, maxWidth: 340, width: "100%", maxHeight: "88vh", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", cursor: "default" } },
+          x.u ? h("div", { style: { padding: 9 } },
+            h(NanaCloudImg, { u: x.u, style: { width: "100%", display: "block", borderRadius: 6, maxHeight: 300, objectFit: "cover" } })) : null,
+          h("div", { style: { padding: "4px 16px 18px" } },
+            h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+              h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
+              h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
+            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
+            photoTalk(x.u),
+            h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
+              h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
+              h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
+            x.kind === "duck"
+              ? h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } }, "这张是在「你的任务」里传的，要撤到那边去撤")
+              : h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
+  })();
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
   return h("div", null,
@@ -22395,7 +22439,7 @@ function LondonRoom(_refLD) {
         hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0,
         addr: LD_ADDR, map: ldMap(LD_ADDR_Q),
         today: todayCard,
-        onToday: function () { setTab("cal"); setCalSel(todayStr); }
+        onToday: function () { setTab("cal"); setSub("cal"); setCalSel(todayStr); }
       }
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
@@ -22403,7 +22447,8 @@ function LondonRoom(_refLD) {
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } }, t[1]);
     })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    tab === "now" ? nowTab : tab === "cal" ? calTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : playTab,
+    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab,
+    shotModal,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(48,140,132,0.3)" } },
         h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
