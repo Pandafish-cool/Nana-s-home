@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-195";
+var NANA_VER = "v2026.8.2-196";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19439,6 +19439,12 @@ var LD_EVENTS = [
     tk: "票买好了，熊猫鱼订的 · General Admission 一张，票上名字 jiani zhang，二维码在邮件里，进门扫一下就行 🎟️",
     tp: "怎么去：楼下 Blackwall 站坐 DLR，往 Tower Gateway 方向，不用换车，大概十五分钟；出站往东走十分钟就到。或者坐到 Aldgate East（地铁），出来五分钟。五点四十从家出发就很宽裕。\n场地是酒店的宴会厅。General Admission 是自由入座，早到二十分钟能挑个靠边、靠过道的位置 —— 不用挤在人堆中间。包里记得有吸入器。\n穿你觉得最有型的那套就好，这种场子没人管你穿什么，倒是拍照很多。\n八点散场，往南走十分钟就是塔桥，晚上打着灯。想溜达就顺路看一眼再回家；不想就直接从 Tower Gateway 坐回来。",
     q: "Leonardo Royal Hotel London Tower Bridge 45 Prescot Street" },
+  { d: "2026-09-25", e: "🎺", n: "去 Ronnie Scott's 听一晚", k: "爵士", open: 0,
+    tm: "两场：18:30 / 20:30 · 想晚一点就等 23:30 的 Late Late Show",
+    pl: "Ronnie Scott's · 47 Frith Street, Soho, W1D 4HT",
+    tk: "票还没买 —— 官网 ronniescotts.co.uk 挑一场，£37.5 起；Late Late Show 只要 £12 左右",
+    tp: "回家前最后一个周五，留给这件事挺好的。\n我查的时候，官网上这天写的是 Ilhan Ersahin's Istanbul Sessions（土耳其血统的萨克斯手在纽约做的迷幻爵士，很好听）—— 但排期会变，订之前在官网再看一眼那天到底是谁。\n怎么去：Jubilee 线一趟到 Green Park，出来往北走十分钟就是 Soho。有座位有桌子，地面层不闷，一个人去完全不奇怪 —— 这地方本来就一半是自己来的人。\n订不到的话，走三分钟就是 Dean Street 的 Pizza Express Live，也是坐着听、票便宜很多。",
+    q: "Ronnie Scotts Jazz Club 47 Frith Street London" },
   { d: "2026-09-22", e: "🍂", n: "秋分", k: "天文", open: 1,
     tm: "全天 · 那天日落约 19:00", pl: "格林威治公园山顶", tk: "免费",
     tp: "这一天全球昼夜等长，之后伦敦的夜一天比一天长。挑个晴天上格林威治山顶，天文台在背后，整座城在脚下。",
@@ -19524,6 +19530,24 @@ var LD_ALWAYS = [
   { e: "🌴", n: "Crossrail 屋顶花园", d: "天天，免费", w: "就在商场顶层，热带植物园，晴天来发呆最好。", q: "Crossrail Place Roof Garden" },
   { e: "🌇", n: "Sky Garden", d: "天天，免费但要预约", w: "全城最好的免费观景台，提前几天官网订。", q: "Sky Garden London" },
   { e: "🏛️", n: "大英 / 国家美术馆 / 泰特 / V&A", d: "天天，常设免费", w: "下雨天的万能答案，逛三次都逛不完。", q: "British Museum London" }
+];
+// 🎷 想听爵士的时候：五个地方，从最正式到最随意
+var LD_JAZZ = [
+  { e: "🎺", n: "Ronnie Scott's", d: "Soho · 47 Frith Street W1D 4HT · 票 £37.5 起，官网提前订",
+    w: "1959 年开到现在的那家，全世界爵士乐手都想上的台。有座位有桌子，一晚通常两场（六点半、八点半）。地面层，不是地下室。\n周三到周六还有 Late Late Show：十一点半开始，十二镑左右，随到随听 —— 想省钱又想感受那个气氛，这场其实最好。\n从家过去：Jubilee 线一趟坐到 Green Park，出来往北走十分钟。",
+    q: "Ronnie Scotts Jazz Club 47 Frith Street London" },
+  { e: "🍕", n: "Pizza Express Live · Soho", d: "10 Dean Street W1D 3RW · 票常在 £15-25 · 地下室",
+    w: "吃着披萨听现场，全是坐着的位子，一个人来最自在的一家。伦敦最老的爵士小场之一，很多人第一次听现场爵士就是在这儿。离 Ronnie Scott's 走路三分钟，那边订不到就来这儿。",
+    q: "Pizza Express Live Dean Street Soho London" },
+  { e: "🌀", n: "Vortex Jazz Club", d: "Dalston · Gillett Square N16 8AZ · 票 £12-20",
+    w: "小、旧、一点都不装，票便宜。听的是现在真正在做事的英国年轻乐手，不是给游客准备的曲目。座位和站位混着，早二十分钟到就有位子。Overground 到 Dalston Kingsland，出站走五分钟。",
+    q: "Vortex Jazz Club Gillett Square Dalston London" },
+  { e: "🥃", n: "606 Club", d: "Chelsea · 90 Lots Road SW10 0QD · 得先订位 · 地下室",
+    w: "1976 年开的地下室，一周七天都有现场。非会员必须点餐才能喝酒，所以它是「坐下来吃一顿、听一整晚」的地方，不是路过随便进的那种。要提前在官网或者打电话订位。",
+    q: "606 Club 90 Lots Road Chelsea London" },
+  { e: "🎤", n: "Jazz Café", d: "Camden · 5 Parkway NW1 7PG",
+    w: "比前面几家都吵、也年轻，爵士掺着 soul、funk 和 hip-hop。楼下是站着看的，楼上是餐位 —— 订了餐位就有座、视野还更好。想热闹一晚上就来这儿。",
+    q: "Jazz Cafe 5 Parkway Camden London" }
 ];
 var LD_STAGE = [
   { e: "🐭", n: "捕鼠器 The Mousetrap", w: "1952 年演到今天，世界上演最久的戏。St Martin's Theatre。", q: "St Martin's Theatre London" },
@@ -21646,6 +21670,21 @@ function LondonRoom(_refLD) {
             h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7 } }, x.tp),
             h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 5, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")));
       }))
+    ]),
+    ukCard([
+      screws,
+      ukHead("想听爵士的时候", "五个地方，从最正式到最随意 · 一个人去都不奇怪", h("span", { style: { fontSize: "1rem" } }, "🎷")),
+      h("div", { key: "jz" }, LD_JAZZ.map(function (x, i) {
+        return h("div", { key: "jz" + i, style: { display: "flex", gap: 10, padding: "10px 0", borderBottom: i === LD_JAZZ.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0, lineHeight: 1.3 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.81rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif" } }, x.n),
+            h("div", { style: { fontSize: "0.62rem", color: "#a1542a", fontWeight: 800, marginTop: 2, lineHeight: 1.6 } }, x.d),
+            h("div", { style: { fontSize: "0.73rem", color: "rgba(92,98,86,0.94)", marginTop: 3, lineHeight: 1.7, whiteSpace: "pre-line" } }, x.w),
+            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 5, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: "0.6rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")));
+      })),
+      h("div", { key: "jzf", style: { marginTop: 10, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)", fontSize: "0.68rem", color: "rgba(110,100,78,0.92)", lineHeight: 1.75, fontFamily: LDHAND } },
+        "排期都是提前一两个月才出，想去哪天就上那家官网看那天是谁。9 月 25 号那天日历里已经写了一条 🎺")
     ]),
     ukCard([
       screws,
