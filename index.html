@@ -19041,8 +19041,10 @@ var ldCandy = function (key, cx, cy, sz, ci, rot, anim) {
 // 玻璃罐 + 糖堆。n 是总数，justIn 为真时最上面那颗会弹一下
 // 🕰 大本钟：钟面上的针按伦敦当前时间走
 // 🏠 家里那栋小房子：她按一下，这边就亮一下
-var ldHouse = function (lit, hold, mail, w) {
+var ldHouse = function (lit, hold, mail, w, pad) {
   var h = React.createElement;
+  // pad：往左右各多留一截夜空，好让那几个小牌子浮在房子周围
+  var P = pad || 0, VW = 200 + P * 2;
   var W = w || 210;
   var dim = lit === "dim";
   var on = function (k) { return lit === k ? 1 : (hold === k ? 0.88 : 0); };
@@ -19060,11 +19062,11 @@ var ldHouse = function (lit, hold, mail, w) {
       h("rect", { x: x + ww / 2 - 0.5, y: y, width: 1, height: hh2, fill: wall2, opacity: 0.8 }),
       h("rect", { x: x, y: y + hh2 / 2 - 0.5, width: ww, height: 1, fill: wall2, opacity: 0.8 }));
   };
-  return h("svg", { viewBox: "0 0 200 128", style: { width: W, height: Math.round(W * 128 / 200), display: "block", margin: "0 auto" } },
+  return h("svg", { viewBox: (-P) + " 0 " + VW + " 128", style: { width: W, height: (typeof W === "number" ? Math.round(W * 128 / VW) : "auto"), display: "block", margin: "0 auto" } },
     // 夜色底
-    h("rect", { x: 0, y: 0, width: 200, height: 128, rx: 10, fill: dim ? "#16232e" : "#1b2c3a" }),
+    h("rect", { x: -P, y: 0, width: VW, height: 128, rx: 10, fill: dim ? "#16232e" : "#1b2c3a" }),
     // 几颗星
-    [[26, 20], [58, 12], [168, 18], [140, 9], [12, 40]].map(function (q, i) {
+    [[26, 20], [58, 12], [168, 18], [140, 9], [12, 40]].concat(P ? [[-P + 16, 30], [-P + 34, 62], [200 + P - 18, 26], [200 + P - 30, 58], [-P + 8, 88], [200 + P - 10, 84]] : []).map(function (q, i) {
       return h("circle", { key: "st" + i, cx: q[0], cy: q[1], r: i % 2 ? 0.9 : 1.3, fill: "#fff", opacity: dim ? 0.28 : 0.5 });
     }),
     // 烟：亮完之后冒一会儿
@@ -19105,9 +19107,9 @@ var ldHouse = function (lit, hold, mail, w) {
     // 221B 有新的信，门口那盏灯就一直亮着
     mail ? h("circle", { cx: 100, cy: 74, r: 5.5, fill: glow, opacity: 0.3, style: { animation: "mpBob 3s ease-in-out infinite" } }) : null,
     // 地面和小路
-    h("rect", { x: 0, y: 108, width: 200, height: 20, fill: dim ? "#1d3129" : "#25423a" }),
+    h("rect", { x: -P, y: 108, width: VW, height: 20, fill: dim ? "#1d3129" : "#25423a" }),
     h("path", { d: "M92 110 L88 128 L112 128 L108 110 Z", fill: dim ? "#2d4a40" : "#3a5c50" }),
-    [[26, 116], [46, 121], [160, 117], [178, 122]].map(function (q, i) {
+    [[26, 116], [46, 121], [160, 117], [178, 122]].concat(P ? [[-P + 12, 119], [200 + P - 20, 120]] : []).map(function (q, i) {
       return h("path", { key: "bu" + i, d: "M" + q[0] + " " + q[1] + " q4 -7 8 0 Z", fill: dim ? "#24382f" : "#2f5145" });
     }));
 };
@@ -20802,11 +20804,31 @@ function LondonRoom(_refLD) {
     return ukCard([
 
       screws,
-      ukHead("按住，家里就亮一下", "不用组织语言，按住哪个都行",
+      ukHead("按住，家里就亮一下", "房子周围挂着几句话，按住哪句都行",
         LD_LETTER_HINT ? ldPostBox(!!newLetter, 30) : h("span", { style: { fontSize: "1rem" } }, "📟")),
-      // 家里那栋房子
+      // 家里那栋房子：四句话不做成按钮，做成挂在夜色里的小牌子
       h("div", { key: "hs", style: { marginBottom: 9 } },
-        ldHouse(pgLit, pgHold, !!newLetter, 196),
+        h("div", { style: { position: "relative" } },
+          ldHouse(pgLit, pgHold, !!newLetter, "100%", 58),
+          LD_PAGE.map(function (p, i) {
+            var busy = pageBusy === p.k;
+            var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
+            var pos = [{ l: "3%", b: "7%", rot: -3 }, { l: "2%", t: "6%", rot: -4 },
+                       { r: "3%", b: "7%", rot: 3 }, { r: "2%", t: "6%", rot: 4 }][i];
+            var holding = pgHold === p.win && pgHold !== "";
+            return h("div", { key: "pg" + i, style: { position: "absolute", left: pos.l, right: pos.r, top: pos.t, bottom: pos.b, zIndex: 2, transform: "rotate(" + pos.rot + "deg) scale(" + (holding ? 1.08 : 1) + ")", transition: "transform 0.25s ease" } },
+              h("button", {
+                onPointerDown: function () { if (!pageBusy) holdOn(p); },
+                onPointerUp: function () { holdOff(p, true); },
+                onPointerCancel: function () { holdOff(p, false); },
+                onPointerLeave: function () { holdOff(p, false); },
+                onContextMenu: function (e) { e.preventDefault(); },
+                disabled: !!pageBusy,
+                style: { display: "flex", alignItems: "center", gap: 4, border: "1.5px solid " + col, background: holding ? "#fffdf3" : "rgba(255,250,236,0.94)", color: col, borderRadius: 999, padding: "4px 9px 4px 7px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.63rem", whiteSpace: "nowrap", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.45 : 1, boxShadow: holding ? "0 0 0 4px rgba(255,223,154,0.4), 0 3px 9px rgba(0,0,0,0.32)" : "0 2px 7px rgba(0,0,0,0.3)", animation: "hsFloat 4.4s ease-in-out infinite", animationDelay: (i * 0.7) + "s", animationPlayState: holding ? "paused" : "running", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } },
+                h("span", { style: { fontSize: "0.86rem" } }, p.e),
+                h("span", null, busy ? "寄出中…" : (holding ? "别松手…" : p.t)),
+                p.pick ? h("span", { style: { fontSize: "0.52rem", opacity: 0.8 } }, badOpen ? "▲" : "▼") : null));
+          })),
         h("div", { style: { minHeight: 28, marginTop: 6 } },
           pgSay ? h("div", { key: "say" + pgSay, style: { textAlign: "center", animation: "hsSay 9s ease-out both" } },
             h("span", { style: { display: "inline-block", background: "rgba(31,111,104,0.1)", color: "#255f58", borderRadius: 9, padding: "7px 12px", fontSize: "0.76rem", fontWeight: 700, lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, pgSay)) : null),
@@ -20815,63 +20837,33 @@ function LondonRoom(_refLD) {
           h("div", { style: { fontSize: "0.72rem", color: "#2a4f4a", lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, ldPick(LD_HERE, lonH)),
           h("div", { style: { fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.5, marginTop: 3, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "🏡 " + ldPick(LD_HOME, gzH)))),
       // 到家之后浮出来的三格，点不点都行
-      pgSafe ? h("div", { key: "safe", style: { display: "flex", gap: 6, marginBottom: 10, animation: "hsChip 26s ease-out both" } },
+      pgSafe ? h("div", { key: "safe", style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8, animation: "hsChip 26s ease-out both" } },
         LD_SAFE.map(function (t, si) {
           var done = pgSafeOn.indexOf(si) >= 0;
           return h("button", { key: "sf" + si, onClick: function () {
               setPgSafeOn(function (o) { return o.indexOf(si) >= 0 ? o.filter(function (y) { return y !== si; }) : o.concat([si]); });
             },
-            style: { flex: 1, border: "1px solid " + (done ? "rgba(31,111,104,0.5)" : "rgba(169,127,46,0.35)"), background: done ? "rgba(31,111,104,0.12)" : "rgba(255,255,255,0.6)", borderRadius: 8, padding: "6px 3px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.63rem", color: done ? "#1a5c56" : "rgba(120,105,80,0.95)", cursor: "pointer" } },
+            style: { border: "1.5px solid " + (done ? "rgba(31,111,104,0.5)" : "rgba(169,127,46,0.35)"), background: done ? "rgba(31,111,104,0.12)" : "rgba(255,255,255,0.6)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", color: done ? "#1a5c56" : "rgba(120,105,80,0.95)", cursor: "pointer" } },
             (done ? "✓ " : "") + t);
         })) : null,
-      // 四个按住的：两列排，一眼扫完
-      h("div", { key: "pg", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 6 } }, LD_PAGE.map(function (p, i) {
-        var busy = pageBusy === p.k;
-        var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
-        var isPick = !!p.pick;
-        var holding = pgHold === p.win && pgHold !== "";
-        return h("button", { key: "pg" + i,
-          onPointerDown: function () { if (!pageBusy) holdOn(p); },
-          onPointerUp: function () { holdOff(p, true); },
-          onPointerCancel: function () { holdOff(p, false); },
-          onPointerLeave: function () { holdOff(p, false); },
-          onContextMenu: function (e) { e.preventDefault(); },
-          disabled: !!pageBusy,
-          style: { width: "100%", display: "flex", alignItems: "center", gap: 6, textAlign: "left", border: "1.5px solid " + col + (holding ? "aa" : "33"), background: holding ? "rgba(255,247,225,0.95)" : "rgba(255,255,255,0.7)", borderRadius: 9, padding: "7px 8px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: holding ? "scale(0.97)" : "scale(1)", transition: "background 0.3s ease, transform 0.2s ease, border-color 0.3s ease", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } },
-          h("span", { style: { fontSize: "0.98rem", flexShrink: 0 } }, p.e),
-          h("span", { style: { flex: 1, minWidth: 0 } },
-            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.75rem", color: col, lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, busy ? "寄出中…" : (holding ? "别松手…" : p.t))),
-          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.6rem" } }, badOpen ? "▲" : "▼") : null);
-      })),
-      // 自己加的那几个
-      myPg.length ? h("div", { key: "mypg" }, myPg.map(function (x, i) {
-        var busy = pageBusy === x.id;
-        var open = pgSwipe === x.id;
-        return h("div", { key: x.id, style: { position: "relative", overflow: "hidden", borderRadius: 9, marginBottom: 5 } },
-          h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setPgSwipe(null); delPg(x); },
-            style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 78, border: "none", background: "#cf5a55", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "删掉"),
-          h("div", {
-            onTouchStart: function (e) {
-              var t = e.touches && e.touches[0];
-              pgTouch.current = { x: t ? t.clientX : 0, y: t ? t.clientY : 0, moved: false };
-            },
-            onTouchMove: function (e) {
-              var t = e.touches && e.touches[0]; if (!t) return;
-              var dx = t.clientX - pgTouch.current.x, dy = t.clientY - pgTouch.current.y;
-              if (Math.abs(dx) < Math.abs(dy)) return;          // 竖着滑是在翻页，别抢
-              if (Math.abs(dx) > 8) pgTouch.current.moved = true;
-              if (dx < -26) setPgSwipe(x.id);
-              else if (dx > 26) setPgSwipe(null);
-            },
-            onClick: function () {
-              if (pgTouch.current.moved) { pgTouch.current.moved = false; return; }
-              if (open) { setPgSwipe(null); return; }            // 露着删掉的时候，点一下先收回去
-              if (!pageBusy) sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" });
-            },
-            style: { position: "relative", display: "flex", alignItems: "center", gap: 6, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.3)", background: "#fffaf0", borderRadius: 9, padding: "7px 8px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
-            h("span", { style: { fontSize: "0.98rem", flexShrink: 0 } }, "💛"),
-            h("span", { style: { flex: 1, minWidth: 0, fontWeight: 800, fontSize: "0.75rem", color: "#a97f2e", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, busy ? "寄出中…" : x.t)));
-      })) : null,
+      // 自己加的那几句：也做成小牌子，跟房子上那几个一家子
+      h("div", { key: "mypg", style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 } },
+        myPg.map(function (x) {
+          var busy = pageBusy === x.id;
+          var armed = pgSwipe === x.id;
+          return h("span", { key: x.id, style: { position: "relative", display: "inline-flex" } },
+            h("button", { onClick: function () {
+                if (armed) { setPgSwipe(null); return; }         // 举着「删掉」的时候，点一下先收回去
+                if (!pageBusy) sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" });
+              }, disabled: !!pageBusy,
+              style: { display: "flex", alignItems: "center", gap: 4, border: "1.5px solid rgba(169,127,46,0.55)", background: "#fffaf0", borderRadius: 999, padding: "5px 10px 5px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "#a97f2e", maxWidth: 168, cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.45 : 1, boxShadow: "0 1px 4px rgba(120,90,40,0.13)" } },
+              h("span", { style: { fontSize: "0.8rem" } }, "💛"),
+              h("span", { style: { minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, busy ? "寄出中…" : x.t)),
+            h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); if (armed) { setPgSwipe(null); delPg(x); } else setPgSwipe(x.id); },
+              style: { position: "absolute", top: -5, right: armed ? -6 : -4, border: "none", borderRadius: 999, background: armed ? "#cf5a55" : "rgba(169,127,46,0.3)", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: armed ? "0.55rem" : "0.6rem", lineHeight: 1, padding: armed ? "3px 6px" : "2px 4px", cursor: "pointer" } }, armed ? "删掉" : "✕"));
+        }),
+        pgOpen ? null : h("button", { key: "pga", onClick: function () { setPgOpen(true); },
+          style: { border: "1.5px dashed rgba(169,127,46,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 999, padding: "5px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "#a97f2e", cursor: "pointer" } }, "＋ 加一句")),
       pgOpen
         ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
             h("div", { style: { fontSize: "0.72rem", color: "#a97f2e", fontWeight: 800, marginBottom: 8 } }, "想按一下就说的那句话"),
@@ -20880,7 +20872,7 @@ function LondonRoom(_refLD) {
             h("div", { style: { display: "flex", gap: 8, marginTop: 9 } },
               h("button", { onClick: addPg, disabled: !pgT.trim(), style: { border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: pgT.trim() ? "pointer" : "default", background: pgT.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: pgT.trim() ? "#4a3510" : "#fff" } }, "加上"),
               h("button", { onClick: function () { setPgOpen(false); setPgT(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")))
-        : h("button", { key: "pga", onClick: function () { setPgOpen(true); }, style: { width: "100%", marginBottom: 6, border: "1.5px dashed rgba(169,127,46,0.42)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "6px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "#a97f2e", cursor: "pointer" } }, "＋ 加一个自己的"),
+        : null,
       badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
         sitMode
           ? h("div", null,
@@ -22327,7 +22319,9 @@ function LondonRoom(_refLD) {
       "@keyframes hsKnock{0%,100%{transform:rotate(0)}30%{transform:rotate(-16deg)}60%{transform:rotate(10deg)}}" +
       "@keyframes hsCat{0%{transform:translateY(0)}45%{transform:translateY(-4px)}100%{transform:translateY(-2px)}}" +
       "@keyframes hsSay{0%{opacity:0;transform:translateY(8px)}18%{opacity:1;transform:translateY(0)}84%{opacity:1}100%{opacity:0;transform:translateY(-4px)}}" +
-      "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}"),
+      "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}" +
+      // 挂在房子周围那几个小牌子，很轻地上下飘
+      "@keyframes hsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}"),
     h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
