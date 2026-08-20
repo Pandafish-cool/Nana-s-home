@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-191";
+var NANA_VER = "v2026.8.2-192";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19433,6 +19433,12 @@ var LD_EVENTS = [
     tm: "19:00 开演，唱到深夜", pl: "皇家阿尔伯特音乐厅 / 海德公园同步直播", tk: "音乐厅要抽签；海德公园 Proms in the Park 另售票；在家看 BBC 直播也行",
     tp: "全英国一起唱歌的那一晚。海德公园版是露天大屏幕，带块野餐布、一瓶气泡水就够，气氛比在厅里还热。",
     q: "Hyde Park London" },
+  { d: "2026-09-19", e: "👗", n: "London Fashion Week · 看秀", k: "看秀", open: 0, booked: 1,
+    tm: "18:30 - 20:00 · 检票不限时间，早到能挑位置",
+    pl: "Leonardo Royal Hotel London Tower Bridge · 45 Prescot Street, London E1 8GP",
+    tk: "票买好了，熊猫鱼订的 · General Admission 一张，票上名字 jiani zhang，二维码在邮件里，进门扫一下就行 🎟️",
+    tp: "怎么去：楼下 Blackwall 站坐 DLR，往 Tower Gateway 方向，不用换车，大概十五分钟；出站往东走十分钟就到。或者坐到 Aldgate East（地铁），出来五分钟。五点四十从家出发就很宽裕。\n场地是酒店的宴会厅。General Admission 是自由入座，早到二十分钟能挑个靠边、靠过道的位置 —— 不用挤在人堆中间。包里记得有吸入器。\n穿你觉得最有型的那套就好，这种场子没人管你穿什么，倒是拍照很多。\n八点散场，往南走十分钟就是塔桥，晚上打着灯。想溜达就顺路看一眼再回家；不想就直接从 Tower Gateway 坐回来。",
+    q: "Leonardo Royal Hotel London Tower Bridge 45 Prescot Street" },
   { d: "2026-09-22", e: "🍂", n: "秋分", k: "天文", open: 1,
     tm: "全天 · 那天日落约 19:00", pl: "格林威治公园山顶", tk: "免费",
     tp: "这一天全球昼夜等长，之后伦敦的夜一天比一天长。挑个晴天上格林威治山顶，天文台在背后，整座城在脚下。",
@@ -19463,8 +19469,8 @@ var LD_RUNS = [
     tm: "各楼开放时间不同，多在白天", pl: "全伦敦几百个点", tk: "免费，热门的要提前抽签",
     tp: "一年一次，平时进不去的政府大楼、教堂塔顶、私人宅邸统统开门。八月底官网放名单，看到想去的赶紧登记。", q: "Open House Festival London" },
   { a: "2026-09-18", b: "2026-09-22", e: "👗", n: "伦敦时装周", k: "展览", open: 0, soon: 1,
-    tm: "全天", pl: "Soho、东区一带", tk: "秀场进不去，街上的免费",
-    tp: "秀看不到，但整周城里到处是快闪店、展览和橱窗，Soho 和 Shoreditch 最好逛。", q: "Soho London" },
+    tm: "全天", pl: "Soho、东区一带", tk: "19 号那场秀的票已经买好了 🎟️",
+    tp: "19 号晚上有一场秀是能进去的（点日历那天看细节）。别的几天，整周城里到处是快闪店、展览和橱窗，Soho 和 Shoreditch 最好逛。", q: "Soho London" },
   { a: "2026-09-19", b: "2026-09-27", e: "🪑", n: "伦敦设计节", k: "展览", open: 0, soon: 1,
     tm: "各展馆开放时间", pl: "全城散点，V&A 是主场", tk: "免费",
     tp: "V&A 里的大型装置每年都很值得看，免费。一直开到你回家那几天。", q: "Victoria and Albert Museum London" }
@@ -21462,7 +21468,7 @@ function LondonRoom(_refLD) {
     if (!txt) return null;
     return h("div", { style: { display: "flex", gap: 7, marginTop: 4 } },
       h("span", { style: { flexShrink: 0, fontSize: "0.68rem", width: 15, textAlign: "center", lineHeight: 1.75 } }, ic),
-      h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.75 } }, txt));
+      h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.75, whiteSpace: "pre-line" } }, txt));
   };
   var detailCard = function (x, i, isRun) {
     var col = LD_KCOL[x.k] || "#888";
@@ -22109,30 +22115,6 @@ function LondonRoom(_refLD) {
               h("a", { href: ldMap(wallSel.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setWallPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")))))
       : null,
-    wallBig ? h("div", { onClick: function () { setWallBig(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(12,16,20,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: 14, cursor: "pointer" } },
-        (String(wallBig).indexOf("http") === 0
-          ? h(NanaCloudImg, { u: wallBig, style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })
-          : h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } }))) : null,
-    // ── Nana 自己拍的 ──
-    (function () {
-      var withP = herShots;
-      if (!withP.length) return null;
-      return ukCard([
-        screws,
-        ukHead("Nana 的伦敦",
-          pcInbox().length ? ("有 " + pcInbox().length + " 句还没看 · 就在带 💬 的那几张下面") : "你自己拍的 · 任务里传的也会收到这儿",
-          h("span", { style: { fontSize: "1rem" } }, pcInbox().length ? "💬" : "🌸")),
-        h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
-          withP.map(function (x, i) {
-            var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
-            return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
-              style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
-              h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
-              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(31,111,104,0.45)" : "0 2px 7px rgba(150,110,30,0.45)" } }, nn ? ("💬 ＋" + nn) : ("💬 " + nc)) : null,
-              h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
-          }))
-      ]);
-    })(),
     // ── 她的伦敦地图（手绘）──
     ukCard([
       screws,
@@ -22319,6 +22301,28 @@ function LondonRoom(_refLD) {
         }));
     }));
   };
+  // ── 🌸 我拍的：她自己的照片单独一栏，评论提示直接挂在这儿 ──
+  var mineSection = h("div", null,
+    (function () {
+      var withP = herShots;
+      if (!withP.length) return null;
+      return ukCard([
+        screws,
+        ukHead("Nana 的伦敦",
+          pcInbox().length ? ("有 " + pcInbox().length + " 句还没看 · 就在带 💬 的那几张下面") : "你自己拍的 · 任务里传的也会收到这儿",
+          h("span", { style: { fontSize: "1rem" } }, pcInbox().length ? "💬" : "🌸")),
+        h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+          withP.map(function (x, i) {
+            var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
+            return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
+              style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
+              h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(31,111,104,0.45)" : "0 2px 7px rgba(150,110,30,0.45)" } }, nn ? ("💬 ＋" + nn) : ("💬 " + nc)) : null,
+              h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
+          }))
+      ]);
+    })() || h("div", { style: { background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "18px 14px", textAlign: "center", fontSize: "0.78rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.9, fontFamily: LDHAND } },
+      "还没有照片 📷", h("br"), "去航海图上加个地方，配一张，就会出现在这儿"));
   // 侦探的任务：照片墙里被点名「一定要去」的那几个
   var duties = wallShown.filter(function (x) { return x.must; });
   var dutyDone = duties.filter(function (x) { return wallBeen.indexOf(x.n) >= 0; }).length;
@@ -22398,20 +22402,24 @@ function LondonRoom(_refLD) {
     zoneRows(LD_LIT.concat(screenGroups))
   ]);
   // 合并版：日历排第一，去玩那几栏挂在同一行分栏里
-  var LD_SUB = (ldMerged ? [["cal", "📅 日历"]] : []).concat(
-    [["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]]);
+  var LD_SUB = [["cal", "📅 日历"], ["mine", "🌸 我拍的"], ["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
   var subNav = h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
     var on = sub === t[0];
-    // 照片在「猜猜是哪里」那一栏里，有新的话就点个小红点
-    var dot = pcInbox().length && t[0] === "wall";
+    // 有人在照片下面说了话，就在「我拍的」那一栏挂个 💬
+    var dot = pcInbox().length && t[0] === "mine";
     return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { position: "relative", flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } },
       t[1],
       dot ? h("span", { style: { marginLeft: 5, fontSize: "0.64rem", verticalAlign: "1px" } }, "💬") : null);
   }));
-  var subBody = sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
+  var subBody = sub === "mine" ? mineSection : sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
   var calTab = ldMerged
     ? h("div", null, subNav, sub === "cal" ? calBody : subBody)
     : calBody;
+  // 点开的大图：哪个分栏里都可能用到
+  var bigShot = wallBig ? h("div", { onClick: function () { setWallBig(null); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9999, background: "rgba(12,16,20,0.95)", display: "flex", alignItems: "center", justifyContent: "center", padding: 14, cursor: "pointer" } },
+        (String(wallBig).indexOf("http") === 0
+          ? h(NanaCloudImg, { u: wallBig, style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } })
+          : h("img", { src: wallBig, alt: "", style: { maxWidth: "100%", maxHeight: "92vh", borderRadius: 8, display: "block" } }))) : null;
   // 点开一张她拍的照片：日历里和去玩里都会用到，所以挂在最外面
   var shotModal = (function () {
       if (!myPick) return null;
@@ -22499,6 +22507,7 @@ function LondonRoom(_refLD) {
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
     tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab,
     shotModal,
+    bigShot,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
       h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 460, margin: "0 auto", background: "#fffaf4", borderRadius: "24px 24px 0 0", padding: "12px 18px calc(24px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 34px rgba(48,140,132,0.3)" } },
         h("div", { style: { width: 42, height: 4, borderRadius: 999, background: "rgba(170,180,200,0.4)", margin: "0 auto 12px" } }),
