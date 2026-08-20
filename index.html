@@ -18504,7 +18504,7 @@ var ldToday = function () {
   return new Date(p.getFullYear(), p.getMonth(), p.getDate());
 };
 // mp- / dc- 的 id 里带着按下那一刻的时间戳，用它把照片挂回日历的那一天
-var ldStampMs = function (id) { var m = String(id || "").match(/-(\d{13})/); return m ? (+m[1]) : 0; };
+var ldStampMs = function (id) { var m = String(id || "").match(/(\d{13})/); return m ? (+m[1]) : 0; };
 var ldStampDay = function (id) {
   var t = ldStampMs(id); if (!t) return "";
   try {
@@ -21317,9 +21317,9 @@ function LondonRoom(_refLD) {
     cfs.map(function (c) {
       return { cu: c.u, cid: c.id, n: c.n, sn: c.n, q: c.n + " London", la: c.la, lo: c.lo, must: c.must, say: c.say, tip: "", more: [] };
     }));
-  // 她拍的照片有两个来源：自己在地图上加的针，和任务里传的
+  // 她发的照片有三个来源：地图上加的针、任务里传的、还有 221B 写信贴的
   var herShots = (function () {
-    var out = [], i, j, c, w;
+    var out = [], i, j, k, c, w, n, ps, ttl;
     for (i = 0; i < myPins.length; i++) { if (myPins[i].u) out.push({ kind: "pin", id: myPins[i].id, n: myPins[i].n, say: myPins[i].say, u: myPins[i].u, la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" }); }
     for (j = 0; j < ducks.length; j++) {
       c = ducks[j];
@@ -21327,6 +21327,16 @@ function LondonRoom(_refLD) {
       w = null;
       for (i = 0; i < wallShown.length; i++) { if (wallShown[i].n === c.k) w = wallShown[i]; }
       out.push({ kind: "duck", id: c.id, n: c.k, say: c.t, u: c.u, la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
+    }
+    for (j = 0; j < letters.length; j++) {
+      n = letters[j];
+      if (!n || n.author !== "nana") continue;
+      ps = nanaPuPics(n.pu);
+      ttl = String(n.t || "").replace(/\s+/g, " ").trim();
+      for (k = 0; k < ps.length; k++) {
+        // id 里带上原信的时间戳，同一封信里的多张照片各自能被点开
+        out.push({ kind: "note", id: n.id + "-" + k, sid: n.id, n: ttl ? (ttl.length > 7 ? ttl.slice(0, 7) + "…" : ttl) : "221B 的信", say: n.t || "", u: ps[k], la: 0, lo: 0, q: "" });
+      }
     }
     return out;
   })();
@@ -21507,15 +21517,15 @@ function LondonRoom(_refLD) {
         if (!sh.length) return null;
         return h("div", { key: "dsh", style: { marginBottom: 13, background: "rgba(31,111,104,0.07)", border: "1px dashed rgba(31,111,104,0.3)", borderRadius: 10, padding: "10px 11px" } },
           h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, marginBottom: 8 } },
-            h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56" } }, "📷 这天去了这儿"),
-            h("span", { style: { fontSize: "0.62rem", color: "rgba(110,100,78,0.9)" } }, sh.length + " 张 · 点开能说话")),
+            h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56" } }, "📷 这天她发的"),
+            h("span", { style: { fontSize: "0.62rem", color: "rgba(110,100,78,0.9)" } }, sh.length + " 张 · 点开能说两句")),
           h("div", { style: { display: "flex", gap: 9, overflowX: "auto", paddingBottom: 3 } },
             sh.map(function (x) {
               var nc = pcOf(x.u).length;
               return h("div", { key: "ds" + x.id, onClick: function () { setMyPick(x.id); setPcT(""); },
                 style: { position: "relative", flexShrink: 0, width: 108, background: "#fff", padding: "5px 5px 19px", borderRadius: 3, boxShadow: "0 5px 13px rgba(60,45,30,0.22)", cursor: "pointer" } },
                 h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 82, objectFit: "cover", display: "block", borderRadius: 2 } }),
-                h("span", { style: { position: "absolute", left: 6, top: 6, background: "rgba(20,30,36,0.62)", color: "#fff", borderRadius: 999, padding: "1px 6px", fontSize: "0.56rem", fontWeight: 800 } }, ldStampHM(x.id)),
+                h("span", { style: { position: "absolute", left: 6, top: 6, background: "rgba(20,30,36,0.62)", color: "#fff", borderRadius: 999, padding: "1px 6px", fontSize: "0.56rem", fontWeight: 800 } }, (x.kind === "note" ? "✉️ " : "") + ldStampHM(x.id)),
                 nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)" } }, "💬 " + nc) : null,
                 h("div", { style: { position: "absolute", left: 3, right: 3, bottom: 3, textAlign: "center", fontFamily: LDHAND, fontSize: "0.78rem", color: "#3a3226", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, x.n));
             })));
@@ -22081,7 +22091,7 @@ function LondonRoom(_refLD) {
       if (!withP.length) return null;
       return ukCard([
         screws,
-        ukHead("Nana 的伦敦", "你自己拍的 · 任务里传的也会收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
+        ukHead("Nana 的伦敦", "地图上加的 · 任务里传的 · 221B 信里贴的，都收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             var nc = pcOf(x.u).length;
@@ -22380,16 +22390,18 @@ function LondonRoom(_refLD) {
           h("div", { style: { padding: "4px 16px 18px" } },
             h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
               h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
-              h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
-            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
+              h("span", { style: { background: x.kind === "note" ? "linear-gradient(135deg,#e7a3b4,#cf6f8c)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: x.kind === "note" ? "#fff4f6" : "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, x.kind === "note" ? "✉️ 221B 的信" : "我去过"),
+              h("span", { style: { marginLeft: "auto", fontSize: "0.6rem", fontWeight: 800, color: "rgba(120,105,80,0.9)" } }, ldStampHM(x.id))),
+            x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid " + (x.kind === "note" ? "#cf6f8c" : "#d99b31"), borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, x.say) : null,
             photoTalk(x.u),
             h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
-              h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
-              h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
-            x.kind === "duck"
-              ? h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } }, "这张是在「你的任务」里传的，要撤到那边去撤")
-              : h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
-                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚"))));
+              x.q ? h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图") : null,
+              h("button", { onClick: function () { setMyPick(null); }, style: { flex: x.q ? "0 0 auto" : 1, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
+            x.kind === "pin"
+              ? h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚")
+              : h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } },
+                  x.kind === "note" ? "这张是 221B 那封信里的，要撤到信那边去撤" : "这张是在「你的任务」里传的，要撤到那边去撤"))));
   })();
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
