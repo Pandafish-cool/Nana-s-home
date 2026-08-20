@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-186";
+var NANA_VER = "v2026.8.2-187";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20154,6 +20154,11 @@ function LondonRoom(_refLD) {
   var _cfs2 = useState(false); var cfBusy = _cfs2[0], setCfBusy = _cfs2[1];
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
+  // 照片底下的评论：按照片的地址存，谁都看得见
+  var _pcs = useState([]); var pcs = _pcs[0], setPcs = _pcs[1];
+  var _pct = useState(""); var pcT = _pct[0], setPcT = _pct[1];
+  var _pcb = useState(false); var pcBusy = _pcb[0], setPcBusy = _pcb[1];
+  var _pcd = useState(null); var pcDel = _pcd[0], setPcDel = _pcd[1];
   // 自己加的呼叫按钮
   var _pgs = useState([]); var myPg = _pgs[0], setMyPg = _pgs[1];
   var _pgo = useState(false); var pgOpen = _pgo[0], setPgOpen = _pgo[1];
@@ -20414,6 +20419,51 @@ function LondonRoom(_refLD) {
     setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
+  // ── 💬 照片底下的评论 ──
+  var pcOf = function (u) { return pcs.filter(function (c) { return c.u === u; }); };
+  var addPc = function (u) {
+    var t = pcT.trim();
+    if (!t || !u || pcBusy) return;
+    setPcBusy(true);
+    var ts = Date.now();
+    var id = "pc-" + ts + Math.floor(Math.random() * 90);
+    var row = { id: id, u: u, a: myAuthor || "panda", t: t, ts: ts };
+    setPcs(function (o) { return o.concat([row]); });
+    setPcT("");
+    nanaPackAdd({ id: id, who: JSON.stringify({ pc: 1, u: u, a: row.a, t: t, ts: ts }) }, function (e) {
+      setPcBusy(false);
+      // 没写上去就撤回来，别让人以为说过了
+      if (e) { setPcs(function (o) { return o.filter(function (y) { return y.id !== id; }); }); setPcT(t); }
+    });
+  };
+  var delPc = function (x) {
+    if (pcDel !== x.id) { setPcDel(x.id); setTimeout(function () { setPcDel(null); }, 2600); return; }
+    setPcDel(null);
+    setPcs(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaPackDel(x.id, function () {});
+  };
+  var photoTalk = function (u) {
+    if (!u) return null;
+    var mine = pcOf(u);
+    return h("div", { style: { marginTop: 13, borderTop: "1px dotted rgba(169,127,46,0.5)", paddingTop: 10 } },
+      h("div", { style: { fontSize: "0.68rem", fontWeight: 800, color: "rgba(110,95,70,0.95)", marginBottom: mine.length ? 8 : 6 } },
+        mine.length ? ("💬 说了 " + mine.length + " 句") : "💬 在这张下面说一句"),
+      mine.length ? h("div", { style: { display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 } },
+        mine.map(function (c) {
+          var au = nanaAuthorById(c.a);
+          var own = c.a === myAuthor;
+          return h("div", { key: c.id, style: { background: au.bg, borderRadius: 8, padding: "7px 10px", borderLeft: "3px solid " + au.col } },
+            h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
+              h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: au.col } }, au.e + " " + au.label),
+              own ? h("span", { onClick: function () { delPc(c); }, style: { marginLeft: "auto", fontSize: "0.58rem", fontWeight: 800, color: pcDel === c.id ? "#c0392b" : "rgba(140,120,95,0.7)", cursor: "pointer" } }, pcDel === c.id ? "再点一下删掉" : "删") : null),
+            h("div", { style: { fontSize: "0.76rem", color: "#4a3f30", lineHeight: 1.7, marginTop: 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t));
+        })) : null,
+      h("div", { style: { display: "flex", gap: 6, alignItems: "flex-end" } },
+        h("textarea", { value: pcT, onChange: function (e) { setPcT(e.target.value); }, rows: 1, placeholder: "看到这张想说的",
+          style: { flex: 1, minWidth: 0, boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.45)", borderRadius: 8, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none", resize: "vertical", lineHeight: 1.6 } }),
+        h("button", { onClick: function () { addPc(u); }, disabled: !pcT.trim() || pcBusy,
+          style: { flexShrink: 0, border: "none", borderRadius: 999, padding: "8px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: (pcT.trim() && !pcBusy) ? "pointer" : "default", background: (pcT.trim() && !pcBusy) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: (pcT.trim() && !pcBusy) ? "#4a3510" : "#fff" } }, pcBusy ? "贴上…" : "说一句")));
+  };
   // 办案手记：案卷详情和任务清单共用同一套
   var duckNotes = function (k) {
     var mine = ducks.filter(function (c) { return c.k === k; });
@@ -20508,7 +20558,7 @@ function LondonRoom(_refLD) {
     nanaPackList(function (err, rows) {
       setPackSync(false);
       if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
-      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [], vol = [], jr = { panda: [], nana: [] };
+      var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [], vol = [], pcl = [], jr = { panda: [], nana: [] };
       (rows || []).forEach(function (r) {
         if (r.id && r.id.indexOf("vo-") === 0) {
           var vo = null;
@@ -20540,6 +20590,11 @@ function LondonRoom(_refLD) {
           try { co = JSON.parse(r.who); } catch (_) { co = null; }
           if (co && co.dc) dcs.push({ id: r.id, k: co.k || "", a: co.a || "nana", t: co.t || "", u: co.u || "" });
         }
+        else if (r.id && r.id.indexOf("pc-") === 0) {
+          var pco = null;
+          try { pco = JSON.parse(r.who); } catch (_) { pco = null; }
+          if (pco && pco.pc && pco.u) pcl.push({ id: r.id, u: pco.u, a: pco.a || "panda", t: pco.t || "", ts: pco.ts || 0 });
+        }
         else if (r.id && r.id.indexOf("mp-") === 0) {
           var mo = null;
           try { mo = JSON.parse(r.who); } catch (_) { mo = null; }
@@ -20559,6 +20614,8 @@ function LondonRoom(_refLD) {
       setDucks(dcs);
       cfl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setCfs(cfl);
+      pcl.sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); });   // 老的在上面，像一条对话
+      setPcs(pcl);
       pgl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setMyPg(pgl);
       vol.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });   // 新的在上面
@@ -21986,9 +22043,11 @@ function LondonRoom(_refLD) {
         ukHead("Nana 的伦敦", "你自己拍的 · 任务里传的也会收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
-            return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); },
+            var nc = pcOf(x.u).length;
+            return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); setPcT(""); },
               style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
               h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: "0 2px 7px rgba(150,110,30,0.45)" } }, "💬 " + nc) : null,
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
           }))
       ]);
@@ -22007,6 +22066,7 @@ function LondonRoom(_refLD) {
               h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
               h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过")),
             x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8 } }, x.say) : null,
+            photoTalk(x.u),
             h("div", { style: { marginTop: 12, display: "flex", gap: 8 } },
               h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图"),
               h("button", { onClick: function () { setMyPick(null); }, style: { flexShrink: 0, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
