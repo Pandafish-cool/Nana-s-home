@@ -20824,7 +20824,8 @@ function LondonRoom(_refLD) {
             style: { flex: 1, border: "1px solid " + (done ? "rgba(31,111,104,0.5)" : "rgba(169,127,46,0.35)"), background: done ? "rgba(31,111,104,0.12)" : "rgba(255,255,255,0.6)", borderRadius: 8, padding: "6px 3px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.63rem", color: done ? "#1a5c56" : "rgba(120,105,80,0.95)", cursor: "pointer" } },
             (done ? "✓ " : "") + t);
         })) : null,
-      h("div", { key: "pg" }, LD_PAGE.map(function (p, i) {
+      // 四个按住的：两列排，一眼扫完
+      h("div", { key: "pg", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 6 } }, LD_PAGE.map(function (p, i) {
         var busy = pageBusy === p.k;
         var col = ["#1f6f68", "#c47a2a", "#123a52", "#b4353a"][i];
         var isPick = !!p.pick;
@@ -20836,18 +20837,17 @@ function LondonRoom(_refLD) {
           onPointerLeave: function () { holdOff(p, false); },
           onContextMenu: function (e) { e.preventDefault(); },
           disabled: !!pageBusy,
-          style: { width: "100%", display: "flex", alignItems: "center", gap: 9, textAlign: "left", marginBottom: 6, border: "1.5px solid " + col + (holding ? "aa" : "3a"), background: holding ? "rgba(255,247,225,0.95)" : "rgba(255,255,255,0.7)", borderRadius: 9, padding: "8px 11px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: holding ? "scale(0.985)" : "scale(1)", transition: "background 0.3s ease, transform 0.2s ease, border-color 0.3s ease", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } },
-          h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, p.e),
+          style: { width: "100%", display: "flex", alignItems: "center", gap: 6, textAlign: "left", border: "1.5px solid " + col + (holding ? "aa" : "33"), background: holding ? "rgba(255,247,225,0.95)" : "rgba(255,255,255,0.7)", borderRadius: 9, padding: "7px 8px", fontFamily: "inherit", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: holding ? "scale(0.97)" : "scale(1)", transition: "background 0.3s ease, transform 0.2s ease, border-color 0.3s ease", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } },
+          h("span", { style: { fontSize: "0.98rem", flexShrink: 0 } }, p.e),
           h("span", { style: { flex: 1, minWidth: 0 } },
-            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.8rem", color: col, lineHeight: 1.3 } }, busy ? "寄出去中…" : p.t),
-            h("span", { style: { display: "block", fontSize: "0.62rem", color: "rgba(110,100,78,0.88)", marginTop: 1, lineHeight: 1.35 } }, holding ? "别松手…" : p.sub)),
-          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.66rem" } }, badOpen ? "▲" : "▼") : null);
+            h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.75rem", color: col, lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, busy ? "寄出中…" : (holding ? "别松手…" : p.t))),
+          isPick ? h("span", { style: { flexShrink: 0, color: col, fontWeight: 800, fontSize: "0.6rem" } }, badOpen ? "▲" : "▼") : null);
       })),
       // 自己加的那几个
       myPg.length ? h("div", { key: "mypg" }, myPg.map(function (x, i) {
         var busy = pageBusy === x.id;
         var open = pgSwipe === x.id;
-        return h("div", { key: x.id, style: { position: "relative", overflow: "hidden", borderRadius: 9, marginBottom: 6 } },
+        return h("div", { key: x.id, style: { position: "relative", overflow: "hidden", borderRadius: 9, marginBottom: 5 } },
           h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setPgSwipe(null); delPg(x); },
             style: { position: "absolute", right: 0, top: 0, bottom: 0, width: 78, border: "none", background: "#cf5a55", color: "#fff", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" } }, "删掉"),
           h("div", {
@@ -20868,9 +20868,9 @@ function LondonRoom(_refLD) {
               if (open) { setPgSwipe(null); return; }            // 露着删掉的时候，点一下先收回去
               if (!pageBusy) sendPage({ k: x.id, body: "📟 " + x.t, ok: "说过了 💛" });
             },
-            style: { position: "relative", display: "flex", alignItems: "center", gap: 9, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.34)", background: "#fffaf0", borderRadius: 9, padding: "8px 11px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
-            h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, "💛"),
-            h("span", { style: { flex: 1, minWidth: 0, fontWeight: 800, fontSize: "0.8rem", color: "#a97f2e" } }, busy ? "寄出去中…" : x.t)));
+            style: { position: "relative", display: "flex", alignItems: "center", gap: 6, textAlign: "left", border: "1.5px solid rgba(169,127,46,0.3)", background: "#fffaf0", borderRadius: 9, padding: "7px 8px", cursor: pageBusy ? "default" : "pointer", opacity: pageBusy && !busy ? 0.5 : 1, transform: "translateX(" + (open ? -78 : 0) + "px)", transition: "transform 0.22s ease", touchAction: "pan-y" } },
+            h("span", { style: { fontSize: "0.98rem", flexShrink: 0 } }, "💛"),
+            h("span", { style: { flex: 1, minWidth: 0, fontWeight: 800, fontSize: "0.75rem", color: "#a97f2e", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, busy ? "寄出中…" : x.t)));
       })) : null,
       pgOpen
         ? h("div", { key: "pgf", style: { background: "rgba(169,127,46,0.09)", borderRadius: 10, padding: "11px 12px", marginBottom: 9 } },
@@ -20880,7 +20880,7 @@ function LondonRoom(_refLD) {
             h("div", { style: { display: "flex", gap: 8, marginTop: 9 } },
               h("button", { onClick: addPg, disabled: !pgT.trim(), style: { border: "none", borderRadius: 999, padding: "7px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: pgT.trim() ? "pointer" : "default", background: pgT.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: pgT.trim() ? "#4a3510" : "#fff" } }, "加上"),
               h("button", { onClick: function () { setPgOpen(false); setPgT(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")))
-        : h("button", { key: "pga", onClick: function () { setPgOpen(true); }, style: { width: "100%", marginBottom: 6, border: "1.5px dashed rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#a97f2e", cursor: "pointer" } }, "＋ 加一个自己的"),
+        : h("button", { key: "pga", onClick: function () { setPgOpen(true); }, style: { width: "100%", marginBottom: 6, border: "1.5px dashed rgba(169,127,46,0.42)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "6px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "#a97f2e", cursor: "pointer" } }, "＋ 加一个自己的"),
       badOpen ? h("div", { key: "bo", style: { marginTop: -2, marginBottom: 9, background: "rgba(180,53,58,0.07)", borderRadius: 10, padding: "12px 12px 11px" } },
         sitMode
           ? h("div", null,
@@ -20898,11 +20898,11 @@ function LondonRoom(_refLD) {
                     if (o.sit) { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); return; }
                     sendPage(o); setBadOpen(false);
                   }, disabled: !!pageBusy,
-                  style: { width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 7, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "10px 12px", fontFamily: "inherit", cursor: "pointer" } },
-                  h("span", { style: { fontSize: "1.1rem", flexShrink: 0 } }, o.e),
+                  style: { width: "100%", display: "flex", alignItems: "center", gap: 8, textAlign: "left", marginBottom: oi === LD_BAD_OPT.length - 1 ? 0 : 6, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "8px 10px", fontFamily: "inherit", cursor: "pointer" } },
+                  h("span", { style: { fontSize: "1rem", flexShrink: 0 } }, o.e),
                   h("span", null,
-                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.83rem", color: "#20393f" } }, o.t),
-                    h("span", { style: { display: "block", fontSize: "0.67rem", color: "rgba(110,100,78,0.9)", marginTop: 2 } }, o.d)));
+                    h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.78rem", color: "#20393f" } }, o.t),
+                    h("span", { style: { display: "block", fontSize: "0.63rem", color: "rgba(110,100,78,0.9)", marginTop: 1 } }, o.d)));
               }))) : null,
       pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
       h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
