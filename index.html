@@ -20173,6 +20173,9 @@ function LondonRoom(_refLD) {
   var _pct = useState(""); var pcT = _pct[0], setPcT = _pct[1];
   var _pcb = useState(false); var pcBusy = _pcb[0], setPcBusy = _pcb[1];
   var _pcd = useState(null); var pcDel = _pcd[0], setPcDel = _pcd[1];
+  // 哪几张照片下面的话我已经看过了：按人分开存，{照片地址: 看到的最后一句的时间}
+  var _pcs2 = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-pc-seen")) || "{}") || {}; } catch (_) { return {}; } });
+  var pcSeen = _pcs2[0], setPcSeen = _pcs2[1];
   // 自己加的呼叫按钮
   var _pgs = useState([]); var myPg = _pgs[0], setMyPg = _pgs[1];
   var _pgo = useState(false); var pgOpen = _pgo[0], setPgOpen = _pgo[1];
@@ -20435,6 +20438,38 @@ function LondonRoom(_refLD) {
   };
   // ── 💬 照片底下的评论 ──
   var pcOf = function (u) { return pcs.filter(function (c) { return c.u === u; }); };
+  // 对方说的、我还没看过的
+  var pcNew = function (u) {
+    var s = pcSeen[u] || 0;
+    return pcOf(u).filter(function (c) { return c.a !== myAuthor && (c.ts || 0) > s; });
+  };
+  var pcSeeAll = function (u) {
+    var l = pcOf(u), top = 0, i;
+    for (i = 0; i < l.length; i++) { if ((l[i].ts || 0) > top) top = l[i].ts || 0; }
+    if (!top || (pcSeen[u] || 0) >= top) return;
+    setPcSeen(function (o) {
+      var nx = {}, k;
+      for (k in o) { if (Object.prototype.hasOwnProperty.call(o, k)) nx[k] = o[k]; }
+      nx[u] = top;
+      try { localStorage.setItem(ldWKey("nana-pc-seen"), JSON.stringify(nx)); } catch (_) {}
+      return nx;
+    });
+  };
+  // 打开一张照片 = 把它下面的话都看过了
+  var openShot = function (id, u) { setMyPick(id); setPcT(""); if (u) pcSeeAll(u); };
+  // 对方在我这边的照片下面留了几句还没看的
+  var pcInbox = (function () {
+    var out = [], i, seenAt;
+    for (i = 0; i < pcs.length; i++) {
+      var c = pcs[i];
+      if (c.a === myAuthor) continue;
+      seenAt = pcSeen[c.u] || 0;
+      if ((c.ts || 0) <= seenAt) continue;
+      out.push(c);
+    }
+    out.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });   // 最新的在最前
+    return out;
+  })();
   var addPc = function (u) {
     var t = pcT.trim();
     if (!t || !u || pcBusy) return;
@@ -21138,7 +21173,31 @@ function LondonRoom(_refLD) {
             h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
         ) : null);
   };
+  // 对方在照片下面说了话：不点开照片也能知道
+  var pcCard = function () {
+    if (!pcInbox.length) return null;
+    var top = pcInbox[0];
+    var au = nanaAuthorById(top.a);
+    var pics = {}, np = 0, i;
+    for (i = 0; i < pcInbox.length; i++) { if (!pics[pcInbox[i].u]) { pics[pcInbox[i].u] = 1; np++; } }
+    return h("div", { key: "pcin", onClick: function () {
+        var j, hit = null;
+        for (j = 0; j < herShots.length; j++) { if (herShots[j].u === top.u) hit = herShots[j]; }
+        if (hit) openShot(hit.id, hit.u); else pcSeeAll(top.u);   // 照片撤掉了就只把红点消掉
+      },
+      style: { display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(150deg,#fff2ee,#ffe6df)", border: "1.5px solid rgba(200,64,60,0.28)", borderRadius: 12, padding: "10px 12px", marginBottom: 13, cursor: "pointer", boxShadow: "0 5px 15px rgba(190,90,80,0.16)" } },
+      h("div", { style: { position: "relative", flexShrink: 0, background: "#fff", padding: "4px 4px 4px", borderRadius: 3, boxShadow: "0 3px 9px rgba(60,45,30,0.22)", transform: "rotate(-3deg)" } },
+        h(NanaCloudImg, { u: top.u, thumb: true, style: { width: 52, height: 52, objectFit: "cover", display: "block", borderRadius: 2 } }),
+        h("span", { style: { position: "absolute", right: -5, top: -5, width: 10, height: 10, borderRadius: "50%", background: "#c8403c", boxShadow: "0 0 0 2px #fff2ee", animation: "mpBob 1.9s ease-in-out infinite" } })),
+      h("div", { style: { flex: 1, minWidth: 0 } },
+        h("div", { style: { fontSize: "0.68rem", fontWeight: 800, color: "#b4353a" } },
+          au.e + " " + au.label + " 在你的照片下面说了话"),
+        h("div", { style: { fontSize: "0.78rem", color: "#4a3f30", lineHeight: 1.6, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "「" + top.t + "」"),
+        np > 1 ? h("div", { style: { fontSize: "0.62rem", color: "rgba(140,110,95,0.95)", marginTop: 2 } }, "还有 " + (np - 1) + " 张下面也有") : null),
+      h("span", { style: { flexShrink: 0, fontSize: "0.68rem", fontWeight: 800, color: "#b4353a" } }, "去看 ›"));
+  };
   var nowTab = h("div", null,
+    pcCard(),
     afterGo ? pagerCard() : null,
 
 
@@ -21517,12 +21576,12 @@ function LondonRoom(_refLD) {
             h("span", { style: { fontSize: "0.62rem", color: "rgba(110,100,78,0.9)" } }, sh.length + " 张 · 点开能说两句")),
           h("div", { style: { display: "flex", gap: 9, overflowX: "auto", paddingBottom: 3 } },
             sh.map(function (x) {
-              var nc = pcOf(x.u).length;
-              return h("div", { key: "ds" + x.id, onClick: function () { setMyPick(x.id); setPcT(""); },
+              var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
+              return h("div", { key: "ds" + x.id, onClick: function () { openShot(x.id, x.u); },
                 style: { position: "relative", flexShrink: 0, width: 108, background: "#fff", padding: "5px 5px 19px", borderRadius: 3, boxShadow: "0 5px 13px rgba(60,45,30,0.22)", cursor: "pointer" } },
                 h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 82, objectFit: "cover", display: "block", borderRadius: 2 } }),
                 h("span", { style: { position: "absolute", left: 6, top: 6, background: "rgba(20,30,36,0.62)", color: "#fff", borderRadius: 999, padding: "1px 6px", fontSize: "0.56rem", fontWeight: 800 } }, ldStampHM(x.id)),
-                nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)" } }, "💬 " + nc) : null,
+                nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: nn ? "linear-gradient(135deg,#e8756f,#c8403c)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#fff5f3" : "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)", animation: nn ? "mpBob 1.9s ease-in-out infinite" : "none" } }, (nn ? "＋" + nn : "💬 " + nc)) : null,
                 h("div", { style: { position: "absolute", left: 3, right: 3, bottom: 3, textAlign: "center", fontFamily: LDHAND, fontSize: "0.78rem", color: "#3a3226", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, x.n));
             })));
       })(),
@@ -22090,11 +22149,11 @@ function LondonRoom(_refLD) {
         ukHead("Nana 的伦敦", "你自己拍的 · 任务里传的也会收到这儿", h("span", { style: { fontSize: "1rem" } }, "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
-            var nc = pcOf(x.u).length;
-            return h("div", { key: "mw" + x.id, onClick: function () { setMyPick(x.id); setPcT(""); },
+            var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
+            return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
               style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
               h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
-              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: "0 2px 7px rgba(150,110,30,0.45)" } }, "💬 " + nc) : null,
+              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#e8756f,#c8403c)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#fff5f3" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(180,60,55,0.5)" : "0 2px 7px rgba(150,110,30,0.45)", animation: nn ? "mpBob 1.9s ease-in-out infinite" : "none" } }, nn ? ("＋" + nn + " 新的") : ("💬 " + nc)) : null,
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
           }))
       ]);
