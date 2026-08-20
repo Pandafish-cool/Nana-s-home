@@ -19840,9 +19840,9 @@ function LondonHarbour(_refHB) {
       hello
         ? h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.12rem", marginTop: 2, minHeight: "1.45rem", letterSpacing: "0.4px", textShadow: "0 2px 12px rgba(0,0,0,0.6)", opacity: hf ? 1 : 0, transition: "opacity 0.34s ease", fontFamily: "'Nunito','PingFang SC',system-ui" } }, hello[hi])
         : h("div", { style: { color: "#fff", fontWeight: 800, fontSize: "1.2rem", marginTop: 3, letterSpacing: "1px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title),
-      hello ? h("div", { style: { color: "rgba(255,255,255,0.9)", fontWeight: 800, fontSize: "0.68rem", marginTop: 1, letterSpacing: "0.5px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title) : null,
+      (hello && !strip) ? h("div", { style: { color: "rgba(255,255,255,0.9)", fontWeight: 800, fontSize: "0.68rem", marginTop: 1, letterSpacing: "0.5px", textShadow: "0 2px 10px rgba(0,0,0,0.55)" } }, title) : null,
       h("div", { style: { color: "rgba(240,250,252,0.95)", fontSize: "0.63rem", marginTop: 2, lineHeight: 1.45, textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, sub),
-      foot ? h("div", { style: { color: "rgba(255,216,138,0.9)", fontSize: "0.57rem", marginTop: 1, fontFamily: "Georgia,serif", letterSpacing: "0.3px", textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, foot) : null),
+      (foot && !strip) ? h("div", { style: { color: "rgba(255,216,138,0.9)", fontSize: "0.57rem", marginTop: 1, fontFamily: "Georgia,serif", letterSpacing: "0.3px", textShadow: "0 1px 8px rgba(0,0,0,0.5)" } }, foot) : null),
     // 天际线
     h("svg", { viewBox: "0 0 400 130", preserveAspectRatio: "xMidYMax slice", style: { display: "block", width: "100%", height: sm ? 88 : 128, marginTop: sm ? 0 : 6, position: "relative", zIndex: 2 } },
       // 塔桥
@@ -19907,9 +19907,19 @@ function LondonHarbour(_refHB) {
             h("div", { style: { fontSize: "0.58rem", fontWeight: 800, color: "rgba(255,216,138,0.92)", letterSpacing: "0.5px" } }, "家里"),
             h("div", { style: { fontSize: "1.12rem", fontWeight: 800, color: "rgba(255,255,255,0.86)", letterSpacing: "1px", fontFamily: "Georgia,serif", fontVariantNumeric: "tabular-nums", lineHeight: 1.1 } }, strip.gz)),
           h("span", { style: { fontSize: "1.15rem", flexShrink: 0, lineHeight: 1 } }, "\uD83C\uDFE1"))),
-      strip.here || strip.home ? h("div", { style: { marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(255,255,255,0.12)" } },
-        strip.here ? h("div", { style: { fontSize: "0.7rem", color: "rgba(255,255,255,0.94)", lineHeight: 1.45, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, strip.here) : null,
-        strip.home ? h("div", { style: { fontSize: "0.68rem", color: "rgba(226,240,246,0.72)", lineHeight: 1.45, marginTop: 2, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, "🏡 " + strip.home) : null) : null,
+      strip.today ? h("div", { onClick: strip.onToday, style: { marginTop: 7, paddingTop: 7, borderTop: "1px solid rgba(255,255,255,0.12)", cursor: "pointer" } },
+        h("div", { style: { display: "flex", alignItems: "baseline", gap: 7, marginBottom: 5 } },
+          h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "rgba(255,216,138,0.92)", letterSpacing: "0.5px", flexShrink: 0 } }, "今天"),
+          h("span", { style: { fontSize: "0.62rem", color: "rgba(214,232,226,0.75)", flex: 1, minWidth: 0 } }, strip.today.date),
+          strip.today.more ? h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: "rgba(255,216,138,0.85)", flexShrink: 0 } }, strip.today.more) : null),
+        strip.today.list.length
+          ? h("div", null, strip.today.list.map(function (x, i) {
+              return h("div", { key: "td" + i, style: { display: "flex", alignItems: "center", gap: 7, marginTop: i ? 4 : 0 } },
+                h("span", { style: { fontSize: "0.85rem", flexShrink: 0, width: 18, textAlign: "center" } }, x.e),
+                h("span", { style: { flex: 1, minWidth: 0, fontSize: "0.76rem", fontWeight: 700, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, x.n),
+                x.tm ? h("span", { style: { fontSize: "0.62rem", color: "rgba(214,232,226,0.8)", flexShrink: 0, fontVariantNumeric: "tabular-nums" } }, x.tm) : null);
+            }))
+          : h("div", { style: { fontSize: "0.72rem", color: "rgba(226,240,246,0.85)", lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, strip.today.empty)) : null,
       h("a", { href: strip.map, target: "_blank", rel: "noopener",
         style: { display: "flex", alignItems: "center", gap: 5, marginTop: 6, paddingTop: 6, borderTop: "1px solid rgba(255,255,255,0.12)", textDecoration: "none" } },
         h("span", { style: { fontSize: "0.6rem", flexShrink: 0 } }, "📍"),
@@ -21281,6 +21291,21 @@ function LondonRoom(_refLD) {
   var inStay = function (ds) { return ds >= LD_DEPART && ds <= LD_BACK; };
   var selEv = calSel ? dayEvents(calSel) : [];
   var selRun = calSel ? dayRuns(calSel) : [];
+  // 顶卡上的「今天」：日历里今天那几件事，最多摆两条
+  var todayCard = (function () {
+    var dt = ldDate(todayStr);
+    var all = (dayEvents(todayStr) || []).concat(dayRuns(todayStr) || []);
+    var list = all.slice(0, 2).map(function (x) {
+      return { e: x.e || "📌", n: x.n || "", tm: (x.tm && String(x.tm).indexOf("全天") < 0) ? String(x.tm).split(" ")[0] : "" };
+    });
+    var empty = "今天没写死的安排 —— 想干嘛干嘛。";
+    if (!all.length && dt && dt.getDay() !== 0 && dt.getDay() !== 6) {
+      var seed = parseInt(todayStr.slice(5, 7) + todayStr.slice(8), 10) || 0;
+      var pick = LD_WEEKNIGHT[seed % LD_WEEKNIGHT.length];
+      if (pick) empty = "今天没安排。想出门的话：" + pick.n;
+    }
+    return { date: ldMD(todayStr), list: list, empty: empty, more: all.length > 2 ? ("看全部 " + all.length + " 件 ›") : (all.length ? "看日历 ›" : "看日历 ›") };
+  })();
   var infoRow = function (ic, txt) {
     if (!txt) return null;
     return h("div", { style: { display: "flex", gap: 7, marginTop: 4 } },
@@ -22286,7 +22311,13 @@ function LondonRoom(_refLD) {
       foot: "从本初子午线 0° 到家里 113°E",
       hello: ldLanded() ? ldHello(lonH) : null,
       sm: ldLanded(),
-      strip: { lon: lonT, gz: gzT, hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0, here: ldPick(LD_HERE, lonH), home: ldPick(LD_HOME, gzH), addr: LD_ADDR, map: ldMap(LD_ADDR_Q) }
+      strip: {
+        lon: lonT, gz: gzT,
+        hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0,
+        addr: LD_ADDR, map: ldMap(LD_ADDR_Q),
+        today: todayCard,
+        onToday: function () { setTab("cal"); setCalSel(todayStr); }
+      }
     }),
     h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
       var on = tab === t[0];
