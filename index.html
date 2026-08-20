@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-201";
+var NANA_VER = "v2026.8.2-202";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21797,46 +21797,6 @@ function LondonRoom(_refLD) {
     ], { background: "linear-gradient(158deg,#fff8e6,#f7ead0)" }) : null,
     ukCard([
       screws,
-      ukHead("摇滚 × 爵士之旅", "四站 · 从 Soho 的摇滚旧址一路走到 Ronnie Scott's", h("span", { style: { fontSize: "1rem" } }, "🎸")),
-      h("div", { key: "tp0", style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.8, marginBottom: 10, fontFamily: LDHAND } },
-        "按你四点下班排的：白天的项目都放在周末，平日只排傍晚之后。不用四站都走 —— 挑喜欢的那两站就够了。"),
-      h("div", { key: "tps" }, LD_TRIP.map(function (x, i) {
-        var open = tripOpen === i;
-        return h("div", { key: "tp" + i, style: { marginBottom: 8, border: "1px solid rgba(169,127,46,0.32)", borderRadius: 10, overflow: "hidden", background: open ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.32)" } },
-          h("div", { onClick: function () { setTripOpen(open ? null : i); },
-            style: { display: "flex", alignItems: "center", gap: 9, padding: "10px 11px", cursor: "pointer" } },
-            h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, x.e),
-            h("div", { style: { flex: 1, minWidth: 0 } },
-              h("div", { style: { fontWeight: 800, fontSize: "0.79rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif", lineHeight: 1.4 } }, x.n),
-              h("div", { style: { fontSize: "0.63rem", color: "#a1542a", fontWeight: 800, marginTop: 2, lineHeight: 1.5 } }, x.when)),
-            h("span", { style: { flexShrink: 0, fontSize: "0.62rem", fontWeight: 800, color: "#a97f2e" } }, open ? "收起 ▲" : "展开 ▼")),
-          open ? h("div", { style: { padding: "0 11px 11px" } },
-            x.blocks.map(function (b2, bi) {
-              return h("div", { key: "tb" + bi, style: { marginTop: bi ? 10 : 2, paddingTop: bi ? 9 : 0, borderTop: bi ? "1px dashed rgba(169,127,46,0.28)" : "none" } },
-                h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 4 } }, b2.h),
-                h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.8, whiteSpace: "pre-line" } }, b2.d));
-            }),
-            x.gigs.length ? h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(169,127,46,0.28)" } },
-              h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 6 } }, "🎺 这几场可以选"),
-              x.gigs.map(function (g, gi) {
-                return h("div", { key: "tg" + gi, style: { display: "flex", gap: 8, alignItems: "baseline", padding: "4px 0" } },
-                  h("span", { style: { flexShrink: 0, width: 34, fontSize: "0.66rem", fontWeight: 800, color: "#a1542a" } }, g.d),
-                  h("div", { style: { flex: 1, minWidth: 0 } },
-                    h("span", { style: { fontSize: "0.74rem", fontWeight: 800, color: UK_INK } }, g.n),
-                    g.w ? h("span", { style: { fontSize: "0.68rem", color: "rgba(110,100,78,0.92)" } }, " · " + g.w) : null));
-              })) : null,
-            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 10, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "4px 11px", fontSize: "0.62rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")) : null);
-      })),
-      h("div", { key: "tpp", style: { marginTop: 4 } }, LD_TRIP_PLAN.map(function (x, i) {
-        return h("div", { key: "tpl" + i, style: { marginTop: 10, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)" } },
-          h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#a97f2e", marginBottom: 4 } }, x.h),
-          h("div", { style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.85, whiteSpace: "pre-line" } }, x.d));
-      })),
-      h("div", { key: "tpn", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 9, padding: "10px 11px", fontSize: "0.7rem", color: "#1a5c56", lineHeight: 1.8, fontFamily: LDHAND } },
-        "订票前再上官网看一眼余票和座位等级 —— 上面写的是公布过的节目，不代表每档座位都还有。")
-    ]),
-    ukCard([
-      screws,
       ukHead("天天都在", "不用挑日子，想去就去", h("span", { style: { fontSize: "1rem" } }, "🔁")),
       h("div", { key: "aw" }, LD_ALWAYS.map(function (x, i) {
         return h("div", { key: "aw" + i, style: { display: "flex", gap: 10, padding: "9px 0", borderBottom: i === LD_ALWAYS.length - 1 ? "none" : "1px dashed rgba(169,127,46,0.28)" } },
@@ -22688,7 +22648,7 @@ function LondonRoom(_refLD) {
     zoneRows(LD_LIT.concat(screenGroups))
   ]);
   // 合并版：日历排第一，去玩那几栏挂在同一行分栏里
-  var LD_SUB = [["cal", "📅 日历"], ["wall", "🔍 猜猜是哪里"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
+  var LD_SUB = [["cal", "📅 日历"], ["wall", "🔍 猜猜是哪里"], ["rock", "🎸 摇滚之旅"], ["duty", "🕵️ 你的任务"], ["lit", "📖 书与剧"], ["week", "🚂 周末探险"]];
   var subNav = h("div", { style: { display: "flex", gap: 6, marginBottom: 12, overflowX: "auto", paddingBottom: 2 } }, LD_SUB.map(function (t) {
     var on = sub === t[0];
     // 有人在照片下面说了话，就在「猜猜是哪里」那一栏挂个 💬
@@ -22697,7 +22657,49 @@ function LondonRoom(_refLD) {
       t[1],
       dot ? h("span", { style: { marginLeft: 5, fontSize: "0.64rem", verticalAlign: "1px" } }, "💬") : null);
   }));
-  var subBody = sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
+  // ── 🎸 摇滚之旅：单独一栏，挨着「猜猜是哪里」 ──
+  var rockSection = h("div", null,
+    ukCard([
+      screws,
+      ukHead("摇滚 × 爵士之旅", "四站 · 从 Soho 的摇滚旧址一路走到 Ronnie Scott's", h("span", { style: { fontSize: "1rem" } }, "🎸")),
+      h("div", { key: "tp0", style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.8, marginBottom: 10, fontFamily: LDHAND } },
+        "按你四点下班排的：白天的项目都放在周末，平日只排傍晚之后。不用四站都走 —— 挑喜欢的那两站就够了。"),
+      h("div", { key: "tps" }, LD_TRIP.map(function (x, i) {
+        var open = tripOpen === i;
+        return h("div", { key: "tp" + i, style: { marginBottom: 8, border: "1px solid rgba(169,127,46,0.32)", borderRadius: 10, overflow: "hidden", background: open ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.32)" } },
+          h("div", { onClick: function () { setTripOpen(open ? null : i); },
+            style: { display: "flex", alignItems: "center", gap: 9, padding: "10px 11px", cursor: "pointer" } },
+            h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, x.e),
+            h("div", { style: { flex: 1, minWidth: 0 } },
+              h("div", { style: { fontWeight: 800, fontSize: "0.79rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif", lineHeight: 1.4 } }, x.n),
+              h("div", { style: { fontSize: "0.63rem", color: "#a1542a", fontWeight: 800, marginTop: 2, lineHeight: 1.5 } }, x.when)),
+            h("span", { style: { flexShrink: 0, fontSize: "0.62rem", fontWeight: 800, color: "#a97f2e" } }, open ? "收起 ▲" : "展开 ▼")),
+          open ? h("div", { style: { padding: "0 11px 11px" } },
+            x.blocks.map(function (b2, bi) {
+              return h("div", { key: "tb" + bi, style: { marginTop: bi ? 10 : 2, paddingTop: bi ? 9 : 0, borderTop: bi ? "1px dashed rgba(169,127,46,0.28)" : "none" } },
+                h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 4 } }, b2.h),
+                h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.8, whiteSpace: "pre-line" } }, b2.d));
+            }),
+            x.gigs.length ? h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(169,127,46,0.28)" } },
+              h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 6 } }, "🎺 这几场可以选"),
+              x.gigs.map(function (g, gi) {
+                return h("div", { key: "tg" + gi, style: { display: "flex", gap: 8, alignItems: "baseline", padding: "4px 0" } },
+                  h("span", { style: { flexShrink: 0, width: 34, fontSize: "0.66rem", fontWeight: 800, color: "#a1542a" } }, g.d),
+                  h("div", { style: { flex: 1, minWidth: 0 } },
+                    h("span", { style: { fontSize: "0.74rem", fontWeight: 800, color: UK_INK } }, g.n),
+                    g.w ? h("span", { style: { fontSize: "0.68rem", color: "rgba(110,100,78,0.92)" } }, " · " + g.w) : null));
+              })) : null,
+            h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 10, textDecoration: "none", border: "1px solid rgba(18,58,82,0.3)", borderRadius: 999, padding: "4px 11px", fontSize: "0.62rem", fontWeight: 800, color: UK_NAVY } }, "📍 地图")) : null);
+      })),
+      h("div", { key: "tpp", style: { marginTop: 4 } }, LD_TRIP_PLAN.map(function (x, i) {
+        return h("div", { key: "tpl" + i, style: { marginTop: 10, paddingTop: 9, borderTop: "1px dotted rgba(169,127,46,0.45)" } },
+          h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#a97f2e", marginBottom: 4 } }, x.h),
+          h("div", { style: { fontSize: "0.72rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.85, whiteSpace: "pre-line" } }, x.d));
+      })),
+      h("div", { key: "tpn", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 9, padding: "10px 11px", fontSize: "0.7rem", color: "#1a5c56", lineHeight: 1.8, fontFamily: LDHAND } },
+        "订票前再上官网看一眼余票和座位等级 —— 上面写的是公布过的节目，不代表每档座位都还有。")
+    ]));
+  var subBody = sub === "wall" ? wallSection : sub === "rock" ? rockSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
   var calTab = ldMerged
     ? h("div", null, subNav, sub === "cal" ? calBody : subBody)
     : calBody;
