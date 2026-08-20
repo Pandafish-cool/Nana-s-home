@@ -21558,7 +21558,7 @@ function LondonRoom(_refLD) {
                 style: { position: "relative", flexShrink: 0, width: 108, background: "#fff", padding: "5px 5px 19px", borderRadius: 3, boxShadow: "0 5px 13px rgba(60,45,30,0.22)", cursor: "pointer" } },
                 h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 82, objectFit: "cover", display: "block", borderRadius: 2 } }),
                 h("span", { style: { position: "absolute", left: 6, top: 6, background: "rgba(20,30,36,0.62)", color: "#fff", borderRadius: 999, padding: "1px 6px", fontSize: "0.56rem", fontWeight: 800 } }, ldStampHM(x.id)),
-                nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: nn ? "linear-gradient(135deg,#e8756f,#c8403c)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#fff5f3" : "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)", animation: nn ? "mpBob 1.9s ease-in-out infinite" : "none" } }, (nn ? "＋" + nn : "💬 " + nc)) : null,
+                nc ? h("span", { style: { position: "absolute", right: 6, top: 6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "1px 7px", fontSize: "0.55rem", fontWeight: 800, boxShadow: "0 2px 6px rgba(60,45,30,0.35)" } }, "💬 " + (nn ? ("＋" + nn) : nc)) : null,
                 h("div", { style: { position: "absolute", left: 3, right: 3, bottom: 3, textAlign: "center", fontFamily: LDHAND, fontSize: "0.78rem", color: "#3a3226", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, x.n));
             })));
       })(),
@@ -22124,16 +22124,15 @@ function LondonRoom(_refLD) {
       return ukCard([
         screws,
         ukHead("Nana 的伦敦",
-          pcInbox().length ? ("有 " + pcInbox().length + " 句还没看 · 红点那几张") : "你自己拍的 · 任务里传的也会收到这儿",
-          h("span", { style: { position: "relative", fontSize: "1rem", display: "inline-block" } }, "🌸",
-            pcInbox().length ? h("span", { style: { position: "absolute", right: -2, top: -1, width: 7, height: 7, borderRadius: "50%", background: "#c8403c" } }) : null)),
+          pcInbox().length ? ("有 " + pcInbox().length + " 句还没看 · 就在带 💬 的那几张下面") : "你自己拍的 · 任务里传的也会收到这儿",
+          h("span", { style: { fontSize: "1rem" } }, pcInbox().length ? "💬" : "🌸")),
         h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
             return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
               style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
               h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
-              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#e8756f,#c8403c)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#fff5f3" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(180,60,55,0.5)" : "0 2px 7px rgba(150,110,30,0.45)", animation: nn ? "mpBob 1.9s ease-in-out infinite" : "none" } }, nn ? ("＋" + nn + " 新的") : ("💬 " + nc)) : null,
+              nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(31,111,104,0.45)" : "0 2px 7px rgba(150,110,30,0.45)" } }, nn ? ("💬 ＋" + nn) : ("💬 " + nc)) : null,
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
           }))
       ]);
@@ -22411,7 +22410,7 @@ function LondonRoom(_refLD) {
     var dot = pcInbox().length && t[0] === "wall";
     return h("button", { key: t[0], onClick: function () { setSub(t[0]); }, style: { position: "relative", flexShrink: 0, border: on ? "1.5px solid #a97f2e" : "1.5px solid rgba(169,127,46,0.35)", background: on ? "linear-gradient(135deg,#f0c46a,#e0aa45)" : "rgba(255,255,255,0.6)", color: on ? "#4a3510" : "rgba(130,110,75,0.95)", borderRadius: 999, padding: "7px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer", whiteSpace: "nowrap", boxShadow: on ? "0 3px 10px rgba(170,125,40,0.3)" : "none" } },
       t[1],
-      dot ? h("span", { style: { position: "absolute", right: 4, top: 4, width: 7, height: 7, borderRadius: "50%", background: "#c8403c" } }) : null);
+      dot ? h("span", { style: { marginLeft: 5, fontSize: "0.64rem", verticalAlign: "1px" } }, "💬") : null);
   }));
   var subBody = sub === "wall" ? wallSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
   var playTab = h("div", null, subNav, subBody);
@@ -22500,7 +22499,7 @@ function LondonRoom(_refLD) {
       var dot = pcInbox().length && t[0] === (ldMerged ? "cal" : "play");
       return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { position: "relative", flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } },
         t[1],
-        dot ? h("span", { style: { position: "absolute", right: 5, top: 5, width: 7, height: 7, borderRadius: "50%", background: "#c8403c" } }) : null);
+        dot ? h("span", { style: { marginLeft: 5, fontSize: "0.66rem", verticalAlign: "1px" } }, "💬") : null);
     })),
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
     tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : tab === "play" ? playTab : calTab,
