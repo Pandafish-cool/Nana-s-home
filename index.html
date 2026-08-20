@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-194";
+var NANA_VER = "v2026.8.2-195";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20151,6 +20151,7 @@ function LondonRoom(_refLD) {
   var _mub = useState(false); var pinUp = _mub[0], setPinUp = _mub[1];
   var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
   var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
+  var _sho = useState(false); var shotOpen = _sho[0], setShotOpen = _sho[1];   // 直接传一张的那个小表单
   var _wbg = useState(null); var wallBig = _wbg[0], setWallBig = _wbg[1];
   var _wfl = useState(function () { try { return JSON.parse(localStorage.getItem(ldWKey("nana-wall-flip")) || "[]"); } catch (_) { return []; } });
   var wallFlip = _wfl[0], setWallFlip = _wfl[1];
@@ -20423,6 +20424,40 @@ function LondonRoom(_refLD) {
   };
   var clearPinDraft = function () {
     setPendPin(null); setPinName(""); setPinSay(""); setPinPhoto(""); setPinErr(""); setAddMode(false);
+  };
+  // 直接传一张：先读照片里的位置，读到就自动落到地图上，读不到也照样收下
+  var onPickMyPhoto = function (e) {
+    var f = e.target.files && e.target.files[0];
+    var inp = e.target;
+    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
+    if (!f || pinUp) return;
+    setPinUp(true); setPinErr("");
+    nanaExifGps(f, function (ll) { setPendPin(ll ? { la: ll[0], lo: ll[1] } : { la: 0, lo: 0 }); });
+    var pid = "mp" + Date.now() + Math.floor(Math.random() * 900);
+    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
+    nanaPhotoCompress(f, function (err, data) {
+      if (err || !data) { setPinUp(false); setPinErr("这张照片读不出来，换一张试试"); return; }
+      nanaPhotoCompressTo(f, 360, 0.7, function (e3, tdata) {
+        nanaCloudPut(url, data);
+        var turl = nanaThumbUrl(url);
+        if (tdata && turl) nanaCloudPut(turl, tdata);
+        setPinPhoto(url);
+        nanaSharedUploadRetry(data, pid, 3, function (e2) {
+          if (e2) { setPinUp(false); setPinPhoto(""); setPinErr("没传上去，再试一次？"); return; }
+          if (!tdata) { setPinUp(false); return; }
+          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setPinUp(false); });
+        });
+      });
+    });
+  };
+  var saveShot = function () {
+    var t = pinName.trim();
+    if (!t || !pinPhoto || pinUp) return;
+    var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
+    var row = { id: id, n: t, la: (pendPin && pendPin.la) || 0, lo: (pendPin && pendPin.lo) || 0, say: pinSay.trim(), u: pinPhoto };
+    setMyPins(function (o) { return o.concat([row]); });
+    setShotOpen(false); clearPinDraft();
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: row.n, la: row.la, lo: row.lo, say: row.say, u: row.u }) }, function () {});
   };
   var savePin = function () {
     var t = pinName.trim();
@@ -21993,13 +22028,34 @@ function LondonRoom(_refLD) {
   var mineSection = h("div", null,
     (function () {
       var withP = herShots;
-      if (!withP.length) return null;
+      var mine = myAuthor !== "panda";
+      if (!withP.length && !mine) return null;
       return ukCard([
         screws,
         ukHead("Nana 的伦敦",
           pcInbox().length ? ("有 " + pcInbox().length + " 句还没看 · 就在带 💬 的那几张下面") : "你自己拍的 · 任务里传的也会收到这儿",
           h("span", { style: { fontSize: "1rem" } }, pcInbox().length ? "💬" : "🌸")),
-        h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
+        // 直接传一张：不用先在地图上点，照片里带位置就自动落到地图上
+        mine ? (shotOpen
+          ? h("div", { key: "up1", style: { marginTop: 4, marginBottom: withP.length ? 12 : 0, background: "rgba(180,53,58,0.07)", border: "1px dashed rgba(180,53,58,0.35)", borderRadius: 10, padding: "11px 12px" } },
+              h("div", { style: { display: "flex", gap: 10, alignItems: "flex-start" } },
+                pinPhoto
+                  ? h("div", { style: { position: "relative", flexShrink: 0, background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 13px rgba(60,45,30,0.26)", borderRadius: 3, transform: "rotate(-2deg)" } },
+                      h(NanaCloudImg, { u: pinPhoto, thumb: true, style: { width: 78, height: 62, objectFit: "cover", display: "block", borderRadius: 2 } }),
+                      h("button", { onClick: function () { nanaSharedPhotoDel(pinPhoto); setPinPhoto(""); }, style: { position: "absolute", right: -8, top: -8, width: 21, height: 21, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer" } }, "✕"))
+                  : h("span", { onClick: function () { if (pinUp) return; try { var el = document.getElementById("my-photo-input"); if (el) el.click(); } catch (_) {} }, style: { flexShrink: 0, width: 78, height: 74, display: "inline-flex", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: pinUp ? "default" : "pointer", border: "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 6, color: "#b4353a", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)", lineHeight: 1.5 } }, pinUp ? "⏫ 传着…" : "📷 选一张"),
+                h("div", { style: { flex: 1, minWidth: 0 } },
+                  h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "这是哪儿（会写在地图上）", style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none" } }),
+                  h("input", { value: pinSay, onChange: function (e) { setPinSay(e.target.value); }, placeholder: "想写一句就写（可以空着）", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.35)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.74rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none" } }))),
+              h("input", { id: "my-photo-input", type: "file", accept: "image/*", onChange: onPickMyPhoto, style: { display: "none" } }),
+              h("div", { style: { marginTop: 8, fontSize: "0.64rem", fontWeight: 800, color: (pendPin && pendPin.la) ? "#1f7a55" : "rgba(140,120,95,0.95)" } },
+                (pendPin && pendPin.la) ? "📍 位置已经从照片里读到了，会落在地图上" : (pinPhoto ? "照片里没有位置 —— 还是会收进这儿，只是地图上不落针" : "选一张照片，有位置的话会自动落到地图上")),
+              pinErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null,
+              h("div", { style: { display: "flex", gap: 8, marginTop: 9, alignItems: "center" } },
+                h("button", { onClick: saveShot, disabled: !pinName.trim() || !pinPhoto || pinUp, style: { border: "none", borderRadius: 999, padding: "8px 18px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: (pinName.trim() && pinPhoto && !pinUp) ? "pointer" : "default", background: (pinName.trim() && pinPhoto && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: (pinName.trim() && pinPhoto && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "贴上去"),
+                h("button", { onClick: function () { setShotOpen(false); clearPinDraft(); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")))
+          : h("button", { key: "up0", onClick: function () { setShotOpen(true); clearPinDraft(); }, style: { width: "100%", marginTop: 4, marginBottom: withP.length ? 12 : 0, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.55)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📷 传一张我拍的")) : null,
+        withP.length ? h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
             return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
@@ -22007,7 +22063,7 @@ function LondonRoom(_refLD) {
               h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
               nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(31,111,104,0.45)" : "0 2px 7px rgba(150,110,30,0.45)" } }, nn ? ("💬 ＋" + nn) : ("💬 " + nc)) : null,
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
-          }))
+          })) : null
       ]);
     })());
   var wallSection = h("div", null,
