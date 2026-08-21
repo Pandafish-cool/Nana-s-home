@@ -9122,7 +9122,7 @@ function ReadingRoomActivity(_refRR) {
     return NANA_LETTER_THEMES[0];
   };
   // 精简之前存下来的那张纸，映射到现在最接近的一张（老信本身不动，还是原来的样子）
-  var NANA_PAPER_MOVED = { latte: "air", peach: "brit", cherry: "peach", dusk: "peach", bus: "peach", box: "peach", tea: "peach", mcat: "cat", berry: "night" };
+  var NANA_PAPER_MOVED = { latte: "air", mist2: "mist", peach: "brit", cherry: "brit", dusk: "brit", bus: "brit", box: "brit", tea: "brit", mcat: "cat", berry: "night" };
   var _wt = useState(function () {
     var v = "air";
     try { v = localStorage.getItem("nana-note-theme") || "air"; } catch (_) {}
