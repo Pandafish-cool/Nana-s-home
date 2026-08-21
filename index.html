@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-204";
+var NANA_VER = "v2026.8.2-205";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8833,7 +8833,14 @@ function ReadingRoomActivity(_refRR) {
   var onCozy = _refRR.onCozy;
   var h = React.createElement;
   var HAND = "'ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive";
-  var _tab = useState("note"); var tab = _tab[0], setTab = _tab[1];
+  var _tab = useState(function () { var w = nanaWantTab; nanaWantTab = null; return w || "note"; });
+  var tab = _tab[0], setTab = _tab[1];
+  // 已经开着阅读室的时候再点邮筒，也要跳过去
+  useEffect(function () {
+    var go = function () { setTab("shared"); nanaWantTab = null; };
+    window.addEventListener("nana-go-221b", go);
+    return function () { window.removeEventListener("nana-go-221b", go); };
+  }, []);
   // 笔记 {id, d 日期, t 内容}
   var _ns = useState(function () { try { return JSON.parse(localStorage.getItem("nana-reading-notes") || "[]"); } catch (_) { return []; } });
   var notes = _ns[0], setNotes = _ns[1];
@@ -18711,6 +18718,12 @@ var ldLanded = function () {
   // 两个人现在都直接进伦敦首页，不再等落地那一刻
   return true;
 };
+// 点邮筒直接跳到 221B —— 伦敦房间和外面的壳是两个组件，用一个事件搭桥
+var nanaWantTab = null;                     // 阅读室开起来之后停在哪一栏
+var nanaGo221B = function () {
+  nanaWantTab = "shared";
+  try { window.dispatchEvent(new CustomEvent("nana-go-221b")); } catch (_) {}
+};
 var ldHomeRoom = function () {
   if (!ldLanded()) return null;
   try { for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === "london") return ROOMS[i]; } } catch (_) {}
@@ -21175,7 +21188,9 @@ function LondonRoom(_refLD) {
 
       screws,
       ukHead("按住，家里就亮一下", "房子周围挂着几句话，按住哪句都行",
-        LD_LETTER_HINT ? ldPostBox(!!newLetter, 30) : h("span", { style: { fontSize: "1rem" } }, "📟")),
+        LD_LETTER_HINT
+          ? h("span", { onClick: nanaGo221B, title: "去 221B 看信", style: { cursor: "pointer", flexShrink: 0, lineHeight: 0 } }, ldPostBox(!!newLetter, 30))
+          : h("span", { style: { fontSize: "1rem" } }, "📟")),
       // 家里那栋房子：四句话不做成按钮，做成挂在夜色里的小牌子
       h("div", { key: "hs", style: { marginBottom: 9 } },
         h("div", { style: { position: "relative" } },
@@ -25097,6 +25112,21 @@ function NanasHome() {
     _useState326 = _slicedToArray(_useState325, 2),
     activity = _useState326[0],
     setActivity = _useState326[1];
+  // 邮筒那一下：从伦敦直接跳进阅读室的 221B
+  useEffect(function () {
+    var go = function () {
+      var r = null, a = null, i;
+      for (i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === "gaming") r = ROOMS[i]; }
+      var acts = ACTIVITIES.gaming || [];
+      for (i = 0; i < acts.length; i++) { if (acts[i].id === "reading") a = acts[i]; }
+      if (!r || !a) return;
+      setRoom(r);
+      setActivity(a);
+      try { window.scrollTo(0, 0); } catch (_) {}
+    };
+    window.addEventListener("nana-go-221b", go);
+    return function () { window.removeEventListener("nana-go-221b", go); };
+  }, []);
   var _useState327 = useState(20),
     _useState328 = _slicedToArray(_useState327, 2),
     cozy = _useState328[0],
