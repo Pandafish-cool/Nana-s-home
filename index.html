@@ -8480,6 +8480,10 @@ var nanaAirmailStripe = function (ctx, x, y, w, hgt, colors) {
 };
 // 信纸主题（分享图配色）
 // 把两个 emoji 铺成一张很淡的包装纸，垫在横线底下
+var nanaPapers = function () {
+  return NANA_LETTER_THEMES.filter(function (t) { return t.pick; })
+    .sort(function (a, b) { return a.pick - b.pick; });
+};
 var nanaPat = function (a, b, size, op) {
   var sz = size || 54, o = op || 0.1, f = Math.round(sz * 0.30);
   var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + sz + "' height='" + sz + "'>"
@@ -8489,7 +8493,7 @@ var nanaPat = function (a, b, size, op) {
   return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
 };
 var NANA_LETTER_THEMES = [
-  { id: "air", name: "航空信笺", e: "💌", css: "linear-gradient(160deg,#fffdf6,#ffeade)",
+  { id: "air", name: "航空信笺", e: "💌", pick: 1, use: "随便说点什么", css: "linear-gradient(160deg,#fffdf6,#ffeade)",
     out1: "#f7ebe9", out2: "#f1e4ee", p1: "#fffdf6", p2: "#fff6ec",
     line: "rgba(205,155,175,0.35)", margin: "rgba(235,140,160,0.55)",
     header: "#b05a52", date: "rgba(170,115,105,0.9)", text: "#6a4a3a", foot: "rgba(170,115,105,0.85)",
@@ -8497,7 +8501,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,150,180,0.6)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#ef8a95", "#fffdf6", "#8aa8e0", "#fffdf6"],
     wash1: "rgba(255,185,200,0.3)", wash2: "rgba(185,210,255,0.26)", footE: "🌹" },
-  { id: "night", name: "星夜信笺", e: "🌙", css: "linear-gradient(160deg,#2a2454,#171233)",
+  { id: "night", name: "星夜信笺", e: "🌙", pick: 6, use: "夜里写的", css: "linear-gradient(160deg,#2a2454,#171233)",
     out1: "#141026", out2: "#221a3e", p1: "#262252", p2: "#1b1838",
     line: "rgba(170,180,235,0.28)", margin: "rgba(200,170,255,0.45)",
     header: "#ffd86a", date: "rgba(200,195,240,0.85)", text: "#ece8ff", foot: "rgba(200,195,240,0.8)",
@@ -8505,7 +8509,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(160,150,240,0.55)", tapeB: "rgba(255,255,255,0.35)",
     stripes: ["#8a7ad0", "#262252", "#e0c060", "#262252"],
     wash1: "rgba(140,120,220,0.28)", wash2: "rgba(90,140,220,0.22)", footE: "🌠" , rule: "dot" },
-  { id: "mint", name: "薄荷信笺", e: "🌿", css: "linear-gradient(160deg,#f0fbf3,#d8f2e0)",
+  { id: "mint", name: "薄荷信笺", e: "🌿", pick: 4, use: "轻松的一天", css: "linear-gradient(160deg,#f0fbf3,#d8f2e0)",
     out1: "#e9f4ec", out2: "#dceee4", p1: "#fbfffc", p2: "#eefaf1",
     line: "rgba(120,180,150,0.35)", margin: "rgba(90,185,140,0.5)",
     header: "#2f9166", date: "rgba(90,140,115,0.9)", text: "#3f5f4e", foot: "rgba(90,140,115,0.85)",
@@ -8513,7 +8517,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(120,210,170,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#6cc79a", "#fbfffc", "#e8c860", "#fbfffc"],
     wash1: "rgba(150,225,185,0.32)", wash2: "rgba(190,230,200,0.3)", footE: "🍃" , rule: "grid" },
-  { id: "peach", name: "蜜桃信笺", e: "🍑", css: "linear-gradient(160deg,#fff3ec,#ffdfcf)",
+  { id: "peach", name: "蜜桃信笺", e: "🍑", pick: 2, use: "想你的时候", css: "linear-gradient(160deg,#fff3ec,#ffdfcf)",
     out1: "#f9ece5", out2: "#f6e0d5", p1: "#fffaf4", p2: "#ffefe2",
     line: "rgba(230,160,120,0.38)", margin: "rgba(235,140,95,0.55)",
     header: "#d0663a", date: "rgba(190,120,85,0.9)", text: "#7a4a35", foot: "rgba(190,120,85,0.85)",
@@ -8529,7 +8533,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(210,170,120,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b98a5a", "#fdf9f2", "#7a5a3a", "#fdf9f2"],
     wash1: "rgba(215,180,135,0.3)", wash2: "rgba(240,220,190,0.3)", footE: "🥐" , rule: "dot" },
-  { id: "cat", name: "好好信笺", e: "🐈", css: "linear-gradient(160deg,#fff6ec,#ffe2c2)",
+  { id: "cat", name: "好好信笺", e: "🐈", pick: 3, use: "家里的事", css: "linear-gradient(160deg,#fff6ec,#ffe2c2)",
     out1: "#f8ecdd", out2: "#f4e2cc", p1: "#fffaf2", p2: "#ffeeda",
     line: "rgba(225,165,100,0.35)", margin: "rgba(230,150,70,0.55)",
     header: "#c56a1e", date: "rgba(185,130,75,0.9)", text: "#77502e", foot: "rgba(185,130,75,0.85)",
@@ -8545,7 +8549,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(130,195,240,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#6aaede", "#f8fdff", "#e8c860", "#f8fdff"],
     wash1: "rgba(150,205,245,0.3)", wash2: "rgba(190,225,245,0.28)", footE: "⛵" , rule: "grid" },
-  { id: "call", name: "呼叫信笺", e: "📟", css: "linear-gradient(160deg,#fffbe8,#ffe9a8)",
+  { id: "call", name: "呼叫信笺", e: "📟", pick: 7, use: "约个时间", css: "linear-gradient(160deg,#fffbe8,#ffe9a8)",
     out1: "#f8f0d8", out2: "#f4e6c2", p1: "#fffdf0", p2: "#fff3cf",
     line: "rgba(200,150,60,0.38)", margin: "rgba(220,70,50,0.6)",
     header: "#d03a2a", date: "rgba(180,110,60,0.9)", text: "#6a4f28", foot: "rgba(180,110,60,0.85)",
@@ -8602,7 +8606,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#7ecbb6", "#fbfffd", "#f0a8b8", "#fbfffd"],
     wash1: "rgba(165,230,210,0.28)", wash2: "rgba(255,215,225,0.26)", footE: "🐱",
     pat: nanaPat("🐾", "🐟", 56, 0.1) , rule: "grid" },
-  { id: "tube", name: "地铁信笺", e: "🚇", css: "linear-gradient(160deg,#fdfdfb,#e8eef6)",
+  { id: "tube", name: "地铁信笺", e: "🚇", pick: 5, use: "今天去了哪儿", css: "linear-gradient(160deg,#fdfdfb,#e8eef6)",
     out1: "#eef1f5", out2: "#e2e8f0", p1: "#ffffff", p2: "#f2f6fa",
     line: "rgba(120,140,175,0.3)", margin: "rgba(200,16,46,0.55)",
     header: "#c8102e", date: "rgba(90,110,145,0.9)", text: "#2b3a52", foot: "rgba(90,110,145,0.85)",
@@ -9080,7 +9084,13 @@ function ReadingRoomActivity(_refRR) {
     for (var ti = 0; ti < NANA_LETTER_THEMES.length; ti++) { if (NANA_LETTER_THEMES[ti].id === id) return NANA_LETTER_THEMES[ti]; }
     return NANA_LETTER_THEMES[0];
   };
-  var _wt = useState(function () { try { return localStorage.getItem("nana-note-theme") || "air"; } catch (_) { return "air"; } });
+  // 精简之前存下来的那张纸，映射到现在最接近的一张（老信本身不动，还是原来的样子）
+  var NANA_PAPER_MOVED = { latte: "air", mist: "air", cherry: "peach", dusk: "peach", bus: "peach", box: "peach", tea: "peach", dog: "cat", mcat: "cat", sea: "tube", berry: "night" };
+  var _wt = useState(function () {
+    var v = "air";
+    try { v = localStorage.getItem("nana-note-theme") || "air"; } catch (_) {}
+    return NANA_PAPER_MOVED[v] || v;
+  });
   var writeTheme = _wt[0], setWriteTheme = _wt[1];
   var pickWriteTheme = function (id) { setWriteTheme(id); try { localStorage.setItem("nana-note-theme", id); } catch (_) {} };
     // 纸面：横线 / 方格 / 点阵 / 空白
@@ -9148,15 +9158,16 @@ function ReadingRoomActivity(_refRR) {
             h("span", { onTouchStart: startHold, onTouchEnd: cancelHold, onTouchMove: cancelHold, onTouchCancel: cancelHold, onMouseDown: startHold, onMouseUp: cancelHold, onMouseLeave: cancelHold, onContextMenu: function (e) { e.preventDefault(); }, title: "长按 3 秒换人", style: { fontSize: "0.62rem", fontWeight: 800, color: me.col, background: me.bg, borderRadius: 999, padding: "4px 10px", cursor: "pointer", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", whiteSpace: "nowrap", transform: holding ? "scale(0.92)" : "none", opacity: holding ? 0.65 : 1, transition: "transform 0.2s, opacity 0.2s" } }, holding ? "🕰️ 按住换人…" : me.e + " " + me.label))),
         h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" } },
           h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
-          NANA_LETTER_THEMES.map(function (t) {
+          nanaPapers().map(function (t) {
             var on = writeTheme === t.id;
             return h("button", { key: t.id, onClick: function () {
               var tpl = "📟 滴滴～给 " + (other ? other.label : "TA") + " 的一条小呼叫，不急慢慢看\n▸ 想约的事：\n▸ 什么时候：\n▸ 在哪碰头：\n收到回封小信就好 📮";
               pickWriteTheme(t.id);
               if (t.id === "call") { if (!(sharedDraft || "").trim()) setSharedDraft(tpl); }
               else if ((sharedDraft || "") === tpl) setSharedDraft("");
-            }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 34, height: 34, fontSize: "0.98rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.1)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
-          })),
+            }, title: t.name + " · " + t.use, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 34, height: 34, fontSize: "0.98rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.1)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
+          }),
+          h("span", { style: { color: "rgba(150,120,95,0.75)", fontSize: "0.64rem", fontWeight: 700, marginLeft: 2 } }, themeById(writeTheme).use || "")),
         h("div", { style: { position: "relative", transform: "rotate(-0.5deg)" } },
           tape(wt, -3),
           h("div", { style: Object.assign({}, paperStyle(wt), { padding: "20px 16px 34px 44px" }) },
@@ -9264,11 +9275,11 @@ function ReadingRoomActivity(_refRR) {
       // ── 选信纸 ──
       h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" } },
         h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
-        NANA_LETTER_THEMES.map(function (t) {
+        nanaPapers().map(function (t) {
           var on = writeTheme === t.id;
           return h("button", { key: t.id, onClick: function () { pickWriteTheme(t.id); }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 36, height: 36, fontSize: "1.02rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.12)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
         }),
-        h("span", { style: { color: "rgba(150,120,95,0.6)", fontSize: "0.64rem", marginLeft: 2 } }, wt.name)),
+        h("span", { style: { color: "rgba(150,120,95,0.7)", fontSize: "0.64rem", fontWeight: 700, marginLeft: 2 } }, wt.name + (wt.use ? "（" + wt.use + "）" : ""))),
       writeTheme === "call" && h("div", { style: { margin: "0 2px 12px", background: "rgba(255,205,110,0.18)", border: "1px dashed rgba(220,140,60,0.45)", borderRadius: 10, padding: "8px 11px", color: "#a86a20", fontSize: "0.68rem", fontWeight: 700, lineHeight: 1.6 } }, "📟 呼叫信笺是约事专用款——去 🏠 221B 标签页选它，会自动生成「事由/时间/地点」的呼叫模板寄给对方哦"),
       // ── 信纸写作区 ──
       h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 4 } },
