@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-205";
+var NANA_VER = "v2026.8.2-210";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18558,6 +18558,13 @@ var ldToday = function () {
   var p = new Date(d.toLocaleString("en-US", { timeZone: "Europe/London" }));
   return new Date(p.getFullYear(), p.getMonth(), p.getDate());
 };
+// 一条记录可以挂好几张照片：新的存在 us 里，老的只有一个 u —— 两种都要读得出来
+var NANA_MAX_SHOTS = 9;
+var nanaUrls = function (o) {
+  if (!o) return [];
+  if (o.us && o.us.length) return o.us.slice();
+  return o.u ? [o.u] : [];
+};
 // mp- / dc- 的 id 里带着按下那一刻的时间戳，用它把照片挂回日历的那一天
 var ldStampMs = function (id) { var m = String(id || "").match(/(\d{13})/); return m ? (+m[1]) : 0; };
 var ldStampDay = function (id) {
@@ -20382,7 +20389,7 @@ function LondonRoom(_refLD) {
   var _mi = useState(""); var pinName = _mi[0], setPinName = _mi[1];
   var _mx = useState(null); var pinDel = _mx[0], setPinDel = _mx[1];
   var _mw = useState(""); var pinSay = _mw[0], setPinSay = _mw[1];
-  var _mu = useState(""); var pinPhoto = _mu[0], setPinPhoto = _mu[1];
+  var _mu = useState([]); var pinUs = _mu[0], setPinUs = _mu[1];
   var _mub = useState(false); var pinUp = _mub[0], setPinUp = _mub[1];
   var _mue = useState(""); var pinErr = _mue[0], setPinErr = _mue[1];
   var _mv = useState(null); var myPick = _mv[0], setMyPick = _mv[1];
@@ -20396,7 +20403,7 @@ function LondonRoom(_refLD) {
   var _dct = useState(""); var dcText = _dct[0], setDcText = _dct[1];
   var _dcb = useState(false); var dcBusy = _dcb[0], setDcBusy = _dcb[1];
   var _dcd = useState(null); var dcDel = _dcd[0], setDcDel = _dcd[1];
-  var _dcp = useState(""); var dcPhoto = _dcp[0], setDcPhoto = _dcp[1];
+  var _dcp = useState([]); var dcUs = _dcp[0], setDcUs = _dcp[1];
   var _cfs = useState([]); var cfs = _cfs[0], setCfs = _cfs[1];
   var _cfo = useState(false); var cfOpen = _cfo[0], setCfOpen = _cfo[1];
   var _cfu = useState(""); var cfPhoto = _cfu[0], setCfPhoto = _cfu[1];
@@ -20532,38 +20539,62 @@ function LondonRoom(_refLD) {
   }, []);
   var _dcu = useState(false); var dcUp = _dcu[0], setDcUp = _dcu[1];
   var _dce = useState(""); var dcErr = _dce[0], setDcErr = _dce[1];
-  var onPickDuckPhoto = function (e) {
-    var f = e.target.files && e.target.files[0];
-    var inp = e.target;
+  // 一次可以选好几张：挨个压缩上传，传好一张就先摆出来，传不上去的那张自己退出去
+  var nanaPickMany = function (e, prefix, have, busy, setBusy, setErr, addOne, dropOne, onFirst) {
+    var fl = e.target.files, inp = e.target;
     setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
-    if (!f || dcUp) return;
-    setDcUp(true); setDcErr("");
-    var pid = "dp" + Date.now() + Math.floor(Math.random() * 900);
-    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
-    nanaPhotoCompress(f, function (err, data) {
-      if (err || !data) { setDcUp(false); setDcErr("这张读不出来，换一张"); return; }
-      nanaPhotoCompressTo(f, 360, 0.7, function (e3, tdata) {
-        nanaCloudPut(url, data);
-        var turl = nanaThumbUrl(url);
-        if (tdata && turl) nanaCloudPut(turl, tdata);
-        setDcPhoto(url);
-        nanaSharedUploadRetry(data, pid, 3, function (e2) {
-          if (e2) { setDcUp(false); setDcPhoto(""); setDcErr("没传上去，再试一次？"); return; }
-          if (!tdata) { setDcUp(false); return; }
-          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setDcUp(false); });
+    if (!fl || !fl.length || busy) return;
+    var files = [], i;
+    for (i = 0; i < fl.length; i++) files.push(fl[i]);
+    var room = NANA_MAX_SHOTS - have;
+    if (room <= 0) { setErr("一次最多 " + NANA_MAX_SHOTS + " 张，已经满了"); return; }
+    var over = files.length > room;
+    if (over) files = files.slice(0, room);
+    setBusy(true);
+    setErr(over ? ("一次最多 " + NANA_MAX_SHOTS + " 张，先收下这 " + files.length + " 张") : "");
+    if (onFirst) onFirst(files[0]);
+    var k = 0, bad = 0;
+    var step = function () {
+      if (k >= files.length) {
+        setBusy(false);
+        if (bad) setErr(bad === files.length ? "没传上去，再试一次？" : ("有 " + bad + " 张没传上去"));
+        return;
+      }
+      var f = files[k]; k++;
+      var pid = prefix + Date.now() + Math.floor(Math.random() * 900) + "n" + k;
+      var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
+      nanaPhotoCompress(f, function (err, data) {
+        if (err || !data) { bad++; step(); return; }
+        nanaPhotoCompressTo(f, 360, 0.7, function (e3, tdata) {
+          nanaCloudPut(url, data);
+          var turl = nanaThumbUrl(url);
+          if (tdata && turl) nanaCloudPut(turl, tdata);
+          addOne(url);
+          nanaSharedUploadRetry(data, pid, 3, function (e2) {
+            if (e2) { bad++; dropOne(url); step(); return; }
+            if (!tdata) { step(); return; }
+            nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { step(); });
+          });
         });
       });
-    });
+    };
+    step();
+  };
+  var dcAdd = function (u) { setDcUs(function (o) { return o.concat([u]); }); };
+  var dcDrop = function (u) { setDcUs(function (o) { return o.filter(function (y) { return y !== u; }); }); };
+  var onPickDuckPhoto = function (e) {
+    nanaPickMany(e, "dp", dcUs.length, dcUp, setDcUp, setDcErr, dcAdd, dcDrop, null);
   };
   var addDuck = function (k) {
     var t = dcText.trim();
-    if ((!t && !dcPhoto) || dcBusy || dcUp) return;
+    if ((!t && !dcUs.length) || dcBusy || dcUp) return;
     setDcBusy(true);
     var id = "dc-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, k: k, a: myAuthor || "nana", t: t, u: dcPhoto };
+    // u 留着第一张，老版本的读法照样认得
+    var row = { id: id, k: k, a: myAuthor || "nana", t: t, u: dcUs[0] || "", us: dcUs.slice() };
     setDucks(function (o) { return o.concat([row]); });
-    setDcText(""); setDcPhoto(""); setDcErr(""); setDcOpen("");
-    nanaPackAdd({ id: id, who: JSON.stringify({ dc: 1, k: k, a: row.a, t: t, u: row.u }) }, function (e) {
+    setDcText(""); setDcUs([]); setDcErr(""); setDcOpen("");
+    nanaPackAdd({ id: id, who: JSON.stringify({ dc: 1, k: k, a: row.a, t: t, u: row.u, us: row.us }) }, function (e) {
       setDcBusy(false);
       if (e) setDucks(function (o) { return o.filter(function (y) { return y.id !== id; }); });
     });
@@ -20571,7 +20602,7 @@ function LondonRoom(_refLD) {
   var delDuck = function (x) {
     if (dcDel !== x.id) { setDcDel(x.id); setTimeout(function () { setDcDel(null); }, 2600); return; }
     setDcDel(null);
-    if (x.u) nanaSharedPhotoDel(x.u);
+    nanaUrls(x).forEach(function (u) { nanaSharedPhotoDel(u); });
     setDucks(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
   };
@@ -20586,29 +20617,11 @@ function LondonRoom(_refLD) {
     var ll = ldLatLon(vx, vy);
     setPendPin({ la: ll[0], lo: ll[1] });
   };
-  // 传照片：跟 221B 那套一样，先存本机再往云上推，断了自动重试
+  // 传照片：跟 221B 那套一样，先存本机再往云上推，断了自动重试；一次可以选好几张
+  var pinAdd = function (u) { setPinUs(function (o) { return o.concat([u]); }); };
+  var pinDrop = function (u) { setPinUs(function (o) { return o.filter(function (y) { return y !== u; }); }); };
   var onPickPinPhoto = function (e) {
-    var f = e.target.files && e.target.files[0];
-    var inp = e.target;
-    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
-    if (!f || pinUp) return;
-    setPinUp(true); setPinErr("");
-    var pid = "mp" + Date.now() + Math.floor(Math.random() * 900);
-    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
-    nanaPhotoCompress(f, function (err, data) {
-      if (err || !data) { setPinUp(false); setPinErr("这张照片读不出来，换一张试试"); return; }
-      nanaPhotoCompressTo(f, 360, 0.7, function (err3, tdata) {
-        nanaCloudPut(url, data);
-        var turl = nanaThumbUrl(url);
-        if (tdata && turl) nanaCloudPut(turl, tdata);
-        setPinPhoto(url);
-        nanaSharedUploadRetry(data, pid, 3, function (err2) {
-          if (err2) { setPinUp(false); setPinPhoto(""); setPinErr("没传上去，再试一次？"); return; }
-          if (!tdata) { setPinUp(false); return; }
-          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setPinUp(false); });
-        });
-      });
-    });
+    nanaPickMany(e, "mp", pinUs.length, pinUp, setPinUp, setPinErr, pinAdd, pinDrop, null);
   };
   // 寄一份新案卷：先读照片里的 GPS，读到就自动落点
   var onPickCfPhoto = function (e) {
@@ -20659,55 +20672,38 @@ function LondonRoom(_refLD) {
     nanaPackDel(x.id, function () {});
   };
   var clearPinDraft = function () {
-    setPendPin(null); setPinName(""); setPinSay(""); setPinPhoto(""); setPinErr(""); setAddMode(false);
+    setPendPin(null); setPinName(""); setPinSay(""); setPinUs([]); setPinErr(""); setAddMode(false);
   };
-  // 直接传一张：先读照片里的位置，读到就自动落到地图上，读不到也照样收下
+  // 直接传：可以一次选好几张，位置从第一张里读，读不到也照样收下
   var onPickMyPhoto = function (e) {
-    var f = e.target.files && e.target.files[0];
-    var inp = e.target;
-    setTimeout(function () { try { inp.value = ""; } catch (_) {} }, 400);
-    if (!f || pinUp) return;
-    setPinUp(true); setPinErr("");
-    nanaExifGps(f, function (ll) { setPendPin(ll ? { la: ll[0], lo: ll[1] } : { la: 0, lo: 0 }); });
-    var pid = "mp" + Date.now() + Math.floor(Math.random() * 900);
-    var url = NANA_SYNC.url + "/storage/v1/object/public/notes/" + pid + ".jpg";
-    nanaPhotoCompress(f, function (err, data) {
-      if (err || !data) { setPinUp(false); setPinErr("这张照片读不出来，换一张试试"); return; }
-      nanaPhotoCompressTo(f, 360, 0.7, function (e3, tdata) {
-        nanaCloudPut(url, data);
-        var turl = nanaThumbUrl(url);
-        if (tdata && turl) nanaCloudPut(turl, tdata);
-        setPinPhoto(url);
-        nanaSharedUploadRetry(data, pid, 3, function (e2) {
-          if (e2) { setPinUp(false); setPinPhoto(""); setPinErr("没传上去，再试一次？"); return; }
-          if (!tdata) { setPinUp(false); return; }
-          nanaSharedUploadRetry(tdata, pid + "_t", 2, function () { setPinUp(false); });
-        });
-      });
+    nanaPickMany(e, "mp", pinUs.length, pinUp, setPinUp, setPinErr, pinAdd, pinDrop, function (f0) {
+      if (pendPin) return;   // 已经有位置了就不再覆盖
+      nanaExifGps(f0, function (ll) { setPendPin(ll ? { la: ll[0], lo: ll[1] } : { la: 0, lo: 0 }); });
     });
   };
   var saveShot = function () {
     var t = pinName.trim();
-    if (!t || !pinPhoto || pinUp) return;
+    if (!t || !pinUs.length || pinUp) return;
     var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, n: t, la: (pendPin && pendPin.la) || 0, lo: (pendPin && pendPin.lo) || 0, say: pinSay.trim(), u: pinPhoto };
+    // u 留着第一张，老版本的读法照样认得
+    var row = { id: id, n: t, la: (pendPin && pendPin.la) || 0, lo: (pendPin && pendPin.lo) || 0, say: pinSay.trim(), u: pinUs[0] || "", us: pinUs.slice() };
     setMyPins(function (o) { return o.concat([row]); });
     setShotOpen(false); clearPinDraft();
-    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: row.n, la: row.la, lo: row.lo, say: row.say, u: row.u }) }, function () {});
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: row.n, la: row.la, lo: row.lo, say: row.say, u: row.u, us: row.us }) }, function () {});
   };
   var savePin = function () {
     var t = pinName.trim();
     if (!t || !pendPin || pinUp) return;
     var id = "mp-" + Date.now() + Math.floor(Math.random() * 90);
-    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo, say: pinSay.trim(), u: pinPhoto };
+    var row = { id: id, n: t, la: pendPin.la, lo: pendPin.lo, say: pinSay.trim(), u: pinUs[0] || "", us: pinUs.slice() };
     setMyPins(function (o) { return o.concat([row]); });
     clearPinDraft();
-    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo, say: row.say, u: row.u }) }, function () {});
+    nanaPackAdd({ id: id, who: JSON.stringify({ mp: 1, n: t, la: row.la, lo: row.lo, say: row.say, u: row.u, us: row.us }) }, function () {});
   };
   var delPin = function (x) {
     if (pinDel !== x.id) { setPinDel(x.id); setTimeout(function () { setPinDel(null); }, 2600); return; }
     setPinDel(null);
-    if (x.u) nanaSharedPhotoDel(x.u);
+    nanaUrls(x).forEach(function (u) { nanaSharedPhotoDel(u); });
     setMyPick(null);
     setMyPins(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
     nanaPackDel(x.id, function () {});
@@ -20802,32 +20798,55 @@ function LondonRoom(_refLD) {
           h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
             h("span", { style: { fontSize: "0.6rem", fontWeight: 800, color: au.col } }, au.e + " " + au.label),
             own ? h("span", { onClick: function () { delDuck(c); }, style: { marginLeft: "auto", fontSize: "0.58rem", fontWeight: 800, color: dcDel === c.id ? "#c0392b" : "rgba(140,120,95,0.7)", cursor: "pointer" } }, dcDel === c.id ? "再点一下删掉" : "删") : null),
-          c.u ? h("div", { style: { marginTop: 5, background: "#fff", padding: 4, borderRadius: 4, display: "inline-block", boxShadow: "0 4px 11px rgba(60,45,30,0.22)" } },
-            h(NanaCloudImg, { u: c.u, thumb: true, onClick: function () { setWallBig(c.u); }, style: { width: 132, height: 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })) : null,
-          c.t ? h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: c.u ? 5 : 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t) : null);
+          (function () {
+            var us = nanaUrls(c);
+            if (!us.length) return null;
+            return h("div", { style: { marginTop: 5, display: "flex", flexWrap: "wrap", gap: 6 } },
+              us.map(function (u, ui) {
+                return h("div", { key: "du" + ui, style: { background: "#fff", padding: 4, borderRadius: 4, boxShadow: "0 4px 11px rgba(60,45,30,0.22)" } },
+                  h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setWallBig(u); }, style: { width: us.length > 1 ? 92 : 132, height: us.length > 1 ? 72 : 100, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
+              }));
+          })(),
+          c.t ? h("div", { style: { fontSize: "0.74rem", color: "#4a3f30", lineHeight: 1.7, marginTop: nanaUrls(c).length ? 5 : 2, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, c.t) : null);
       }));
+  };
+  // 草稿里那排照片：每张右上角一个 ✕，后面跟一个「再加一张」
+  var shotStrip = function (list, dropAt, inputId, busy, w, hh, first, tint) {
+    var col = tint || "#a97f2e";
+    return h("div", { style: { display: "flex", flexWrap: "wrap", gap: 7, alignItems: "center" } },
+      list.map(function (u, i) {
+        return h("div", { key: "sp" + i, style: { position: "relative", flexShrink: 0, background: "#fff", padding: "4px 4px 10px", boxShadow: "0 4px 11px rgba(60,45,30,0.24)", borderRadius: 3, transform: "rotate(" + (i % 2 ? 1.6 : -1.6) + "deg)" } },
+          h(NanaCloudImg, { u: u, thumb: true, style: { width: w, height: hh, objectFit: "cover", display: "block", borderRadius: 2 } }),
+          h("button", { onClick: function () { dropAt(i, u); }, style: { position: "absolute", right: -7, top: -7, width: 20, height: 20, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "\u2715"));
+      }),
+      list.length < NANA_MAX_SHOTS
+        ? h("span", { onClick: function () { if (busy) return; try { var el = document.getElementById(inputId); if (el) el.click(); } catch (_) {} },
+            style: { flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: busy ? "default" : "pointer", border: "1.5px dashed " + col, borderRadius: list.length ? 6 : 999, padding: list.length ? 0 : "7px 13px", width: list.length ? w + 8 : "auto", height: list.length ? hh + 14 : "auto", color: col, fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)", lineHeight: 1.5 } },
+            busy ? "\u23eb 传着…" : (list.length ? "\uff0b 再加" : first))
+        : null);
   };
   var duckForm = function (k, inputId) {
     if (dcOpen !== k) return null;
-    var can = (dcText.trim() || dcPhoto) && !dcBusy && !dcUp;
+    var can = (dcText.trim() || dcUs.length) && !dcBusy && !dcUp;
     return h("div", { style: { marginTop: 8 } },
       h("textarea", { value: dcText, onChange: function (e) { setDcText(e.target.value); }, rows: 2, placeholder: "想说什么都行，也可以只传一张照片 · 两个人都看得见",
         style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.45)", borderRadius: 8, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none", resize: "vertical", lineHeight: 1.7 } }),
+      h("div", { style: { marginTop: 7 } },
+        shotStrip(dcUs, function (i, u) { nanaSharedPhotoDel(u); setDcUs(function (o) { return o.filter(function (y) { return y !== u; }); }); },
+          inputId, dcUp, 66, 52, "📷 传照片（可以多张）", "rgba(169,127,46,0.7)")),
       h("div", { style: { display: "flex", gap: 8, marginTop: 7, alignItems: "center", flexWrap: "wrap" } },
-        dcPhoto
-          ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 10px", boxShadow: "0 4px 11px rgba(60,45,30,0.25)", borderRadius: 3, transform: "rotate(-2deg)" } },
-              h(NanaCloudImg, { u: dcPhoto, thumb: true, style: { width: 66, height: 52, objectFit: "cover", display: "block", borderRadius: 2 } }),
-              h("button", { onClick: function () { nanaSharedPhotoDel(dcPhoto); setDcPhoto(""); }, style: { position: "absolute", right: -7, top: -7, width: 20, height: 20, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.62rem", cursor: "pointer" } }, "✕"))
-          : h("span", { onClick: function () { if (dcUp) return; try { var el = document.getElementById(inputId); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", cursor: dcUp ? "default" : "pointer", border: "1.5px dashed rgba(169,127,46,0.6)", borderRadius: 999, padding: "6px 12px", color: "#a97f2e", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.7)" } }, dcUp ? "⏫ 传着…" : "📷 传张照片"),
-        h("input", { id: inputId, type: "file", accept: "image/*", onChange: onPickDuckPhoto, style: { display: "none" } }),
+        h("input", { id: inputId, type: "file", accept: "image/*", multiple: true, onChange: onPickDuckPhoto, style: { display: "none" } }),
         h("button", { onClick: function () { addDuck(k); }, disabled: !can, style: { marginLeft: "auto", border: "none", borderRadius: 999, padding: "6px 15px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: can ? "pointer" : "default", background: can ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: can ? "#4a3510" : "#fff" } }, dcBusy ? "贴上去…" : "贴上去"),
-        h("button", { onClick: function () { setDcOpen(""); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")),
+        h("button", { onClick: function () { setDcOpen(""); setDcText(""); setDcUs([]); setDcErr(""); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")),
       dcErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, dcErr) : null);
   };
   var duckBtn = function (k, style) {
     var n = ducks.filter(function (c) { return c.k === k; });
-    return h("button", { onClick: function () { setDcOpen(dcOpen === k ? "" : k); setDcText(""); setDcPhoto(""); setDcErr(""); }, style: style },
-      n.length ? ((n.filter(function (c) { return c.u; }).length ? "📷 " : "💬 ") + n.length) : "💬 写两句 / 传照片");
+    // 数的是照片张数，不是条数 —— 一条里可以有好几张
+    var np = 0;
+    n.forEach(function (c) { np += nanaUrls(c).length; });
+    return h("button", { onClick: function () { setDcOpen(dcOpen === k ? "" : k); setDcText(""); setDcUs([]); setDcErr(""); }, style: style },
+      n.length ? (np ? ("📷 " + np) : ("💬 " + n.length)) : "💬 写两句 / 传照片");
   };
   var toggleBeen = function (name) {
     var nx = wallBeen.indexOf(name) >= 0
@@ -20914,7 +20933,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("dc-") === 0) {
           var co = null;
           try { co = JSON.parse(r.who); } catch (_) { co = null; }
-          if (co && co.dc) dcs.push({ id: r.id, k: co.k || "", a: co.a || "nana", t: co.t || "", u: co.u || "" });
+          if (co && co.dc) dcs.push({ id: r.id, k: co.k || "", a: co.a || "nana", t: co.t || "", u: co.u || "", us: nanaUrls(co) });
         }
         else if (r.id && r.id.indexOf("pc-") === 0) {
           var pco = null;
@@ -20924,7 +20943,7 @@ function LondonRoom(_refLD) {
         else if (r.id && r.id.indexOf("mp-") === 0) {
           var mo = null;
           try { mo = JSON.parse(r.who); } catch (_) { mo = null; }
-          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo, say: mo.say || "", u: mo.u || "" });
+          if (mo && mo.mp) mps.push({ id: r.id, n: mo.n || "", la: mo.la, lo: mo.lo, say: mo.say || "", u: mo.u || "", us: nanaUrls(mo) });
         }
         else if (r.id && r.id.indexOf("ev-") === 0) {
           var eo = null;
@@ -21633,15 +21652,27 @@ function LondonRoom(_refLD) {
     }));
   // 她拍的照片有两个来源：自己在地图上加的针，和任务里传的
   // 221B 里的照片一概不进来 —— 那儿是封着的，不往别处露
+  // 一条记录可能有好几张照片，这里摊平成一张一张的 —— 照片墙、日历、评论都按张来
   var herShots = (function () {
-    var out = [], i, j, c, w;
-    for (i = 0; i < myPins.length; i++) { if (myPins[i].u) out.push({ kind: "pin", id: myPins[i].id, n: myPins[i].n, say: myPins[i].say, u: myPins[i].u, la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" }); }
+    var out = [], i, j, k, c, w, us;
+    for (i = 0; i < myPins.length; i++) {
+      us = nanaUrls(myPins[i]);
+      for (k = 0; k < us.length; k++) {
+        out.push({ kind: "pin", pid: myPins[i].id, id: myPins[i].id + (k ? "#" + k : ""), ix: k, nu: us.length,
+          n: myPins[i].n, say: myPins[i].say, u: us[k], la: myPins[i].la, lo: myPins[i].lo, q: myPins[i].n + " London" });
+      }
+    }
     for (j = 0; j < ducks.length; j++) {
       c = ducks[j];
-      if (!c.u || c.a !== "nana") continue;
+      if (c.a !== "nana") continue;
+      us = nanaUrls(c);
+      if (!us.length) continue;
       w = null;
       for (i = 0; i < wallShown.length; i++) { if (wallShown[i].n === c.k) w = wallShown[i]; }
-      out.push({ kind: "duck", id: c.id, n: c.k, say: c.t, u: c.u, la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
+      for (k = 0; k < us.length; k++) {
+        out.push({ kind: "duck", pid: c.id, id: c.id + (k ? "#" + k : ""), ix: k, nu: us.length,
+          n: c.k, say: c.t, u: us[k], la: w ? w.la : 0, lo: w ? w.lo : 0, q: w ? w.q : c.k + " London" });
+      }
     }
     return out;
   })();
@@ -22291,29 +22322,27 @@ function LondonRoom(_refLD) {
         // 直接传一张：不用先在地图上点，照片里带位置就自动落到地图上
         mine ? (shotOpen
           ? h("div", { key: "up1", style: { marginTop: 4, marginBottom: withP.length ? 12 : 0, background: "rgba(180,53,58,0.07)", border: "1px dashed rgba(180,53,58,0.35)", borderRadius: 10, padding: "11px 12px" } },
-              h("div", { style: { display: "flex", gap: 10, alignItems: "flex-start" } },
-                pinPhoto
-                  ? h("div", { style: { position: "relative", flexShrink: 0, background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 13px rgba(60,45,30,0.26)", borderRadius: 3, transform: "rotate(-2deg)" } },
-                      h(NanaCloudImg, { u: pinPhoto, thumb: true, style: { width: 78, height: 62, objectFit: "cover", display: "block", borderRadius: 2 } }),
-                      h("button", { onClick: function () { nanaSharedPhotoDel(pinPhoto); setPinPhoto(""); }, style: { position: "absolute", right: -8, top: -8, width: 21, height: 21, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer" } }, "✕"))
-                  : h("span", { onClick: function () { if (pinUp) return; try { var el = document.getElementById("my-photo-input"); if (el) el.click(); } catch (_) {} }, style: { flexShrink: 0, width: 78, height: 74, display: "inline-flex", alignItems: "center", justifyContent: "center", textAlign: "center", cursor: pinUp ? "default" : "pointer", border: "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 6, color: "#b4353a", fontWeight: 800, fontSize: "0.68rem", background: "rgba(255,255,255,0.75)", lineHeight: 1.5 } }, pinUp ? "⏫ 传着…" : "📷 选一张"),
+              shotStrip(pinUs, function (i, u) { nanaSharedPhotoDel(u); setPinUs(function (o) { return o.filter(function (y) { return y !== u; }); }); },
+                "my-photo-input", pinUp, 78, 62, "📷 选几张", "rgba(180,53,58,0.5)"),
+              h("div", { style: { display: "flex", gap: 10, alignItems: "flex-start", marginTop: 9 } },
                 h("div", { style: { flex: 1, minWidth: 0 } },
                   h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "这是哪儿（会写在地图上）", style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none" } }),
                   h("input", { value: pinSay, onChange: function (e) { setPinSay(e.target.value); }, placeholder: "想写一句就写（可以空着）", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.35)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.74rem", background: "rgba(255,255,255,0.85)", color: UK_INK, outline: "none" } }))),
-              h("input", { id: "my-photo-input", type: "file", accept: "image/*", onChange: onPickMyPhoto, style: { display: "none" } }),
+              h("input", { id: "my-photo-input", type: "file", accept: "image/*", multiple: true, onChange: onPickMyPhoto, style: { display: "none" } }),
               h("div", { style: { marginTop: 8, fontSize: "0.64rem", fontWeight: 800, color: (pendPin && pendPin.la) ? "#1f7a55" : "rgba(140,120,95,0.95)" } },
-                (pendPin && pendPin.la) ? "📍 位置已经从照片里读到了，会落在地图上" : (pinPhoto ? "照片里没有位置 —— 还是会收进这儿，只是地图上不落针" : "选一张照片，有位置的话会自动落到地图上")),
+                (pendPin && pendPin.la) ? ("📍 位置已经从照片里读到了，会落在地图上" + (pinUs.length > 1 ? ("　·　这 " + pinUs.length + " 张都算在这个地方") : "")) : (pinUs.length ? "照片里没有位置 —— 还是会收进这儿，只是地图上不落针" : "选照片，可以一次选好几张；有位置的话会自动落到地图上")),
               pinErr ? h("div", { style: { marginTop: 6, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null,
               h("div", { style: { display: "flex", gap: 8, marginTop: 9, alignItems: "center" } },
-                h("button", { onClick: saveShot, disabled: !pinName.trim() || !pinPhoto || pinUp, style: { border: "none", borderRadius: 999, padding: "8px 18px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: (pinName.trim() && pinPhoto && !pinUp) ? "pointer" : "default", background: (pinName.trim() && pinPhoto && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: (pinName.trim() && pinPhoto && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "贴上去"),
+                h("button", { onClick: saveShot, disabled: !pinName.trim() || !pinUs.length || pinUp, style: { border: "none", borderRadius: 999, padding: "8px 18px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.74rem", cursor: (pinName.trim() && pinUs.length && !pinUp) ? "pointer" : "default", background: (pinName.trim() && pinUs.length && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: (pinName.trim() && pinUs.length && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : (pinUs.length > 1 ? ("贴上去（" + pinUs.length + " 张）") : "贴上去")),
                 h("button", { onClick: function () { setShotOpen(false); clearPinDraft(); }, style: { border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: "rgba(140,120,95,0.9)", cursor: "pointer" } }, "算了")))
-          : h("button", { key: "up0", onClick: function () { setShotOpen(true); clearPinDraft(); }, style: { width: "100%", marginTop: 4, marginBottom: withP.length ? 12 : 0, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.55)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📷 传一张我拍的")) : null,
+          : h("button", { key: "up0", onClick: function () { setShotOpen(true); clearPinDraft(); }, style: { width: "100%", marginTop: 4, marginBottom: withP.length ? 12 : 0, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.55)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📷 传我拍的（可以多张）")) : null,
         withP.length ? h("div", { key: "mw", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 4 } },
           withP.map(function (x, i) {
             var nc = pcOf(x.u).length, nn = pcNew(x.u).length;
             return h("div", { key: "mw" + x.id, onClick: function () { openShot(x.id, x.u); },
               style: { background: "#fff", padding: "6px 6px 22px", borderRadius: 3, boxShadow: "0 6px 16px rgba(60,45,30,0.24)", transform: "rotate(" + (i % 2 ? 1.8 : -1.8) + "deg)", cursor: "pointer", position: "relative" } },
               h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 112, objectFit: "cover", display: "block", borderRadius: 2 } }),
+              x.nu > 1 ? h("span", { style: { position: "absolute", left: 10, top: 10, background: "rgba(28,36,44,0.72)", color: "#fdf0d2", borderRadius: 999, padding: "1px 7px", fontSize: "0.56rem", fontWeight: 800 } }, (x.ix + 1) + "/" + x.nu) : null,
               nc ? h("span", { style: { position: "absolute", right: -6, top: -6, background: nn ? "linear-gradient(135deg,#3fa79a,#1f6f68)" : "linear-gradient(135deg,#f0c46a,#d99b31)", color: nn ? "#eefaf7" : "#4a3510", borderRadius: 999, padding: "2px 8px", fontSize: "0.6rem", fontWeight: 800, boxShadow: nn ? "0 2px 8px rgba(31,111,104,0.45)" : "0 2px 7px rgba(150,110,30,0.45)" } }, nn ? ("💬 ＋" + nn) : ("💬 " + nc)) : null,
               h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 4, textAlign: "center", fontFamily: LDHAND, fontSize: "0.88rem", color: "#3a3226" } }, x.n));
           })) : null
@@ -22586,19 +22615,17 @@ function LondonRoom(_refLD) {
             pendPin ? h("div", null,
               h("input", { value: pinName, onChange: function (e) { setPinName(e.target.value); }, placeholder: "比如 海德公园的长椅", style: { width: "100%", boxSizing: "border-box", border: "1px solid rgba(169,127,46,0.5)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.76rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
               h("input", { value: pinSay, onChange: function (e) { setPinSay(e.target.value); }, placeholder: "想写一句就写（可以空着）", style: { width: "100%", boxSizing: "border-box", marginTop: 6, border: "1px solid rgba(169,127,46,0.35)", borderRadius: 7, padding: "8px 9px", fontFamily: "inherit", fontSize: "0.74rem", background: "rgba(255,255,255,0.8)", color: UK_INK, outline: "none" } }),
+              h("div", { style: { marginTop: 8 } },
+                shotStrip(pinUs, function (i, u) { nanaSharedPhotoDel(u); setPinUs(function (o) { return o.filter(function (y) { return y !== u; }); }); },
+                  "mp-photo-input", pinUp, 72, 58, "📷 配照片（可以多张）", "rgba(180,53,58,0.5)")),
               h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginTop: 8 } },
-                pinPhoto
-                  ? h("div", { style: { position: "relative", background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 13px rgba(60,45,30,0.28)", transform: "rotate(-2deg)", borderRadius: 3, flexShrink: 0 } },
-                      h(NanaCloudImg, { u: pinPhoto, thumb: true, style: { width: 72, height: 58, objectFit: "cover", display: "block", borderRadius: 2 } }),
-                      h("button", { onClick: function () { nanaSharedPhotoDel(pinPhoto); setPinPhoto(""); }, style: { position: "absolute", right: -8, top: -8, width: 21, height: 21, borderRadius: "50%", border: "none", background: "#e07070", color: "#fff", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", boxShadow: "0 2px 6px rgba(150,60,60,0.4)" } }, "✕"))
-                  : h("span", { onClick: function () { if (pinUp) return; try { var el = document.getElementById("mp-photo-input"); if (el) el.click(); } catch (_) {} }, style: { display: "inline-flex", alignItems: "center", gap: 5, cursor: pinUp ? "default" : "pointer", border: "1.5px dashed rgba(180,53,58,0.5)", borderRadius: 999, padding: "7px 13px", color: "#b4353a", fontWeight: 800, fontSize: "0.7rem", background: "rgba(255,255,255,0.75)" } }, pinUp ? "⏫ 照片在传…" : "📷 配一张照片"),
-                h("input", { id: "mp-photo-input", type: "file", accept: "image/*", onChange: onPickPinPhoto, style: { display: "none" } }),
+                h("input", { id: "mp-photo-input", type: "file", accept: "image/*", multiple: true, onChange: onPickPinPhoto, style: { display: "none" } }),
                 h("button", { onClick: savePin, disabled: !pinName.trim() || pinUp, style: { marginLeft: "auto", flexShrink: 0, border: "none", borderRadius: 7, padding: "9px 16px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: (pinName.trim() && !pinUp) ? "pointer" : "default", background: (pinName.trim() && !pinUp) ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.35)", color: (pinName.trim() && !pinUp) ? "#4a3510" : "#fff" } }, pinUp ? "等一下" : "盖章")),
               pinErr ? h("div", { style: { marginTop: 7, fontSize: "0.68rem", color: "#c05555", fontWeight: 700 } }, pinErr) : null) : null,
             h("button", { onClick: clearPinDraft, style: { marginTop: 8, border: "none", background: "none", color: "rgba(140,120,95,0.9)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", padding: 0 } }, "算了，不加了"))
         : (myAuthor === "panda"
             ? null
-            : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配张照片）")),
+            : h("button", { key: "add0", onClick: function () { setAddMode(true); }, style: { width: "100%", marginTop: 10, border: "1.5px dashed rgba(180,53,58,0.5)", background: "rgba(255,255,255,0.5)", borderRadius: 9, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#b4353a", cursor: "pointer" } }, "📍 加一个我自己去过的地方（可以配照片）")),
       myPins.length ? h("div", { key: "mylist", style: { marginTop: 10, borderTop: "1px dotted rgba(169,127,46,0.45)", paddingTop: 9 } },
         h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "我自己加的 " + myPins.length + " 个地方"),
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 6 } },
@@ -22785,6 +22812,7 @@ function LondonRoom(_refLD) {
             h("div", { style: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } },
               h("span", { style: { fontFamily: LDSCRAWL, fontWeight: 700, fontSize: "1.5rem", color: "#20303a" } }, x.n),
               h("span", { style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", borderRadius: 999, padding: "3px 10px", fontSize: "0.58rem", fontWeight: 800 } }, "我去过"),
+              x.nu > 1 ? h("span", { style: { background: "rgba(40,52,62,0.1)", color: "#43505c", borderRadius: 999, padding: "3px 9px", fontSize: "0.58rem", fontWeight: 800 } }, "这处的第 " + (x.ix + 1) + " 张，共 " + x.nu + " 张") : null,
               h("span", { style: { marginLeft: "auto", fontSize: "0.6rem", fontWeight: 800, color: "rgba(120,105,80,0.9)" } }, ldStampHM(x.id))),
             x.say ? h("div", { style: { marginTop: 11, background: "rgba(255,255,255,0.7)", borderLeft: "4px solid #d99b31", borderRadius: "0 8px 8px 0", padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.86rem", color: "#4a3f30", lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word" } }, x.say) : null,
             photoTalk(x.u),
@@ -22792,8 +22820,8 @@ function LondonRoom(_refLD) {
               x.q ? h("a", { href: ldMap(x.q), target: "_blank", rel: "noopener", style: { flex: 1, textAlign: "center", textDecoration: "none", background: UK_NAVY, color: "#fdf0d2", borderRadius: 8, padding: "9px 0", fontSize: "0.76rem", fontWeight: 800 } }, "📍 打开地图") : null,
               h("button", { onClick: function () { setMyPick(null); }, style: { flex: x.q ? "0 0 auto" : 1, border: "1px solid rgba(120,105,80,0.4)", background: "transparent", borderRadius: 8, padding: "9px 16px", fontFamily: "inherit", fontSize: "0.76rem", fontWeight: 800, color: "#6b6355", cursor: "pointer" } }, "关上")),
             x.kind === "pin"
-              ? h("button", { onClick: function () { delPin(x); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.id ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
-                  pinDel === x.id ? "再点一下就删掉了" : "撤掉这一枚")
+              ? h("button", { onClick: function () { var pr = null, pi; for (pi = 0; pi < myPins.length; pi++) { if (myPins[pi].id === x.pid) pr = myPins[pi]; } if (pr) delPin(pr); }, style: { width: "100%", marginTop: 9, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", color: pinDel === x.pid ? "#c0392b" : "rgba(140,120,95,0.9)", cursor: "pointer", padding: "4px 0" } },
+                  pinDel === x.pid ? "再点一下就删掉了" : (x.nu > 1 ? ("撤掉这一枚（连它的 " + x.nu + " 张照片）") : "撤掉这一枚"))
               : h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.64rem", color: "rgba(140,120,95,0.9)", fontFamily: LDHAND } }, "这张是在「你的任务」里传的，要撤到那边去撤"))));
   })();
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
