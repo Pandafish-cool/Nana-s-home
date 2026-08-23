@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-216";
+var NANA_VER = "v2026.8.2-217";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8584,7 +8584,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(202,235,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#58b6bb", "#8bd6da", "#63bad9", "#8bd6da"],
     wash1: "rgba(202,235,237,0.18)", wash2: "rgba(204,231,217,0.15)", footE: "⛵" , pat: nanaPat("🐚", "⛵", 58, 0.08) , rule: "dot" },
-  { id: "call", name: "呼叫信笺", e: "📟", pick: 14, use: "约个时间", css: "linear-gradient(160deg,#b6d4e2,#95a9d2)",
+  { id: "call", name: "呼叫信笺", e: "📟", pick: 14, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
     out1: "#e8f0f2", out2: "#95a9d2", p1: "#d2e2ea", p2: "#b6d4e2",
     line: "rgba(88,156,187,0.3)", margin: "rgba(88,156,187,0.45)",
     header: "#306c88", date: "rgba(48,108,136,0.85)", text: "#254d5f", foot: "rgba(48,108,136,0.8)",
@@ -9262,9 +9262,9 @@ function ReadingRoomActivity(_refRR) {
             if (n.th === "call") {
               var pusC = nanaPuPics(n.pu);
               return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.6 : -0.6) + "deg)", marginBottom: 24 } },
-                h("div", { style: { background: "linear-gradient(180deg,#d2e2ea,#b6d4e2)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: "0 10px 26px rgba(120,160,185,0.4)", position: "relative" } },
+                h("div", { style: { background: "linear-gradient(180deg,#ffe98a,#ffd24a)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: "0 10px 26px rgba(220,160,40,0.4)", position: "relative" } },
                   h("div", { style: { position: "absolute", right: 24, top: -16, textAlign: "center", transform: "rotate(10deg)", pointerEvents: "none" } },
-                    h("div", { style: { width: 2, height: 12, background: "rgba(110,150,175,0.8)", margin: "0 auto" } }),
+                    h("div", { style: { width: 2, height: 12, background: "rgba(200,140,40,0.8)", margin: "0 auto" } }),
                     h("div", { style: { fontSize: "0.85rem", lineHeight: 1 } }, "🐟")),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
                     h("span", { style: { fontSize: "0.9rem" } }, "📟"),
@@ -9296,7 +9296,7 @@ function ReadingRoomActivity(_refRR) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
                         h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
-                  h("div", { style: { textAlign: "center", color: "rgba(70,110,135,0.62)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
+                  h("div", { style: { textAlign: "center", color: "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
             }
             return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.8 : -0.8) + "deg)", marginBottom: 24 } },
               tape(nt, i % 2 ? 4 : -4, i % 3 === 0 ? "32%" : i % 3 === 1 ? "52%" : "70%"),
@@ -9332,7 +9332,7 @@ function ReadingRoomActivity(_refRR) {
           return h("button", { key: t.id, onClick: function () { pickWriteTheme(t.id); }, title: t.name, style: { border: on ? "2px solid #d07838" : "1.5px solid rgba(180,150,140,0.35)", background: t.css, borderRadius: 999, width: 36, height: 36, fontSize: "1.02rem", cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(210,130,60,0.4)" : "none", transform: on ? "scale(1.12)" : "none", transition: "all 0.15s", padding: 0, lineHeight: 1 } }, t.e);
         }),
         h("span", { style: { color: "rgba(150,120,95,0.7)", fontSize: "0.64rem", fontWeight: 700, marginLeft: 2 } }, wt.name + (wt.use ? "（" + wt.use + "）" : ""))),
-      writeTheme === "call" && h("div", { style: { margin: "0 2px 12px", background: "rgba(182,212,226,0.28)", border: "1px dashed rgba(110,150,175,0.5)", borderRadius: 10, padding: "8px 11px", color: "#2b5c72", fontSize: "0.68rem", fontWeight: 700, lineHeight: 1.6 } }, "📟 呼叫信笺是约事专用款——去 🏠 221B 标签页选它，会自动生成「事由/时间/地点」的呼叫模板寄给对方哦"),
+      writeTheme === "call" && h("div", { style: { margin: "0 2px 12px", background: "rgba(255,205,110,0.18)", border: "1px dashed rgba(220,140,60,0.45)", borderRadius: 10, padding: "8px 11px", color: "#a86a20", fontSize: "0.68rem", fontWeight: 700, lineHeight: 1.6 } }, "📟 呼叫信笺是约事专用款——去 🏠 221B 标签页选它，会自动生成「事由/时间/地点」的呼叫模板寄给对方哦"),
       // ── 信纸写作区 ──
       h("div", { style: { position: "relative", transform: "rotate(-0.6deg)", marginTop: 4 } },
         tape(wt, -3),
