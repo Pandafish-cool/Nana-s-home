@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-219";
+var NANA_VER = "v2026.8.2-220";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18566,6 +18566,15 @@ var ldToday = function () {
   var p = new Date(d.toLocaleString("en-US", { timeZone: "Europe/London" }));
   return new Date(p.getFullYear(), p.getMonth(), p.getDate());
 };
+// ── 开心的一瞬间：伦敦首页上留着的那几下 ──
+// 新的加在最前面就行，首页只显示第一条
+var LD_MOMENTS = [
+  { id: "roll", d: "2026-08-23", e: "🌿",
+    t: "你从坡上滚下去了",
+    at: "The Spaniards 后面那片草坪",
+    say: "昨天我们还在说，想从格林威治的大坡上一路滚下来。今天你就在这片草地上，先滚了个够。",
+    tail: "格林威治那个大坡先记着 —— 等我来了一起滚" }
+];
 // 一条记录可以挂好几张照片：新的存在 us 里，老的只有一个 u —— 两种都要读得出来
 var NANA_MAX_SHOTS = 9;
 var nanaUrls = function (o) {
@@ -21476,8 +21485,88 @@ function LondonRoom(_refLD) {
             h("a", { href: ldMap(LD_ADDR_Q), target: "_blank", rel: "noopener", style: { display: "inline-block", marginTop: 9, textDecoration: "none", border: "1px solid rgba(255,216,138,0.5)", borderRadius: 999, padding: "5px 14px", fontSize: "0.66rem", fontWeight: 800, color: "#ffd88a" } }, "📍 打开地图"))
         ) : null);
   };
+  // ── 开心的一瞬间：草坡上滚下去的那一下 ──
+  var momentCard = (function () {
+    var m = LD_MOMENTS[0];
+    if (!m) return null;
+    var td = ldToday();
+    var tds = td.getFullYear() + "-" + ("0" + (td.getMonth() + 1)).slice(-2) + "-" + ("0" + td.getDate()).slice(-2);
+    var when = m.d === tds ? "今天" : ldMD(m.d);
+    // 远处的树
+    var trees = [[14, 8], [30, 11], [48, 7], [66, 10], [88, 8], [112, 12], [138, 9], [162, 11], [188, 8], [214, 10], [232, 7]];
+    // 坡面上的草丛
+    var tufts = [[20, 60], [56, 69], [94, 80], [132, 90], [170, 99], [204, 107], [40, 88], [116, 108], [186, 114]];
+    return ukCard([
+      screws,
+      ukHead("开心的一瞬间", when + " · " + m.at, h("span", { style: { fontSize: "1rem" } }, m.e)),
+      h("div", { key: "rollsvg", style: { marginTop: 4, borderRadius: 10, overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.35)" } },
+        h("svg", { viewBox: "0 0 240 118", style: { width: "100%", display: "block" } },
+          h("defs", null,
+            h("linearGradient", { id: "rollSky", x1: "0", y1: "0", x2: "0", y2: "1" },
+              h("stop", { offset: "0", stopColor: "#dfeaf0" }),
+              h("stop", { offset: "1", stopColor: "#f4efdd" })),
+            h("linearGradient", { id: "rollGrass", x1: "0", y1: "0", x2: "0", y2: "1" },
+              h("stop", { offset: "0", stopColor: "#d8dca6" }),
+              h("stop", { offset: "1", stopColor: "#bcc489" }))),
+          h("rect", { x: 0, y: 0, width: 240, height: 118, fill: "url(#rollSky)" }),
+          // 太阳
+          h("circle", { cx: 208, cy: 20, r: 13, fill: "rgba(255,228,160,0.5)" }),
+          h("circle", { cx: 208, cy: 20, r: 7.5, fill: "#ffe6a8" }),
+          // 远处的水面和树线
+          h("rect", { x: 0, y: 30, width: 240, height: 7, fill: "rgba(96,120,116,0.35)" }),
+          trees.map(function (t, i) {
+            return h("ellipse", { key: "t" + i, cx: t[0], cy: 33 - t[1] * 0.35, rx: t[1] * 0.72, ry: t[1] * 0.9, fill: i % 3 ? "rgba(74,96,74,0.75)" : "rgba(58,80,60,0.8)" });
+          }),
+          // 远处的平地
+          h("rect", { x: 0, y: 37, width: 240, height: 81, fill: "#c7d09b" }),
+          // 照片里那道细铁丝栅栏
+          h("line", { x1: 0, y1: 51, x2: 240, y2: 51, stroke: "rgba(90,88,70,0.45)", strokeWidth: 0.8 }),
+          [8, 34, 60, 86, 112, 138, 164, 190, 216].map(function (x, i) {
+            return h("line", { key: "fp" + i, x1: x, y1: 47, x2: x, y2: 54, stroke: "rgba(90,88,70,0.5)", strokeWidth: 0.9 });
+          }),
+          // 近处的草坡：从左上斜到右下
+          h("path", { d: "M0 48 C70 54 150 82 240 106 L240 118 L0 118 Z", fill: "url(#rollGrass)" }),
+          h("path", { d: "M0 48 C70 54 150 82 240 106", fill: "none", stroke: "rgba(150,158,110,0.55)", strokeWidth: 0.9 }),
+          // 滚过去留下的那道痕
+          h("path", { d: "M32 52 C82 59 146 80 200 95", fill: "none", stroke: "rgba(255,255,255,0.6)", strokeWidth: 2.8, strokeLinecap: "round", strokeDasharray: "1 7" }),
+          tufts.map(function (g, i) {
+            return h("g", { key: "g" + i, style: { transformOrigin: g[0] + "px " + g[1] + "px", animation: "ldRollGrass " + (2.6 + (i % 4) * 0.5) + "s ease-in-out infinite" } },
+              h("path", { d: "M" + g[0] + " " + g[1] + " q-2.2 -0.8 -3.2 -2.6 M" + g[0] + " " + g[1] + " q0.8 -1.8 0.2 -3.6 M" + g[0] + " " + g[1] + " q2.4 -0.6 3.4 -2.2", stroke: "rgba(140,153,98,0.45)", strokeWidth: 0.75, strokeLinecap: "round", fill: "none" }));
+          }),
+          // 两只飞过去的鸟
+          [[20, 18, 9], [46, 12, 13]].map(function (b, i) {
+            return h("g", { key: "b" + i, style: { animation: "ldRollBird " + b[2] + "s linear infinite" } },
+              h("path", { d: "M" + b[0] + " " + b[1] + " q3 -2.4 6 0 q3 -2.4 6 0", fill: "none", stroke: "rgba(80,96,110,0.5)", strokeWidth: 1, strokeLinecap: "round" }));
+          }),
+          // 滚起来的小尘土
+          [[70, 62], [118, 76], [166, 90]].map(function (p, i) {
+            return h("circle", { key: "pf" + i, cx: p[0], cy: p[1], r: 2.6, fill: "rgba(255,255,255,0.8)",
+              style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "ldRollPuff 4.6s ease-out infinite", animationDelay: (1 + i * 0.55) + "s" } });
+          }),
+          // 她：白上衣、深裤子，抱着腿一路翻下去
+          h("g", { transform: "translate(32,50) scale(1.35)" },
+            h("g", { style: { animation: "ldRollGo 4.6s cubic-bezier(.42,0,.72,1) infinite" } },
+              h("ellipse", { cx: 0, cy: 4.2, rx: 7.4, ry: 2, fill: "rgba(110,118,80,0.28)" }),
+              h("circle", { cx: 0, cy: 0, r: 6.8, fill: "#39435a" }),
+              h("path", { d: "M-6.8 0 A6.8 6.8 0 0 1 3.9 -5.6 L0 0 Z", fill: "#fbfbf6" }),
+              h("path", { d: "M-5.4 2.6 a6.8 6.8 0 0 0 5.4 4.2", fill: "none", stroke: "#2c3548", strokeWidth: 1.6, strokeLinecap: "round" }),
+              h("circle", { cx: 4.6, cy: -4.3, r: 3.05, fill: "#f4d6bd" }),
+              h("path", { d: "M1.9 -6.6 a3.05 3.05 0 0 1 5.5 1.1 l-2.8 0.5 z", fill: "#2f2a2e" }),
+              h("path", { d: "M-4.6 -3.4 a5.4 5.4 0 0 1 3.2 -2.2", fill: "none", stroke: "#e6e2d6", strokeWidth: 1.2, strokeLinecap: "round" }),
+              h("circle", { cx: 0, cy: 0, r: 6.8, fill: "none", stroke: "rgba(48,58,48,0.28)", strokeWidth: 0.6 }),
+              h("path", { d: "M-9.4 -3.6 a9.6 9.6 0 0 1 2.6 -3.8", fill: "none", stroke: "rgba(255,255,255,0.8)", strokeWidth: 1.1, strokeLinecap: "round" }),
+              h("path", { d: "M-11 0.8 a11.4 11.4 0 0 1 1 -5.4", fill: "none", stroke: "rgba(255,255,255,0.5)", strokeWidth: 1, strokeLinecap: "round" })))),
+        h("div", { style: { background: "#20303a", padding: "5px 10px", display: "flex", alignItems: "center", gap: 6 } },
+          h("span", { style: { fontSize: "0.6rem", fontWeight: 800, letterSpacing: 1.4, color: "rgba(255,216,138,0.9)", fontFamily: "Georgia,serif" } }, "HAMPSTEAD HEATH"),
+          h("span", { style: { marginLeft: "auto", fontSize: "0.6rem", fontWeight: 800, color: "rgba(253,240,210,0.75)" } }, ldMD(m.d)))),
+      h("div", { key: "rolltxt", style: { marginTop: 10, fontFamily: "'Patrick Hand','ZCOOL KuaiLe','Comic Sans MS','PingFang SC',cursive", fontSize: "1.02rem", color: "#20303a", lineHeight: 1.5 } }, m.t),
+      h("div", { key: "rollsay", style: { marginTop: 6, fontSize: "0.78rem", color: "rgba(70,90,84,0.96)", lineHeight: 1.85 } }, m.say),
+      m.tail ? h("div", { key: "rolltail", style: { marginTop: 9, background: "rgba(31,111,104,0.09)", borderLeft: "3px solid rgba(31,111,104,0.5)", borderRadius: "0 8px 8px 0", padding: "8px 10px", fontSize: "0.74rem", fontWeight: 700, color: "#1a5c56", lineHeight: 1.7 } }, "⛰️ " + m.tail) : null
+    ]);
+  })();
   var nowTab = h("div", null,
     afterGo ? pagerCard() : null,
+    momentCard,
 
 
     ukCard([
@@ -22838,6 +22927,19 @@ function LondonRoom(_refLD) {
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
       "@keyframes ldWave{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
+      // 草坡上滚下去的那一下：沿着坡面走，一路翻，到底了停一会儿再来
+      "@keyframes ldRollGo{0%{transform:translate(0px,0px) rotate(0deg);opacity:0}" +
+        "5%{transform:translate(6px,1px) rotate(50deg);opacity:1}" +
+        "34%{transform:translate(50px,10px) rotate(520deg);opacity:1}" +
+        "62%{transform:translate(125px,33px) rotate(1120deg);opacity:1}" +
+        "84%{transform:translate(125px,33px) rotate(1120deg);opacity:1}" +
+        "93%{transform:translate(125px,33px) rotate(1120deg);opacity:0}" +
+        "100%{transform:translate(0px,0px) rotate(0deg);opacity:0}}" +
+      "@keyframes ldRollPuff{0%,100%{opacity:0;transform:translateY(0) scale(.5)}" +
+        "18%{opacity:.75;transform:translateY(-2px) scale(1)}" +
+        "44%{opacity:0;transform:translateY(-6px) scale(1.4)}}" +
+      "@keyframes ldRollGrass{0%,100%{transform:rotate(0)}50%{transform:rotate(-9deg)}}" +
+      "@keyframes ldRollBird{from{transform:translateX(0)}to{transform:translateX(150px)}}" +
       "@keyframes ldBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}" +
       "@keyframes ldTwinkle{0%,100%{opacity:.2}50%{opacity:1}}" +
       "@keyframes ldNeedle{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}" +
