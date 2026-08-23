@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-223";
+var NANA_VER = "v2026.8.2-224";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8371,7 +8371,11 @@ var nanaVoMime = function () {
 // 这里开门几秒后拿几个字节的 version.txt 比一下，有新版就换掉缓存里的页面再重载一次。
 (function () {
   if (typeof caches === "undefined" || typeof fetch === "undefined") return;
-  setTimeout(function () {
+  var last = 0, busy = 0;
+  var check = function () {
+    var now = Date.now();
+    if (busy || (last && now - last < 30000)) return;   // 别一直问，最多半分钟一次（就十几个字节）
+    last = now; busy = 1;
     fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
       return r && r.ok ? r.text() : null;
     }).then(function (t) {
@@ -8395,8 +8399,19 @@ var nanaVoMime = function () {
           }));
         }).then(function () { return 1; });
       }).then(function (ok) { if (ok) location.reload(); });
-    })["catch"](function () {});
-  }, 3000);
+    })["catch"](function () {}).then(function () { busy = 0; }, function () { busy = 0; });
+  };
+  setTimeout(check, 3000);
+  // 装在主屏上的 PWA 从后台切回来不会重新加载页面，只靠上面那一次检查会一直停在老版本。
+  // 切回前台、或者从 bfcache 里恢复的时候，再问一次。
+  try {
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) setTimeout(check, 1200);
+    });
+    window.addEventListener("pageshow", function (e) {
+      if (e && e.persisted) setTimeout(check, 1200);
+    });
+  } catch (_) {}
 })();
 // 跨境链路一抖上传就断，多试几次再认输
 var nanaSharedUploadRetry = function (dataUrl, id, tries, cb) {
