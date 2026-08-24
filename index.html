@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-229";
+var NANA_VER = "v2026.8.2-230";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19519,10 +19519,10 @@ var LD_VO_HINT = [
 ];
 // 点了「今天不太顺」之后，她只需要选想要什么，不用说发生了什么
 var LD_BAD_OPT = [
-  { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
+  { k: "know", e: "🤍", t: "知道就行，别来问", d: "她会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "她知道了，不会打扰你 🤍" },
   { k: "sit", e: "🫖", t: "先不说，坐会儿", d: "谁都不用惊动", sit: 1 }
 ];
-// 今天有点长：不想说话的时候，让他来做点什么 —— 每个都带一小段动画
+// 今天有点长：不想说话的时候，让她来做点什么 —— 每个都带一小段动画
 var LD_BAD_ACTS = [
   { k: "hug", e: "🫂", t: "来抱一下", d: "什么都不说，就抱着",
     cap: "抱住了。不用讲话，待一会儿就行。",
@@ -19534,7 +19534,7 @@ var LD_BAD_ACTS = [
     d: "轻轻的，三下", cap: "拍完了。今天你已经很好了。",
     body: "📟 今天有点长。过来拍拍我的头。", ok: "拍过了 🖐️" },
   { k: "flk", e: "😤", t: "来回踱步，决定弹一下你的脑瓜嘣儿",
-    d: "他想了半天，还是弹了", cap: "弹完了。疼是不疼的，就是提醒你别自己扛着。",
+    d: "她想了半天，还是弹了", cap: "弹完了。疼是不疼的，就是提醒你别自己扛着。",
     body: "📟 今天有点长。来弹我一个脑瓜嘣儿。", ok: "弹过了 😤" }
 ];
 var LD_SIT = [
@@ -19550,7 +19550,7 @@ var LD_NIGHTSAFE = [
   { t: "记住这一句：Ask for Angela", b: "英国酒吧和很多场所都有这个暗号。跟任何一个工作人员说「Is Angela here?」，他们就知道你需要帮忙 —— 会带你从后门走、帮你叫车、或者挡掉纠缠你的人。不用解释任何事。" },
   { t: "999 说不了话，就按 55", b: "拨 999 之后如果不方便出声，先咳嗽或按任意键，听到提示后按 55，接线员就知道你有危险但不能讲话，会转给警察。" },
   { t: "只上有牌的车", b: "路边招手拦到的、主动凑上来问你要不要车的，一律不上。黑色出租车（black cab）可以街上拦，其余的必须是 App 叫的，上车前对一下车牌和司机照片。" },
-  { t: "Uber 里按「分享行程」", b: "上车后在 App 里点 Share trip status，把链接发给熊猫鱼。他能看着那个点一路挪到家。" },
+  { t: "Uber 里按「分享行程」", b: "上车后在 App 里点 Share trip status，把链接发给熊猫鱼。她能看着那个点一路挪到家。" },
   { t: "回家挑亮的那条", b: "Canary Wharf 到公寓那一段商场和码头一路有灯有人。别为了近抄小路或穿工地。" },
   { t: "觉得被跟了", b: "别回家。走进最近的还开着的店、酒店大堂或者商场，站到柜台边，跟店员说你需要帮助。然后打 999。" }
 ];
@@ -19971,7 +19971,7 @@ var LD_NIGHT = [
   { e: "🌴", t: "上屋顶花园吹会儿风", d: "Crossrail Place 顶层，免费，人少" },
   { e: "🛁", t: "泡个澡，把歌开大声", d: "随身听里有你从广州带走的整个歌单" },
   { e: "📮", t: "去 221B 写两句", d: "壁炉一直烧着，写什么都行，凑数的废话也行" },
-  { e: "🎬", t: "看一部电影节里标了想看的", d: "看完记得打分，等他开牌" },
+  { e: "🎬", t: "看一部电影节里标了想看的", d: "看完记得打分，等她开牌" },
   { e: "🍮", t: "下楼买个 M&S 的甜点", d: "十分钟的路，回来心情会不一样" },
   { e: "🎧", t: "把随身听打开，随便放一首", d: "整个歌单都跟着你飞过来了" },
   { e: "🛏️", t: "什么都不做，就躺着", d: "今天已经够努力了，躺着也是正经事" }
@@ -21529,7 +21529,7 @@ function LondonRoom(_refLD) {
               h("div", { style: { fontSize: "0.74rem", color: "rgba(110,100,78,0.95)", lineHeight: 1.8, marginTop: 10 } }, "不用做什么。坐着也算数。"),
               h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
                 h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
-                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
+                h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "她知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让她知道一声")))
           : act
           ? h("div", null,
               h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, act.e + " " + act.t),
@@ -21556,7 +21556,6 @@ function LondonRoom(_refLD) {
                     h("span", { style: { display: "block", fontSize: "0.63rem", color: "rgba(110,100,78,0.9)", marginTop: 1 } }, o.d)));
               }),
               h("div", { style: { marginTop: 11, paddingTop: 9, borderTop: "1px dashed rgba(180,53,58,0.3)" } },
-                h("div", { style: { fontSize: "0.7rem", color: "rgba(140,80,80,0.95)", fontWeight: 800, marginBottom: 8 } }, "或者，让他过来做点什么"),
                 LD_BAD_ACTS.map(function (o, oi) {
                   return h("button", { key: "ba" + oi, onClick: function () { setActN(actN + 1); setChgPct(0); setAct(o); },
                     style: { width: "100%", display: "flex", alignItems: "center", gap: 8, textAlign: "left", marginBottom: oi === LD_BAD_ACTS.length - 1 ? 0 : 6, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "8px 10px", fontFamily: "inherit", cursor: "pointer" } },
@@ -22585,7 +22584,7 @@ function LondonRoom(_refLD) {
         return x.u ? h("a", { key: "so" + i, href: x.u, style: { textDecoration: "none", color: "inherit", display: "block" } }, inner) : h("div", { key: "so" + i }, inner);
       })),
       h("div", { key: "sof", style: { marginTop: 12, background: "rgba(31,111,104,0.09)", borderRadius: 8, padding: "11px 12px", fontSize: "0.75rem", color: "#1f6f68", lineHeight: 1.85 } },
-        "这张单子上没有熊猫鱼 —— 他不在「出事才找」这一栏。",
+        "这张单子上没有熊猫鱼 —— 她不在「出事才找」这一栏。",
         h("br", null),
         "这一页最上面那四个按钮，什么时候按都行。")
     ]),
@@ -22799,7 +22798,7 @@ function LondonRoom(_refLD) {
             wallSel.tip ? h("div", { style: { marginTop: 10, fontSize: "0.76rem", color: "rgba(85,75,60,0.96)", lineHeight: 1.8 } }, wallSel.tip) : null,
             (wallSel.more && wallSel.more.length)
               ? h("div", { style: { marginTop: 12 } },
-                  h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "同一天他还拍了"),
+                  h("div", { style: { fontSize: "0.64rem", color: "rgba(110,100,78,0.9)", fontWeight: 800, marginBottom: 6 } }, "同一天她还拍了"),
                   h("div", { style: { display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 } },
                     wallSel.more.map(function (mf) {
                       return h("img", { key: mf, src: "ld/" + mf + "_t.jpg", alt: "", loading: "lazy",
@@ -23245,7 +23244,7 @@ function LondonRoom(_refLD) {
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
       "@keyframes ldWave{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
-      // ── 今天有点长：她挑一个，让他来做点什么 ──
+      // ── 今天有点长：她挑一个，让她来做点什么 ──
       // 抱一下：两个人挪到一起，挤一下，冒几颗心
       "@keyframes ldHugL{0%,8%{transform:translateX(0)}30%,72%{transform:translateX(21px)}94%,100%{transform:translateX(0)}}" +
       "@keyframes ldHugR{0%,8%{transform:translateX(0)}30%,72%{transform:translateX(-21px)}94%,100%{transform:translateX(0)}}" +
