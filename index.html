@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-231";
+var NANA_VER = "v2026.8.2-232";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21379,6 +21379,16 @@ function LondonRoom(_refLD) {
         h("circle", { cx: r * 0.56, cy: r * 0.3, r: r * 0.14, fill: "rgba(240,150,150,0.5)" }),
         h("path", { d: "M" + (-r * 0.2) + " " + (r * 0.42) + " q" + (r * 0.2) + " " + (r * 0.22) + " " + (r * 0.4) + " 0", fill: "none", stroke: "#3b3038", strokeWidth: 1.1, strokeLinecap: "round" }));
     };
+    // Nana 的手：手心加四根指头
+    var hand = function () {
+      return h("g", null,
+        h("ellipse", { cx: 0, cy: 0.6, rx: 7.8, ry: 7, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.55)", strokeWidth: 1 }),
+        h("ellipse", { cx: -4.6, cy: -5.4, rx: 1.9, ry: 2.6, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.45)", strokeWidth: 0.85 }),
+        h("ellipse", { cx: -1, cy: -6.6, rx: 2, ry: 2.9, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.45)", strokeWidth: 0.85 }),
+        h("ellipse", { cx: 2.7, cy: -6.2, rx: 1.9, ry: 2.7, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.45)", strokeWidth: 0.85 }),
+        h("ellipse", { cx: 6, cy: -4.4, rx: 1.7, ry: 2.3, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.45)", strokeWidth: 0.85 }),
+        h("ellipse", { cx: -7.4, cy: 1.6, rx: 2.6, ry: 1.8, fill: "#f6dcc6", stroke: "rgba(150,110,88,0.45)", strokeWidth: 0.85, transform: "rotate(-24 -7.4 1.6)" }));
+    };
     // 熊猫的爪子
     var paw = function () {
       return h("g", null,
@@ -21426,9 +21436,9 @@ function LondonRoom(_refLD) {
     if (k === "pat") {
       return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
         sh(100, 82, 24),
-        h("g", { style: { transformOrigin: "100px 60px", animation: "ldPatHead 2.8s ease-in-out infinite" } }, nana(100, 58, 23)),
+        h("g", { style: { transformOrigin: "100px 60px", animation: "ldPatHead 2.8s ease-in-out infinite" } }, panda(100, 58, 22)),
         h("g", { style: { animation: "ldPatPaw 2.8s ease-in-out infinite" } },
-          h("g", { transform: "translate(100,26)" }, paw())),
+          h("g", { transform: "translate(100,22)" }, hand())),
         [[74, 40, 0], [126, 40, 0.28], [100, 22, 0.55]].map(function (p2, i) {
           return h("text", { key: "ps" + i, x: p2[0], y: p2[1], textAnchor: "middle", fontSize: 10,
             style: { animation: "ldPatSpark 2.8s ease-out infinite", animationDelay: p2[2] + "s", transformOrigin: p2[0] + "px " + p2[1] + "px" } }, "✨");
@@ -21437,10 +21447,10 @@ function LondonRoom(_refLD) {
     // flk
     return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
       sh(142, 80, 21), sh(66, 80, 19),
-      h("g", { style: { transformOrigin: "142px 56px", animation: "ldFlkHead 3.6s ease-in-out infinite" } }, nana(142, 56, 21)),
-      h("g", { style: { animation: "ldFlkPace 3.6s ease-in-out infinite" } }, panda(66, 56, 19)),
+      h("g", { style: { transformOrigin: "142px 56px", animation: "ldFlkHead 3.6s ease-in-out infinite" } }, panda(142, 56, 20)),
+      h("g", { style: { animation: "ldFlkPace 3.6s ease-in-out infinite" } }, nana(66, 56, 19)),
       h("g", { style: { animation: "ldFlkArm 3.6s ease-in-out infinite", transformOrigin: "120px 48px" } },
-        h("g", { transform: "translate(120,48)" }, paw())),
+        h("g", { transform: "translate(120,48)" }, hand())),
       h("text", { x: 110, y: 32, textAnchor: "middle", fontSize: 13, fontWeight: 800, fill: "#d2683f",
         style: { animation: "ldFlkPop 3.6s ease-out infinite", transformOrigin: "110px 32px" } }, "叮!"),
       h("text", { x: 158, y: 34, textAnchor: "middle", fontSize: 11,
