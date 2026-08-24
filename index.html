@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-226";
+var NANA_VER = "v2026.8.2-227";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -19522,6 +19522,21 @@ var LD_BAD_OPT = [
   { k: "know", e: "🤍", t: "知道就行，别来问", d: "他会看到，但不会追着你说话", body: "📟 今天有点长。知道就行，别来问。", ok: "他知道了，不会打扰你 🤍" },
   { k: "sit", e: "🫖", t: "先不说，坐会儿", d: "谁都不用惊动", sit: 1 }
 ];
+// 今天有点长：不想说话的时候，让他来做点什么 —— 每个都带一小段动画
+var LD_BAD_ACTS = [
+  { k: "hug", e: "🫂", t: "来抱一下", d: "什么都不说，就抱着",
+    cap: "抱住了。不用讲话，待一会儿就行。",
+    body: "📟 今天有点长。抱一下。", ok: "抱到了 🫂" },
+  { k: "chg", e: "🔋", t: "来沙发充个电", d: "躺平，充到满为止",
+    cap: "充满了。电量不是省出来的，是躺出来的。",
+    body: "📟 今天有点长。在沙发上充电，充满了再说。", ok: "充满了 🔋" },
+  { k: "pat", e: "🖐️", t: "来玩儿一下，拍拍你的头",
+    d: "轻轻的，三下", cap: "拍完了。今天你已经很好了。",
+    body: "📟 今天有点长。过来拍拍我的头。", ok: "拍过了 🖐️" },
+  { k: "flk", e: "😤", t: "来回踱步，决定弹一下你的脑瓜嘣儿",
+    d: "他想了半天，还是弹了", cap: "弹完了。疼是不疼的，就是提醒你别自己扛着。",
+    body: "📟 今天有点长。来弹我一个脑瓜嘣儿。", ok: "弹过了 😤" }
+];
 var LD_SIT = [
   "把水烧上，站在旁边等它响。",
   "窗帘拉开，让光进来一点就行。",
@@ -20350,6 +20365,10 @@ function LondonRoom(_refLD) {
   var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
   var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
+  var _act = useState(null); var act = _act[0], setAct = _act[1];          // 今天有点长：正在放哪一个动作
+  var _actn = useState(0); var actN = _actn[0], setActN = _actn[1];        // 重放用的计数，换 key 让动画从头来
+  var _chg = useState(0); var chgPct = _chg[0], setChgPct = _chg[1];       // 沙发充电充到几了
+
   // 🏠 家里的灯：按住 → 那扇窗慢慢亮 → 松手亮满 → 窗里飘出一句话
   var _hl = useState(""); var pgLit = _hl[0], setPgLit = _hl[1];
   var _hh2 = useState(""); var pgHold = _hh2[0], setPgHold = _hh2[1];
@@ -21157,7 +21176,7 @@ function LondonRoom(_refLD) {
       setPgSafeOn([]); setPgSafe(true);
       setTimeout(function () { setPgSafe(false); }, 26000);
     }
-    if (p.pick) { setBadOpen(true); setSitMode(null); return; }
+    if (p.pick) { setBadOpen(!badOpen); setSitMode(null); setAct(null); return; }
     sendPage(p);
   };
   var sendPage = function (p) {
@@ -21317,6 +21336,115 @@ function LondonRoom(_refLD) {
     nanaPackDel(x.id, function () {});
   };
   // 一键呼叫（安心页和此刻页共用）
+  // 沙发充电：0 到 100 自己往上走，走满就停
+  useEffect(function () {
+    if (!act || act.k !== "chg") return;
+    setChgPct(0);
+    var v = 0;
+    var t = setInterval(function () {
+      v += (v < 70 ? 4 : (v < 92 ? 2 : 1));
+      if (v >= 100) { v = 100; clearInterval(t); }
+      setChgPct(v);
+    }, 55);
+    return function () { clearInterval(t); };
+  }, [act, actN]);
+  // ── 四个小动画：都是纯 SVG，循环放；充电那个走到 100% 就停 ──
+  var ldActScene = function (k, pct) {
+    var sky = h("defs", null,
+      h("linearGradient", { id: "actBg", x1: "0", y1: "0", x2: "0", y2: "1" },
+        h("stop", { offset: "0", stopColor: "#fff6ea" }),
+        h("stop", { offset: "1", stopColor: "#fbe9d6" })));
+    var floor = h("rect", { x: 0, y: 0, width: 200, height: 96, fill: "url(#actBg)" });
+    // 熊猫鱼：白圆脸、黑耳朵、黑眼圈
+    var panda = function (x, y, r) {
+      return h("g", { transform: "translate(" + x + "," + y + ")" },
+        h("circle", { cx: -r * 0.62, cy: -r * 0.72, r: r * 0.34, fill: "#2f2a2e" }),
+        h("circle", { cx: r * 0.62, cy: -r * 0.72, r: r * 0.34, fill: "#2f2a2e" }),
+        h("circle", { cx: 0, cy: 0, r: r, fill: "#fdfdfa", stroke: "rgba(70,62,58,0.35)", strokeWidth: 0.8 }),
+        h("ellipse", { cx: -r * 0.38, cy: -r * 0.08, rx: r * 0.26, ry: r * 0.32, fill: "#2f2a2e", transform: "rotate(-14 " + (-r * 0.38) + " " + (-r * 0.08) + ")" }),
+        h("ellipse", { cx: r * 0.38, cy: -r * 0.08, rx: r * 0.26, ry: r * 0.32, fill: "#2f2a2e", transform: "rotate(14 " + (r * 0.38) + " " + (-r * 0.08) + ")" }),
+        h("circle", { cx: -r * 0.34, cy: -r * 0.1, r: r * 0.09, fill: "#fff" }),
+        h("circle", { cx: r * 0.34, cy: -r * 0.1, r: r * 0.09, fill: "#fff" }),
+        h("ellipse", { cx: 0, cy: r * 0.3, rx: r * 0.13, ry: r * 0.1, fill: "#2f2a2e" }),
+        h("path", { d: "M" + (-r * 0.22) + " " + (r * 0.5) + " q" + (r * 0.22) + " " + (r * 0.2) + " " + (r * 0.44) + " 0", fill: "none", stroke: "#2f2a2e", strokeWidth: 1.1, strokeLinecap: "round" }));
+    };
+    // Nana：圆脸、深色头发
+    var nana = function (x, y, r) {
+      return h("g", { transform: "translate(" + x + "," + y + ")" },
+        h("circle", { cx: 0, cy: 0, r: r, fill: "#f6dcc6", stroke: "rgba(120,90,70,0.3)", strokeWidth: 0.8 }),
+        h("path", { d: "M" + (-r) + " " + (-r * 0.12) + " a" + r + " " + r + " 0 0 1 " + (r * 2) + " 0 q" + (-r * 0.3) + " " + (-r * 0.5) + " " + (-r) + " " + (-r * 0.42) + " q" + (-r * 0.7) + " " + (-r * 0.08) + " " + (-r) + " " + (r * 0.42) + " z", fill: "#3b3038" }),
+        h("circle", { cx: -r * 0.32, cy: r * 0.06, r: r * 0.09, fill: "#3b3038" }),
+        h("circle", { cx: r * 0.32, cy: r * 0.06, r: r * 0.09, fill: "#3b3038" }),
+        h("circle", { cx: -r * 0.56, cy: r * 0.3, r: r * 0.14, fill: "rgba(240,150,150,0.5)" }),
+        h("circle", { cx: r * 0.56, cy: r * 0.3, r: r * 0.14, fill: "rgba(240,150,150,0.5)" }),
+        h("path", { d: "M" + (-r * 0.2) + " " + (r * 0.42) + " q" + (r * 0.2) + " " + (r * 0.22) + " " + (r * 0.4) + " 0", fill: "none", stroke: "#3b3038", strokeWidth: 1.1, strokeLinecap: "round" }));
+    };
+    // 熊猫的爪子
+    var paw = function () {
+      return h("g", null,
+        h("circle", { cx: 0, cy: 0, r: 8.5, fill: "#f7f4ec", stroke: "rgba(70,62,58,0.7)", strokeWidth: 1.2 }),
+        h("circle", { cx: -4.4, cy: -6, r: 2.5, fill: "#f7f4ec", stroke: "rgba(70,62,58,0.62)", strokeWidth: 1 }),
+        h("circle", { cx: 0.4, cy: -7.4, r: 2.6, fill: "#f7f4ec", stroke: "rgba(70,62,58,0.62)", strokeWidth: 1 }),
+        h("circle", { cx: 5.2, cy: -5.6, r: 2.4, fill: "#f7f4ec", stroke: "rgba(70,62,58,0.62)", strokeWidth: 1 }),
+        h("ellipse", { cx: 0, cy: 1.4, rx: 3.6, ry: 3, fill: "rgba(70,62,58,0.28)" }));
+    };
+    var sh = function (x, y, rx) { return h("ellipse", { cx: x, cy: y, rx: rx, ry: rx * 0.26, fill: "rgba(140,115,80,0.16)" }); };
+    if (k === "hug") {
+      return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
+        sh(66, 78, 20), sh(134, 78, 20),
+        h("g", { style: { animation: "ldHugL 3.4s ease-in-out infinite" } },
+          h("g", { style: { transformOrigin: "66px 54px", animation: "ldHugSquish 3.4s ease-in-out infinite" } }, panda(66, 54, 21))),
+        h("g", { style: { animation: "ldHugR 3.4s ease-in-out infinite" } },
+          h("g", { style: { transformOrigin: "134px 54px", animation: "ldHugSquish 3.4s ease-in-out infinite" } }, nana(134, 54, 21))),
+        [[100, 26, 0], [86, 30, 0.5], [114, 30, 0.95]].map(function (p2, i) {
+          return h("text", { key: "hh" + i, x: p2[0], y: p2[1], textAnchor: "middle", fontSize: 11,
+            style: { animation: "ldHugHrt 3.4s ease-out infinite", animationDelay: p2[2] + "s", transformOrigin: p2[0] + "px " + p2[1] + "px" } }, "💛");
+        }));
+    }
+    if (k === "chg") {
+      var full = pct >= 100;
+      return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
+        h("rect", { x: 26, y: 52, width: 116, height: 26, rx: 9, fill: "#c2d9d2", stroke: "rgba(70,100,92,0.3)", strokeWidth: 0.9 }),
+        h("rect", { x: 26, y: 44, width: 12, height: 34, rx: 6, fill: "#aecabf" }),
+        h("rect", { x: 130, y: 44, width: 12, height: 34, rx: 6, fill: "#aecabf" }),
+        h("ellipse", { cx: 84, cy: 54, rx: 40, ry: 7, fill: "#d6e8e0" }),
+        h("g", null, nana(56, 47, 13)),
+        h("rect", { x: 68, y: 44, width: 52, height: 12, rx: 6, fill: "#e8bcc3" }),
+        full ? null : [[64, 34, 0], [72, 30, 0.7], [80, 33, 1.4]].map(function (z, i) {
+          return h("text", { key: "cz" + i, x: z[0], y: z[1], fontSize: 9, fill: "rgba(90,110,105,0.85)", fontWeight: 800,
+            style: { animation: "ldChgZ 2.1s ease-out infinite", animationDelay: z[2] + "s", transformOrigin: z[0] + "px " + z[1] + "px" } }, "z");
+        }),
+        h("rect", { x: 148, y: 30, width: 34, height: 50, rx: 6, fill: "none", stroke: "#5f8f84", strokeWidth: 2.4 }),
+        h("rect", { x: 158, y: 25, width: 14, height: 5, rx: 2, fill: "#5f8f84" }),
+        h("rect", { x: 152, y: 34 + (42 - 42 * pct / 100), width: 26, height: 42 * pct / 100, rx: 3,
+          fill: full ? "#4fae86" : "#7ec9a4",
+          style: full ? { animation: "ldChgGlow 1.4s ease-in-out infinite" } : null }),
+        h("text", { x: 165, y: 90, textAnchor: "middle", fontSize: 11, fontWeight: 800, fill: full ? "#2f7d5e" : "#5f8f84" }, pct + "%"),
+        full ? h("text", { x: 165, y: 58, textAnchor: "middle", fontSize: 13 }, "⚡") : null);
+    }
+    if (k === "pat") {
+      return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
+        sh(100, 82, 24),
+        h("g", { style: { transformOrigin: "100px 60px", animation: "ldPatHead 2.8s ease-in-out infinite" } }, nana(100, 58, 23)),
+        h("g", { style: { animation: "ldPatPaw 2.8s ease-in-out infinite" } },
+          h("g", { transform: "translate(100,26)" }, paw())),
+        [[74, 40, 0], [126, 40, 0.28], [100, 22, 0.55]].map(function (p2, i) {
+          return h("text", { key: "ps" + i, x: p2[0], y: p2[1], textAnchor: "middle", fontSize: 10,
+            style: { animation: "ldPatSpark 2.8s ease-out infinite", animationDelay: p2[2] + "s", transformOrigin: p2[0] + "px " + p2[1] + "px" } }, "✨");
+        }));
+    }
+    // flk
+    return h("svg", { viewBox: "0 0 200 96", style: { width: "100%", display: "block" } }, sky, floor,
+      sh(142, 80, 21), sh(66, 80, 19),
+      h("g", { style: { transformOrigin: "142px 56px", animation: "ldFlkHead 3.6s ease-in-out infinite" } }, nana(142, 56, 21)),
+      h("g", { style: { animation: "ldFlkPace 3.6s ease-in-out infinite" } }, panda(66, 56, 19)),
+      h("g", { style: { animation: "ldFlkArm 3.6s ease-in-out infinite", transformOrigin: "120px 48px" } },
+        h("g", { transform: "translate(120,48)" }, paw())),
+      h("text", { x: 110, y: 32, textAnchor: "middle", fontSize: 13, fontWeight: 800, fill: "#d2683f",
+        style: { animation: "ldFlkPop 3.6s ease-out infinite", transformOrigin: "110px 32px" } }, "叮!"),
+      h("text", { x: 158, y: 34, textAnchor: "middle", fontSize: 11,
+        style: { animation: "ldFlkHrt 3.6s ease-out infinite", transformOrigin: "158px 34px" } }, "💛"));
+  };
   var pagerCard = function () {
     return ukCard([
 
@@ -21402,6 +21530,18 @@ function LondonRoom(_refLD) {
               h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
                 h("button", { onClick: function () { setSitMode(LD_SIT[Math.floor(Math.random() * LD_SIT.length)]); setBeat(LD_BEAT[Math.floor(Math.random() * LD_BEAT.length)]); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "换一件"),
                 h("button", { onClick: function () { sendPage({ k: "bad", body: "📟 今天有点长。已经坐了会儿了，你知道就好。", ok: "他知道了 🤍" }); setBadOpen(false); setSitMode(null); }, style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")))
+          : act
+          ? h("div", null,
+              h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, act.e + " " + act.t),
+              h("div", { key: "sc" + actN, style: { borderRadius: 10, overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.3)" } },
+                ldActScene(act.k, chgPct)),
+              h("div", { style: { marginTop: 9, background: "rgba(255,255,255,0.74)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#4a3f30", lineHeight: 1.8 } },
+                (act.k === "chg" && chgPct < 100) ? ("充到 " + chgPct + "% 了，不着急。") : act.cap),
+              h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
+                h("button", { onClick: function () { setActN(actN + 1); setChgPct(0); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "再来一次"),
+                h("button", { onClick: function () { sendPage({ k: act.k, body: act.body, ok: act.ok }); setAct(null); setBadOpen(false); }, disabled: !!pageBusy,
+                  style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")),
+              h("button", { onClick: function () { setAct(null); }, style: { width: "100%", marginTop: 7, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "rgba(140,120,95,0.9)", cursor: "pointer", padding: "2px 0" } }, "← 换一个"))
           : h("div", null,
               h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
               LD_BAD_OPT.map(function (o, oi) {
@@ -21414,7 +21554,17 @@ function LondonRoom(_refLD) {
                   h("span", null,
                     h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.78rem", color: "#20393f" } }, o.t),
                     h("span", { style: { display: "block", fontSize: "0.63rem", color: "rgba(110,100,78,0.9)", marginTop: 1 } }, o.d)));
-              }))) : null,
+              }),
+              h("div", { style: { marginTop: 11, paddingTop: 9, borderTop: "1px dashed rgba(180,53,58,0.3)" } },
+                h("div", { style: { fontSize: "0.7rem", color: "rgba(140,80,80,0.95)", fontWeight: 800, marginBottom: 8 } }, "或者，让他过来做点什么"),
+                LD_BAD_ACTS.map(function (o, oi) {
+                  return h("button", { key: "ba" + oi, onClick: function () { setActN(actN + 1); setChgPct(0); setAct(o); },
+                    style: { width: "100%", display: "flex", alignItems: "center", gap: 8, textAlign: "left", marginBottom: oi === LD_BAD_ACTS.length - 1 ? 0 : 6, border: "none", background: "rgba(255,255,255,0.78)", borderRadius: 9, padding: "8px 10px", fontFamily: "inherit", cursor: "pointer" } },
+                    h("span", { style: { fontSize: "1rem", flexShrink: 0 } }, o.e),
+                    h("span", { style: { minWidth: 0 } },
+                      h("span", { style: { display: "block", fontWeight: 800, fontSize: "0.78rem", color: "#20393f", lineHeight: 1.4 } }, o.t),
+                      h("span", { style: { display: "block", fontSize: "0.63rem", color: "rgba(110,100,78,0.9)", marginTop: 1 } }, o.d)));
+                })))) : null,
       pageMsg ? h("div", { key: "pm", style: { marginTop: 2, textAlign: "center", fontSize: "0.74rem", fontWeight: 800, color: "#1f6f68", background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "9px 10px" } }, pageMsg) : null,
       h("div", { key: "pw", style: { marginTop: 10, fontSize: "0.68rem", color: "rgba(110,100,78,0.9)", lineHeight: 1.75 } },
         "按下去就变成一封信落到 221B，家里的 BB 机会响一声。不用等回复 —— 按过了，这件事本身就算数。")
@@ -23095,6 +23245,30 @@ function LondonRoom(_refLD) {
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
       "@keyframes ldWave{from{transform:translateX(0)}to{transform:translateX(-50%)}}" +
+      // ── 今天有点长：她挑一个，让他来做点什么 ──
+      // 抱一下：两个人挪到一起，挤一下，冒几颗心
+      "@keyframes ldHugL{0%,8%{transform:translateX(0)}30%,72%{transform:translateX(21px)}94%,100%{transform:translateX(0)}}" +
+      "@keyframes ldHugR{0%,8%{transform:translateX(0)}30%,72%{transform:translateX(-21px)}94%,100%{transform:translateX(0)}}" +
+      "@keyframes ldHugSquish{0%,26%{transform:scale(1,1)}34%,70%{transform:scale(1.05,.94)}80%,100%{transform:scale(1,1)}}" +
+      "@keyframes ldHugHrt{0%,28%{opacity:0;transform:translateY(0) scale(.3)}42%{opacity:.95;transform:translateY(-8px) scale(1)}72%{opacity:.8;transform:translateY(-22px) scale(.95)}100%{opacity:0;transform:translateY(-34px) scale(.7)}}" +
+      // 沙发充电：小小的 z 一个个飘上去
+      "@keyframes ldChgZ{0%{opacity:0;transform:translate(0,0) scale(.5)}25%{opacity:.9}100%{opacity:0;transform:translate(9px,-20px) scale(1.1)}}" +
+      "@keyframes ldChgGlow{0%,100%{opacity:.25}50%{opacity:.6}}" +
+      // 拍拍头：爪子落下三下，脑袋跟着扁一下
+      "@keyframes ldPatPaw{0%,10%{transform:translateY(-24px)}18%{transform:translateY(-3px)}26%{transform:translateY(-18px)}34%{transform:translateY(-3px)}42%{transform:translateY(-18px)}50%{transform:translateY(-3px)}62%,100%{transform:translateY(-24px)}}" +
+      "@keyframes ldPatHead{0%,14%{transform:scale(1,1)}19%{transform:scale(1.07,.93)}23%,29%{transform:scale(1,1)}35%{transform:scale(1.07,.93)}39%,45%{transform:scale(1,1)}51%{transform:scale(1.07,.93)}56%,100%{transform:scale(1,1)}}" +
+      "@keyframes ldPatSpark{0%,16%{opacity:0;transform:translateY(0) scale(.4)}24%{opacity:1;transform:translateY(-7px) scale(1)}46%{opacity:0;transform:translateY(-15px) scale(.7)}100%{opacity:0}}" +
+      // 脑瓜嘣：先来回踱步，蓄力，弹一下，最后飘颗心
+      "@keyframes ldFlkPace{0%{transform:translateX(-15px)}14%{transform:translateX(11px)}28%{transform:translateX(-11px)}40%{transform:translateX(6px)}48%,100%{transform:translateX(8px)}}" +
+      "@keyframes ldFlkArm{0%,46%{opacity:0;transform:translateX(-14px) rotate(-6deg)}"
+        + "52%{opacity:1;transform:translateX(-12px) rotate(-20deg)}"
+        + "61%{opacity:1;transform:translateX(-11px) rotate(-24deg)}"
+        + "65%{opacity:1;transform:translateX(13px) rotate(16deg)}"
+        + "72%{opacity:1;transform:translateX(-2px) rotate(4deg)}"
+        + "80%{opacity:0;transform:translateX(-10px) rotate(0)}100%{opacity:0}}" +
+      "@keyframes ldFlkPop{0%,60%{opacity:0;transform:scale(.3)}64%{opacity:1;transform:scale(1.25)}74%{opacity:0;transform:scale(1.6)}100%{opacity:0}}" +
+      "@keyframes ldFlkHead{0%,60%{transform:translateX(0) rotate(0)}66%{transform:translateX(5px) rotate(7deg)}74%{transform:translateX(-2px) rotate(-3deg)}82%,100%{transform:translateX(0) rotate(0)}}" +
+      "@keyframes ldFlkHrt{0%,76%{opacity:0;transform:translateY(0) scale(.3)}86%{opacity:1;transform:translateY(-9px) scale(1)}100%{opacity:0;transform:translateY(-20px) scale(.8)}}" +
       // 草坡上滚下去的那一下：沿着坡面走，一路翻，到底了停一会儿再来
       "@keyframes ldRollGo{0%{transform:translate(0px,0px) rotate(0deg);opacity:0}" +
         "5%{transform:translate(6px,1px) rotate(50deg);opacity:1}" +
