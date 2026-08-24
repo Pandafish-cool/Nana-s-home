@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-227";
+var NANA_VER = "v2026.8.2-228";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21533,7 +21533,7 @@ function LondonRoom(_refLD) {
           : act
           ? h("div", null,
               h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, act.e + " " + act.t),
-              h("div", { key: "sc" + actN, style: { borderRadius: 10, overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.3)" } },
+              h("div", { key: "sc" + actN, style: { maxWidth: 216, margin: "0 auto", borderRadius: 10, overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(169,127,46,0.3)" } },
                 ldActScene(act.k, chgPct)),
               h("div", { style: { marginTop: 9, background: "rgba(255,255,255,0.74)", borderRadius: 9, padding: "10px 12px", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", fontSize: "0.84rem", color: "#4a3f30", lineHeight: 1.8 } },
                 (act.k === "chg" && chgPct < 100) ? ("充到 " + chgPct + "% 了，不着急。") : act.cap),
