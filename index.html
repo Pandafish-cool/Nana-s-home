@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-225";
+var NANA_VER = "v2026.8.2-226";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18533,6 +18533,47 @@ var LD_SURVIVE = [
 ];
 
 // 去玩
+// ── 📖 巴斯：奥斯汀的城，九月正好有她的节 ──
+// 节期、票价、开放状态都是查来的，会变；卡片里也写了出发前再确认
+var LD_BATH = [
+  { e: "🚄", n: "怎么去", when: "Paddington 直达 · 1 小时 25 分", blocks: [
+    { h: "车", d: "London Paddington 上车，GWR，到 Bath Spa 最快 1 小时 25 分，不用换乘。\n提前几天买 Advance 便宜很多，临时买贵一大截。" },
+    { h: "到了之后", d: "Bath Spa 车站就在城里，走五六分钟就是罗马浴场和修道院。\n整座城不大，一天全程步行就够 —— 但它是建在山坡上的，皇家新月那一带要上坡，鞋穿舒服的。" }
+  ] },
+  { e: "👒", n: "简·奥斯汀节", when: "9 月 11 到 20 日 · 这次去的正题", blocks: [
+    { h: "是个什么节", d: "整座城为奥斯汀办十天：摄政时期装扮的游行、化装舞会、戏剧、讲座、导览散步。\n最热闹的是开幕第二天那场「盛装大游行」—— 五百多人穿着摄政时期的衣服走满整条街。" },
+    { h: "哪天去最好", d: "游行是 9 月 12 日周六 —— 但那天下午你有 Hamilton，票买好了，去不成。\n\n所以推荐 9 月 13 日（周日）。节还在办，只是没有游行那天那么挤，讲座、导览、剧场照常。\n9 月 20 日（周日）是闭幕日也可以，但那天晚上伦敦还有别的安排，来回会赶。" },
+    { h: "想参加游行的话", d: "看游行不要钱，站在街边就行。\n想穿上衣服走在队伍里要买腕带，£15（16 岁以下免费）。" },
+    { h: "买票", d: "2026 年的票 5 月 14 日开卖，热门场次会满。\n完整节目单在 janeausten.co.uk 的 Festival 页面，出发前先看一眼当天有什么。" }
+  ] },
+  { e: "📖", n: "奥斯汀的巴斯", when: "你专业的那部分", blocks: [
+    { h: "她在这儿住过", d: "1801 到 1806 年，奥斯汀一家住在巴斯。《劝导》和《诺桑觉寺》大半发生在这座城里。\n她住过的其中一处在 4 Sydney Place，房子还在，门口有牌子，隔街就是 Sydney Gardens。" },
+    { h: "Jane Austen Centre", d: "40 Gay Street，讲她在巴斯那几年，门口常年站着一位摄政打扮的先生。\n不大，一小时够。" },
+    { h: "Gravel Walk", d: "皇家新月旁边那条碎石小路 —— 《劝导》最后温特沃斯和安妮把话说开，就在这条路上。\n路本身很普通，但站在那儿会不一样。" },
+    { h: "有个地方别白跑", d: "Assembly Rooms（集会厅）—— 奥斯汀笔下跳舞的那个地方 —— 正在大修，要到 2027 年才重开。\n现在只能看外面。" }
+  ] },
+  { e: "♨️", n: "罗马浴场和温泉", when: "两千年的水，现在还热着", blocks: [
+    { h: "罗马浴场", d: "提前在官网买 £25（现场买贵 £2），含 12 种语言的语音导览和分时入场，可以不排队。\n人最少的是刚开门的 9:00 和下午 4 点以后；夏天周末现场买要排 30 到 60 分钟。" },
+    { h: "想泡的话", d: "Thermae Bath Spa，用的是同一眼温泉。两小时平日 £42.50，周末 £47.50，含浴袍和毛巾。\n重点是顶楼那个露天温泉池，泡在里面看整座城的屋顶 —— 是露天的，不闷。" },
+    { h: "顺一句", d: "罗马浴场的水是不能下去的，只能看。想真泡就是上面那家。" }
+  ] },
+  { e: "🚶", n: "剩下的时间", when: "一座城本身就是景点", blocks: [
+    { h: "皇家新月和圆形广场", d: "Royal Crescent 是三十栋连成一道弧的房子，前面一大片草坡，很多人就躺在那儿。\n往回走两步是 The Circus，圆形的一圈，中间几棵大树。" },
+    { h: "普尔特尼桥", d: "Pulteney Bridge 桥上两边全是店铺，是欧洲很少见的那种。桥下那道弧形堰，是巴斯照片里出现最多的一处。" },
+    { h: "吃", d: "Sally Lunn's 是全城最老的房子之一，招牌是一种很大的圆面包，热的，配黄油或者做成咸口。\n巴斯没什么必须吃生的东西，随便挑都行。" }
+  ] },
+  { e: "⚠️", n: "几件要记得的事", when: "都是为你写的", blocks: [
+    { h: "修道院的塔楼别上", d: "Bath Abbey 的塔楼导览要爬 212 级台阶，两段旋转楼梯，又窄又暗，有的地方没有扶手、天花板很低。\n官方自己写明了：幽闭恐惧的人不要参加。这条你直接跳过，城里高处的景在皇家新月的草坡上一样看得到。" },
+    { h: "罗马浴场里的路线", d: "地面那圈大浴池是露天的，很敞。往下走的几段是石砌的地下通道，灯偏暗、层高不高。\n觉得不舒服就顺着人流走出去，主景在上面那圈，不下去也看得完。" },
+    { h: "提前订", d: "罗马浴场的分时票、温泉的两小时场次、节里的热门活动，都建议提前订。周日的巴斯人不少。" },
+    { h: "还有", d: "整座城是山坡，来回上下不少，鞋穿舒服的。\n九月天说变就变，带把伞。" }
+  ] },
+  { e: "💷", n: "钱大概怎么花", when: "看你泡不泡温泉", blocks: [
+    { h: "路上", d: "火车往返提前买大约 £30–50。城里全靠走，不用再花交通费。" },
+    { h: "玩", d: "罗马浴场 £25 · 温泉两小时 £42.50（周末 £47.50）· 游行腕带 £15（只看不要钱）· Jane Austen Centre 十几镑\n皇家新月、圆形广场、普尔特尼桥、Gravel Walk 都不要钱。" },
+    { h: "合起来", d: "只看不泡：一天 £60–80。\n加上温泉：£110 上下。" }
+  ] }
+];
 // ── 🐑 伯恩茅斯：熊猫鱼去过的那个小镇，给她的一天 ──
 // 路线里的班次、票价、开放时间都是查来的，会变；卡片里也写了要出发前再确认一次
 var LD_BMTH = [
@@ -18594,7 +18635,7 @@ var LD_TRIPS = [
     { n: "邱园 Kew Gardens", d: "District 线直达，连火车都不用坐 · 维多利亚温室，下雨天也能逛一整天", e: "🌿", q: "Kew Gardens London" }
   ] },
   { z: "🚉 一到两小时（够玩一整天）", list: [
-    { n: "巴斯 Bath", d: "Paddington 1 小时 25 分 · 罗马浴场 · 简奥斯汀的城", e: "♨️", q: "Bath UK" },
+    { n: "巴斯 Bath", d: "Paddington 1 小时 25 分 · 罗马浴场 · 简奥斯汀的城 · 九月 11–20 日有奥斯汀节，详细的一天怎么安排看「周末探险」上面那张 📖", e: "♨️", q: "Bath UK" },
     { n: "惠茨特布尔 Whitstable", d: "Victoria 约 1 小时 20 分 · 一排彩色沙滩小屋，看日落 · 这儿以生蚝出名，但你不用碰生的，炸鱼薯条和现煮的贻贝一样好", e: "🏖️", q: "Whitstable Kent" },
     { n: "布罗德斯泰斯 Broadstairs", d: "St Pancras 约 1 小时 20 分 · 狄更斯写《大卫·科波菲尔》的那个海湾，沙滩小而安静", e: "📖", q: "Broadstairs Kent" },
     { n: "拉伊 Rye", d: "St Pancras 换 Ashford 约 1 小时 20 分 · 中世纪小镇，鹅卵石街，半天走得完", e: "🏘️", q: "Rye East Sussex" },
@@ -20490,6 +20531,7 @@ function LondonRoom(_refLD) {
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
   var _tro = useState(null); var tripOpen = _tro[0], setTripOpen = _tro[1];   // 摇滚爵士之旅展开到第几站
   var _bmo = useState(null); var bmOpen = _bmo[0], setBmOpen = _bmo[1];      // 伯恩茅斯那张展开到第几格
+  var _bao = useState(null); var baOpen = _bao[0], setBaOpen = _bao[1];      // 巴斯那张展开到第几格
   // 照片底下的评论：按照片的地址存，谁都看得见
   var _pcs = useState([]); var pcs = _pcs[0], setPcs = _pcs[1];
   var _pct = useState(""); var pcT = _pct[0], setPcT = _pct[1];
@@ -22884,6 +22926,38 @@ function LondonRoom(_refLD) {
     h("div", { key: "bmft", style: { marginTop: 11, background: "rgba(31,111,104,0.09)", borderLeft: "3px solid rgba(31,111,104,0.5)", borderRadius: "0 8px 8px 0", padding: "9px 11px", fontSize: "0.72rem", color: "#1a5c56", fontWeight: 700, lineHeight: 1.75 } },
       "🐑 班次、票价、农场的开放时间都是我查来的，会变 —— 出发前在官网再看一眼。别的都不用操心，那地方本来就是让人放空的。")
   ]);
+  // ── 📖 巴斯：奥斯汀的城 ──
+  var bathCard = ukCard([
+    screws,
+    ukHead("巴斯 · 奥斯汀的那座城", "Paddington 直达 1 小时 25 分 · 9 月 11–20 日有奥斯汀节", h("span", { style: { fontSize: "1rem" } }, "📖")),
+    h("div", { key: "ba0", style: { fontSize: "0.74rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.85, marginBottom: 10, fontFamily: LDHAND } },
+      "奥斯汀在这儿住过五年，《劝导》和《诺桑觉寺》大半发生在这座城里。\n更巧的是：你还在的这几天，正好赶上一年一度的简·奥斯汀节 —— 整座城的人穿上摄政时期的衣服上街。学英国文学的人碰上这个，不去说不过去。"),
+    h("div", { key: "bas" }, LD_BATH.map(function (x, i) {
+      var open = baOpen === i;
+      return h("div", { key: "ba" + i, style: { marginBottom: 8, border: "1px solid rgba(169,127,46,0.32)", borderRadius: 10, overflow: "hidden", background: open ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.32)" } },
+        h("div", { onClick: function () { setBaOpen(open ? null : i); },
+          style: { display: "flex", alignItems: "center", gap: 9, padding: "10px 11px", cursor: "pointer" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.79rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif", lineHeight: 1.4 } }, x.n),
+            h("div", { style: { fontSize: "0.63rem", color: "#a1542a", fontWeight: 800, marginTop: 2, lineHeight: 1.5 } }, x.when)),
+          h("span", { style: { flexShrink: 0, fontSize: "0.62rem", fontWeight: 800, color: "#a97f2e" } }, open ? "收起 ▲" : "展开 ▼")),
+        open ? h("div", { style: { padding: "0 11px 11px" } },
+          x.blocks.map(function (b2, bi) {
+            return h("div", { key: "bab" + bi, style: { marginTop: bi ? 10 : 2, paddingTop: bi ? 9 : 0, borderTop: bi ? "1px dashed rgba(169,127,46,0.28)" : "none" } },
+              h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 4 } }, b2.h),
+              h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.8, whiteSpace: "pre-line" } }, b2.d));
+          })) : null);
+    })),
+    h("div", { key: "bamap", style: { marginTop: 4, display: "flex", gap: 8, flexWrap: "wrap" } },
+      [["📍 巴斯", "Bath UK"], ["♨️ 罗马浴场", "Roman Baths Bath"], ["👒 Jane Austen Centre", "Jane Austen Centre 40 Gay Street Bath"],
+       ["🏛️ 皇家新月", "Royal Crescent Bath"], ["🌉 普尔特尼桥", "Pulteney Bridge Bath"]].map(function (m, mi) {
+        return h("a", { key: "bam" + mi, href: ldMap(m[1]), target: "_blank", rel: "noopener",
+          style: { textDecoration: "none", border: "1px solid rgba(31,111,104,0.4)", borderRadius: 999, padding: "5px 11px", fontSize: "0.66rem", fontWeight: 800, color: "#1a5c56" } }, m[0]);
+      })),
+    h("div", { key: "baft", style: { marginTop: 11, background: "rgba(31,111,104,0.09)", borderLeft: "3px solid rgba(31,111,104,0.5)", borderRadius: "0 8px 8px 0", padding: "9px 11px", fontSize: "0.72rem", color: "#1a5c56", fontWeight: 700, lineHeight: 1.75 } },
+      "📖 节期和票价是我查来的，节目单每年会调 —— 出发前在 janeausten.co.uk 看一眼当天有什么。罗马浴场和温泉的票提前订。")
+  ]);
   var weekTab = ukCard([
     screws,
     ukHead("侦探的周末探险", "坐上火车就走，或者就在城里逛 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
@@ -22979,7 +23053,7 @@ function LondonRoom(_refLD) {
       h("div", { key: "tpn", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 9, padding: "10px 11px", fontSize: "0.7rem", color: "#1a5c56", lineHeight: 1.8, fontFamily: LDHAND } },
         "订票前再上官网看一眼余票和座位等级 —— 上面写的是公布过的节目，不代表每档座位都还有。")
     ]));
-  var weekSection = h("div", null, bmthCard, weekTab);
+  var weekSection = h("div", null, bmthCard, bathCard, weekTab);
   var subBody = sub === "wall" ? wallSection : sub === "rock" ? rockSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekSection;
   var calTab = ldMerged
     ? h("div", null, subNav, sub === "cal" ? calBody : subBody)
