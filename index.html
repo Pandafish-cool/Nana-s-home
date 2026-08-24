@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-224";
+var NANA_VER = "v2026.8.2-225";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18533,6 +18533,43 @@ var LD_SURVIVE = [
 ];
 
 // 去玩
+// ── 🐑 伯恩茅斯：熊猫鱼去过的那个小镇，给她的一天 ──
+// 路线里的班次、票价、开放时间都是查来的，会变；卡片里也写了要出发前再确认一次
+var LD_BMTH = [
+  { e: "🚆", n: "怎么去", when: "Waterloo 直达 · 1 小时 45 分", blocks: [
+    { h: "车", d: "London Waterloo 上车，South Western Railway，中途不用换，最快 1 小时 43 分，平常 1 小时 45 分左右。\n白天大约半小时一班，最早一班 5:30 —— 睡到自然醒再出门也完全来得及。" },
+    { h: "票", d: "提前几天在 Trainline 或 National Rail 买 Advance，便宜的时候单程 £12 出头；当天到车站买要贵一倍不止。\n周末常修路改线，出门前在 National Rail 上看一眼当天有没有变。" },
+    { h: "到了之后", d: "火车站走到海边 23–30 分钟，一路是下坡，穿过 Lower Gardens 那条绿带正好当散步。\n不想走就在站门口坐 5 路或 6 路，几站就到。" }
+  ] },
+  { e: "🐑", n: "海边的羊", when: "这趟的重点 · Old Harry Rocks", blocks: [
+    { h: "怎么过去", d: "在 Bournemouth Square 坐 Purbeck Breezer 50 路。这趟车有意思的地方是：开到 Sandbanks 之后，整辆巴士会开上一条链渡轮，横穿 Poole 港的入海口，再从对岸继续开。\n全程约 46 分钟，30–60 分钟一班；渡轮 7:00 到 23:00，每 20 分钟一趟。" },
+    { h: "在哪儿下", d: "在 Ferry Road 和 Beach Road 的路口下车，就是 Studland 村口。\n从那儿往 Old Harry Rocks 走 1.4 英里，大概 30 分钟，路很平，不是爬山。" },
+    { h: "会看到什么", d: "白垩崖伸进海里，白得发亮，那就是侏罗纪海岸的东头。\n沿路的草场上散着羊和牛 —— 海、崖、草地、羊全在一个画面里，就是帖子里那种感觉。" },
+    { h: "老实说一句", d: "这一段的羊是散养在草场里的，隔着围栏看，不是能上手喂的那种。\n真想摸到、喂到，看下面那一格。" },
+    { h: "车票", d: "Morebus 的 Dayrider 一天票 £10.50，当天这一片的巴士随便坐，比单程买划算。" }
+  ] },
+  { e: "🐏", n: "想真的喂到羊", when: "两个地方，都要先确认开放时间", blocks: [
+    { h: "Nick's Farm", d: "Valley Rd, Bournemouth BH8 0EB —— 伯恩茅斯城里唯一一家能进去摸动物的小农场。\n羊、小羊羔、山羊、猪、设特兰矮马、兔子都有。进去 £5，饲料在里面另买。" },
+    { h: "Church Knowle", d: "Wareham BH20 5NQ —— 能喂羊、猪、羊驼、兔子和鹅，11:00 到 15:00，周三休息。\n在 Corfe Castle 那一带，可以跟 Old Harry Rocks 排在同一天。" },
+    { h: "去之前", d: "这两家的开放时间和票价都会变，去之前在各自官网上再看一眼。" }
+  ] },
+  { e: "🏖️\uFE0F", n: "剩下的时间", when: "沙滩、栈桥、彩色小屋", blocks: [
+    { h: "海滩", d: "七英里连着的沙滩，一路通到 Poole，是英国最长的那几条之一。\n沙子细，坡很缓，走多远都行。" },
+    { h: "栈桥和花园", d: "Bournemouth Pier 走到头，回头能看整片海湾。\nLower Gardens 从市中心一路绿到海边，随便找张椅子坐着就很好。" },
+    { h: "Hengistbury Head", d: "海边一整片自然保护区，绕一圈大约 1.5 小时。\n走到头是 Mudeford 沙嘴，那排彩色的海边小屋就在那儿。\n不想走回来可以坐园区的小火车，也能从 Mudeford Quay 或 Tuckton 坐船直接过去。" }
+  ] },
+  { e: "\u26A0\uFE0F", n: "几件要记得的事", when: "都是为你写的", blocks: [
+    { h: "东崖缆车别去了", d: "East Cliff Lift 那台在山体滑坡之后就一直关着，到现在也没有确定的重开时间。别专门跑一趟。" },
+    { h: "另一台缆车你可以跳过", d: "Fisherman's Walk 那台还在跑（4 月到 10 月），但它是个封闭的小车厢。\n你不喜欢那种就别坐 —— 旁边有坡道和台阶，一样下得到海边，还能一路看海。" },
+    { h: "带件外套", d: "整天都在户外，海边风比城里大，八九月傍晚会凉。" },
+    { h: "挑周末去", d: "你四点下班，平日赶过去天就黑了。八月底和九月初那两个周末最合适 —— 天还长，海水也还没凉透。" }
+  ] },
+  { e: "💷", n: "钱大概怎么花", when: "一天下来 £60 以内", blocks: [
+    { h: "路上", d: "火车往返提前买 £25–35 · Morebus 一天票 £10.50" },
+    { h: "玩", d: "沙滩、栈桥、Old Harry Rocks、Hengistbury Head 全都不要钱 · Nick's Farm £5 加饲料几镑" },
+    { h: "吃", d: "海边一顿炸鱼薯条十几镑；不想吃炸的，市中心餐厅很多，都是熟食。" }
+  ] }
+];
 var LD_TRIPS = [
   { z: "🚇 不出城的时候（市区几个别处没写的）", list: [
     { n: "Sky Garden", d: "免费登高看全城，需要提前在官网订时段 · 顶层是玻璃花园，下雨天也能看", e: "🌇", q: "Sky Garden London" },
@@ -18563,6 +18600,7 @@ var LD_TRIPS = [
     { n: "拉伊 Rye", d: "St Pancras 换 Ashford 约 1 小时 20 分 · 中世纪小镇，鹅卵石街，半天走得完", e: "🏘️", q: "Rye East Sussex" },
     { n: "利兹城堡 Leeds Castle", d: "Victoria 到 Bearsted 约 1 小时再接驳巴士 · 护城河围一圈的城堡（在肯特，不在利兹）", e: "🏯", q: "Leeds Castle Kent" },
     { n: "七姐妹白崖", d: "先到 Brighton 或 Eastbourne 再转巴士 · 白色悬崖长在海边，要走不少路，穿好鞋", e: "🏳️", q: "Seven Sisters Cliffs" },
+    { n: "伯恩茅斯 Bournemouth", d: "Waterloo 直达 1 小时 45 分 · 七英里沙滩 · 熊猫鱼去过的那个小镇 · 详细的一天怎么安排，看「周末探险」最上面那张 🐑", e: "🏖️", q: "Bournemouth UK" },
     { n: "科茨沃尔德 Cotswolds", d: "没有直达火车，建议报一日团 · 英国最美的村庄群", e: "🐏", q: "Cotswolds England" },
     { n: "巨石阵 Stonehenge", d: "常和 Bath 拼一天团；自己去是 Waterloo → Salisbury 再接驳巴士", e: "🗿", q: "Stonehenge" }
   ] },
@@ -20451,6 +20489,7 @@ function LondonRoom(_refLD) {
   var _cfd = useState(null); var cfDel = _cfd[0], setCfDel = _cfd[1];
   var _wy = useState(false); var wayOpen = _wy[0], setWayOpen = _wy[1];
   var _tro = useState(null); var tripOpen = _tro[0], setTripOpen = _tro[1];   // 摇滚爵士之旅展开到第几站
+  var _bmo = useState(null); var bmOpen = _bmo[0], setBmOpen = _bmo[1];      // 伯恩茅斯那张展开到第几格
   // 照片底下的评论：按照片的地址存，谁都看得见
   var _pcs = useState([]); var pcs = _pcs[0], setPcs = _pcs[1];
   var _pct = useState(""); var pcT = _pct[0], setPcT = _pct[1];
@@ -22813,6 +22852,38 @@ function LondonRoom(_refLD) {
     h("div", { key: "dft", style: { marginTop: 12, background: "rgba(169,127,46,0.1)", borderRadius: 9, padding: "10px 12px", fontSize: "0.7rem", color: "rgba(110,95,70,0.95)", lineHeight: 1.75, fontFamily: LDHAND } },
       "这几件不着急，六个星期够办完了。办不完也没关系，案子不会过期。手记两个人都能写，也都看得见。")
   ]);
+  // ── 🐑 伯恩茅斯：熊猫鱼去过的那个小镇 ──
+  var bmthCard = ukCard([
+    screws,
+    ukHead("伯恩茅斯 · 一个人去也很好", "Waterloo 直达 1 小时 45 分 · 海、白崖、草地上的羊", h("span", { style: { fontSize: "1rem" } }, "🐑")),
+    h("div", { key: "bm0", style: { fontSize: "0.74rem", color: "rgba(92,98,86,0.94)", lineHeight: 1.85, marginBottom: 10, fontFamily: LDHAND } },
+      "熊猫鱼当年在英国的时候去过这个小镇，说那是幸福感最高的一天。\n如果哪个周末你觉得有点累，不想安排、也不想动脑子 —— 就去这儿。买张票坐上车，剩下的到了再说。"),
+    h("div", { key: "bms" }, LD_BMTH.map(function (x, i) {
+      var open = bmOpen === i;
+      return h("div", { key: "bm" + i, style: { marginBottom: 8, border: "1px solid rgba(169,127,46,0.32)", borderRadius: 10, overflow: "hidden", background: open ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.32)" } },
+        h("div", { onClick: function () { setBmOpen(open ? null : i); },
+          style: { display: "flex", alignItems: "center", gap: 9, padding: "10px 11px", cursor: "pointer" } },
+          h("span", { style: { fontSize: "1.05rem", flexShrink: 0 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.79rem", color: UK_INK, fontFamily: "Georgia,'PingFang SC',serif", lineHeight: 1.4 } }, x.n),
+            h("div", { style: { fontSize: "0.63rem", color: "#a1542a", fontWeight: 800, marginTop: 2, lineHeight: 1.5 } }, x.when)),
+          h("span", { style: { flexShrink: 0, fontSize: "0.62rem", fontWeight: 800, color: "#a97f2e" } }, open ? "收起 \u25B2" : "展开 \u25BC")),
+        open ? h("div", { style: { padding: "0 11px 11px" } },
+          x.blocks.map(function (b2, bi) {
+            return h("div", { key: "bb" + bi, style: { marginTop: bi ? 10 : 2, paddingTop: bi ? 9 : 0, borderTop: bi ? "1px dashed rgba(169,127,46,0.28)" : "none" } },
+              h("div", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#1a5c56", marginBottom: 4 } }, b2.h),
+              h("div", { style: { fontSize: "0.73rem", color: "rgba(88,96,84,0.95)", lineHeight: 1.8, whiteSpace: "pre-line" } }, b2.d));
+          })) : null);
+    })),
+    h("div", { key: "bmmap", style: { marginTop: 4, display: "flex", gap: 8, flexWrap: "wrap" } },
+      [["📍 伯恩茅斯", "Bournemouth UK"], ["🐑 Old Harry Rocks", "Old Harry Rocks Studland Dorset"],
+       ["🐖 Nick's Farm", "Nicks Farm Valley Road Bournemouth BH8 0EB"], ["🏖️\uFE0F Hengistbury Head", "Hengistbury Head Bournemouth"]].map(function (m, mi) {
+        return h("a", { key: "bmm" + mi, href: ldMap(m[1]), target: "_blank", rel: "noopener",
+          style: { textDecoration: "none", border: "1px solid rgba(31,111,104,0.4)", borderRadius: 999, padding: "5px 11px", fontSize: "0.66rem", fontWeight: 800, color: "#1a5c56" } }, m[0]);
+      })),
+    h("div", { key: "bmft", style: { marginTop: 11, background: "rgba(31,111,104,0.09)", borderLeft: "3px solid rgba(31,111,104,0.5)", borderRadius: "0 8px 8px 0", padding: "9px 11px", fontSize: "0.72rem", color: "#1a5c56", fontWeight: 700, lineHeight: 1.75 } },
+      "🐑 班次、票价、农场的开放时间都是我查来的，会变 —— 出发前在官网再看一眼。别的都不用操心，那地方本来就是让人放空的。")
+  ]);
   var weekTab = ukCard([
     screws,
     ukHead("侦探的周末探险", "坐上火车就走，或者就在城里逛 · 想去 " + wantN + " · 去过 " + doneN, h("span", { style: { fontSize: "1rem" } }, "🚂")),
@@ -22908,7 +22979,8 @@ function LondonRoom(_refLD) {
       h("div", { key: "tpn", style: { marginTop: 11, background: "rgba(31,111,104,0.08)", borderRadius: 9, padding: "10px 11px", fontSize: "0.7rem", color: "#1a5c56", lineHeight: 1.8, fontFamily: LDHAND } },
         "订票前再上官网看一眼余票和座位等级 —— 上面写的是公布过的节目，不代表每档座位都还有。")
     ]));
-  var subBody = sub === "wall" ? wallSection : sub === "rock" ? rockSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekTab;
+  var weekSection = h("div", null, bmthCard, weekTab);
+  var subBody = sub === "wall" ? wallSection : sub === "rock" ? rockSection : sub === "duty" ? dutyTab : sub === "lit" ? litTab : weekSection;
   var calTab = ldMerged
     ? h("div", null, subNav, sub === "cal" ? calBody : subBody)
     : calBody;
