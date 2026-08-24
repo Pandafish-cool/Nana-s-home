@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-228";
+var NANA_VER = "v2026.8.2-229";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21540,7 +21540,7 @@ function LondonRoom(_refLD) {
               h("div", { style: { display: "flex", gap: 8, marginTop: 10 } },
                 h("button", { onClick: function () { setActN(actN + 1); setChgPct(0); }, style: { flex: 1, border: "1px solid rgba(169,127,46,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#8a6a2a", cursor: "pointer" } }, "再来一次"),
                 h("button", { onClick: function () { sendPage({ k: act.k, body: act.body, ok: act.ok }); setAct(null); setBadOpen(false); }, disabled: !!pageBusy,
-                  style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "也让他知道一声")),
+                  style: { flex: 1, border: "none", background: "rgba(180,53,58,0.14)", borderRadius: 8, padding: "8px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", color: "#b4353a", cursor: "pointer" } }, "一起来呀")),
               h("button", { onClick: function () { setAct(null); }, style: { width: "100%", marginTop: 7, border: "none", background: "none", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", color: "rgba(140,120,95,0.9)", cursor: "pointer", padding: "2px 0" } }, "← 换一个"))
           : h("div", null,
               h("div", { style: { fontSize: "0.72rem", color: "#b4353a", fontWeight: 800, marginBottom: 9 } }, "什么都不用说，选一个就行"),
