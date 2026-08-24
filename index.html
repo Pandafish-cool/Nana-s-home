@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-230";
+var NANA_VER = "v2026.8.2-231";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -21396,9 +21396,10 @@ function LondonRoom(_refLD) {
           h("g", { style: { transformOrigin: "66px 54px", animation: "ldHugSquish 3.4s ease-in-out infinite" } }, panda(66, 54, 21))),
         h("g", { style: { animation: "ldHugR 3.4s ease-in-out infinite" } },
           h("g", { style: { transformOrigin: "134px 54px", animation: "ldHugSquish 3.4s ease-in-out infinite" } }, nana(134, 54, 21))),
-        [[100, 26, 0], [86, 30, 0.5], [114, 30, 0.95]].map(function (p2, i) {
-          return h("text", { key: "hh" + i, x: p2[0], y: p2[1], textAnchor: "middle", fontSize: 11,
-            style: { animation: "ldHugHrt 3.4s ease-out infinite", animationDelay: p2[2] + "s", transformOrigin: p2[0] + "px " + p2[1] + "px" } }, "💛");
+        // 抱住的时候飘几个泡泡，比爱心轻一点
+        [[100, 25, 11, 0], [85, 29, 9, 0.5], [115, 29, 9, 0.95]].map(function (p2, i) {
+          return h("text", { key: "hh" + i, x: p2[0], y: p2[1], textAnchor: "middle", fontSize: p2[2],
+            style: { animation: "ldHugHrt 3.4s ease-out infinite", animationDelay: p2[3] + "s", transformOrigin: p2[0] + "px " + p2[1] + "px" } }, "🫧");
         }));
     }
     if (k === "chg") {
