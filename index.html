@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-233";
+var NANA_VER = "v2026.8.2-234";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20420,6 +20420,7 @@ function LondonRoom(_refLD) {
   var _pk = useState(ldReadPack); var packed = _pk[0], setPacked = _pk[1];
   var _ps = useState(false); var packSync = _ps[0], setPackSync = _ps[1];
   var _pe = useState(""); var packErr = _pe[0], setPackErr = _pe[1];
+  var _pd = useState(0); var packDown = _pd[0], setPackDown = _pd[1];   // 只表示「目录没同步上」，别跟别的错混在一起
   var _pv = useState("all"); var packView = _pv[0], setPackView = _pv[1];
   var _px = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-extra") || "[]"); } catch (_) { return []; } }); var extras = _px[0], setExtras = _px[1];
   var _pi = useState(""); var packInp = _pi[0], setPackInp = _pi[1];
@@ -21142,11 +21143,11 @@ function LondonRoom(_refLD) {
     var n = parseInt(lonT.slice(0, 2), 10) * 60 + parseInt(lonT.slice(3, 5), 10);
     return n >= a && n <= b;
   })();
-  var loadPack = function (silent) {
-    if (!silent) setPackSync(true);
-    nanaPackList(function (err, rows) {
-      setPackSync(false);
-      if (err) { if (!silent) setPackErr("同步不上，等会儿再试 · " + (err.message || "")); return; }
+  // 目录同步。以前只在开门那一下问一次，问不到就是一片空白，
+  // 还得把 app 杀掉重开才有 —— 短波最明显，因为那一页除了目录什么都没有。
+  // 现在：先把上次存的画出来（没网也有东西看），再去服务器要；失败自己重试；
+  // 每次切回前台也顺手再要一遍。
+  var applyRows = function (rows) {
       var m = {}, ex = [], evs = [], mps = [], dcs = [], cfl = [], pgl = [], vol = [], pcl = [], jr = { panda: [], nana: [] };
       (rows || []).forEach(function (r) {
         if (r.id && r.id.indexOf("vo-") === 0) {
@@ -21232,10 +21233,51 @@ function LondonRoom(_refLD) {
       ex.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setPacked(m); setExtras(ex); ldSavePack(m);
       try { localStorage.setItem("nana-pack-extra", JSON.stringify(ex)); } catch (_) {}
+  };
+  var packAt = useRef(0), packBusy = useRef(0);
+  var loadPack = function (silent, tries) {
+    if (packBusy.current) return;
+    packBusy.current = 1;
+    if (!silent) setPackSync(true);
+    nanaPackList(function (err, rows) {
+      packBusy.current = 0;
+      setPackSync(false);
+      if (err) {
+        var left = (tries === undefined ? 3 : tries) - 1;
+        if (left > 0) { setTimeout(function () { loadPack(silent, left); }, 1600 * (4 - left)); return; }   // 网不好就自己再等等重来
+        setPackDown(1);
+        setPackErr("同步不上，等会儿再试 · " + (err.message || ""));
+        return;
+      }
+      setPackDown(0);
+      packAt.current = Date.now();
+      // 整份存下来：下次开门先画这个，不用干等一趟跨境请求
+      try { localStorage.setItem("nana-pack-rows", JSON.stringify(rows || [])); }
+      catch (_) { try { localStorage.removeItem("nana-pack-rows"); } catch (_2) {} }
+      applyRows(rows);
       setPackErr("");
     });
   };
-  useEffect(function () { if (myAuthor) loadPack(Object.keys(ldReadPack()).length > 0); }, [myAuthor]);
+  useEffect(function () {
+    if (!myAuthor) return;
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem("nana-pack-rows") || "null"); } catch (_) { cached = null; }
+    var had = !!(cached && cached.length);
+    if (had) applyRows(cached);
+    loadPack(had);
+    // 切走再切回来 —— 顺手再要一遍，不用杀掉重开
+    var back = function () {
+      if (document.hidden) return;
+      if (Date.now() - packAt.current < 45000) return;      // 别一直问
+      loadPack(true);
+    };
+    document.addEventListener("visibilitychange", back);
+    window.addEventListener("pageshow", back);
+    return function () {
+      document.removeEventListener("visibilitychange", back);
+      window.removeEventListener("pageshow", back);
+    };
+  }, [myAuthor]);
   var saveExtras = function (list) { setExtras(list); try { localStorage.setItem("nana-pack-extra", JSON.stringify(list)); } catch (_) {} };
   var addExtra = function () {
     var t = (packInp || "").trim();
@@ -22558,6 +22600,11 @@ function LondonRoom(_refLD) {
       ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在",
         h("span", { style: { fontSize: "1rem" } }, "\uD83D\uDCFB")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
+      packDown ? h("div", { key: "vsy", style: { marginBottom: 9, display: "flex", alignItems: "center", gap: 8, background: "rgba(169,127,46,0.12)", borderRadius: 8, padding: "8px 9px 8px 11px" } },
+        h("span", { style: { flex: 1, fontSize: "0.7rem", color: "#8a6a2e", fontWeight: 700, lineHeight: 1.5 } }, "没连上服务器，下面这些可能不全"),
+        h("button", { onClick: function () { setPackDown(0); setPackErr(""); loadPack(false); },
+          style: { flexShrink: 0, border: "none", background: "rgba(169,127,46,0.85)", color: "#fff", borderRadius: 8, padding: "7px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } },
+          packSync ? "连接中…" : "重新连接")) : null,
       readOnly ? null : h("div", { key: "vb", style: { marginBottom: 12 } },
         h("button", {
           onClick: function () {
@@ -22590,7 +22637,9 @@ function LondonRoom(_refLD) {
           voMic === "raw" ? "不做任何处理，一般走手机自己的麦。戴耳机觉得不对就用这个。" : "iPhone 自带的通话降噪。戴着蓝牙耳机时会切到耳机的麦，声音闷、周围反而更响 —— 摘了用手机录明显更清楚。")),
       voList.length === 0
         ? h("div", { key: "vz", style: { textAlign: "center", fontSize: "0.72rem", color: "rgba(120,108,84,0.9)", lineHeight: 1.8, padding: "6px 0 2px" } },
-            readOnly ? "这个频率上还没有东西。录在「安心」那一页。" : "这个频率上还没有东西。按住上面那条，说什么都行。")
+            packSync ? "正在把这个频率上的东西找回来…"
+              : packDown ? "还没连上 —— 点上面那个「重新连接」"
+              : (readOnly ? "这个频率上还没有东西。录在「安心」那一页。" : "这个频率上还没有东西。按住上面那条，说什么都行。"))
         : h("div", { key: "vl" }, voList.map(function (x) {
             var on = voPlay === x.id, ld = voLoad === x.id, ask = voDel === x.id;
             return h("div", { key: x.id, style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 9 } },
