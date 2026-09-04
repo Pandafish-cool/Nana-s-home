@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-232";
+var NANA_VER = "v2026.8.2-233";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8258,6 +8258,63 @@ var nanaVoGet = function (u, cb) {
       })["catch"](function (e) { if (tm) clearTimeout(tm); cb(e); });
     } catch (err) { cb(err); }
   });
+};
+// ── 📤 待寄的录音：松手先落到本机，确认寄到了才擦掉 ──
+// 之前一段刚录完的声音只活在页面内存里。传到一半掉线，或者把 app 切走被系统收掉，
+// 这段就彻底没了，连一个「没寄出去」的痕迹都不剩。现在先写进本机，下次打开还在，接着寄。
+var NANA_OUT_PFX = "outbox:";
+var nanaOutPut = function (rid, blob, meta, cb) {
+  try {
+    var fr = new FileReader();
+    fr.onload = function () {
+      nanaPhotoDB(function (err, db) {
+        if (err || !db || !db.objectStoreNames.contains("cloud")) return cb && cb(err || new Error("idb"));
+        try {
+          db.transaction("cloud", "readwrite").objectStore("cloud")
+            .put({ u: NANA_OUT_PFX + rid, data: String(fr.result), m: meta || {}, ts: Date.now() });
+          cb && cb(null);
+        } catch (e2) { cb && cb(e2); }
+      });
+    };
+    fr.onerror = function () { cb && cb(fr.error || new Error("read")); };
+    fr.readAsDataURL(blob);
+  } catch (err) { cb && cb(err); }
+};
+var nanaOutDel = function (rid) {
+  nanaPhotoDB(function (err, db) {
+    if (err || !db || !db.objectStoreNames.contains("cloud")) return;
+    try { db.transaction("cloud", "readwrite").objectStore("cloud")["delete"](NANA_OUT_PFX + rid); } catch (_) {}
+  });
+};
+// 只翻 outbox: 开头那几条，别把缓存的照片一起读进内存
+var nanaOutList = function (cb) {
+  nanaPhotoDB(function (err, db) {
+    if (err || !db || !db.objectStoreNames.contains("cloud")) return cb([]);
+    try {
+      var rng = IDBKeyRange.bound(NANA_OUT_PFX, NANA_OUT_PFX + "\uffff");
+      var out = [];
+      var rq = db.transaction("cloud").objectStore("cloud").openCursor(rng);
+      rq.onsuccess = function (e) {
+        var c = e.target.result;
+        if (!c) { out.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }); return cb(out); }
+        var r = c.value;
+        if (r && r.data) out.push({ rid: String(r.u).slice(NANA_OUT_PFX.length), data: r.data, m: r.m || {}, ts: r.ts || 0 });
+        c["continue"]();
+      };
+      rq.onerror = function () { cb([]); };
+    } catch (_) { cb([]); }
+  });
+};
+// 本机存的是 dataURL，重寄的时候变回 Blob
+var nanaDataBlob = function (d, mime) {
+  try {
+    var parts = String(d).split(",");
+    var bin = atob(parts[1] || "");
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    var mt = mime || ((parts[0] || "").split(":")[1] || "").split(";")[0] || "audio/mp4";
+    return new Blob([arr], { type: mt });
+  } catch (_) { return null; }
 };
 // 开麦：明确要语音模式（回声消除 / 降噪 / 自动增益），再串一条高通 + 压缩 + 提音量，
 // 不然 iPhone 给的是没做语音优化的那路，人声远、环境声反而大
@@ -9075,7 +9132,10 @@ function ReadingRoomActivity(_refRR) {
       setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); return next; });
       if (shVo) {                                        // 同一段声音也进「短波」那个架子
         var ts = dt.getTime();
-        nanaPackAdd({ id: "vo-" + ts + Math.floor(Math.random() * 90), who: JSON.stringify({ vo: 1, u: shVo, d: nanaVoSecs(shVo), a: myAuthor, ts: ts }) }, function () {});
+        // 顺手放到「短波」那个架子上。以前这里失败是完全不吭声的，现在至少自己重试两次。
+        var vrow = { id: "vo-" + ts + Math.floor(Math.random() * 90), who: JSON.stringify({ vo: 1, u: shVo, d: nanaVoSecs(shVo), a: myAuthor, ts: ts }) };
+        var vtry = function (n) { nanaPackAdd(vrow, function (e3) { if (e3 && n > 1) setTimeout(function () { vtry(n - 1); }, 1500); }); };
+        vtry(3);
       }
       setSharedDraft(""); setSharedDraftPs([]); setShVo(""); if (onCozy) onCozy(5);
     });
@@ -18338,7 +18398,26 @@ var ldFullOpen = function () {
   try { if (localStorage.getItem("nana-author") === "panda") return true; } catch (_) {}
   try { return new Date() >= new Date(LD_FULL + "T00:00:00+08:00"); } catch (_) { return true; }
 };
-var nanaPackList = function (cb) { nanaSyncReq("GET", "shared_pack?select=*&limit=300", null, cb); };
+// 以前是 select=*&limit=300：既没排序，又封了顶。
+// 表一过三百行，服务器给回哪三百行就不一定了；而且勾一下装箱清单是 UPDATE，
+// 那一行在库里会换个位置，于是每次刷新捞回来的都不是同一批。
+// 结果就是：明明寄出去的东西（比如早上录的那段），过几个小时再开就没了，
+// 说不定过一阵自己又回来。改成按 id 排好、一页一页全捞回来。
+var NANA_PACK_PAGE = 500, NANA_PACK_MAXPAGE = 20;
+var nanaPackList = function (cb) {
+  var all = [], page = 0;
+  var step = function () {
+    nanaSyncReq("GET", "shared_pack?select=*&order=id.asc&limit=" + NANA_PACK_PAGE + "&offset=" + (page * NANA_PACK_PAGE), null, function (err, rows) {
+      if (err) return cb(err);                    // 只捞到一半比一条都没捞到更糟，宁可整趟算失败
+      var list = rows || [];
+      all = all.concat(list);
+      page++;
+      if (list.length < NANA_PACK_PAGE || page >= NANA_PACK_MAXPAGE) return cb(null, all);
+      step();
+    });
+  };
+  step();
+};
 var nanaPackAdd = function (row, cb) { nanaSyncReq("POST", "shared_pack", row, cb); };
 var nanaPackDel = function (id, cb) { nanaSyncReq("DELETE", "shared_pack?id=eq." + encodeURIComponent(id), null, cb); };
 var nanaPackTxt = function (id) { return id.indexOf("x-") === 0; };
@@ -20438,49 +20517,80 @@ function LondonRoom(_refLD) {
     catch (_) { stopVoTimer(); setVoRec(""); voStopping.current = false; }
   };
   // 松手就先摆到列表上（本地就能放），传是后台的事 —— 不用干等两趟跨境请求
+  var voMark = function (rid, patch) {
+    setVoList(function (o) { return o.map(function (x) { return x.id === rid ? Object.assign({}, x, patch) : x; }); });
+  };
+  var voWhy = function (e) {
+    var m2 = String((e && e.message) || e || "");
+    if (!m2) return "不知道为什么";
+    if (m2.indexOf("超时") >= 0) return "超时 · 网太慢";
+    if (m2.indexOf("HTTP") >= 0) return m2;
+    if (/Failed to fetch|NetworkError|Load failed/i.test(m2)) return "连不上服务器";
+    return m2.slice(0, 40);
+  };
+  // 一段声音要走两步：先把音频传上去，再往目录里写一行。两步都成了才算寄到，
+  // 才把本机那份原件擦掉 —— 中间任何一步断了，下次打开还能接着寄。
+  var voPush = function (o, tries) {
+    voMark(o.rid, { up: 1, bad: 0 });
+    nanaVoUpload(o.blob, o.fid, o.ext, o.mime, function (err, url) {
+      if (err || !url) {
+        if (tries > 1) { setTimeout(function () { voPush(o, tries - 1); }, 1500); return; }   // 自己先重试两次
+        voMark(o.rid, { up: 0, bad: 1, why: "音频没传上去 · " + voWhy(err), retry: function () { voPush(o, 3); } });
+        return;
+      }
+      nanaPackAdd({ id: o.rid, who: JSON.stringify({ vo: 1, u: url, d: o.secs, a: o.a, ts: o.ts }) }, function (e2) {
+        // 409 = 这一行早就写进去了（上次其实寄到了，只是没来得及擦本机那份）。算寄到。
+        if (e2 && String((e2 && e2.message) || "").indexOf("409") >= 0) e2 = null;
+        if (e2) {
+          if (tries > 1) { setTimeout(function () { voPush(o, tries - 1); }, 1500); return; }
+          voMark(o.rid, { up: 0, bad: 1, why: "目录没写上 · " + voWhy(e2), retry: function () { voPush(o, 3); } });
+          return;
+        }
+        voMark(o.rid, { u: url, up: 0, bad: 0, why: "", retry: null });
+        nanaOutDel(o.rid);                                  // 确认在服务器上了，本机那份才擦
+      });
+    });
+  };
   var voSave = function (blob, secs, fmt) {
     var ts = Date.now();
-    var id = "vo" + ts + Math.floor(Math.random() * 900);
+    var fid = "vo" + ts + Math.floor(Math.random() * 900);
     var rid = "vo-" + ts + Math.floor(Math.random() * 90);
     var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+    var ext = fmt ? fmt.e : "m4a";
+    var mime = fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4";
     var local = "";
     try { local = URL.createObjectURL(blob); } catch (_) {}
     setVoList(function (o) { return [{ id: rid, u: "", local: local, d: secs, a: me, ts: ts, up: 1 }].concat(o); });
     setVoErr("");
-    var mark = function (patch) {
-      setVoList(function (o) { return o.map(function (x) { return x.id === rid ? Object.assign({}, x, patch) : x; }); });
-    };
-    var why = function (e) {
-      var m2 = String((e && e.message) || e || "");
-      if (!m2) return "不知道为什么";
-      if (m2.indexOf("超时") >= 0) return "超时 · 网太慢";
-      if (m2.indexOf("HTTP") >= 0) return m2;
-      if (/Failed to fetch|NetworkError|Load failed/i.test(m2)) return "连不上服务器";
-      return m2.slice(0, 40);
-    };
-    var push = function (tries) {
-      mark({ up: 1, bad: 0 });
-      nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
-        if (err || !url) {
-          if (tries > 1) { setTimeout(function () { push(tries - 1); }, 1500); return; }   // 自己先重试两次
-          mark({ up: 0, bad: 1, why: "音频没传上去 · " + why(err), retry: function () { push(3); } });
-          return;
-        }
-        nanaPackAdd({ id: rid, who: JSON.stringify({ vo: 1, u: url, d: secs, a: me, ts: ts }) }, function (e2) {
-          if (e2) {
-            if (tries > 1) { setTimeout(function () { push(tries - 1); }, 1500); return; }
-            mark({ up: 0, bad: 1, why: "目录没写上 · " + why(e2), retry: function () { push(3); } });
-            return;
-          }
-          mark({ u: url, up: 0, bad: 0, why: "", retry: null });
-        });
-      });
-    };
-    push(3);
+    var job = { rid: rid, fid: fid, blob: blob, secs: secs, a: me, ts: ts, ext: ext, mime: mime };
+    // 先落到本机，再开始寄
+    nanaOutPut(rid, blob, { fid: fid, secs: secs, a: me, ts: ts, ext: ext, mime: mime }, function () { voPush(job, 3); });
   };
+  // 打开就看看本机还有没有上次没寄成的，有就接着寄
+  useEffect(function () {
+    nanaOutList(function (list) {
+      if (!list || !list.length) return;
+      var add = [], jobs = [];
+      list.forEach(function (r) {
+        var m = r.m || {};
+        var b = nanaDataBlob(r.data, m.mime);
+        if (!b || !b.size) { nanaOutDel(r.rid); return; }
+        add.push({ id: r.rid, u: "", local: r.data, d: m.secs || 0, a: m.a || "", ts: m.ts || r.ts, up: 1 });
+        jobs.push({ rid: r.rid, fid: m.fid || ("vo" + (m.ts || r.ts || Date.now())), blob: b, secs: m.secs || 0, a: m.a || "", ts: m.ts || r.ts, ext: m.ext || "m4a", mime: m.mime || "audio/mp4" });
+      });
+      if (!add.length) return;
+      setVoList(function (o) {
+        var have = {};
+        (o || []).forEach(function (x) { have[x.id] = 1; });
+        return add.filter(function (x) { return !have[x.id]; }).concat(o || []);
+      });
+      jobs.forEach(function (j) { voPush(j, 3); });
+    });
+  }, []);
   var voDrop = function (x) {
     setVoDel(null);
     setVoList(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
+    nanaOutDel(x.id);
     nanaPackDel(x.id, function () {});
   };
   var voHit = function (x) {
@@ -21098,7 +21208,19 @@ function LondonRoom(_refLD) {
       pgl.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
       setMyPg(pgl);
       vol.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });   // 新的在上面
-      setVoList(vol);
+      setVoList(function (old) {
+        // 以服务器为准，但本机刚录的、还在寄或者没寄成的那几段不能被抹掉
+        var byId = {}, srv = {};
+        (old || []).forEach(function (x) { byId[x.id] = x; });
+        var out = vol.map(function (v) {
+          srv[v.id] = 1;
+          var o2 = byId[v.id];
+          return (o2 && o2.local) ? Object.assign({}, v, { local: o2.local }) : v;   // 本机有原件就不用再下一遍
+        });
+        (old || []).forEach(function (x) { if (!srv[x.id] && (x.up || x.bad)) out.push(x); });
+        out.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+        return out;
+      });
       setJar(function (old) {
         // 自己这边刚放进去还没写成功的，别被服务器的旧数据抹掉
         var mine = (old && myAuthor && old[myAuthor]) || [];
