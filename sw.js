@@ -65,6 +65,10 @@ self.addEventListener("fetch", function (e) {
       /\.(mp3|m4a|aac|ogg|oga|wav|flac|mp4|webm|mov)$/i.test(url.pathname)) {
     return;
   }
+  // 版本号：本来就是拿来问「线上是不是有新版」的，走缓存毫无意义。
+  // 而且每次都带一个新的 ?t=，落到下面那个缓存优先的分支里，
+  // 等于每隔半分钟往缓存里塞一条永远命中不了的垃圾。直连，别管。
+  if (/(^|\/)version\.txt$/.test(url.pathname)) return;
   // 跨域数据接口（Supabase 等）不走缓存，直连
   var isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (url.origin !== self.location.origin && !isFont) return;
