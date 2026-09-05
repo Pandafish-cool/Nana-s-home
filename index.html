@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-234";
+var NANA_VER = "v2026.8.2-235";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8341,8 +8341,30 @@ var nanaMicDrop = function () {
 // 录完立刻放掉：只要麦克风还开着，iOS 就把声音输出切到听筒并压低，
 // 放录音几乎听不见，状态栏那个橙点也一直亮着。留着它省一次权限弹窗，不值。
 var nanaMicIdle = function () { nanaMicDrop(); };
+// 正在录音的时候，上面那句「切到后台就放掉麦克风」会把录音当场掐死 ——
+// 屏幕一黑页面就变 hidden，这一下比 iOS 自己的挂起还快。录着的时候不许放。
+var NANA_RECORDING = 0;
+// 录音的时候不让屏幕自己黑掉。iOS 一锁屏就把页面挂起，录音必断，
+// 所以最好的办法是根本别让它黑（Safari 16.4+ 支持；不支持就退回下面的「黑了就先存住」）。
+var NANA_WAKE = null;
+var nanaWakeOn = function () {
+  try {
+    if (NANA_WAKE || !navigator.wakeLock || !navigator.wakeLock.request) return;
+    navigator.wakeLock.request("screen").then(function (lk) {
+      NANA_WAKE = lk;
+      try { lk.addEventListener("release", function () { NANA_WAKE = null; }); } catch (_) {}
+    })["catch"](function () {});
+  } catch (_) {}
+};
+var nanaWakeOff = function () {
+  try { if (NANA_WAKE && NANA_WAKE.release) NANA_WAKE.release(); } catch (_) {}
+  NANA_WAKE = null;
+};
 try {
-  document.addEventListener("visibilitychange", function () { if (document.hidden) nanaMicDrop(); });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { if (!NANA_RECORDING) nanaMicDrop(); return; }
+    if (NANA_RECORDING) nanaWakeOn();          // 系统会自动收回这把锁，回来要重新要一次
+  });
 } catch (_) {}
 var nanaMicLive = function () {
   try {
@@ -8431,6 +8453,7 @@ var nanaVoMime = function () {
   var last = 0, busy = 0;
   var check = function () {
     var now = Date.now();
+    if (NANA_RECORDING) return;                        // 人还在说话，这时候重载页面等于把录音扔了
     if (busy || (last && now - last < 30000)) return;   // 别一直问，最多半分钟一次（就十几个字节）
     last = now; busy = 1;
     fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
@@ -8944,6 +8967,7 @@ function ReadingRoomActivity(_refRR) {
   var _snn = useState(readSharedCache); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
   var _see = useState(null); var sharedErr = _see[0], setSharedErr = _see[1];
+  var _snt = useState(""); var shNote = _snt[0], setShNote = _snt[1];
   var _sdd = useState(function () { var d = nanaReadShDraft(); return typeof d.t === "string" ? d.t : ""; }); var sharedDraft = _sdd[0], setSharedDraft = _sdd[1];
   var _spp = useState(false); var sharedPosting = _spp[0], setSharedPosting = _spp[1];
   var _sxx = useState(null); var sharedDelId = _sxx[0], setSharedDelId = _sxx[1];
@@ -9038,6 +9062,7 @@ function ReadingRoomActivity(_refRR) {
   var _rv5 = useState(""); var shPlay = _rv5[0], setShPlay = _rv5[1];
   var _rv6 = useState(""); var shLoad = _rv6[0], setShLoad = _rv6[1];
   var shMR = useRef(null), shChunks = useRef([]), shTimer = useRef(null), shT0 = useRef(0), shAud = useRef(null);
+  var shStopAt = useRef(0);
   var shKeep = useRef(true), shStopping = useRef(false);
   var shStopTimer = function () { if (shTimer.current) { clearInterval(shTimer.current); shTimer.current = null; } };
   var shRecStart = function () {
@@ -9053,8 +9078,11 @@ function ReadingRoomActivity(_refRR) {
       shChunks.current = [];
       mr.ondataavailable = function (e) { if (e.data && e.data.size) shChunks.current.push(e.data); };
       mr.onstop = function () {
+        NANA_RECORDING = 0; nanaWakeOff();
         try { micStop(); } catch (_) {}
-        var secs = Math.round((Date.now() - shT0.current) / 1000);
+        var end = shStopAt.current || Date.now();          // 按停下那一刻算，不是回调跑起来那一刻
+        var secs = Math.round((end - shT0.current) / 1000);
+        if (secs > 180) secs = 180;
         shStopTimer(); setShRec(false); setShSec(0);
         shStopping.current = false;
         if (!shKeep.current) return;                       // 上滑取消 / 被打断：扔掉
@@ -9070,8 +9098,12 @@ function ReadingRoomActivity(_refRR) {
           setSharedErr(null);
         });
       };
-      shMR.current = mr; shT0.current = Date.now(); shKeep.current = true; shStopping.current = false; mr.start();
-      setShRec(true); setShSec(0); setSharedErr(null);
+      try { mr.onerror = function () { shRecStop(true); }; } catch (_) {}
+      shMR.current = mr; shT0.current = Date.now(); shStopAt.current = 0;
+      shKeep.current = true; shStopping.current = false;
+      NANA_RECORDING = 1; nanaWakeOn();                    // 录着的时候别让屏幕黑
+      mr.start();
+      setShRec(true); setShSec(0); setSharedErr(null); setShNote("");
       shStopTimer();
       shTimer.current = setInterval(function () {
         var n = Math.round((Date.now() - shT0.current) / 1000);
@@ -9083,10 +9115,26 @@ function ReadingRoomActivity(_refRR) {
   var shRecStop = function (keep) {
     if (shStopping.current) return;
     shStopping.current = true;
+    shStopAt.current = Date.now();
     shKeep.current = !!keep;
     try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); }
-    catch (_) { shStopTimer(); setShRec(false); shStopping.current = false; }
+    catch (_) { NANA_RECORDING = 0; nanaWakeOff(); shStopTimer(); setShRec(false); shStopping.current = false; }
   };
+  // 屏幕黑了就先把这段停下来存住，别让它跟着页面一起没
+  useEffect(function () {
+    if (!shRec) return;
+    var bye = function (e) {
+      if (e && e.type === "visibilitychange" && !document.hidden) { nanaWakeOn(); return; }
+      shRecStop(true);
+      setShNote("屏幕黑了 —— 刚才那段已经给你留住了");
+    };
+    document.addEventListener("visibilitychange", bye);
+    window.addEventListener("pagehide", bye);
+    return function () {
+      document.removeEventListener("visibilitychange", bye);
+      window.removeEventListener("pagehide", bye);
+    };
+  }, [shRec]);
   var shVoHit = function (key, u) {
     if (shPlay === key) { try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {} setShPlay(""); return; }
     try { if (shAud.current) { shAud.current.pause(); shAud.current = null; } } catch (_) {}
@@ -9326,6 +9374,7 @@ function ReadingRoomActivity(_refRR) {
                 h("button", { onClick: function () { setShVo(""); if (shPlay === "draft") { try { if (shAud.current) shAud.current.pause(); } catch (_) {} setShPlay(""); } },
                   style: { flexShrink: 0, border: "none", background: "none", color: "rgba(150,120,110,0.85)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "重录")) : null)),
           h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length && !shVo) || sharedPosting || sharedUploading || shVoUp || shRec, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
+        shNote ? h("div", { style: { marginTop: 26, background: "rgba(31,111,104,0.1)", borderRadius: 12, padding: "10px 12px", color: "#1a5c56", fontSize: "0.7rem", fontWeight: 700, textAlign: "center", lineHeight: 1.55 } }, shNote) : null,
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, (String(sharedErr).indexOf("照片") >= 0 ? "" : "信没送到贝克街 😢 ") + sharedErr),
         h("div", { style: { marginTop: 32 } },
           sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
@@ -20462,10 +20511,12 @@ function LondonRoom(_refLD) {
   var _vsec = useState(0); var voSec = _vsec[0], setVoSec = _vsec[1];
   var _vup = useState(""); var voUp = _vup[0], setVoUp = _vup[1];           // 正在上传的那一格
   var _verr = useState(""); var voErr = _verr[0], setVoErr = _verr[1];
+  var _vnt = useState(""); var voNote = _vnt[0], setVoNote = _vnt[1];   // 不是错误，是「刚才发生了什么」
   var _vpl = useState(""); var voPlay = _vpl[0], setVoPlay = _vpl[1];       // 正在放的那一条
   var _vld = useState(""); var voLoad = _vld[0], setVoLoad = _vld[1];
   var _vdel = useState(null); var voDel = _vdel[0], setVoDel = _vdel[1];
   var voMR = useRef(null), voChunks = useRef([]), voTimer = useRef(null), voT0 = useRef(0), voAud = useRef(null);
+  var voStopAt = useRef(0);
   var voKeep = useRef(true), voStopping = useRef(false);
 
   var VO_MAX = 180;                                                          // 三分钟够录一段雨声了
@@ -20484,8 +20535,12 @@ function LondonRoom(_refLD) {
       voChunks.current = [];
       mr.ondataavailable = function (e) { if (e.data && e.data.size) voChunks.current.push(e.data); };
       mr.onstop = function () {
+        NANA_RECORDING = 0; nanaWakeOff();
         try { micStop(); } catch (_) {}
-        var secs = Math.round((Date.now() - voT0.current) / 1000);
+        // 按下停止那一刻算，不是回调跑起来那一刻 —— 中间可能被系统挂起了好一会儿
+        var end = voStopAt.current || Date.now();
+        var secs = Math.round((end - voT0.current) / 1000);
+        if (secs > VO_MAX) secs = VO_MAX;
         stopVoTimer(); setVoRec(""); setVoSec(0);
         voStopping.current = false;
         if (!voKeep.current) return;                       // 上滑取消 / 被系统打断：直接扔掉
@@ -20494,10 +20549,15 @@ function LondonRoom(_refLD) {
         if (!blob.size || blob.size < 900) { setVoErr("没录到声音，再试一次"); return; }
         voSave(blob, secs, fmt);
       };
+      try { mr.onerror = function () { voStop(true); }; } catch (_) {}   // 出岔子也把已经录到的留住
       voMR.current = mr;
       voT0.current = Date.now();
+      voStopAt.current = 0;
       voKeep.current = true;
       voStopping.current = false;
+      NANA_RECORDING = 1;
+      setVoNote("");
+      nanaWakeOn();                                     // 别让屏幕自己黑掉
       mr.start();
       setVoRec("on"); setVoSec(0);
       stopVoTimer();
@@ -20513,9 +20573,10 @@ function LondonRoom(_refLD) {
     // 那一下不能再把「保留」翻成「丢弃」，否则整段被静默扔掉
     if (voStopping.current) return;
     voStopping.current = true;
+    voStopAt.current = Date.now();
     voKeep.current = !!keep;
     try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); }
-    catch (_) { stopVoTimer(); setVoRec(""); voStopping.current = false; }
+    catch (_) { NANA_RECORDING = 0; nanaWakeOff(); stopVoTimer(); setVoRec(""); voStopping.current = false; }
   };
   // 松手就先摆到列表上（本地就能放），传是后台的事 —— 不用干等两趟跨境请求
   var voMark = function (rid, patch) {
@@ -20588,6 +20649,22 @@ function LondonRoom(_refLD) {
       jobs.forEach(function (j) { voPush(j, 3); });
     });
   }, []);
+  // 屏幕黑了 / 被切走了：iOS 会把页面挂起，录音一定断。
+  // 与其让它无声无息地死掉，不如趁还能跑代码的那一下停下来，把已经录到的那段留住。
+  useEffect(function () {
+    if (voRec !== "on") return;
+    var bye = function (e) {
+      if (e && e.type === "visibilitychange" && !document.hidden) { nanaWakeOn(); return; }
+      voStop(true);
+      setVoNote("屏幕黑了 —— 刚才那段已经给你存下来了");
+    };
+    document.addEventListener("visibilitychange", bye);
+    window.addEventListener("pagehide", bye);
+    return function () {
+      document.removeEventListener("visibilitychange", bye);
+      window.removeEventListener("pagehide", bye);
+    };
+  }, [voRec]);
   var voDrop = function (x) {
     setVoDel(null);
     setVoList(function (o) { return o.filter(function (y) { return y.id !== x.id; }); });
@@ -22610,6 +22687,7 @@ function LondonRoom(_refLD) {
       ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在",
         h("span", { style: { fontSize: "1rem" } }, "\uD83D\uDCFB")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
+      voNote ? h("div", { key: "vn", style: { marginBottom: 9, background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#1a5c56", fontWeight: 700, lineHeight: 1.55 } }, voNote) : null,
       packDown ? h("div", { key: "vsy", style: { marginBottom: 9, display: "flex", alignItems: "center", gap: 8, background: "rgba(169,127,46,0.12)", borderRadius: 8, padding: "8px 9px 8px 11px" } },
         h("span", { style: { flex: 1, fontSize: "0.7rem", color: "#8a6a2e", fontWeight: 700, lineHeight: 1.5 } }, "没连上服务器，下面这些可能不全"),
         h("button", { onClick: function () { setPackDown(0); setPackErr(""); loadPack(false); },
