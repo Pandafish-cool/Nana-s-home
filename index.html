@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-235";
+var NANA_VER = "v2026.8.2-236";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8344,6 +8344,16 @@ var nanaMicIdle = function () { nanaMicDrop(); };
 // 正在录音的时候，上面那句「切到后台就放掉麦克风」会把录音当场掐死 ——
 // 屏幕一黑页面就变 hidden，这一下比 iOS 自己的挂起还快。录着的时候不许放。
 var NANA_RECORDING = 0;
+// NANA_RECORDING 一停就归零（麦克风要马上还回去），但那一刻原件还没写进本机。
+// 这几十毫秒里要是触发自动重载，这段照样没了 —— 所以另开一把锁，
+// 从按下录音一直扣到「原件确实落盘了」才松。
+var NANA_AUDIO_BUSY = 0, NANA_AUDIO_T = null;
+var nanaAudioBusy = function (on) {
+  try { if (NANA_AUDIO_T) { clearTimeout(NANA_AUDIO_T); NANA_AUDIO_T = null; } } catch (_) {}
+  NANA_AUDIO_BUSY = on ? 1 : 0;
+  // 兜底：万一哪条路忘了松手，别把自动更新永远卡死
+  if (on) NANA_AUDIO_T = setTimeout(function () { NANA_AUDIO_BUSY = 0; NANA_AUDIO_T = null; }, 300000);
+};
 // 录音的时候不让屏幕自己黑掉。iOS 一锁屏就把页面挂起，录音必断，
 // 所以最好的办法是根本别让它黑（Safari 16.4+ 支持；不支持就退回下面的「黑了就先存住」）。
 var NANA_WAKE = null;
@@ -8453,7 +8463,7 @@ var nanaVoMime = function () {
   var last = 0, busy = 0;
   var check = function () {
     var now = Date.now();
-    if (NANA_RECORDING) return;                        // 人还在说话，这时候重载页面等于把录音扔了
+    if (NANA_RECORDING || NANA_AUDIO_BUSY) return;     // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
     if (busy || (last && now - last < 30000)) return;   // 别一直问，最多半分钟一次（就十几个字节）
     last = now; busy = 1;
     fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
@@ -8984,12 +8994,14 @@ function ReadingRoomActivity(_refRR) {
       }
     }
   }, [tab, myAuthor, sharedNotes]);
+  var _rv4 = useState(function () { var d = nanaReadShDraft(); return typeof d.vo === "string" ? d.vo : ""; });
+  var shVo = _rv4[0], setShVo = _rv4[1];        // 草稿上挂着的那段（跟着草稿一起存本机，重载不会掉）
   useEffect(function () {
     try {
-      if (!sharedDraft && !sharedDraftPs.length) localStorage.removeItem("nana-shared-draft");
-      else localStorage.setItem("nana-shared-draft", JSON.stringify({ t: sharedDraft, ps: sharedDraftPs }));
+      if (!sharedDraft && !sharedDraftPs.length && !shVo) localStorage.removeItem("nana-shared-draft");
+      else localStorage.setItem("nana-shared-draft", JSON.stringify({ t: sharedDraft, ps: sharedDraftPs, vo: shVo }));
     } catch (_) {}
-  }, [sharedDraft, sharedDraftPs]);
+  }, [sharedDraft, sharedDraftPs, shVo]);
   var onPickSharedPhoto = function (e) {
     var f = e.target.files && e.target.files[0];
     // 不能在 change 里同步清空 value：iOS 会以为这次选择没完成，把相册再弹一次
@@ -9058,7 +9070,6 @@ function ReadingRoomActivity(_refRR) {
   var _rv1 = useState(false); var shRec = _rv1[0], setShRec = _rv1[1];
   var _rv2 = useState(0); var shSec = _rv2[0], setShSec = _rv2[1];
   var _rv3 = useState(false); var shVoUp = _rv3[0], setShVoUp = _rv3[1];
-  var _rv4 = useState(""); var shVo = _rv4[0], setShVo = _rv4[1];        // 草稿上挂着的那段
   var _rv5 = useState(""); var shPlay = _rv5[0], setShPlay = _rv5[1];
   var _rv6 = useState(""); var shLoad = _rv6[0], setShLoad = _rv6[1];
   var shMR = useRef(null), shChunks = useRef([]), shTimer = useRef(null), shT0 = useRef(0), shAud = useRef(null);
@@ -9085,14 +9096,16 @@ function ReadingRoomActivity(_refRR) {
         if (secs > 180) secs = 180;
         shStopTimer(); setShRec(false); setShSec(0);
         shStopping.current = false;
-        if (!shKeep.current) return;                       // 上滑取消 / 被打断：扔掉
-        if (secs < 1) { setSharedErr("太短了，再按久一点"); return; }
+        if (!shKeep.current) { nanaAudioBusy(0); return; }  // 上滑取消 / 被打断：扔掉
+        if (secs < 1) { nanaAudioBusy(0); setSharedErr("太短了，再按久一点"); return; }
         var blob = new Blob(shChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
-        if (!blob.size || blob.size < 900) { setSharedErr("没录到声音，再试一次"); return; }
+        if (!blob.size || blob.size < 900) { nanaAudioBusy(0); setSharedErr("没录到声音，再试一次"); return; }
         setShVoUp(true);
         var id = "vo" + Date.now() + Math.floor(Math.random() * 900);
+        // 这一条没有本机待寄箱，所以锁一直扣到传完（成或不成）为止
         nanaVoUpload(blob, id, fmt ? fmt.e : "m4a", fmt ? fmt.m.split(";")[0] : "audio/mp4", function (err, url) {
           setShVoUp(false);
+          nanaAudioBusy(0);
           if (err || !url) { setSharedErr("声音没传上去：" + String((err && err.message) || err || "不知道为什么") + " · 再按一次试试"); return; }
           setShVo(url + "#d=" + secs);
           setSharedErr(null);
@@ -9101,7 +9114,7 @@ function ReadingRoomActivity(_refRR) {
       try { mr.onerror = function () { shRecStop(true); }; } catch (_) {}
       shMR.current = mr; shT0.current = Date.now(); shStopAt.current = 0;
       shKeep.current = true; shStopping.current = false;
-      NANA_RECORDING = 1; nanaWakeOn();                    // 录着的时候别让屏幕黑
+      NANA_RECORDING = 1; nanaAudioBusy(1); nanaWakeOn();  // 录着的时候别让屏幕黑，也别让自动更新插进来
       mr.start();
       setShRec(true); setShSec(0); setSharedErr(null); setShNote("");
       shStopTimer();
@@ -9118,7 +9131,7 @@ function ReadingRoomActivity(_refRR) {
     shStopAt.current = Date.now();
     shKeep.current = !!keep;
     try { if (shMR.current && shMR.current.state !== "inactive") shMR.current.stop(); }
-    catch (_) { NANA_RECORDING = 0; nanaWakeOff(); shStopTimer(); setShRec(false); shStopping.current = false; }
+    catch (_) { NANA_RECORDING = 0; nanaAudioBusy(0); nanaWakeOff(); shStopTimer(); setShRec(false); shStopping.current = false; }
   };
   // 屏幕黑了就先把这段停下来存住，别让它跟着页面一起没
   useEffect(function () {
@@ -20543,11 +20556,11 @@ function LondonRoom(_refLD) {
         if (secs > VO_MAX) secs = VO_MAX;
         stopVoTimer(); setVoRec(""); setVoSec(0);
         voStopping.current = false;
-        if (!voKeep.current) return;                       // 上滑取消 / 被系统打断：直接扔掉
-        if (secs < 1) { setVoErr("太短了，再按久一点"); return; }
+        if (!voKeep.current) { nanaAudioBusy(0); return; }  // 上滑取消 / 被系统打断：直接扔掉
+        if (secs < 1) { nanaAudioBusy(0); setVoErr("太短了，再按久一点"); return; }
         var blob = new Blob(voChunks.current, { type: fmt && fmt.m ? fmt.m.split(";")[0] : "audio/mp4" });
-        if (!blob.size || blob.size < 900) { setVoErr("没录到声音，再试一次"); return; }
-        voSave(blob, secs, fmt);
+        if (!blob.size || blob.size < 900) { nanaAudioBusy(0); setVoErr("没录到声音，再试一次"); return; }
+        voSave(blob, secs, fmt);   // 锁在 voSave 里等原件落盘之后才松
       };
       try { mr.onerror = function () { voStop(true); }; } catch (_) {}   // 出岔子也把已经录到的留住
       voMR.current = mr;
@@ -20556,6 +20569,7 @@ function LondonRoom(_refLD) {
       voKeep.current = true;
       voStopping.current = false;
       NANA_RECORDING = 1;
+      nanaAudioBusy(1);
       setVoNote("");
       nanaWakeOn();                                     // 别让屏幕自己黑掉
       mr.start();
@@ -20576,7 +20590,7 @@ function LondonRoom(_refLD) {
     voStopAt.current = Date.now();
     voKeep.current = !!keep;
     try { if (voMR.current && voMR.current.state !== "inactive") voMR.current.stop(); }
-    catch (_) { NANA_RECORDING = 0; nanaWakeOff(); stopVoTimer(); setVoRec(""); voStopping.current = false; }
+    catch (_) { NANA_RECORDING = 0; nanaAudioBusy(0); nanaWakeOff(); stopVoTimer(); setVoRec(""); voStopping.current = false; }
   };
   // 松手就先摆到列表上（本地就能放），传是后台的事 —— 不用干等两趟跨境请求
   var voMark = function (rid, patch) {
@@ -20625,8 +20639,11 @@ function LondonRoom(_refLD) {
     setVoList(function (o) { return [{ id: rid, u: "", local: local, d: secs, a: me, ts: ts, up: 1 }].concat(o); });
     setVoErr("");
     var job = { rid: rid, fid: fid, blob: blob, secs: secs, a: me, ts: ts, ext: ext, mime: mime };
-    // 先落到本机，再开始寄
-    nanaOutPut(rid, blob, { fid: fid, secs: secs, a: me, ts: ts, ext: ext, mime: mime }, function () { voPush(job, 3); });
+    // 先落到本机，再开始寄。原件确实写进去了，才允许自动更新重载页面。
+    nanaOutPut(rid, blob, { fid: fid, secs: secs, a: me, ts: ts, ext: ext, mime: mime }, function () {
+      nanaAudioBusy(0);
+      voPush(job, 3);
+    });
   };
   // 打开就看看本机还有没有上次没寄成的，有就接着寄
   useEffect(function () {
