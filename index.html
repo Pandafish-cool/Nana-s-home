@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-238";
+var NANA_VER = "v2026.8.2-239";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8650,14 +8650,16 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(215,172,226,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#9958bb", "#e6cff2", "#d7ace2", "#e6cff2"],
     wash1: "rgba(215,172,226,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "🌠" , rule: "dot" },
-  { id: "mint", name: "薄荷信笺", e: "🌿", pick: 5, use: "轻松的一天", css: "linear-gradient(160deg,#a8e6ce,#d1e4ed)",
-    out1: "#f0f4f7", out2: "#d1e4ed", p1: "#c8eadd", p2: "#a8e6ce",
-    line: "rgba(88,187,149,0.3)", margin: "rgba(88,187,149,0.45)",
-    header: "#2d8060", date: "rgba(45,128,96,0.85)", text: "#255f49", foot: "rgba(45,128,96,0.8)",
-    stamp: "🍀", stampBg: "#f0f4f7", stampBd: "rgba(88,187,149,0.7)", wm: "🌿", wmA: 0.1,
-    tapeA: "rgba(209,228,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
-    stripes: ["#58bb95", "#a8e6ce", "#d1e4ed", "#a8e6ce"],
-    wash1: "rgba(209,228,237,0.18)", wash2: "rgba(240,244,247,0.15)", footE: "🍃" , pat: nanaPat("🌿", "🍃", 56, 0.09) , rule: "none" },
+  // 薄荷信笺换成了雪碧 —— 接手它「轻松的一天」这一格。
+  // 以前用薄荷写的信存的是 th:"mint"，靠 themeById 里的映射落到这张。
+  { id: "soda", name: "雪碧信笺", e: "🥤", pick: 5, use: "轻松的一天", css: "linear-gradient(160deg,#f2fcdf,#d2f09b)",
+    out1: "#e7f8c8", out2: "#c2e884", p1: "#f2fcdf", p2: "#d2f09b",
+    line: "rgba(120,175,60,0.32)", margin: "rgba(120,175,60,0.5)",
+    header: "#46801c", date: "rgba(70,128,28,0.88)", text: "#2e5a16", foot: "rgba(70,128,28,0.85)",
+    stamp: "🍋", stampBg: "#f7fee9", stampBd: "rgba(120,175,60,0.8)", wm: "🫧", wmA: 0.12,
+    tapeA: "rgba(194,232,132,0.55)", tapeB: "rgba(255,255,255,0.8)",
+    stripes: ["#78af3c", "#f2fcdf", "#c2e884", "#f2fcdf"],
+    wash1: "rgba(210,240,155,0.3)", wash2: "rgba(242,252,223,0.28)", footE: "🫧" , pat: nanaPat("🫧", "🍋", 54, 0.09) , rule: "dot" },
   { id: "brit", name: "英伦信笺", e: "🌹", pick: 2, use: "想你的时候", css: "linear-gradient(160deg,#e8bcc3,#b7c9d3)",
     out1: "#f0e6e8", out2: "#b7c9d3", p1: "#efd9dc", p2: "#e8bcc3",
     line: "rgba(187,88,104,0.3)", margin: "rgba(187,88,104,0.45)",
@@ -9300,14 +9302,14 @@ function ReadingRoomActivity(_refRR) {
   var doneN = books.filter(function (b) { return b.s === "done"; }).length;
   // 信纸样式：跟随所选主题 t（与分享图共用 NANA_LETTER_THEMES）
   // 换掉过的纸：老信里存的还是旧 id，得先翻译一次，不然会掉回航空信笺
-  var NANA_PAPER_GONE = { hearth: "cinn" };
+  var NANA_PAPER_GONE = { hearth: "cinn", mint: "soda" };
   var themeById = function (id) {
     var want = NANA_PAPER_GONE[id] || id;
     for (var ti = 0; ti < NANA_LETTER_THEMES.length; ti++) { if (NANA_LETTER_THEMES[ti].id === want) return NANA_LETTER_THEMES[ti]; }
     return NANA_LETTER_THEMES[0];
   };
   // 精简之前存下来的那张纸，映射到现在最接近的一张（老信本身不动，还是原来的样子）
-  var NANA_PAPER_MOVED = { hearth: "cinn", latte: "air", mist2: "mist", peach: "brit", cherry: "brit", dusk: "brit", bus: "brit", box: "brit", tea: "brit", mcat: "cat", berry: "night" };
+  var NANA_PAPER_MOVED = { hearth: "cinn", mint: "soda", latte: "air", mist2: "mist", peach: "brit", cherry: "brit", dusk: "brit", bus: "brit", box: "brit", tea: "brit", mcat: "cat", berry: "night" };
   var _wt = useState(function () {
     var v = "air";
     try { v = localStorage.getItem("nana-note-theme") || "air"; } catch (_) {}
