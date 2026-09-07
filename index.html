@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-239";
+var NANA_VER = "v2026.8.2-240";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8589,13 +8589,25 @@ var nanaPapers = function () {
   return NANA_LETTER_THEMES.filter(function (t) { return t.pick; })
     .sort(function (a, b) { return a.pick - b.pick; });
 };
-// 第五种横线：波浪。CSS 的 repeating-linear-gradient 只能画直的，
-// 想要波浪得自己铺一张能无缝接上的小图 —— 一格正好一个整周期，接缝处高度和斜率都对得上。
-var nanaWave = function (col) {
-  var W = 30, H = 28, y = H - 1.6;
-  var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + W + "' height='" + H + "'>"
-    + "<path d='M 0 " + y + " Q " + (W / 4) + " " + (y - 3.4) + ", " + (W / 2) + " " + y
-    + " T " + W + " " + y + "' fill='none' stroke='" + col + "' stroke-width='1.5'/></svg>";
+// 撒在纸上的肉桂糖粉：一格里几十颗大小不一的细点。
+// 坐标用固定的伪随机数算出来（同样的输入永远同样的图），
+// 每颗都离格子边至少留出自己的半径，铺开之后接缝处不会被切掉半颗。
+var nanaDust = function (col, size, op, n) {
+  var sz = size || 96, o = op == null ? 0.16 : op, N = n || 34;
+  var seed = 20260907, rnd = function () {            // 小 LCG，够随机又每次都一样
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  var out = "";
+  for (var i = 0; i < N; i++) {
+    var r = (0.55 + rnd() * 1.35).toFixed(2);
+    var pad = 2.5;
+    var x = (pad + rnd() * (sz - pad * 2)).toFixed(1);
+    var y = (pad + rnd() * (sz - pad * 2)).toFixed(1);
+    var a = (o * (0.45 + rnd() * 0.55)).toFixed(3);
+    out += "<circle cx='" + x + "' cy='" + y + "' r='" + r + "' fill='" + col + "' opacity='" + a + "'/>";
+  }
+  var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + sz + "' height='" + sz + "'>" + out + "</svg>";
   return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
 };
 var nanaPat = function (a, b, size, op) {
@@ -8633,7 +8645,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🍪", stampBg: "#fbeedd", stampBd: "rgba(150,85,35,0.85)", wm: "🍪", wmA: 0.09,
     tapeA: "rgba(217,169,126,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#96552a", "#f8e3ca", "#d9a97e", "#f8e3ca"],
-    wash1: "rgba(230,185,135,0.3)", wash2: "rgba(248,227,202,0.28)", footE: "🍯" , rule: "wave" },
+    wash1: "rgba(230,185,135,0.3)", wash2: "rgba(248,227,202,0.28)", footE: "🍯" , pat: nanaDust("#7a3d0c", 96, 0.17, 34) , rule: "none" },
   { id: "moon", name: "月光信笺", e: "🌙", pick: 10, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
     out1: "#f0e6e8", out2: "#e6cff2", p1: "#e2cae8", p2: "#d7ace2",
     line: "rgba(167,88,187,0.3)", margin: "rgba(167,88,187,0.45)",
@@ -8864,21 +8876,16 @@ var nanaShareNote = function (note, theme, done) {
       rg2.addColorStop(0, t.wash2); rg2.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = rg2; ctx.fillRect(paperX, paperY, paperW, paperH);
       ctx.strokeStyle = t.line; ctx.lineWidth = 2;
-      var lx0 = paperX + 26, lx1 = paperX + paperW - 26;
-      for (var ly = paperY + headerH; ly < paperY + paperH - 110; ly += LH) {
-        ctx.beginPath();
-        if (t.rule === "wave") {                        // 波浪款：一段一段的正弦，跟 app 里那张对上
-          ctx.moveTo(lx0, ly);
-          for (var wx = lx0; wx <= lx1; wx += 4) {
-            ctx.lineTo(wx, ly - Math.sin((wx - lx0) / 30 * Math.PI * 2) * 4);
-          }
-        } else {
-          ctx.moveTo(lx0, ly); ctx.lineTo(lx1, ly);
+      // 分享图以前不看 rule，一律画横线和竖边线 —— 于是「无横线」那几款
+      // 在 app 里干干净净、寄出去却带着线。这里跟上，两边一致。
+      if ((t.rule || "line") !== "none") {
+        for (var ly = paperY + headerH; ly < paperY + paperH - 110; ly += LH) {
+          ctx.beginPath();
+          ctx.moveTo(paperX + 26, ly); ctx.lineTo(paperX + paperW - 26, ly); ctx.stroke();
         }
-        ctx.stroke();
+        ctx.strokeStyle = t.margin; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(paperX + 84, paperY + 24); ctx.lineTo(paperX + 84, paperY + paperH - 24); ctx.stroke();
       }
-      ctx.strokeStyle = t.margin; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(paperX + 84, paperY + 24); ctx.lineTo(paperX + 84, paperY + paperH - 24); ctx.stroke();
       nanaAirmailStripe(ctx, paperX, paperY, paperW, 14, t.stripes);
       nanaAirmailStripe(ctx, paperX, paperY + paperH - 14, paperW, 14, t.stripes);
       ctx.globalAlpha = t.wmA; ctx.font = "130px sans-serif"; ctx.textAlign = "left";
@@ -9323,12 +9330,11 @@ function ReadingRoomActivity(_refRR) {
     if (r === "none") return "";
     if (r === "dot") return "radial-gradient(circle at 1.6px 1.6px, " + t.line + " 1.35px, transparent 1.55px) 0 0 / 21px 21px, ";
     if (r === "grid") return "repeating-linear-gradient(180deg, transparent 0 25px, " + t.line + " 25px 26px), repeating-linear-gradient(90deg, transparent 0 25px, " + t.line + " 25px 26px), ";
-    if (r === "wave") return nanaWave(t.line) + " 0 0 / 30px 28px, ";
     return "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), ";
   };
   var marginBg = function (t) {
     var r = t.rule || "line";
-    if (r !== "line" && r !== "wave") return "";       // 分享图那边不管什么横线都画竖边线，这里跟上
+    if (r !== "line") return "";
     return "linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), ";
   };
   var paperStyle = function (t) {
