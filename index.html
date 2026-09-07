@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-237";
+var NANA_VER = "v2026.8.2-238";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8589,6 +8589,15 @@ var nanaPapers = function () {
   return NANA_LETTER_THEMES.filter(function (t) { return t.pick; })
     .sort(function (a, b) { return a.pick - b.pick; });
 };
+// 第五种横线：波浪。CSS 的 repeating-linear-gradient 只能画直的，
+// 想要波浪得自己铺一张能无缝接上的小图 —— 一格正好一个整周期，接缝处高度和斜率都对得上。
+var nanaWave = function (col) {
+  var W = 30, H = 28, y = H - 1.6;
+  var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + W + "' height='" + H + "'>"
+    + "<path d='M 0 " + y + " Q " + (W / 4) + " " + (y - 3.4) + ", " + (W / 2) + " " + y
+    + " T " + W + " " + y + "' fill='none' stroke='" + col + "' stroke-width='1.5'/></svg>";
+  return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
+};
 var nanaPat = function (a, b, size, op) {
   var sz = size || 54, o = op || 0.1, f = Math.round(sz * 0.30);
   var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='" + sz + "' height='" + sz + "'>"
@@ -8615,14 +8624,16 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(144,120,172,0.5)", tapeB: "rgba(255,255,255,0.4)",
     stripes: ["#7970c2", "#302b58", "#9078ac", "#302b58"],
     wash1: "rgba(144,120,172,0.18)", wash2: "rgba(182,169,200,0.15)", footE: "🌠" , rule: "dot" },
-  { id: "hearth", name: "炉火信笺", e: "🕯️", pick: 13, use: "屋里只开一盏灯", css: "linear-gradient(160deg,#fecfb9,#ffe9e1)",
-    out1: "#e8bcc3", out2: "#ffe9e1", p1: "#fbe8df", p2: "#fecfb9",
-    line: "rgba(187,120,88,0.3)", margin: "rgba(187,120,88,0.45)",
-    header: "#884c30", date: "rgba(136,76,48,0.85)", text: "#5f3825", foot: "rgba(136,76,48,0.8)",
-    stamp: "\uD83D\uDD6F\uFE0F", stampBg: "#e8bcc3", stampBd: "rgba(187,120,88,0.7)", wm: "\uD83D\uDD25", wmA: 0.09,
-    tapeA: "rgba(255,233,225,0.5)", tapeB: "rgba(255,255,255,0.78)",
-    stripes: ["#bb7858", "#fecfb9", "#ffe9e1", "#fecfb9"],
-    wash1: "rgba(255,183,160,0.18)", wash2: "rgba(232,188,195,0.15)", footE: "\uD83D\uDD25" , pat: nanaPat("🔥", "☕", 56, 0.07) , rule: "none" },
+  // 炉火信笺换成了肉桂卷 —— 深烤棕，横线是波浪（像淋上去的糖霜）。
+  // 以前用炉火写的信存的是 th:"hearth"，靠下面 themeById 里的映射落到这张，内容不会丢。
+  { id: "cinn", name: "肉桂卷信笺", e: "🍪", pick: 13, use: "刚出炉的肉桂卷味", css: "linear-gradient(160deg,#f8e3ca,#dfb48a)",
+    out1: "#f3d9bb", out2: "#d9a97e", p1: "#f8e3ca", p2: "#dfb48a",
+    line: "rgba(150,85,35,0.34)", margin: "rgba(150,85,35,0.55)",
+    header: "#82440f", date: "rgba(130,68,15,0.9)", text: "#4a2710", foot: "rgba(130,68,15,0.85)",
+    stamp: "🍪", stampBg: "#fbeedd", stampBd: "rgba(150,85,35,0.85)", wm: "🍪", wmA: 0.09,
+    tapeA: "rgba(217,169,126,0.55)", tapeB: "rgba(255,255,255,0.8)",
+    stripes: ["#96552a", "#f8e3ca", "#d9a97e", "#f8e3ca"],
+    wash1: "rgba(230,185,135,0.3)", wash2: "rgba(248,227,202,0.28)", footE: "🍯" , rule: "wave" },
   { id: "moon", name: "月光信笺", e: "🌙", pick: 10, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
     out1: "#f0e6e8", out2: "#e6cff2", p1: "#e2cae8", p2: "#d7ace2",
     line: "rgba(167,88,187,0.3)", margin: "rgba(167,88,187,0.45)",
@@ -8682,6 +8693,15 @@ var NANA_LETTER_THEMES = [
     stripes: ["#c68c42", "#fff3d6", "#e8b871", "#fff3d6"],
     wash1: "rgba(255,214,150,0.3)", wash2: "rgba(255,240,205,0.28)", footE: "🍨" , pat: nanaPat("🍦", "🍮", 56, 0.08) , rule: "line" },
 
+  { id: "soda", name: "雪碧信笺", e: "🥤", pick: 15, use: "开心得冒泡", css: "linear-gradient(160deg,#f2fcdf,#d2f09b)",
+    out1: "#e7f8c8", out2: "#c2e884", p1: "#f2fcdf", p2: "#d2f09b",
+    line: "rgba(120,175,60,0.32)", margin: "rgba(120,175,60,0.5)",
+    header: "#46801c", date: "rgba(70,128,28,0.88)", text: "#2e5a16", foot: "rgba(70,128,28,0.85)",
+    stamp: "🍋", stampBg: "#f7fee9", stampBd: "rgba(120,175,60,0.8)", wm: "🫧", wmA: 0.12,
+    tapeA: "rgba(194,232,132,0.55)", tapeB: "rgba(255,255,255,0.8)",
+    stripes: ["#78af3c", "#f2fcdf", "#c2e884", "#f2fcdf"],
+    wash1: "rgba(210,240,155,0.3)", wash2: "rgba(242,252,223,0.28)", footE: "🫧" , pat: nanaPat("🫧", "🍋", 54, 0.09) , rule: "dot" },
+
   { id: "cat", name: "好好信笺", e: "🐈", pick: 3, use: "家里的事", css: "linear-gradient(160deg,#ffe9e1,#d5d8dc)",
     out1: "#f0e6e8", out2: "#d5d8dc", p1: "#fef4f1", p2: "#ffe9e1",
     line: "rgba(187,115,88,0.3)", margin: "rgba(187,115,88,0.45)",
@@ -8699,7 +8719,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(202,235,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#58bbbb", "#b1eded", "#63bad9", "#b1eded"],
     wash1: "rgba(202,235,237,0.18)", wash2: "rgba(249,244,234,0.15)", footE: "⛵" , pat: nanaPat("🐚", "⛵", 58, 0.08) , rule: "dot" },
-  { id: "call", name: "呼叫信笺", e: "📟", pick: 15, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
+  { id: "call", name: "呼叫信笺", e: "📟", pick: 16, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
     out1: "#e8f0f2", out2: "#95a9d2", p1: "#d2e2ea", p2: "#b6d4e2",
     line: "rgba(88,156,187,0.3)", margin: "rgba(88,156,187,0.45)",
     header: "#306c88", date: "rgba(48,108,136,0.85)", text: "#254d5f", foot: "rgba(48,108,136,0.8)",
@@ -8851,8 +8871,18 @@ var nanaShareNote = function (note, theme, done) {
       rg2.addColorStop(0, t.wash2); rg2.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = rg2; ctx.fillRect(paperX, paperY, paperW, paperH);
       ctx.strokeStyle = t.line; ctx.lineWidth = 2;
+      var lx0 = paperX + 26, lx1 = paperX + paperW - 26;
       for (var ly = paperY + headerH; ly < paperY + paperH - 110; ly += LH) {
-        ctx.beginPath(); ctx.moveTo(paperX + 26, ly); ctx.lineTo(paperX + paperW - 26, ly); ctx.stroke();
+        ctx.beginPath();
+        if (t.rule === "wave") {                        // 波浪款：一段一段的正弦，跟 app 里那张对上
+          ctx.moveTo(lx0, ly);
+          for (var wx = lx0; wx <= lx1; wx += 4) {
+            ctx.lineTo(wx, ly - Math.sin((wx - lx0) / 30 * Math.PI * 2) * 4);
+          }
+        } else {
+          ctx.moveTo(lx0, ly); ctx.lineTo(lx1, ly);
+        }
+        ctx.stroke();
       }
       ctx.strokeStyle = t.margin; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.moveTo(paperX + 84, paperY + 24); ctx.lineTo(paperX + 84, paperY + paperH - 24); ctx.stroke();
@@ -9278,12 +9308,15 @@ function ReadingRoomActivity(_refRR) {
   };
   var doneN = books.filter(function (b) { return b.s === "done"; }).length;
   // 信纸样式：跟随所选主题 t（与分享图共用 NANA_LETTER_THEMES）
+  // 换掉过的纸：老信里存的还是旧 id，得先翻译一次，不然会掉回航空信笺
+  var NANA_PAPER_GONE = { hearth: "cinn" };
   var themeById = function (id) {
-    for (var ti = 0; ti < NANA_LETTER_THEMES.length; ti++) { if (NANA_LETTER_THEMES[ti].id === id) return NANA_LETTER_THEMES[ti]; }
+    var want = NANA_PAPER_GONE[id] || id;
+    for (var ti = 0; ti < NANA_LETTER_THEMES.length; ti++) { if (NANA_LETTER_THEMES[ti].id === want) return NANA_LETTER_THEMES[ti]; }
     return NANA_LETTER_THEMES[0];
   };
   // 精简之前存下来的那张纸，映射到现在最接近的一张（老信本身不动，还是原来的样子）
-  var NANA_PAPER_MOVED = { latte: "air", mist2: "mist", peach: "brit", cherry: "brit", dusk: "brit", bus: "brit", box: "brit", tea: "brit", mcat: "cat", berry: "night" };
+  var NANA_PAPER_MOVED = { hearth: "cinn", latte: "air", mist2: "mist", peach: "brit", cherry: "brit", dusk: "brit", bus: "brit", box: "brit", tea: "brit", mcat: "cat", berry: "night" };
   var _wt = useState(function () {
     var v = "air";
     try { v = localStorage.getItem("nana-note-theme") || "air"; } catch (_) {}
@@ -9297,10 +9330,12 @@ function ReadingRoomActivity(_refRR) {
     if (r === "none") return "";
     if (r === "dot") return "radial-gradient(circle at 1.6px 1.6px, " + t.line + " 1.35px, transparent 1.55px) 0 0 / 21px 21px, ";
     if (r === "grid") return "repeating-linear-gradient(180deg, transparent 0 25px, " + t.line + " 25px 26px), repeating-linear-gradient(90deg, transparent 0 25px, " + t.line + " 25px 26px), ";
+    if (r === "wave") return nanaWave(t.line) + " 0 0 / 30px 28px, ";
     return "repeating-linear-gradient(180deg, transparent 0 27px, " + t.line + " 27px 28px), ";
   };
   var marginBg = function (t) {
-    if ((t.rule || "line") !== "line") return "";
+    var r = t.rule || "line";
+    if (r !== "line" && r !== "wave") return "";       // 分享图那边不管什么横线都画竖边线，这里跟上
     return "linear-gradient(90deg, transparent 0 34px, " + t.margin + " 34px 35.5px, transparent 35.5px 100%), ";
   };
   var paperStyle = function (t) {
