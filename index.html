@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-240";
+var NANA_VER = "v2026.8.2-241";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8189,7 +8189,30 @@ var nanaSyncReq = function (method, path, body, cb) {
       })["catch"](function (err) { done(err && err.name === "AbortError" ? new Error("连接超时，稍后点刷新再试") : err); });
   } catch (err) { cb(err); }
 };
-var nanaSharedList = function (cb) { nanaSyncReq("GET", "shared_notes?select=*&order=created_at.desc&limit=200", null, cb); };
+// 以前只取最新 200 封（limit=200）。呼叫、投喂申请也都写进这张表，
+// 一个月就满了，更早的信就再也取不回来 —— 信本身都在，只是被截掉了。
+// 改成一页一页全捞（新的在前）；两页之间要是有人寄了新信，offset 会错一位，
+// 同一封可能出现两次，按 id 去重。
+var NANA_SHARED_PAGE = 200, NANA_SHARED_MAXPAGE = 20;
+var nanaSharedList = function (cb) {
+  var all = [], seen = {}, page = 0;
+  var step = function () {
+    nanaSyncReq("GET", "shared_notes?select=*&order=created_at.desc&limit=" + NANA_SHARED_PAGE + "&offset=" + (page * NANA_SHARED_PAGE), null, function (err, rows) {
+      if (err) return cb(err);                       // 只捞到一半比一封都没有更糟，宁可整趟算失败
+      var list = rows || [];
+      for (var i = 0; i < list.length; i++) {
+        var id = list[i] && list[i].id;
+        if (id && seen[id]) continue;
+        if (id) seen[id] = 1;
+        all.push(list[i]);
+      }
+      page++;
+      if (list.length < NANA_SHARED_PAGE || page >= NANA_SHARED_MAXPAGE) return cb(null, all);
+      step();
+    });
+  };
+  step();
+};
 var nanaSharedAdd = function (note, cb) { nanaSyncReq("POST", "shared_notes", note, cb); };
 var nanaSharedDel = function (id, cb) { nanaSyncReq("DELETE", "shared_notes?id=eq." + encodeURIComponent(id), null, cb); };
 // 共享照片：压缩图上传到 Supabase Storage（公开桶 notes）
@@ -9013,8 +9036,9 @@ function ReadingRoomActivity(_refRR) {
   var myAuthor = _au[0], setMyAuthor = _au[1];
   // 秒开优化：先展示上次缓存的信，后台再拉最新（stale-while-revalidate）
   var readSharedCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } };
-  var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 200))); } catch (_) {} };
+  var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 1000))); } catch (_) {} };
   var _snn = useState(readSharedCache); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
+  var _ssh = useState(80); var sharedShow = _ssh[0], setSharedShow = _ssh[1];   // 先画这么多张，往前翻再加
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
   var _see = useState(null); var sharedErr = _see[0], setSharedErr = _see[1];
   var _snt = useState(""); var shNote = _snt[0], setShNote = _snt[1];
@@ -9436,7 +9460,7 @@ function ReadingRoomActivity(_refRR) {
         h("div", { style: { marginTop: 32 } },
           sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
           !sharedLoading && !sharedErr && sharedNotes.length === 0 ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.78rem", padding: "10px 0", fontFamily: HAND } }, "壁炉边还没有来信，写下第一封吧 🕯️") : null,
-          sharedNotes.map(function (n, i) {
+          sharedNotes.slice(0, sharedShow).map(function (n, i) {
             var nt = themeById(n.th);
             var a = nanaAuthorById(n.author);
             var mine = n.author === myAuthor;
@@ -9503,7 +9527,12 @@ function ReadingRoomActivity(_refRR) {
                 n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word", marginTop: 4 } }, n.t) : null,
                 (function () { var vu = nanaPuVo(n.pu); return vu ? h("div", { style: { position: "relative", zIndex: 1, marginTop: 8, marginRight: 26 } }, shVoBar(n.id, vu, a.col)) : null; })(),
                 h("div", { style: { position: "absolute", right: 13, bottom: 9, fontSize: "0.85rem", transform: "rotate(12deg)", opacity: 0.9, pointerEvents: "none" } }, nt.footE)));
-          })));
+          }),
+          sharedNotes.length > sharedShow
+            ? h("button", { onClick: function () { setSharedShow(sharedShow + 80); },
+                style: { display: "block", width: "100%", border: "1.5px dashed rgba(200,135,26,0.45)", background: "rgba(255,255,255,0.6)", borderRadius: 14, padding: "12px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", color: "#a97f2e", cursor: "pointer", marginTop: 4 } },
+                "📜 再往前翻 · 还有 " + (sharedNotes.length - sharedShow) + " 封")
+            : null));
     })() : tab === "note" ? h("div", null,
       // ── 选信纸 ──
       h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" } },
