@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-241";
+var NANA_VER = "v2026.8.2-242";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8194,6 +8194,23 @@ var nanaSyncReq = function (method, path, body, cb) {
 // 改成一页一页全捞（新的在前）；两页之间要是有人寄了新信，offset 会错一位，
 // 同一封可能出现两次，按 id 去重。
 var NANA_SHARED_PAGE = 200, NANA_SHARED_MAXPAGE = 20;
+// 取信只留这一个入口。以前阅读室和伦敦页的邮筒各自调 nanaSharedList，互不知道，
+// 开门就是两遍；阅读室还会被卸载再挂载（邮筒直达那一下），新实例又取一遍。
+// 现在：正在取的时候后来者排队等同一趟结果；一分钟内取过就直接给上次那份；
+// 手点「刷新」才强制重取。
+var NANA_SHARED_AT = 0, NANA_SHARED_ROWS = null, NANA_SHARED_BUSY = 0, NANA_SHARED_WAIT = [];
+var nanaSharedFetch = function (force, cb) {
+  if (!force && NANA_SHARED_ROWS && Date.now() - NANA_SHARED_AT < 60000) return cb(null, NANA_SHARED_ROWS);
+  NANA_SHARED_WAIT.push(cb);
+  if (NANA_SHARED_BUSY) return;                       // 有一趟在路上，等它回来一起分
+  NANA_SHARED_BUSY = 1;
+  nanaSharedList(function (err, rows) {
+    NANA_SHARED_BUSY = 0;
+    if (!err) { NANA_SHARED_AT = Date.now(); NANA_SHARED_ROWS = rows || []; }
+    var q = NANA_SHARED_WAIT; NANA_SHARED_WAIT = [];
+    for (var i = 0; i < q.length; i++) { try { q[i](err, rows); } catch (_) {} }
+  });
+};
 var nanaSharedList = function (cb) {
   var all = [], seen = {}, page = 0;
   var step = function () {
@@ -9037,7 +9054,7 @@ function ReadingRoomActivity(_refRR) {
   // 秒开优化：先展示上次缓存的信，后台再拉最新（stale-while-revalidate）
   var readSharedCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } };
   var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 1000))); } catch (_) {} };
-  var _snn = useState(readSharedCache); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
+  var _snn = useState(function () { return NANA_SHARED_ROWS || readSharedCache(); }); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
   var _ssh = useState(80); var sharedShow = _ssh[0], setSharedShow = _ssh[1];   // 先画这么多张，往前翻再加
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
   var _see = useState(null); var sharedErr = _see[0], setSharedErr = _see[1];
@@ -9119,9 +9136,12 @@ function ReadingRoomActivity(_refRR) {
     setHolding(false);
     if (holdRef.current) { clearTimeout(holdRef.current); holdRef.current = null; }
   };
-  var loadShared = function () {
+  // 开门那一瞬间有三个地方会喊「去取信」：挂载、tab 初值、邮筒直达。
+  // 以前靠 sharedLoading 挡，但它是 state，同一帧里三个触发看到的都还是 false，一个都拦不住。
+  // 现在每次取信要分页捞全，三趟就是十来个跨境请求 —— 换成 ref 当锁，当场就能拦。
+  var loadShared = function (force) {
     setSharedLoading(true); setSharedErr(null);
-    nanaSharedList(function (err, rows) {
+    nanaSharedFetch(force, function (err, rows) {          // 排队 / 节流都在里面，这里只管拿结果
       setSharedLoading(false);
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
       setSharedNotes(rows || []);
@@ -9129,7 +9149,7 @@ function ReadingRoomActivity(_refRR) {
     });
   };
   useEffect(function () { if (myAuthor) loadShared(); }, [myAuthor]);
-  useEffect(function () { if (tab === "shared" && myAuthor && !sharedLoading) loadShared(); }, [tab]);
+  useEffect(function () { if (tab === "shared" && myAuthor) loadShared(); }, [tab]);
   // 🎙 在信里说一句：按住录，松手上传，附在这封信上
   var _rv1 = useState(false); var shRec = _rv1[0], setShRec = _rv1[1];
   var _rv2 = useState(0); var shSec = _rv2[0], setShSec = _rv2[1];
@@ -9254,7 +9274,7 @@ function ReadingRoomActivity(_refRR) {
       setSharedPosting(false);
       if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
       setSharedErr(null);
-      setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); return next; });
+      setSharedNotes(function (prev) { var next = [note].concat(prev); saveSharedCache(next); NANA_SHARED_ROWS = next; return next; });
       if (shVo) {                                        // 同一段声音也进「短波」那个架子
         var ts = dt.getTime();
         // 顺手放到「短波」那个架子上。以前这里失败是完全不吭声的，现在至少自己重试两次。
@@ -9273,7 +9293,7 @@ function ReadingRoomActivity(_refRR) {
     nanaSharedDel(id, function (err) {
       if (err) { setSharedErr(String((err && err.message) || err)); return; }
       if (target && target.pu) nanaPuPics(target.pu).forEach(function (u) { nanaSharedPhotoDel(u); });
-      setSharedNotes(function (prev) { var next = prev.filter(function (x) { return x.id !== id; }); saveSharedCache(next); return next; });
+      setSharedNotes(function (prev) { var next = prev.filter(function (x) { return x.id !== id; }); saveSharedCache(next); NANA_SHARED_ROWS = next; return next; });
     });
   };
   var doShare = function (theme) {
@@ -9410,7 +9430,7 @@ function ReadingRoomActivity(_refRR) {
         h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 } },
           h("div", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.76rem" } }, "🏠 贝克街 221B · " + sharedNotes.length + " 封信"),
           h("div", { style: { display: "flex", gap: 6, alignItems: "center" } },
-            h("button", { onClick: loadShared, style: { border: "1px solid rgba(200,135,26,0.35)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#c8871a" } }, sharedLoading ? "…" : "🔄 刷新"),
+            h("button", { onClick: function () { loadShared(true); }, style: { border: "1px solid rgba(200,135,26,0.35)", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", background: "rgba(255,255,255,0.7)", color: "#c8871a" } }, sharedLoading ? "…" : "🔄 刷新"),
             h("span", { onTouchStart: startHold, onTouchEnd: cancelHold, onTouchMove: cancelHold, onTouchCancel: cancelHold, onMouseDown: startHold, onMouseUp: cancelHold, onMouseLeave: cancelHold, onContextMenu: function (e) { e.preventDefault(); }, title: "长按 3 秒换人", style: { fontSize: "0.62rem", fontWeight: 800, color: me.col, background: me.bg, borderRadius: 999, padding: "4px 10px", cursor: "pointer", userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", whiteSpace: "nowrap", transform: holding ? "scale(0.92)" : "none", opacity: holding ? 0.65 : 1, transition: "transform 0.2s, opacity 0.2s" } }, holding ? "🕰️ 按住换人…" : me.e + " " + me.label))),
         h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" } },
           h("span", { style: { color: "#9a7a5a", fontWeight: 800, fontSize: "0.72rem", flexShrink: 0 } }, "选信纸"),
@@ -20902,7 +20922,7 @@ function LondonRoom(_refLD) {
   var letterSeen = _lm[0], setLetterSeen = _lm[1];
   useEffect(function () {
     if (!LD_LETTER_HINT) return;
-    nanaSharedList(function (err, rows) { if (!err && rows) setLetters(rows); });
+    nanaSharedFetch(false, function (err, rows) { if (!err && rows) setLetters(rows); });   // 跟阅读室共用同一趟
   }, []);
   var newLetter = (function () {
     var me = "";
