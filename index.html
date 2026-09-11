@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-242";
+var NANA_VER = "v2026.8.2-244";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8659,14 +8659,14 @@ var nanaPat = function (a, b, size, op) {
   return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
 };
 var NANA_LETTER_THEMES = [
-  { id: "air", name: "航空信笺", e: "💌", pick: 1, use: "随便说点什么", css: "linear-gradient(160deg,#f0f4f7,#b7c9d3)",
-    out1: "#d1e4ed", out2: "#b7c9d3", p1: "#f5f8f9", p2: "#f0f4f7",
-    line: "rgba(97,143,178,0.3)", margin: "rgba(97,143,178,0.45)",
-    header: "#356183", date: "rgba(53,97,131,0.85)", text: "#27465d", foot: "rgba(53,97,131,0.8)",
-    stamp: "✈️", stampBg: "#d1e4ed", stampBd: "rgba(97,143,178,0.7)", wm: "☁️", wmA: 0.08,
-    tapeA: "rgba(232,188,195,0.5)", tapeB: "rgba(255,255,255,0.78)",
-    stripes: ["#618fb2", "#f0f4f7", "#b7c9d3", "#f0f4f7"],
-    wash1: "rgba(232,240,242,0.18)", wash2: "rgba(209,228,237,0.15)", footE: "✉️" , rule: "line" },
+  { id: "air", name: "航空信笺", e: "💌", pick: 1, use: "随便说点什么", css: "linear-gradient(160deg,#eff6fb,#aad9fd)",
+    out1: "#d6ecfc", out2: "#8cc8f7", p1: "#eff6fb", p2: "#aad9fd",
+    line: "rgba(44,106,160,0.32)", margin: "rgba(44,106,160,0.5)",
+    header: "#1e5a8a", date: "rgba(30,90,138,0.88)", text: "#1a4569", foot: "rgba(30,90,138,0.85)",
+    stamp: "✈️", stampBg: "#eaf5fe", stampBd: "rgba(44,106,160,0.8)", wm: "☁️", wmA: 0.1,
+    tapeA: "rgba(140,200,247,0.55)", tapeB: "rgba(255,255,255,0.78)",
+    stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
+    wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
   { id: "night", name: "星夜信笺", e: "🌌", pick: 12, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
     out1: "#b6a9c8", out2: "#9078ac", p1: "#3f396e", p2: "#302b58",
@@ -8693,7 +8693,7 @@ var NANA_LETTER_THEMES = [
     stamp: "🌙", stampBg: "#f0e6e8", stampBd: "rgba(167,88,187,0.7)", wm: "🌙", wmA: 0.08,
     tapeA: "rgba(230,207,242,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#a758bb", "#d7ace2", "#e6cff2", "#d7ace2"],
-    wash1: "rgba(230,207,242,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "✨" , pat: nanaPat("🌙", "✨", 58, 0.07) , rule: "dot" },
+    wash1: "rgba(230,207,242,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "✨" , pat: nanaPat("🐇", "☁️", 60, 0.28) , rule: "none" },
   { id: "star", name: "星空信笺", e: "✨", pick: 11, use: "看星星的时候", css: "linear-gradient(160deg,#e6cff2,#d7ace2)",
     out1: "#f0e6e8", out2: "#d7ace2", p1: "#f4ecf8", p2: "#e6cff2",
     line: "rgba(153,88,187,0.3)", margin: "rgba(153,88,187,0.45)",
@@ -8764,7 +8764,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(202,235,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#58bbbb", "#b1eded", "#63bad9", "#b1eded"],
     wash1: "rgba(202,235,237,0.18)", wash2: "rgba(249,244,234,0.15)", footE: "⛵" , pat: nanaPat("🐚", "⛵", 58, 0.08) , rule: "dot" },
-  { id: "call", name: "呼叫信笺", e: "📟", pick: 15, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
+  { id: "call", name: "呼叫信笺", e: "📟", pick: 16, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
     out1: "#e8f0f2", out2: "#95a9d2", p1: "#d2e2ea", p2: "#b6d4e2",
     line: "rgba(88,156,187,0.3)", margin: "rgba(88,156,187,0.45)",
     header: "#306c88", date: "rgba(48,108,136,0.85)", text: "#254d5f", foot: "rgba(48,108,136,0.8)",
@@ -8831,14 +8831,15 @@ var NANA_LETTER_THEMES = [
     stripes: ["#7ecbb6", "#fbfffd", "#f0a8b8", "#fbfffd"],
     wash1: "rgba(165,230,210,0.28)", wash2: "rgba(255,215,225,0.26)", footE: "🐱",
     pat: nanaPat("🐾", "🐟", 56, 0.1) , rule: "grid" },
-  { id: "tube", name: "地铁信笺", e: "🚇", pick: 7, use: "今天去了哪儿", css: "linear-gradient(160deg,#a6bee7,#d3cce3)",
-    out1: "#e8f0f2", out2: "#d3cce3", p1: "#c6d4eb", p2: "#a6bee7",
-    line: "rgba(88,125,187,0.3)", margin: "rgba(88,125,187,0.45)",
-    header: "#305088", date: "rgba(48,80,136,0.85)", text: "#253b5f", foot: "rgba(48,80,136,0.8)",
-    stamp: "🚇", stampBg: "#e8f0f2", stampBd: "rgba(88,125,187,0.7)", wm: "🚇", wmA: 0.08,
-    tapeA: "rgba(209,228,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
-    stripes: ["#587dbb", "#a6bee7", "#d3cce3", "#a6bee7"],
-    wash1: "rgba(209,228,237,0.18)", wash2: "rgba(232,240,242,0.15)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) , rule: "dot" },
+  // 普鲁士蓝：纸面得守住「不发灰」那条亮度线，所以只往它的色相靠；真正的深蓝放在字、横线、边条和邮票边上
+  { id: "tube", name: "地铁信笺", e: "🚇", pick: 7, use: "今天去了哪儿", css: "linear-gradient(160deg,#dae8fb,#98bdf0)",
+    out1: "#c9dbf3", out2: "#7fa9e6", p1: "#dae8fb", p2: "#98bdf0",
+    line: "rgba(11,53,86,0.32)", margin: "rgba(11,53,86,0.52)",
+    header: "#0b3556", date: "rgba(11,53,86,0.88)", text: "#112f4d", foot: "rgba(11,53,86,0.85)",
+    stamp: "🚇", stampBg: "#e6f0fb", stampBd: "rgba(11,53,86,0.8)", wm: "🚇", wmA: 0.08,
+    tapeA: "rgba(127,169,230,0.55)", tapeB: "rgba(255,255,255,0.78)",
+    stripes: ["#0b3556", "#dae8fb", "#1b5078", "#dae8fb"],
+    wash1: "rgba(152,189,240,0.22)", wash2: "rgba(218,232,251,0.18)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) , rule: "dot" },
   { id: "box", name: "电话亭信笺", e: "☎️", css: "linear-gradient(160deg,#fff4f2,#f6d6d2)",
     out1: "#f6e4e1", out2: "#f0d6d2", p1: "#fffaf8", p2: "#fbe6e2",
     line: "rgba(200,120,110,0.32)", margin: "rgba(181,34,34,0.6)",
@@ -8847,7 +8848,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(215,90,85,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b52222", "#fffaf8", "#e8c860", "#fffaf8"],
     wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" , pat: nanaPat("☎️", "📮", 58, 0.07) , rule: "dot" },
-  { id: "tea", name: "下午茶信笺", e: "🫖", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
+  { id: "tea", name: "下午茶信笺", e: "🫖", pick: 15, use: "三点钟歇一会儿", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
     out1: "#f5eef0", out2: "#eee2e8", p1: "#fffdfa", p2: "#f8eff3",
     line: "rgba(190,155,175,0.32)", margin: "rgba(175,130,155,0.5)",
     header: "#8a5570", date: "rgba(160,120,140,0.9)", text: "#5e4450", foot: "rgba(160,120,140,0.85)",
