@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-244";
+var NANA_VER = "v2026.8.2-245";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8831,15 +8831,16 @@ var NANA_LETTER_THEMES = [
     stripes: ["#7ecbb6", "#fbfffd", "#f0a8b8", "#fbfffd"],
     wash1: "rgba(165,230,210,0.28)", wash2: "rgba(255,215,225,0.26)", footE: "🐱",
     pat: nanaPat("🐾", "🐟", 56, 0.1) , rule: "grid" },
-  // 普鲁士蓝：纸面得守住「不发灰」那条亮度线，所以只往它的色相靠；真正的深蓝放在字、横线、边条和邮票边上
-  { id: "tube", name: "地铁信笺", e: "🚇", pick: 7, use: "今天去了哪儿", css: "linear-gradient(160deg,#dae8fb,#98bdf0)",
-    out1: "#c9dbf3", out2: "#7fa9e6", p1: "#dae8fb", p2: "#98bdf0",
-    line: "rgba(11,53,86,0.32)", margin: "rgba(11,53,86,0.52)",
-    header: "#0b3556", date: "rgba(11,53,86,0.88)", text: "#112f4d", foot: "rgba(11,53,86,0.85)",
-    stamp: "🚇", stampBg: "#e6f0fb", stampBd: "rgba(11,53,86,0.8)", wm: "🚇", wmA: 0.08,
-    tapeA: "rgba(127,169,230,0.55)", tapeB: "rgba(255,255,255,0.78)",
-    stripes: ["#0b3556", "#dae8fb", "#1b5078", "#dae8fb"],
-    wash1: "rgba(152,189,240,0.22)", wash2: "rgba(218,232,251,0.18)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) , rule: "dot" },
+  // 紫蓝：比上一版普鲁士蓝浅一档（纸面 L77 → 82），色相往紫挪到 H234，字色退到紫藏青。
+  // 浅一档的纯蓝全跟航空 / 呼叫撞，往紫挪反而自然躲开了它们。
+  { id: "tube", name: "地铁信笺", e: "🚇", pick: 7, use: "今天去了哪儿", css: "linear-gradient(160deg,#e3e5fb,#aab1f5)",
+    out1: "#d3d7f6", out2: "#8f98ea", p1: "#e3e5fb", p2: "#aab1f5",
+    line: "rgba(58,75,150,0.32)", margin: "rgba(58,75,150,0.5)",
+    header: "#3a4b96", date: "rgba(58,75,150,0.88)", text: "#2d3b7a", foot: "rgba(58,75,150,0.85)",
+    stamp: "🚇", stampBg: "#eef0fc", stampBd: "rgba(58,75,150,0.8)", wm: "🚇", wmA: 0.08,
+    tapeA: "rgba(143,152,234,0.55)", tapeB: "rgba(255,255,255,0.78)",
+    stripes: ["#3a4b96", "#e3e5fb", "#7b86e0", "#e3e5fb"],
+    wash1: "rgba(170,177,245,0.22)", wash2: "rgba(227,229,251,0.18)", footE: "🎫" , pat: nanaPat("🚇", "🎫", 58, 0.07) , rule: "dot" },
   { id: "box", name: "电话亭信笺", e: "☎️", css: "linear-gradient(160deg,#fff4f2,#f6d6d2)",
     out1: "#f6e4e1", out2: "#f0d6d2", p1: "#fffaf8", p2: "#fbe6e2",
     line: "rgba(200,120,110,0.32)", margin: "rgba(181,34,34,0.6)",
