@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-245";
+var NANA_VER = "v2026.8.2-246";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -11446,8 +11446,10 @@ function HeroBanner(_ref60) {
   }, []);
 
   // Apply weekend overrides
-  var activeWelcomes = isWeekend ? weekendWelcomes : scene.welcomes;
-  var activeSub = isWeekend ? weekendSub : scene.sub;
+  // 刚回家那一周，不管几点、周几，先说欢迎回家
+  var justHome = (function () { try { return ldBackHome() && new Date() < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
+  var activeWelcomes = justHome ? ["欢迎回家，Nana 🏡", "四十二天，你回来了", "这次是真的到家了"] : isWeekend ? weekendWelcomes : scene.welcomes;
+  var activeSub = justHome ? "伦敦的四十二天收好了，就在下面 📖" : isWeekend ? weekendSub : scene.sub;
   var bgGrad = "linear-gradient(170deg,".concat(scene.bg.join(","), ")");
 
   // Decorative elements based on time
@@ -18549,6 +18551,27 @@ function BasementScene(_refB1) {
 // ── 🧭 伦敦航海家（Canary Wharf 港）─────────────────────
 var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
+// 她到家的日子。从这天起：开门不再直接落到伦敦，「伦敦航海家」变成纪念册，首页变成新家。
+// 带 ?home=1 / ?home=0 打开可以强行开关（预览用），记在本机；不带参数就按日子来。
+var LD_HOME = "2026-09-25";
+var ldBackHome = function () {
+  try {
+    var q = (location.search || "").match(/[?&]home=([01])/);
+    if (q) localStorage.setItem("nana-home", q[1]);
+    var p = localStorage.getItem("nana-home");
+    if (p === "1") return true;
+    if (p === "0") return false;
+  } catch (_) {}
+  try { return new Date() >= new Date(LD_HOME + "T00:00:00+08:00"); } catch (_) { return false; }
+};
+// 回家之后这间房换个名字（ROOMS 在上面已经定义好了）
+try {
+  if (ldBackHome()) {
+    for (var _ri = 0; _ri < ROOMS.length; _ri++) {
+      if (ROOMS[_ri].id === "london") { ROOMS[_ri].name = "伦敦的四十二天"; ROOMS[_ri].emoji = "📖"; ROOMS[_ri].desc = "2026.8.15 → 9.26 · 一本翻得动的纪念册"; }
+    }
+  }
+} catch (_) {}
 var LD_FULL = "2026-08-14";
 var ldFullOpen = function () {
   // 熊猫鱼提前把全部标签页打开，方便先过一遍内容；nana 那边还是 8/14 才解锁
@@ -19082,6 +19105,7 @@ var nanaGo221B = function () {
 };
 var ldHomeRoom = function () {
   if (!ldLanded()) return null;
+  if (ldBackHome()) return null;              // 回家了：开门落到新家首页，不再直接进伦敦
   try { for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === "london") return ROOMS[i]; } } catch (_) {}
   return null;
 };
@@ -20247,11 +20271,14 @@ var LD_SH_LINES = [
   "这座城我熟。你只管住得舒服。",
   "推理讲证据 —— 证据是，有人把这儿收拾好了等你。"
 ];
+// 回家之后门口这几句：案子结了
+var LD_SH_HOME = ["案子结了。证据都收好了，进来看。", "这座城你熟了。", "四十二天，一页一页都在。"];
 function LondonOpening(_refSO) {
   var h = React.createElement;
   var onDone = _refSO.onDone;
   // 落地那天她刚下飞机，门口这句不派活，只接人
   var _ln = useState(function () {
+    if (ldBackHome()) return LD_SH_HOME[Math.floor(Math.random() * LD_SH_HOME.length)];
     try {
       var now = new Date();
       if (now >= new Date(LD_LAND_AT) && now < new Date("2026-08-16T04:00:00+01:00")) {
@@ -23612,6 +23639,115 @@ function LondonRoom(_refLD) {
   })();
   var CRAVE_BASE = ["🍚 中餐（随便什么家常菜）", "🥟 点心 / 粤菜", "🌶️ 川菜火锅那种辣的", "🍜 一碗热汤面", "🍱 日料（熟的那种）", "🍕 披萨汉堡", "🥗 清淡一点的", "🍰 甜的！要甜的！"];
   var CRAVE = craveMine.map(function (x) { return "🍽️ " + x; }).concat(CRAVE_BASE);
+  var ldTabBar = h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
+      var on = tab === t[0];
+      // 照片下面有没看过的话，就在那一格右上角点一个小红点
+      var dot = pcInbox().length && t[0] === "cal";
+      return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { position: "relative", flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } },
+        t[1],
+        dot ? h("span", { style: { marginLeft: 5, fontSize: "0.66rem", verticalAlign: "1px" } }, "💬") : null);
+    }));
+  var ldTabBody = tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab;
+  // ── 📖 回家之后：这间房变成「伦敦的四十二天」，工具收进一个折叠里 ──
+  var backHome = ldBackHome();
+  var _to = useState(false); var toolsOpen = _to[0], setToolsOpen = _to[1];
+  var _mn = useState(function () { return NANA_SHARED_ROWS || null; }); var memoNotes = _mn[0], setMemoNotes = _mn[1];
+  useEffect(function () {
+    if (!backHome) return;
+    var on = true;
+    nanaSharedFetch(false, function (err, rows) { if (on && !err && rows) setMemoNotes(rows); });
+    return function () { on = false; };
+  }, [backHome]);
+  var memoir = null;
+  if (backHome) {
+    var realLetters = (memoNotes || []).filter(function (x) { return x && x.th !== "call" && (x.created_at || "").slice(0, 10) >= LD_DEPART; });
+    var nWords = 0; realLetters.forEach(function (x) { nWords += (x.t || "").length; });
+    var nVoSec = 0; voList.forEach(function (v) { nVoSec += v.d || 0; });
+    var byPlace = {}, placeOrder = [];
+    herShots.forEach(function (x) { var k = x.n || "别的地方"; if (!byPlace[k]) { byPlace[k] = []; placeOrder.push(k); } byPlace[k].push(x); });
+    var SERIF = "Georgia,'PingFang SC',serif";
+    var num = function (v, unit, note) {
+      return h("div", { key: unit, style: { background: "rgba(255,255,255,0.62)", border: "1px solid rgba(120,100,70,0.16)", borderRadius: 12, padding: "12px 8px 10px", textAlign: "center" } },
+        h("div", { style: { fontFamily: SERIF, fontWeight: 800, fontSize: "1.5rem", color: "#2d3a4a", lineHeight: 1.1 } }, v),
+        h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#6a5a48", marginTop: 3 } }, unit),
+        note ? h("div", { style: { fontSize: "0.58rem", color: "rgba(106,90,72,0.75)", marginTop: 2 } }, note) : null);
+    };
+    // 封面
+    var cover = h("div", { style: { position: "relative", borderRadius: 20, overflow: "hidden", background: "linear-gradient(165deg,#1c2a44 0%,#243a5c 58%,#2f5470 100%)", color: "#f4efe3", padding: "26px 20px 20px", marginBottom: 14, boxShadow: "0 14px 34px rgba(28,42,68,0.3)" } },
+      h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", fontWeight: 700 } }, "THE LONDON DAYS"),
+      h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.9rem", marginTop: 6, letterSpacing: "0.04em" } }, "伦敦的四十二天"),
+      h("div", { style: { fontSize: "0.76rem", color: "rgba(244,239,227,0.8)", marginTop: 6, lineHeight: 1.6 } }, "2026 年 8 月 15 日 → 9 月 26 日", h("br"), "Canary Wharf 港 → 家里 113°E"),
+      h("div", { style: { display: "flex", gap: 7, marginTop: 18, overflow: "hidden" } },
+        LD_COVER_PICS.map(function (f, i) {
+          return h("div", { key: f, style: { flex: "0 0 auto", width: 64, background: "#fff", padding: "4px 4px 11px", borderRadius: 2, transform: "rotate(" + ((i % 2 ? 1 : -1) * (2 + (i % 3))) + "deg)", boxShadow: "0 6px 14px rgba(0,0,0,0.32)", marginTop: i % 2 ? 7 : 0 } },
+            h("img", { src: "ld/" + f + "_t.jpg", alt: "", style: { width: "100%", height: 56, objectFit: "cover", display: "block" } }));
+        })),
+      h("div", { style: { marginTop: 18, fontSize: "0.7rem", color: "rgba(244,239,227,0.62)", fontStyle: "italic" } }, "「这座城你熟了。」"));
+    // 数字墙
+    var numbers = ukCard([
+      screws,
+      ukHead("数出来的部分", "都是真的，一封一段一张地数", h("span", { style: { fontSize: "1rem" } }, "🔢")),
+      h("div", { key: "grid", style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 6 } }, [
+        num("42", "天"),
+        num(realLetters.length ? String(realLetters.length) : "…", "封信", nWords ? (Math.round(nWords / 1000) + " 千多字") : null),
+        num(String(voList.length), "段声音", Math.round(nVoSec / 60) + " 分钟"),
+        num(String(herShots.length), "张照片", "你拍的"),
+        num(String(wallShown.length), "个地方", "去过的"),
+        num("1", "个大坡", "先滚了个够")
+      ])
+    ]);
+    // 那几天
+    var DAYS = [
+      { d: "8.15", e: "🛬", t: "落地", s: "到了。这儿也是家。" },
+      { d: "8.23", e: "🌿", t: "The Spaniards 后面那片草坪", s: "不用等大坡了 —— 先滚了个够。" },
+      { d: "9.12", e: "🎤", t: "Hamilton", s: "Victoria Palace · 14:30 · 熊猫鱼订的票" },
+      { d: "9.19", e: "👗", t: "London Fashion Week", s: "看秀那天，早到挑了个好位置" },
+      { d: "9.26", e: "🏡", t: "回家", s: "从本初子午线 0° 回到 113°E" }
+    ];
+    var days = ukCard([
+      screws,
+      ukHead("那几天", "四十二天里，特别记得的几个日子", h("span", { style: { fontSize: "1rem" } }, "📌")),
+      h("div", { key: "dl", style: { marginTop: 4 } }, DAYS.map(function (x, i) {
+        return h("div", { key: x.d, style: { display: "flex", gap: 10, alignItems: "flex-start", padding: "9px 0", borderTop: i ? "1px dashed rgba(120,100,70,0.22)" : "none" } },
+          h("div", { style: { flexShrink: 0, width: 44, fontFamily: SERIF, fontWeight: 800, fontSize: "0.86rem", color: "#2d3a4a", paddingTop: 2 } }, x.d),
+          h("div", { style: { flexShrink: 0, fontSize: "1.1rem", lineHeight: 1.2 } }, x.e),
+          h("div", { style: { flex: 1, minWidth: 0 } },
+            h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#3a3226" } }, x.t),
+            h("div", { style: { fontSize: "0.7rem", color: "rgba(90,75,60,0.85)", marginTop: 2, lineHeight: 1.55 } }, x.s)));
+      }))
+    ]);
+    // 照片：她拍的，按地方分
+    var photos = ukCard([
+      screws,
+      ukHead("你拍的", herShots.length + " 张 · 按地方放在一起 · 点开能看大图和底下的话", h("span", { style: { fontSize: "1rem" } }, "📷")),
+      placeOrder.length ? h("div", { key: "pl" }, placeOrder.map(function (k) {
+        var list = byPlace[k];
+        return h("div", { key: k, style: { marginTop: 12 } },
+          h("div", { style: { display: "flex", alignItems: "baseline", gap: 6, marginBottom: 6 } },
+            h("span", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#3a3226" } }, k),
+            h("span", { style: { fontSize: "0.62rem", color: "rgba(120,105,80,0.9)" } }, list.length + " 张")),
+          h("div", { style: { display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 } }, list.map(function (x, i) {
+            return h("div", { key: x.id, onClick: function () { openShot(x.id, x.u); }, style: { flex: "0 0 auto", width: 92, background: "#fff", padding: "4px 4px 8px", borderRadius: 3, boxShadow: "0 4px 12px rgba(60,45,30,0.2)", transform: "rotate(" + (i % 2 ? 1.2 : -1.2) + "deg)", cursor: "pointer" } },
+              h(NanaCloudImg, { u: x.u, thumb: true, style: { width: "100%", height: 84, objectFit: "cover", display: "block", borderRadius: 2 } }));
+          })));
+      })) : h("div", { key: "pz", style: { fontSize: "0.72rem", color: "rgba(120,105,80,0.9)", padding: "8px 0" } }, "照片还在路上，等一下同步。")
+    ]);
+    // 最后一页
+    var lastPage = ukCard([
+      screws,
+      ukHead("最后一页", "留给熊猫鱼", h("span", { style: { fontSize: "1rem" } }, "✉️")),
+      h("div", { key: "lp", style: { padding: "14px 4px 6px", fontFamily: LDHAND, fontSize: "0.96rem", color: "rgba(58,50,38,0.72)", lineHeight: 1.8, textAlign: "center", fontStyle: "italic" } }, "（这一页先空着。等一封信。）")
+    ]);
+    // 工具箱：那些天用过的东西，收起来但还在
+    var toolbox = h("div", { style: { margin: "6px 0 14px" } },
+      h("button", { onClick: function () { setToolsOpen(!toolsOpen); }, style: { width: "100%", border: "1.5px dashed rgba(120,100,70,0.4)", background: "rgba(255,255,255,0.5)", borderRadius: 12, padding: "11px 12px", fontFamily: "inherit", cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 8 } },
+        h("span", { style: { fontSize: "1rem" } }, "🧰"),
+        h("span", { style: { flex: 1 } },
+          h("div", { style: { fontWeight: 800, fontSize: "0.82rem", color: "#3a3226" } }, "那些天用过的工具"),
+          h("div", { style: { fontSize: "0.64rem", color: "rgba(120,105,80,0.9)", marginTop: 2 } }, "此刻 · 游玩记 · 安心 · 楼下 · 吃饭 · 装箱")),
+        h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#8a6a2e" } }, toolsOpen ? "收起 ▲" : "展开 ▼")));
+    memoir = h("div", null, cover, numbers, days, momentCard, wallSection, photos, lastPage, toolbox);
+  }
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
@@ -23682,7 +23818,7 @@ function LondonRoom(_refLD) {
       "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}" +
       // 挂在房子周围那几个小牌子，很轻地上下飘
       "@keyframes hsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}"),
-    h(LondonHarbour, {
+    backHome ? memoir : h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
       title: "\uD83E\uDDED 伦敦航海家",
@@ -23698,16 +23834,9 @@ function LondonRoom(_refLD) {
         onToday: function () { setTab("cal"); setSub("cal"); setCalSel(todayStr); }
       }
     }),
-    h("div", { style: { display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 2 } }, TABS.map(function (t) {
-      var on = tab === t[0];
-      // 照片下面有没看过的话，就在那一格右上角点一个小红点
-      var dot = pcInbox().length && t[0] === "cal";
-      return h("button", { key: t[0], onClick: function () { setTab(t[0]); }, style: { position: "relative", flexShrink: 0, border: on ? "2px solid #3bbdae" : "1.5px solid rgba(165,222,216,0.62)", background: on ? "rgba(80,215,205,0.16)" : "#fff", color: on ? "#1f7a6d" : "rgba(110,162,155,0.9)", borderRadius: 999, padding: "8px 13px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.76rem", cursor: "pointer", whiteSpace: "nowrap" } },
-        t[1],
-        dot ? h("span", { style: { marginLeft: 5, fontSize: "0.66rem", verticalAlign: "1px" } }, "💬") : null);
-    })),
+    backHome ? null : ldTabBar,
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab,
+    backHome ? (toolsOpen ? h("div", null, ldTabBar, ldTabBody) : null) : ldTabBody,
     shotModal,
     bigShot,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
@@ -24345,7 +24474,7 @@ function BottomNav(_ref135) {
     return pinned.includes(r.id);
   });
   var ldHome = ldLanded();
-  if (ldHome) {
+  if (ldHome && !ldBackHome()) {              // 回家之后伦敦不再钉在第一位
     pinnedRooms = pinnedRooms.slice().sort(function (a, b) {
       return (a.id === "london" ? -1 : 0) - (b.id === "london" ? -1 : 0);
     });
@@ -24359,7 +24488,7 @@ function BottomNav(_ref135) {
   var pinLabels = {
     living: "客厅",
     bedroom: "卧室",
-    london: "伦敦",
+    london: ldBackHome() ? "四十二天" : "伦敦",
     basement: "地下室",
     gaming: "游乐场"
   };
@@ -24525,7 +24654,7 @@ function BottomNav(_ref135) {
     var roomBtns = pinnedRooms.map(function (r) {
       return /*#__PURE__*/React.createElement(NavBtn, {
         key: r.id,
-        emoji: (ldHome && r.id === "london") ? "\uD83C\uDFE0" : r.emoji,
+        emoji: (ldHome && !ldBackHome() && r.id === "london") ? "\uD83C\uDFE0" : r.emoji,
         label: pinLabels[r.id] || r.name,
         active: (room === null || room === void 0 ? void 0 : room.id) === r.id,
         onClick: function onClick() {
@@ -25399,6 +25528,39 @@ function NanaMixtapeCard(_refNM) {
           h("span", { style: { fontSize: "0.64rem", color: "#b0a090", flexShrink: 0 } }, t.artist));
       }))));
 }
+// ── 🏡 新家首页上那张「伦敦的四十二天」：一本合着的册子，点开进纪念册 ──
+var LD_COVER_PICS = ["221b-door", "greenwich-clock", "tate-ghost", "platform934", "serpentine-swan", "bigben-blue"];
+function HomeLondonCard() {
+  var h = React.createElement;
+  var _n = useState(function () { return NANA_SHARED_ROWS ? NANA_SHARED_ROWS.length : 0; }); var nLetters = _n[0], setNLetters = _n[1];
+  useEffect(function () {
+    var on = true;
+    nanaSharedFetch(false, function (err, rows) {
+      if (!on || err || !rows) return;
+      setNLetters(rows.filter(function (x) { return x && x.th !== "call" && (x.created_at || "").slice(0, 10) >= LD_DEPART; }).length);
+    });
+    return function () { on = false; };
+  }, []);
+  var go = function () { try { window.dispatchEvent(new CustomEvent("nana-go-london")); } catch (_) {} };
+  return h("div", { style: { padding: "14px 16px 4px" } },
+    h("div", { onClick: go, style: { position: "relative", cursor: "pointer", borderRadius: 22, overflow: "hidden", background: "linear-gradient(160deg,#1c2a44 0%,#243a5c 55%,#2f5470 100%)", boxShadow: "0 14px 34px rgba(28,42,68,0.32)", color: "#f4efe3" } },
+      h("div", { style: { position: "absolute", left: 0, top: 0, bottom: 0, width: 14, background: "linear-gradient(90deg,rgba(255,255,255,0.18),rgba(255,255,255,0))" } }),   // 书脊那道光
+      h("div", { style: { padding: "18px 18px 8px 26px" } },
+        h("div", { style: { fontSize: "0.58rem", letterSpacing: "0.32em", color: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", fontWeight: 700 } }, "THE LONDON DAYS"),
+        h("div", { style: { fontSize: "1.42rem", fontWeight: 900, marginTop: 4, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.04em" } }, "伦敦的四十二天"),
+        h("div", { style: { fontSize: "0.72rem", color: "rgba(244,239,227,0.78)", marginTop: 4 } }, "2026.8.15 → 9.26 · 一本翻得动的纪念册")),
+      // 六张小照片斜斜贴着，像刚从口袋里掏出来
+      h("div", { style: { display: "flex", gap: 6, padding: "6px 14px 0 24px", overflow: "hidden" } },
+        LD_COVER_PICS.map(function (f, i) {
+          return h("div", { key: f, style: { flex: "0 0 auto", width: 62, background: "#fff", padding: "4px 4px 10px", borderRadius: 2, transform: "rotate(" + ((i % 2 ? 1 : -1) * (2 + (i % 3))) + "deg)", boxShadow: "0 6px 14px rgba(0,0,0,0.3)", marginTop: i % 2 ? 6 : 0 } },
+            h("img", { src: "ld/" + f + "_t.jpg", alt: "", style: { width: "100%", height: 54, objectFit: "cover", display: "block", borderRadius: 1 } }));
+        })),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 10, padding: "14px 18px 16px 26px", fontSize: "0.7rem", color: "rgba(244,239,227,0.85)" } },
+        h("span", null, "✉️ " + (nLetters || "…") + " 封信"),
+        h("span", null, "📅 42 天"),
+        h("span", null, "📍 " + LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; }).length + " 个地方"),
+        h("span", { style: { marginLeft: "auto", fontWeight: 800, color: "#f0c46a" } }, "翻开 →"))));
+}
 function HomeDeck(_refHD) {
   var h = React.createElement;
   var rc = h;
@@ -25978,6 +26140,18 @@ function NanasHome() {
     window.addEventListener("nana-go-221b", go);
     return function () { window.removeEventListener("nana-go-221b", go); };
   }, []);
+  // 首页那张「伦敦的四十二天」卡：点一下进纪念册
+  useEffect(function () {
+    var go = function () {
+      var r = null;
+      for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === "london") r = ROOMS[i]; }
+      if (!r) return;
+      setActivity(null); setRoom(r);
+      try { window.scrollTo(0, 0); } catch (_) {}
+    };
+    window.addEventListener("nana-go-london", go);
+    return function () { window.removeEventListener("nana-go-london", go); };
+  }, []);
   var _useState327 = useState(20),
     _useState328 = _slicedToArray(_useState327, 2),
     cozy = _useState328[0],
@@ -26080,7 +26254,7 @@ function NanasHome() {
   }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
-  }), !room && /*#__PURE__*/React.createElement("div", {
+  }), !room && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), !room && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 2px"
     }
