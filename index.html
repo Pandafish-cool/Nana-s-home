@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-254";
+var NANA_VER = "v2026.8.2-255";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26253,19 +26253,20 @@ function BakerFacade(_refBF) {
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
       h("div", { style: { marginTop: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine),
-      h("div", { style: { marginTop: 8, color: skyText, opacity: 0.55, fontSize: "0.62rem", fontWeight: 700 } }, "按住门垫、窗、门环或路灯，家里就亮一下 ✨"),
-      badOpen ? h("div", { style: { display: "flex", gap: 6, marginTop: 4 } },
-        LD_BAD_OPT.map(function (o) {
-          return h("button", { key: o.k, onClick: function () { setBadOpen(false); if (o.sit) { setPgMsg("那就坐一会儿，谁都不惊动 🫖"); setTimeout(function () { setPgMsg(""); }, 5000); } else sendPage(o); },
-            style: { flex: 1, border: "1.5px solid rgba(180,53,58,0.55)", background: "rgba(255,250,236,0.94)", color: "#b4353a", borderRadius: 10, padding: "7px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", textAlign: "left" } },
-            h("div", null, o.e + " " + o.t), h("div", { style: { fontSize: "0.56rem", fontWeight: 600, opacity: 0.8, marginTop: 2 } }, o.d));
-        })) : null,
-      (pgSay || pgMsg) ? h("div", { style: { marginTop: 6, minHeight: 22 } },
-        pgSay ? h("div", { key: "say" + pgSay, style: { display: "inline-block", background: "rgba(253,246,232,0.94)", color: "#255f58", borderRadius: 9, padding: "6px 11px", fontSize: "0.74rem", fontWeight: 700, lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", animation: "bkRise 0.3s ease both" } }, "🪟 " + pgSay) : null,
-        pgMsg ? h("div", { style: { display: "inline-block", marginLeft: pgSay ? 6 : 0, background: "rgba(31,111,104,0.18)", color: BK_CREAM, borderRadius: 9, padding: "6px 11px", fontSize: "0.7rem", fontWeight: 800 } }, pgMsg) : null) : h("div", { style: { height: 6 } })),
+      h("div", { style: { height: 10 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 2, padding: "0 26px" } },
       building,
+      // 松手之后窗里飘出来的那句、寄没寄到，都浮在楼上；「今天有点长」的两格贴在路面上
+      (pgSay || pgMsg) ? h("div", { style: { position: "absolute", left: "10%", right: "10%", top: "47%", textAlign: "center", zIndex: 4, pointerEvents: "none" } },
+        pgSay ? h("div", { key: "say" + pgSay, style: { display: "inline-block", background: "rgba(253,246,232,0.96)", color: "#255f58", borderRadius: 10, padding: "7px 12px", fontSize: "0.74rem", fontWeight: 700, lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", boxShadow: "0 8px 20px rgba(0,0,0,0.35)", animation: "bkRise 0.3s ease both" } }, "🪟 " + pgSay) : null,
+        pgMsg ? h("div", { style: { display: "inline-block", marginTop: 5, background: "rgba(30,38,54,0.94)", color: BK_CREAM, borderRadius: 10, padding: "6px 11px", fontSize: "0.7rem", fontWeight: 800, boxShadow: "0 6px 16px rgba(0,0,0,0.35)", animation: "bkRise 0.3s ease both" } }, pgMsg) : null) : null,
+      badOpen ? h("div", { style: { position: "absolute", left: "5%", right: "5%", bottom: "2.5%", display: "flex", gap: 6, zIndex: 4 } },
+        LD_BAD_OPT.map(function (o) {
+          return h("button", { key: o.k, onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); setBadOpen(false); if (o.sit) { setPgMsg("那就坐一会儿，谁都不惊动 🫖"); setTimeout(function () { setPgMsg(""); }, 5000); } else sendPage(o); },
+            style: { flex: 1, border: "1.5px solid rgba(180,53,58,0.6)", background: "rgba(253,246,232,0.96)", color: "#b4353a", borderRadius: 10, padding: "7px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", textAlign: "left", boxShadow: "0 6px 16px rgba(0,0,0,0.4)" } },
+            h("div", null, o.e + " " + o.t), h("div", { style: { fontSize: "0.56rem", fontWeight: 600, opacity: 0.8, marginTop: 2 } }, o.d));
+        })) : null,
       // 门口能点的都画在楼里了：门 → 进屋，信箱 → 221B 的信，短波 → 安心，门铃 → 敲门
       knock ? h("div", { style: { position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%)", background: "rgba(253,246,232,0.96)", color: "#22303f", fontSize: "0.7rem", fontWeight: 700, lineHeight: 1.5, padding: "7px 11px", borderRadius: 10, zIndex: 4, whiteSpace: "nowrap", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", animation: "bkRise 0.3s ease both" } }, knock) : null,
       h("div", { style: { position: "absolute", left: "58%", top: "82.5%", fontSize: 16, lineHeight: 1, animation: "bkCat 18s linear infinite", zIndex: 2 } }, "🐈"),
