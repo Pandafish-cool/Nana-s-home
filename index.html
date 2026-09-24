@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-253";
+var NANA_VER = "v2026.8.2-254";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -25949,6 +25949,65 @@ function BakerFacade(_refBF) {
   var _kn = useState(null); var knock = _kn[0], setKnock = _kn[1];
   var _tk = useState(0); var tick = _tk[0], setTick = _tk[1];
   var _fd = useState(bkHuntRead); var found = _fd[0];
+  var _ph = useState(""); var pgHold = _ph[0], setPgHold = _ph[1];
+  var _pl = useState(""); var pgLit = _pl[0], setPgLit = _pl[1];
+  var _ps = useState(""); var pgSay = _ps[0], setPgSay = _ps[1];
+  var _pb = useState(""); var pgBusy = _pb[0], setPgBusy = _pb[1];
+  var _pm = useState(""); var pgMsg = _pm[0], setPgMsg = _pm[1];
+  var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
+  var pgDown = useRef(0);
+  var litTimer = useRef(null);
+  // 按住：那扇窗先亮一点；松手：真的亮起来，窗里飘出一句话，寄一条到 221B
+  var sendPage = function (p) {
+    if (pgBusy) return;
+    var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+    if (!me) { setPgMsg("先去 221B 选一下你是谁"); return; }
+    setPgBusy(p.k); setPgMsg("");
+    var dt = new Date();
+    var hm = (dt.getHours() < 10 ? "0" : "") + dt.getHours() + ":" + (dt.getMinutes() < 10 ? "0" : "") + dt.getMinutes();
+    var note = { id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: me, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: p.body + "\n▸ 家里：" + hm + "　▸ 从 221B 门口按的", th: "call", pu: null };
+    nanaSharedAdd(note, function (err) {
+      setPgBusy("");
+      setPgMsg(err ? "没寄出去…检查下网络再试 😢" : p.ok);
+      setTimeout(function () { setPgMsg(""); }, 5000);
+    });
+  };
+  var lightUp = function (p) {
+    setPgLit(p.win || "");
+    if (litTimer.current) clearTimeout(litTimer.current);
+    litTimer.current = setTimeout(function () { setPgLit(""); }, p.win === "dim" ? 40000 : 14000);
+    var bank = LD_BACK_SAY[p.k];
+    if (bank && bank.length) { setPgSay(bank[Math.floor(Math.random() * bank.length)]); setTimeout(function () { setPgSay(""); }, 9000); }
+  };
+  var holdOn = function (p) { pgDown.current = Date.now(); setPgHold(p.win || ""); };
+  var holdOff = function (p, okk) {
+    if (!pgDown.current) return;
+    var held = Date.now() - pgDown.current;
+    pgDown.current = 0; setPgHold("");
+    if (!okk) return;                               // 手指划走了就不算
+    if (held < 380) {                               // 只是点了一下：门环给句台词，别的提醒一声「按住」
+      if (p.k === "knock") doKnock();
+      else { setPgMsg("按住不放，家里就亮一下 ✨"); setTimeout(function () { setPgMsg(""); }, 2500); }
+      return;
+    }
+    lightUp(p);
+    if (p.pick) { setBadOpen(!badOpen); return; }   // 今天有点长：先选要什么，不急着寄
+    sendPage(p);
+  };
+  var holdProps = function (p) {
+    return { onPointerDown: function (e) { if (e && e.stopPropagation) e.stopPropagation(); if (!pgBusy) holdOn(p); },
+      onPointerUp: function (e) { if (e && e.stopPropagation) e.stopPropagation(); holdOff(p, true); },
+      onPointerCancel: function () { holdOff(p, false); }, onPointerLeave: function () { holdOff(p, false); },
+      onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); },
+      onContextMenu: function (e) { e.preventDefault(); },
+      style: { cursor: "pointer", touchAction: "pan-y", WebkitUserSelect: "none", userSelect: "none" } };
+  };
+  var PG = {}; LD_PAGE.forEach(function (p) { PG[p.k] = p; });
+  var holdingIs = function (k) { return pgHold !== "" && pgHold === (PG[k] && PG[k].win); };
+  var dimAll = pgLit === "dim" || pgHold === "dim";
+  var glowBay = !dimAll && (pgLit === "live" || pgHold === "live");
+  var glowDoor = !dimAll && (pgLit === "door" || pgHold === "door" || pgLit === "knock" || pgHold === "knock");
+  useEffect(function () { if (pgLit === "knock") { setKnock(null); } }, [pgLit]);
   // 来信：跟伦敦那间房同一套判断（缓存 + 共用那一趟拉取，看过的 id 记在本机）
   var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
   var letters = _lt[0], setLetters = _lt[1];
@@ -25991,6 +26050,7 @@ function BakerFacade(_refBF) {
     setKnock(BK_KNOCK[Math.floor(Math.random() * BK_KNOCK.length)]);
     setTimeout(function () { setKnock(null); }, 2600);
   };
+  var doorShake = pgLit === "knock" || pgHold === "knock";
   // 一扇窗：奶白石框、拱心石、玻璃有一道斜光、细窗棂、暗红窗帘、窗台
   var win = function (x, y, w, hh, on, key, extra, arch) {
     var glass = on ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)");
@@ -26049,7 +26109,7 @@ function BakerFacade(_refBF) {
     h("polygon", { points: "30,74 180,36 330,74", fill: "none", stroke: "#1e2636", strokeWidth: 2 }),
     h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#2f3749" }),
     h("polygon", { points: "144,46 180,28 216,46", fill: "#1e2636" }),
-    win(166, 50, 28, 22, lit, "attic", null, true),
+    win(166, 50, 28, 22, lit && !dimAll, "attic", null, true),
     // 檐口：奶白石带 + 齿饰
     h("rect", { x: 24, y: 74, width: 312, height: 10, fill: "#e9e2d2" }),
     h("rect", { x: 24, y: 84, width: 312, height: 3, fill: "rgba(0,0,0,0.28)" }),
@@ -26057,8 +26117,8 @@ function BakerFacade(_refBF) {
     // 上层：砖墙 + 两扇高窗 + 花箱
     h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfBrick)" }),
     h("rect", { x: 30, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }), h("rect", { x: 324, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }),
-    win(68, 112, 56, 78, lit, "u0", h("text", { x: 96, y: 168, textAnchor: "middle", fontSize: 15 }, lit ? "🕯️" : "🎻")),
-    win(236, 112, 56, 78, lit && tick % 9 !== 0, "u1", h("text", { x: 264, y: 172, textAnchor: "middle", fontSize: 14 }, "🐈")),
+    win(68, 112, 56, 78, lit && !dimAll, "u0", h("text", { x: 96, y: 168, textAnchor: "middle", fontSize: 15 }, lit ? "🕯️" : "🎻")),
+    win(236, 112, 56, 78, lit && !dimAll && tick % 9 !== 0, "u1", h("text", { x: 264, y: 172, textAnchor: "middle", fontSize: 14 }, "🐈")),
     flowers(68, 200, 56), flowers(236, 200, 56),
     h("g", { onClick: goLondon, style: { cursor: "pointer", transformOrigin: "180px 91px", animation: "bfSwing 4.2s ease-in-out infinite" } },
       h("rect", { x: 142, y: 91, width: 76, height: 3, fill: "#0a0c10" }),
@@ -26076,26 +26136,31 @@ function BakerFacade(_refBF) {
     h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#1e2636", strokeWidth: 2.5 }),
     // 凸窗：三格
     h("rect", { x: 48, y: 230, width: 96, height: 8, fill: "#ddd5c3" }), h("rect", { x: 48, y: 238, width: 96, height: 2, fill: "rgba(0,0,0,0.22)" }),
-    win(58, 248, 80, 54, lit, "bay", h("g", null, h("rect", { x: 83, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("rect", { x: 110, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("text", { x: 98, y: 296, textAnchor: "middle", fontSize: 13 }, "🪴"))),
+    h("g", holdProps(PG.good),
+      win(58, 248, 80, 54, (lit && !dimAll) || glowBay, "bay", h("g", null, h("rect", { x: 83, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("rect", { x: 110, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("text", { x: 98, y: 296, textAnchor: "middle", fontSize: 13 }, "🪴"),
+        h("rect", { x: 63, y: 253, width: 32, height: 9, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6, style: holdingIs("good") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
+        h("text", { x: 79, y: 259.4, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#7a5a2a", fontFamily: "'PingFang SC',sans-serif" }, "今天还不错 ☀️")))),
     h("rect", { x: 46, y: 310, width: 100, height: 6, fill: "#ddd5c3" }),
     // 门套：柱 + 楣 + 扇形气窗 + 灯
     h("rect", { x: 170, y: 234, width: 100, height: 12, fill: "#e9e2d2" }), h("rect", { x: 166, y: 230, width: 108, height: 5, fill: "#f2ece0" }), h("rect", { x: 170, y: 246, width: 100, height: 2.5, fill: "rgba(0,0,0,0.25)" }),
     h("rect", { x: 176, y: 248, width: 12, height: 93, fill: "#e9e2d2" }), h("rect", { x: 252, y: 248, width: 12, height: 93, fill: "#e9e2d2" }),
     h("rect", { x: 174, y: 248, width: 16, height: 6, fill: "#ddd5c3" }), h("rect", { x: 250, y: 248, width: 16, height: 6, fill: "#ddd5c3" }),
     h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#0b0d12" }),
-    h("path", { d: "M191 282 a29 29 0 0 1 58 0 Z", fill: lit ? "url(#bfWarm)" : "#b8c6d2" }),
+    h("path", { d: "M191 282 a29 29 0 0 1 58 0 Z", fill: dimAll ? "#2a2f3a" : (lit || glowDoor) ? "url(#bfWarm)" : "#b8c6d2", style: glowDoor ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.95))" } : null }),
     h("path", { d: "M199 282 a21 21 0 0 1 42 0", fill: "none", stroke: "#f2ece0", strokeWidth: 1.4 }),
     [-2, -1, 0, 1, 2].map(function (i) { return h("line", { key: "fan" + i, x1: 220, y1: 282, x2: 220 + Math.sin(i * 0.5) * 29, y2: 282 - Math.cos(i * 0.5) * 29, stroke: "#f2ece0", strokeWidth: 1.6 }); }),
     h("rect", { x: 188, y: 282, width: 64, height: 3, fill: "#e9e2d2" }),
     // 门：原版黑门，六块门板、黄铜 221B、门环、信箱口、门把
     h("g", { onClick: goIn, style: { cursor: "pointer" } },
       h("g", { style: { transformOrigin: "191px 313px", transform: doorOpen ? "scaleX(0.1)" : "scaleX(1)", transition: "transform 0.55s cubic-bezier(.4,0,.2,1)" } },
-        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#111418", style: knock ? { animation: "bkKnock 0.5s ease" } : null }),
+        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#111418", style: (knock || doorShake) ? { animation: "bkKnock 0.5s ease" } : null }),
         [[195, 289, 22, 12], [223, 289, 22, 12], [195, 305, 22, 14], [223, 305, 22, 14], [195, 323, 22, 14], [223, 323, 22, 14]].map(function (p, i) {
           return h("rect", { key: "pn" + i, x: p[0], y: p[1], width: p[2], height: p[3], rx: 1, fill: "#171b22", stroke: "#06080c", strokeWidth: 1 });
         }),
         h("text", { x: 220, y: 300, textAnchor: "middle", fontSize: 8.5, fontWeight: "bold", fill: "url(#bfBrass)", fontFamily: "Georgia,serif", letterSpacing: 1.2 }, "221B"),
-        h("circle", { cx: 220, cy: 311, r: 3.4, fill: "none", stroke: "url(#bfBrass)", strokeWidth: 1.6 }),
+        h("g", holdProps(PG.knock),
+          h("circle", { cx: 220, cy: 311, r: 6, fill: "rgba(0,0,0,0.01)" }),
+          h("circle", { cx: 220, cy: 311, r: holdingIs("knock") ? 4.2 : 3.4, fill: "none", stroke: "url(#bfBrass)", strokeWidth: 1.6, style: holdingIs("knock") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.95))" } : null })),
         h("rect", { x: 212, y: 318, width: 16, height: 2.6, rx: 1.3, fill: "url(#bfBrass)" }),
         h("circle", { cx: 243, cy: 314, r: 1.9, fill: "url(#bfBrass)" })),
       doorOpen ? h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "url(#bfWarm)", opacity: 0.85 }) : null),
@@ -26103,7 +26168,7 @@ function BakerFacade(_refBF) {
     h("g", null,
       h("rect", { x: 262, y: 234, width: 10, height: 2, fill: "#141821" }), h("rect", { x: 270, y: 234, width: 1.6, height: 8, fill: "#141821" }),
       h("polygon", { points: "266,242 276,242 278,246 264,246", fill: "#141821" }),
-      h("rect", { x: 265, y: 246, width: 12, height: 14, rx: 1, fill: lit ? BK_WARM : "#cfd9e2", stroke: "#141821", strokeWidth: 1.2, style: lit ? { filter: "drop-shadow(0 0 7px rgba(255,220,140,0.95))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
+      h("rect", { x: 265, y: 246, width: 12, height: 14, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#cfd9e2", stroke: "#141821", strokeWidth: 1.2, style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 7px rgba(255,220,140,0.95))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
       h("polygon", { points: "264,260 278,260 271,265", fill: "#141821" })),
     // ✉️ 墙上的信箱：黑铁、圆顶、黄铜皇冠和 VR、投信口；有新信就露出一角
     h("g", { onClick: nanaGo221B, style: { cursor: "pointer" } },
@@ -26140,6 +26205,9 @@ function BakerFacade(_refBF) {
     h("circle", { cx: 258, cy: 300, r: 3.2, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 0.8, onClick: doKnock, style: { cursor: "pointer" } }),
     // 台阶 + 花盆 + 刮泥器
     h("rect", { x: 184, y: 341, width: 72, height: 6, fill: "#ddd5c3" }), h("rect", { x: 178, y: 347, width: 84, height: 6, fill: "#cfc7b5" }),
+    h("g", holdProps(PG.home),
+      h("rect", { x: 198, y: 341.5, width: 44, height: 7, rx: 1, fill: holdingIs("home") ? "#8a5a3a" : "#6b4a34", stroke: "#3a2416", strokeWidth: 0.6, style: holdingIs("home") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
+      h("text", { x: 220, y: 346.6, textAnchor: "middle", fontSize: 4.6, fontWeight: "bold", fill: "#f1e4c4", fontFamily: "'PingFang SC',sans-serif", letterSpacing: 0.6 }, "到家了 🏠")),
     [172, 262].map(function (px, i) { return h("g", { key: "pot" + i },
       h("circle", { cx: px + 7, cy: 322, r: 7, fill: "#3f7a4c" }), h("circle", { cx: px + 3, cy: 326, r: 5, fill: "#2f5a3a" }), h("circle", { cx: px + 11, cy: 326, r: 5, fill: "#4f8a5a" }),
       h("polygon", { points: (px) + ",330 " + (px + 14) + ",330 " + (px + 12) + ",342 " + (px + 2) + ",342", fill: "#a8623a" }), h("rect", { x: px - 1, y: 328, width: 16, height: 3.5, fill: "#b8734a" })); }),
@@ -26152,8 +26220,13 @@ function BakerFacade(_refBF) {
     // 煤气灯：细杆、横臂、尖顶灯罩
     h("rect", { x: 17, y: 262, width: 3, height: 92, fill: "#0a0c10" }), h("rect", { x: 11, y: 296, width: 15, height: 1.6, fill: "#0a0c10" }),
     h("polygon", { points: "12,252 26,252 19,244", fill: "#0a0c10" }),
-    h("rect", { x: 12.5, y: 252, width: 13, height: 12, rx: 1, fill: lit ? BK_WARM : "#cfd9e2", stroke: "#0a0c10", strokeWidth: 1, style: lit ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.9))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
-    h("circle", { cx: 19, cy: 242, r: 1.5, fill: "url(#bfBrass)" }));
+    h("rect", { x: 12.5, y: 252, width: 13, height: 12, rx: 1, fill: dimAll ? "#3a3f4a" : lit ? BK_WARM : "#cfd9e2", stroke: "#0a0c10", strokeWidth: 1, style: lit && !dimAll ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.9))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
+    h("circle", { cx: 19, cy: 242, r: 1.5, fill: "url(#bfBrass)" }),
+    h("g", holdProps(PG.bad),
+      h("rect", { x: 4, y: 236, width: 30, height: 120, fill: "rgba(0,0,0,0.01)" }),
+      h("rect", { x: 8, y: 300, width: 22, height: 13, rx: 1, fill: holdingIs("bad") ? "#f5c9cb" : "#f1e4c4", stroke: "#8a5a5a", strokeWidth: 0.6, transform: "rotate(-4 19 306)", style: holdingIs("bad") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
+      h("text", { x: 19, y: 305.5, textAnchor: "middle", fontSize: 4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 19 306)" }, "今天"),
+      h("text", { x: 19, y: 310.5, textAnchor: "middle", fontSize: 4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 19 306)" }, "有点长 🌧️")));
   var pill = function (t) { return h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, t); };
   return h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden" } },
     h("style", null,
@@ -26166,6 +26239,7 @@ function BakerFacade(_refBF) {
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
+      "@keyframes bfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
       "@keyframes bfRipple{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.2);opacity:0}}" +
       "@keyframes bfNote{0%{transform:translateY(0) rotate(-8deg);opacity:0}15%{opacity:1}100%{transform:translateY(-26px) rotate(10deg);opacity:0}}"),
     isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44], [66, 48]].map(function (p, i) {
@@ -26178,7 +26252,17 @@ function BakerFacade(_refBF) {
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
-      h("div", { style: { marginTop: 6, marginBottom: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine)),
+      h("div", { style: { marginTop: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine),
+      h("div", { style: { marginTop: 8, color: skyText, opacity: 0.55, fontSize: "0.62rem", fontWeight: 700 } }, "按住门垫、窗、门环或路灯，家里就亮一下 ✨"),
+      badOpen ? h("div", { style: { display: "flex", gap: 6, marginTop: 4 } },
+        LD_BAD_OPT.map(function (o) {
+          return h("button", { key: o.k, onClick: function () { setBadOpen(false); if (o.sit) { setPgMsg("那就坐一会儿，谁都不惊动 🫖"); setTimeout(function () { setPgMsg(""); }, 5000); } else sendPage(o); },
+            style: { flex: 1, border: "1.5px solid rgba(180,53,58,0.55)", background: "rgba(255,250,236,0.94)", color: "#b4353a", borderRadius: 10, padding: "7px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.66rem", cursor: "pointer", textAlign: "left" } },
+            h("div", null, o.e + " " + o.t), h("div", { style: { fontSize: "0.56rem", fontWeight: 600, opacity: 0.8, marginTop: 2 } }, o.d));
+        })) : null,
+      (pgSay || pgMsg) ? h("div", { style: { marginTop: 6, minHeight: 22 } },
+        pgSay ? h("div", { key: "say" + pgSay, style: { display: "inline-block", background: "rgba(253,246,232,0.94)", color: "#255f58", borderRadius: 9, padding: "6px 11px", fontSize: "0.74rem", fontWeight: 700, lineHeight: 1.5, fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive", animation: "bkRise 0.3s ease both" } }, "🪟 " + pgSay) : null,
+        pgMsg ? h("div", { style: { display: "inline-block", marginLeft: pgSay ? 6 : 0, background: "rgba(31,111,104,0.18)", color: BK_CREAM, borderRadius: 9, padding: "6px 11px", fontSize: "0.7rem", fontWeight: 800 } }, pgMsg) : null) : h("div", { style: { height: 6 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 2, padding: "0 26px" } },
       building,
