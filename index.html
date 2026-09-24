@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-250";
+var NANA_VER = "v2026.8.2-251";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -25378,6 +25378,10 @@ function NanaMixtapeCard(_refNM) {
   // 例: { ..., lrc: "[00:12.00]第一句\n[00:15.50]第二句" }  或  { ..., lyrics: "第一句\n第二句" }
   var _i = useState(0); var idx = _i[0]; var setIdx = _i[1];
   var _p = useState(false); var playing = _p[0]; var setPlaying = _p[1];
+  useEffect(function () {
+    NANA_MUSIC = playing ? (tracks[idx] ? tracks[idx].title : "♪") : "";
+    try { window.dispatchEvent(new Event("nana-music")); } catch (_) {}
+  }, [playing, idx]);
   var _pr = useState(0); var progress = _pr[0]; var setProgress = _pr[1];
   var _d = useState(0); var duration = _d[0]; var setDuration = _d[1];
   var _v = useState(0.8); var volume = _v[0]; var setVolume = _v[1];
@@ -25932,6 +25936,7 @@ function BakerHouse(_refBK) {
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
 var NANA_DOOR = false;                      // 正开着门口进来的那页安心（底部导航算小屋）
 var nanaSheet = function (k) { try { window.dispatchEvent(new CustomEvent("nana-sheet", { detail: k })); } catch (_) {} };
+var NANA_MUSIC = "";                        // 随身听正在放的歌名（没放就是空）
 var nanaGoCare = function () {
   ldWantTab = "care";
   try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
@@ -26777,6 +26782,12 @@ function NanasHome() {
     return function () { window.removeEventListener("nana-go-london", go); };
   }, []);
   var _sheet = useState(null); var sheet = _sheet[0], setSheet = _sheet[1];   // 屋里点开的抽屉：music / postcards / meal
+  var _mus = useState(""); var musicOn = _mus[0], setMusicOn = _mus[1];
+  useEffect(function () {
+    var on = function () { setMusicOn(NANA_MUSIC); };
+    window.addEventListener("nana-music", on);
+    return function () { window.removeEventListener("nana-music", on); };
+  }, []);
   useEffect(function () {
     var on = function (e) { setSheet(e && e.detail ? e.detail : null); };
     window.addEventListener("nana-sheet", on);
@@ -27002,6 +27013,9 @@ function NanasHome() {
         /*#__PURE__*/React.createElement(HKMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" }); } }),
         /*#__PURE__*/React.createElement(DisneyMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" }); } })) : null,
       sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MealCheckIn, null)) : null)),
+  nanaBakerOn() && musicOn && sheet !== "music" && !NANA_DOOR && /*#__PURE__*/React.createElement("div", { onClick: function () { setSheet("music"); }, title: musicOn, style: { position: "fixed", right: 14, bottom: "calc(86px + env(safe-area-inset-bottom,0px))", zIndex: 9980, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" } },
+    /*#__PURE__*/React.createElement("div", { style: { maxWidth: 140, background: "rgba(30,38,54,0.92)", color: "#fdf6e8", borderRadius: 999, padding: "5px 10px", fontSize: "0.62rem", fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", boxShadow: "0 4px 12px rgba(0,0,0,0.35)" } }, "♪ " + musicOn),
+    /*#__PURE__*/React.createElement("div", { style: { width: 46, height: 46, borderRadius: "50%", background: "radial-gradient(circle,#d9b45f 0 17%,#1e2636 18% 100%)", boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.14), 0 6px 16px rgba(0,0,0,0.45)", border: "2px solid #d9b45f", animation: "nanaSpin 2.4s linear infinite", flexShrink: 0 } })),
   /*#__PURE__*/React.createElement("main", {
     style: {
       padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
