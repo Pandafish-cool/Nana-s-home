@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-251";
+var NANA_VER = "v2026.8.2-252";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18564,6 +18564,7 @@ var ldBackHome = function () {
     if (p === "1") return true;
     if (p === "0") return false;
   } catch (_) {}
+  try { if (nanaBakerOn()) return true; } catch (_) {}   // 熊猫鱼开着 221B 门面，就已经是回家之后了
   try { return new Date() >= new Date(LD_HOME_AT); } catch (_) { return false; }
 };
 // 回家之后这间房换个名字（ROOMS 在上面已经定义好了）
