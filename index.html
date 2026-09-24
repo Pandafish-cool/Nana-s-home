@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-248";
+var NANA_VER = "v2026.8.2-249";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20612,7 +20612,12 @@ function LondonRoom(_refLD) {
   var h = React.createElement;
   var full = ldFullOpen();
   var _tb = useState(function () { var w = ldWantTab; ldWantTab = null; return w || "now"; }); var tab = _tb[0], setTab = _tb[1];
-  var _door = useState(function () { return ldBackHome() && tab === "care"; }); var door = _door[0], setDoor = _door[1];   // 从门口的传声筒进来的
+  var _door = useState(function () { return ldBackHome() && tab === "care"; }); var door = _door[0], setDoor = _door[1];   // 从门口进来的安心
+  useEffect(function () {
+    NANA_DOOR = !!door;
+    try { window.dispatchEvent(new Event("nana-door")); } catch (_) {}
+    return function () { NANA_DOOR = false; try { window.dispatchEvent(new Event("nana-door")); } catch (_) {} };
+  }, [door]);
   var _op = useState(function () {
     try {
       var k = "nana-london-open";
@@ -23790,10 +23795,10 @@ function LondonRoom(_refLD) {
       h("div", { style: { position: "absolute", right: -10, top: 6, fontSize: 96, lineHeight: 1, opacity: 0.08, transform: "rotate(-12deg)", pointerEvents: "none" } }, "📻"),
       h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
         h("button", { onClick: onBack, style: { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer" } }, "← 回门口"),
-        h("button", { onClick: function () { setDoor(false); setToolsOpen(false); try { window.scrollTo(0, 0); } catch (_) {} }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(253,246,232,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "翻开四十二天 →")),
+        h("div", { style: { marginLeft: "auto", color: "rgba(253,246,232,0.6)", fontSize: "0.62rem", fontWeight: 800, letterSpacing: 1 } }, "🏡 小屋")),
       h("div", { style: { marginTop: 18, color: "#d9b45f", fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
       h("div", { style: { marginTop: 4, color: "#fdf6e8", fontSize: "1.5rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.04em" } }, "安心"),
-      h("div", { style: { marginTop: 4, color: "rgba(253,246,232,0.72)", fontSize: "0.74rem", fontWeight: 700 } }, "短波和每一条记录都在这儿 · 伦敦那些卡还在四十二天的工具箱里")),
+      h("div", { style: { marginTop: 4, color: "rgba(253,246,232,0.72)", fontSize: "0.74rem", fontWeight: 700 } }, "家里的安心。短波和每一条记录都在这儿；伦敦那份还在四十二天的工具箱里，不混在一起")),
     h("div", { style: { padding: "0 14px 24px", marginTop: -26 } }, voCard()));
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
@@ -24516,7 +24521,8 @@ function BottomNav(_ref135) {
     _useState316 = _slicedToArray(_useState315, 2),
     drawerOpen = _useState316[0],
     setDrawerOpen = _useState316[1];
-  var pinned = ["living", "london", "basement", "gaming"];
+  var baker = nanaBakerOn();
+  var pinned = baker ? ["living", "basement", "gaming"] : ["living", "london", "basement", "gaming"];
   var pinnedRooms = rooms.filter(function (r) {
     return pinned.includes(r.id);
   });
@@ -24527,7 +24533,7 @@ function BottomNav(_ref135) {
     });
   }
   var moreRooms = rooms.filter(function (r) {
-    return !pinned.includes(r.id);
+    return !pinned.includes(r.id) && !(baker && r.id === "london");   // 四十二天从屋里那幅画进
   });
   var isMore = room && moreRooms.some(function (r) {
     return r.id === room.id;
@@ -24695,7 +24701,7 @@ function BottomNav(_ref135) {
       key: "home",
       emoji: "\uD83C\uDFE1",
       label: ldHome ? "\u5c0f\u5c4b" : "\u9996\u9875",
-      active: !room,
+      active: !room || NANA_DOOR,
       onClick: onHome
     });
     var roomBtns = pinnedRooms.map(function (r) {
@@ -25710,7 +25716,7 @@ function BakerHouse(_refBK) {
     return function () {
       if (id === "sitting") return;
       if (id === "london") { try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} return; }
-      if (id === "letters") { try { window.dispatchEvent(new Event("nana-go-221b")); } catch (_) {} return; }
+      if (id === "letters") { nanaGo221B(); return; }
       var r = bkRoom(id); if (r && onEnter) onEnter(r);
     };
   };
@@ -25913,6 +25919,7 @@ function BakerHouse(_refBK) {
 }
 // ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
+var NANA_DOOR = false;                      // 正开着门口进来的那页安心（底部导航算小屋）
 var nanaGoCare = function () {
   ldWantTab = "care";
   try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
@@ -26757,6 +26764,12 @@ function NanasHome() {
     window.addEventListener("nana-go-london", go);
     return function () { window.removeEventListener("nana-go-london", go); };
   }, []);
+  var _doorTick = useState(0); var setDoorTick = _doorTick[1];
+  useEffect(function () {
+    var bump = function () { setDoorTick(function (n) { return n + 1; }); };
+    window.addEventListener("nana-door", bump);
+    return function () { window.removeEventListener("nana-door", bump); };
+  }, []);
   var _useState327 = useState(20),
     _useState328 = _slicedToArray(_useState327, 2),
     cozy = _useState328[0],
@@ -26881,7 +26894,7 @@ function NanasHome() {
       alignItems: "center",
       gap: 6
     }
-  }, "🔋 Nana 的充电站", /*#__PURE__*/React.createElement("span", {
+  }, nanaBakerOn() ? "📮 明信片 · 充电站" : "🔋 Nana 的充电站", /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: "0.68rem",
       fontWeight: 600,
@@ -26944,7 +26957,7 @@ function NanasHome() {
         desc: "昨天的迪士尼"
       });
     }
-  })))), home && /*#__PURE__*/React.createElement("div", {
+  })))), home && !nanaBakerOn() && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 0"
     }
