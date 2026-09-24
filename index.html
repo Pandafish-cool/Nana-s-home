@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-252";
+var NANA_VER = "v2026.8.2-253";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -25660,6 +25660,14 @@ var bkHuntToday = function () {
 var bkCaseNo = function (item) { for (var i = 0; i < BK_HUNT.length; i++) { if (BK_HUNT[i].id === item.id) return i + 1; } return 0; };
 var bkRoom = function (id) { for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === id) return ROOMS[i]; } return null; };
 var BK_KNOCK = ["Hudson 太太：来了来了，别敲了", "门里传来小提琴声。他在想事情。", "「进来吧，门没锁。」", "楼梯有十七级。他数过。", "门后面贴着一张纸：Nana 的家，闲人免进 🐈"];
+var BK_SUB = [
+  { to: 5,  s: "夜深了，屋里的灯给你留着，别想太多 🌙" },
+  { to: 9,  s: "早安。雾还没散，慢慢来，先吃早饭 🍳" },
+  { to: 13, s: "上午好呀。今天怎么样？中午记得吃饭，这是命令 🌸" },
+  { to: 17, s: "下午了，累了就在窗边坐坐，你已经很稳了 🌿" },
+  { to: 20, s: "下班啦，欢迎回家。壁炉生好了，进来暖一暖 🔥" },
+  { to: 24, s: "晚上好，Nana。今天怎么样？外面的事都留在门口了 ✨" }
+];
 var BK_GREET = [
   { to: 5,  a: ["Nana，还没睡？灯给你留着", "夜里的贝克街很安静", "这个点了，上楼躺下吧"] },
   { to: 9,  a: ["早，Nana ☀️ 雾还没散", "Hudson 太太在楼下煎蛋", "今天想先去哪间屋"] },
@@ -25966,6 +25974,8 @@ function BakerFacade(_refBF) {
   var skyText = isNight || isDusk || isDawn ? BK_CREAM : "#2b3446";
   var justHome = (function () { try { return ldBackHome() && now < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
   var greets = justHome ? ["欢迎回家，Nana 🏡", "四十二天，你回来了", "这次是真的到家了"] : (function () { for (var i = 0; i < BK_GREET.length; i++) { if (hr < BK_GREET[i].to) return BK_GREET[i].a; } return BK_GREET[0].a; })();
+  var subLine = justHome ? "伦敦的四十二天收好了，都在屋里。今天怎么样？📖" : (function () { for (var i = 0; i < BK_SUB.length; i++) { if (hr < BK_SUB[i].to) return BK_SUB[i].s; } return BK_SUB[0].s; })();
+  var goLondon = function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} };
   useEffect(function () {
     var id = setInterval(function () { setFade(false); setTimeout(function () { setMsg(function (i) { return i + 1; }); setFade(true); }, 350); }, 3800);
     var id2 = setInterval(function () { setTick(function (t) { return t + 1; }); }, 900);
@@ -26050,6 +26060,14 @@ function BakerFacade(_refBF) {
     win(68, 112, 56, 78, lit, "u0", h("text", { x: 96, y: 168, textAnchor: "middle", fontSize: 15 }, lit ? "🕯️" : "🎻")),
     win(236, 112, 56, 78, lit && tick % 9 !== 0, "u1", h("text", { x: 264, y: 172, textAnchor: "middle", fontSize: 14 }, "🐈")),
     flowers(68, 200, 56), flowers(236, 200, 56),
+    h("g", { onClick: goLondon, style: { cursor: "pointer", transformOrigin: "180px 91px", animation: "bfSwing 4.2s ease-in-out infinite" } },
+      h("rect", { x: 142, y: 91, width: 76, height: 3, fill: "#0a0c10" }),
+      h("line", { x1: 152, y1: 94, x2: 152, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }), h("line", { x1: 208, y1: 94, x2: 208, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }),
+      h("rect", { x: 142, y: 104, width: 76, height: 42, rx: 3, fill: "#1a2238", stroke: "url(#bfBrass)", strokeWidth: 2.2 }),
+      h("rect", { x: 145.5, y: 107.5, width: 69, height: 35, rx: 2, fill: "none", stroke: "rgba(217,180,95,0.45)", strokeWidth: 0.8 }),
+      h("text", { x: 180, y: 123, textAnchor: "middle", fontSize: 13 }, "🎡"),
+      h("text", { x: 180, y: 133, textAnchor: "middle", fontSize: 4.4, fill: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: "bold", letterSpacing: 0.9 }, "THE LONDON DAYS"),
+      h("text", { x: 180, y: 140.5, textAnchor: "middle", fontSize: 5.4, fill: "#fdf6e8", fontWeight: "bold", fontFamily: "'PingFang SC',sans-serif" }, "伦敦的四十二天 →")),
     // 楼层线
     h("rect", { x: 24, y: 213, width: 312, height: 8, fill: "#e9e2d2" }), h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
@@ -26147,6 +26165,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(120px) scaleX(1)}50%{transform:translateX(120px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
       "@keyframes bfRipple{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.2);opacity:0}}" +
       "@keyframes bfNote{0%{transform:translateY(0) rotate(-8deg);opacity:0}15%{opacity:1}100%{transform:translateY(-26px) rotate(10deg);opacity:0}}"),
     isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44], [66, 48]].map(function (p, i) {
@@ -26154,14 +26173,14 @@ function BakerFacade(_refBF) {
     }) : null,
     isNight ? h("div", { style: { position: "absolute", right: 26, top: 22, width: 30, height: 30, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 24px rgba(243,233,184,0.6)" } }) : null,
     // 问候
-    h("div", { style: { position: "relative", zIndex: 1, padding: "calc(14px + env(safe-area-inset-top,0px)) 18px 0" } },
+    h("div", { style: { position: "relative", zIndex: 1, padding: "calc(22px + env(safe-area-inset-top,0px)) 18px 0" } },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
-      h("div", { style: { height: 8 } })),
+      h("div", { style: { marginTop: 6, marginBottom: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine)),
     // 楼
-    h("div", { style: { position: "relative", marginTop: 6, padding: "0 6px" } },
+    h("div", { style: { position: "relative", marginTop: 2, padding: "0 26px" } },
       building,
       // 门口能点的都画在楼里了：门 → 进屋，信箱 → 221B 的信，短波 → 安心，门铃 → 敲门
       knock ? h("div", { style: { position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%)", background: "rgba(253,246,232,0.96)", color: "#22303f", fontSize: "0.7rem", fontWeight: 700, lineHeight: 1.5, padding: "7px 11px", borderRadius: 10, zIndex: 4, whiteSpace: "nowrap", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", animation: "bkRise 0.3s ease both" } }, knock) : null,
