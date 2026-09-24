@@ -23784,7 +23784,7 @@ function LondonRoom(_refLD) {
         h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#8a6a2e" } }, toolsOpen ? "收起 ▲" : "展开 ▼")));
     memoir = h("div", null, cover, numbers, days, momentCard, wallSection, photos, lastPage, toolbox);
   }
-  // 门口进来的安心页：内容一样不少，只是换了 221B 的壳
+  // 门口进来的安心页：只有短波和它的记录；哮喘、路线那些伦敦的卡还留在伦敦那间房的安心里
   var doorPage = h("div", { style: { margin: "calc(-16px - env(safe-area-inset-top,0px)) -16px 0", background: "#e9e1d1", minHeight: "100vh" } },
     h("div", { style: { background: "linear-gradient(180deg,#1e2636,#2b3446)", padding: "calc(12px + env(safe-area-inset-top,0px)) 16px 44px", position: "relative", overflow: "hidden" } },
       h("div", { style: { position: "absolute", right: -10, top: 6, fontSize: 96, lineHeight: 1, opacity: 0.08, transform: "rotate(-12deg)", pointerEvents: "none" } }, "📻"),
@@ -23793,8 +23793,8 @@ function LondonRoom(_refLD) {
         h("button", { onClick: function () { setDoor(false); setToolsOpen(false); try { window.scrollTo(0, 0); } catch (_) {} }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(253,246,232,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "翻开四十二天 →")),
       h("div", { style: { marginTop: 18, color: "#d9b45f", fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
       h("div", { style: { marginTop: 4, color: "#fdf6e8", fontSize: "1.5rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.04em" } }, "安心"),
-      h("div", { style: { marginTop: 4, color: "rgba(253,246,232,0.72)", fontSize: "0.74rem", fontWeight: 700 } }, "短波、哪天提不起劲、一个人的晚上，都原样在这儿，记录都留着")),
-    h("div", { style: { padding: "0 14px 24px", marginTop: -26 } }, careTab));
+      h("div", { style: { marginTop: 4, color: "rgba(253,246,232,0.72)", fontSize: "0.74rem", fontWeight: 700 } }, "短波和每一条记录都在这儿 · 伦敦那些卡还在四十二天的工具箱里")),
+    h("div", { style: { padding: "0 14px 24px", marginTop: -26 } }, voCard()));
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
