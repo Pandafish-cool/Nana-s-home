@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-264";
+var NANA_VER = "v2026.8.2-265";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26514,8 +26514,6 @@ function BakerFacade(_refBF) {
 function HomeShelf(_refHS) {
   var h = React.createElement;
   var onEnter = _refHS.onEnter, cozy = _refHS.cozy || 0, onCharge = _refHS.onCharge;
-  var _zap = useState(0); var zap = _zap[0], setZap = _zap[1];
-  var charge = function () { if (onCharge) onCharge(10); setZap(function (n) { return n + 1; }); };
   var _n = useState(function () { return (NANA_SHARED_ROWS || []).length ? NANA_SHARED_ROWS.filter(function (x) { return x && x.th !== "call" && (x.created_at || "").slice(0, 10) >= LD_DEPART; }).length : 0; });
   var nLetters = _n[0], setN = _n[1];
   useEffect(function () {
@@ -26523,45 +26521,91 @@ function HomeShelf(_refHS) {
   }, []);
   var nPlaces = LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; }).length;
   var goLondon = function () { try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} };
-  var ALBUMS = [
-    { id: "meisha", e: "🏖️", t: "大梅沙", s: "上周五的海边", c: "#1a4a5c", c2: "#2a6a7c", room: { id: "meisha", emoji: "🏖️", name: "大梅沙", color: "#1a4a5c", desc: "上周五的海边" } },
-    { id: "travel", e: "🚢", t: "香港", s: "昨天的香港", c: "#0C6780", c2: "#1a86a0", room: { id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" } },
-    { id: "disney", e: "🏰", t: "迪士尼", s: "昨天的迪士尼", c: "#5a3a8a", c2: "#7a52b0", room: { id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" } }
-  ];
-  var spine = function (a, i) {
-    return h("div", { key: a.id, onClick: function () { if (onEnter) onEnter(a.room); }, style: { position: "relative", flex: "0 0 auto", width: 62, height: 118 + (i % 2) * 8, alignSelf: "flex-end", background: "linear-gradient(90deg," + a.c + "," + a.c2 + " 55%," + a.c + ")", borderRadius: "4px 4px 2px 2px", boxShadow: "inset 2px 0 0 rgba(255,255,255,0.18), inset -3px 0 0 rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.35)", color: "#fdf6e8", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "10px 0 8px", cursor: "pointer", transform: "rotate(" + (i === 1 ? -3 : 0) + "deg)", transformOrigin: "bottom center" } },
-      h("div", { style: { fontSize: 20, lineHeight: 1 } }, a.e),
-      h("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 2, fontWeight: 900, fontSize: "0.8rem", fontFamily: "Georgia,'PingFang SC',serif", lineHeight: 1.1 } }, a.t.split("").map(function (ch, k) { return h("span", { key: k }, ch); })),
-      h("div", { style: { width: 30, height: 3, borderRadius: 2, background: "rgba(217,180,95,0.7)" } }),
-      h("div", { style: { position: "absolute", left: "50%", bottom: -14, width: 2, height: 14, marginLeft: -1, background: "#d9b45f", opacity: 0.85 } }));
+  // 充电：插上电就一格一格涨；每段回忆也是一节电池，点一下吸一口
+  var _zp = useState(false); var zapping = _zp[0], setZapping = _zp[1];
+  var _fl = useState([]); var floats = _fl[0], setFloats = _fl[1];
+  var _pr = useState(""); var purr = _pr[0], setPurr = _pr[1];
+  var _fx = useState(""); var fx = _fx[0], setFx = _fx[1];       // 刚点过哪节电池（火花）
+  var full = cozy >= 100;
+  var say = function (txt, x) {
+    var id = Date.now() + Math.random();
+    setFloats(function (o) { return o.concat([{ id: id, t: txt, x: x }]); });
+    setTimeout(function () { setFloats(function (o) { return o.filter(function (f) { return f.id !== id; }); }); }, 1500);
   };
+  var plug = function () {
+    if (zapping) return;
+    if (full) { say("已经满了，去玩吧 ✨", 50); return; }
+    setZapping(true);
+    setPurr(["呼噜噜～", "咕噜咕噜", "嗯……舒服", "再充一会儿"][Math.floor(Math.random() * 4)]);
+    var k = 0;
+    var t = setInterval(function () {
+      k++;
+      if (onCharge) onCharge(2);
+      if (k >= 5) { clearInterval(t); setZapping(false); say("+10 ⚡", 42); setTimeout(function () { setPurr(""); }, 1800); }
+    }, 220);
+  };
+  var CELLS = [
+    { id: "meisha", e: "🏖️", t: "大梅沙", line: "海边的风 +5", c: "#2a8fa6", c2: "#1a5c6e", room: { id: "meisha", emoji: "🏖️", name: "大梅沙", color: "#1a4a5c", desc: "上周五的海边" } },
+    { id: "travel", e: "🚢", t: "香港", line: "维港的夜 +5", c: "#2fa3c4", c2: "#0C6780", room: { id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" } },
+    { id: "disney", e: "🏰", t: "迪士尼", line: "城堡的烟花 +5", c: "#8a5ec4", c2: "#5a3a8a", room: { id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" } },
+    { id: "london", e: "📖", t: LD_BOOK, line: "四十二天的伦敦 +8", c: "#d9b45f", c2: "#8f6d22", london: 1 }
+  ];
+  var sip = function (c, i) {
+    if (full) { say("满了满了 ✨", 20 + i * 20); return; }
+    if (onCharge) onCharge(c.london ? 8 : 5);
+    setFx(c.id); setTimeout(function () { setFx(""); }, 700);
+    say(c.line, 16 + i * 22);
+  };
+  var open = function (c, e) { if (e && e.stopPropagation) e.stopPropagation(); if (c.london) goLondon(); else if (onEnter) onEnter(c.room); };
+  var cell = function (c, i) {
+    var hot = fx === c.id;
+    return h("div", { key: c.id, onClick: function () { sip(c, i); }, style: { flex: "1 1 0", minWidth: 0, position: "relative", background: "linear-gradient(180deg," + c.c + "," + c.c2 + ")", borderRadius: 10, padding: "12px 4px 8px", textAlign: "center", color: "#fdf6e8", cursor: "pointer", boxShadow: hot ? "0 0 0 3px rgba(255,220,120,0.55), 0 8px 18px rgba(0,0,0,0.4)" : "inset 0 -3px 0 rgba(0,0,0,0.25), 0 6px 12px rgba(0,0,0,0.35)", transform: hot ? "translateY(-4px) scale(1.04)" : "none", transition: "transform 0.18s, box-shadow 0.18s", border: c.london ? "1.5px solid #f3dc9a" : "1.5px solid rgba(255,255,255,0.14)" } },
+      // 电池的正极
+      h("div", { style: { position: "absolute", left: "50%", top: -5, width: 18, height: 6, marginLeft: -9, background: c.london ? "#f3dc9a" : "rgba(255,255,255,0.7)", borderRadius: "3px 3px 0 0" } }),
+      h("div", { style: { fontSize: 24, lineHeight: 1, filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.4))", animation: hot ? "hsSip 0.5s ease" : "none" } }, c.e),
+      h("div", { style: { fontWeight: 900, fontSize: c.london ? "0.62rem" : "0.74rem", marginTop: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: "Georgia,'PingFang SC',serif" } }, c.t),
+      h("div", { style: { fontSize: "0.52rem", opacity: 0.8, marginTop: 2 } }, "点一下吸口电"),
+      h("div", { onClick: function (e) { open(c, e); }, style: { marginTop: 7, display: "inline-block", fontSize: "0.56rem", fontWeight: 900, background: "rgba(0,0,0,0.28)", borderRadius: 999, padding: "3px 8px", color: c.london ? "#f3dc9a" : "#fdf6e8" } }, c.london ? "翻开 →" : "进去 →"),
+      hot ? [0, 1, 2, 3, 4].map(function (k) { return h("div", { key: k, style: { position: "absolute", left: "50%", top: "30%", width: 4, height: 4, borderRadius: "50%", background: "#ffe08a", animation: "hsSpark 0.6s ease-out both", transform: "rotate(" + (k * 72) + "deg) translateY(-18px)" } }); }) : null);
+  };
+  var level = Math.max(0, Math.min(100, cozy));
   return h("div", { style: { padding: "14px 16px 4px" } },
+    h("style", null,
+      "@keyframes hsSip{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-8deg)}100%{transform:scale(1)}}" +
+      "@keyframes hsSpark{0%{opacity:1}100%{opacity:0;transform:rotate(0deg) translateY(-34px)}}" +
+      "@keyframes hsFloat{0%{opacity:0;transform:translateY(6px)}20%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}" +
+      "@keyframes hsBolt{0%{left:6%;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:78%;opacity:0}}" +
+      "@keyframes hsWave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}" +
+      "@keyframes hsBubble{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-26px);opacity:0}}" +
+      "@keyframes hsPurr{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}"),
     h("div", { style: { fontSize: "0.84rem", fontWeight: 800, color: COLORS.brown, marginBottom: 9, display: "flex", alignItems: "center", gap: 6 } }, "🔋 Nana 的充电站",
-      h("span", { style: { fontSize: "0.68rem", fontWeight: 600, color: "#b0a090" } }, "· 随时回来回血 💛")),
-    h("div", { style: { position: "relative", background: "linear-gradient(180deg,#2b3446,#1e2636)", borderRadius: 16, padding: "16px 12px 0", boxShadow: "0 12px 28px rgba(28,42,68,0.35)", overflow: "hidden" } },
+      h("span", { style: { fontSize: "0.68rem", fontWeight: 600, color: "#b0a090" } }, "· 回忆是电，随时回来回血 💛")),
+    h("div", { style: { position: "relative", background: "linear-gradient(180deg,#2b3446,#1e2636)", borderRadius: 16, padding: "14px 12px 12px", boxShadow: "0 12px 28px rgba(28,42,68,0.35)", overflow: "hidden" } },
       h("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(244,239,227,0.06) 1px, transparent 1.2px)", backgroundSize: "16px 16px", pointerEvents: "none" } }),
-      h("div", { style: { display: "flex", alignItems: "flex-end", gap: 10, height: 156, position: "relative" } },
-        // 伦敦那本：最厚的一本，封面朝外
-        h("div", { onClick: goLondon, style: { flex: "0 0 auto", width: 128, height: 150, background: "linear-gradient(165deg,#1c2a44,#2f5470)", border: "2px solid #d9b45f", borderRadius: "3px 8px 8px 3px", boxShadow: "inset 6px 0 0 #d9b45f, inset 9px 0 0 #1c2a44, 0 8px 18px rgba(0,0,0,0.45)", color: "#f4efe3", padding: "10px 10px 10px 18px", boxSizing: "border-box", cursor: "pointer", position: "relative" } },
-          h("div", { style: { fontSize: "0.5rem", letterSpacing: "0.3em", color: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", fontWeight: 700 } }, LD_BOOK_EN),
-          h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 900, fontSize: "0.98rem", marginTop: 4, letterSpacing: "0.02em", whiteSpace: "nowrap" } }, LD_BOOK),
-          h("div", { style: { display: "flex", gap: 3, marginTop: 8 } }, LD_COVER_PICS.slice(0, 3).map(function (f, i) {
-            return h("div", { key: f, style: { width: 30, background: "#fff", padding: "2px 2px 5px", borderRadius: 1, transform: "rotate(" + ((i % 2 ? 1 : -1) * 3) + "deg)", boxShadow: "0 3px 6px rgba(0,0,0,0.35)" } },
-              h("img", { src: "ld/" + f + "_t.jpg", alt: "", style: { width: "100%", height: 24, objectFit: "cover", display: "block" } }));
-          })),
-          h("div", { style: { position: "absolute", left: 18, right: 10, bottom: 9, fontSize: "0.56rem", color: "rgba(244,239,227,0.8)", display: "flex", justifyContent: "space-between" } },
-            h("span", null, "✉️ " + (nLetters || "…") + " · 📍 " + nPlaces), h("span", { style: { color: "#f0c46a", fontWeight: 900 } }, "翻开 →"))),
-        ALBUMS.map(spine),
-        h("div", { style: { position: "absolute", right: 4, bottom: 0, fontSize: 18, lineHeight: 1 } }, "🐈")),
-      // 木架 + 插线板：每本都插着电，底下一条 Nana 的电量
-      h("div", { style: { height: 12, margin: "0 -12px", background: "linear-gradient(180deg,#8a6a48,#5a4230)", boxShadow: "0 -2px 0 rgba(0,0,0,0.25)" } }),
-      h("div", { style: { margin: "0 -12px", padding: "8px 14px 12px", background: "#1e2636", display: "flex", alignItems: "center", gap: 10 } },
-        h("div", { style: { display: "flex", gap: 6, flexShrink: 0 } }, [0, 1, 2, 3].map(function (k) { return h("div", { key: k, style: { width: 10, height: 12, borderRadius: 2, background: "#3a4358", boxShadow: "inset 0 0 0 1px rgba(217,180,95,0.35)", position: "relative" } }, h("div", { style: { position: "absolute", left: 3, top: 3, width: 4, height: 1.5, background: "#d9b45f", boxShadow: "0 3px 0 #d9b45f" } })); })),
-        h("div", { style: { flex: 1, minWidth: 0 } },
-          h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.6rem", fontWeight: 800, color: "rgba(253,246,232,0.75)" } }, h("span", null, "Nana 的电量"), h("span", { style: { color: "#f0c46a" } }, cozy + "%")),
-          h("div", { style: { marginTop: 4, height: 8, borderRadius: 999, background: "rgba(255,255,255,0.1)", overflow: "hidden", boxShadow: "inset 0 0 0 1px rgba(217,180,95,0.35)" } },
-            h("div", { style: { width: Math.max(4, Math.min(100, cozy)) + "%", height: "100%", borderRadius: 999, background: "linear-gradient(90deg,#f0c46a,#8fd16a)", transition: "width 0.6s cubic-bezier(.2,1,.4,1)", boxShadow: cozy >= 100 ? "0 0 10px #8fd16a" : "none" } }))),
-        h("button", { onClick: charge, style: { flexShrink: 0, border: "1.5px solid rgba(217,180,95,0.6)", background: "rgba(217,180,95,0.14)", color: "#f0c46a", borderRadius: 999, padding: "6px 11px", fontFamily: "inherit", fontWeight: 900, fontSize: "0.7rem", cursor: "pointer", whiteSpace: "nowrap" } }, cozy >= 100 ? "⚡ 满了" : "⚡ 充一下"))));
+      // 上面：插座 → 电线 → 大电池（一罐暖意），猫趴在旁边
+      h("div", { style: { position: "relative", display: "flex", alignItems: "center", gap: 8, height: 92 } },
+        h("div", { onClick: plug, style: { flexShrink: 0, width: 34, height: 44, background: "#e9e2d2", borderRadius: 6, boxShadow: "inset 0 0 0 2px #cfc7b5, 0 4px 8px rgba(0,0,0,0.4)", position: "relative", cursor: "pointer" } },
+          h("div", { style: { position: "absolute", left: 9, top: 12, width: 4, height: 8, background: "#3a3a3a", borderRadius: 1 } }), h("div", { style: { position: "absolute", right: 9, top: 12, width: 4, height: 8, background: "#3a3a3a", borderRadius: 1 } }),
+          h("div", { style: { position: "absolute", left: 14, top: 26, width: 6, height: 6, background: "#3a3a3a", borderRadius: 1 } }),
+          h("div", { style: { position: "absolute", left: 0, right: 0, bottom: -14, textAlign: "center", fontSize: "0.5rem", fontWeight: 800, color: "rgba(253,246,232,0.7)", whiteSpace: "nowrap" } }, zapping ? "充着呢" : "点插座")),
+        h("div", { style: { flex: 1, position: "relative", height: 6 } },
+          h("div", { style: { position: "absolute", left: 0, right: 0, top: 2, height: 3, background: "#4a5368", borderRadius: 2 } }),
+          zapping ? [0, 1, 2].map(function (k) { return h("div", { key: k, style: { position: "absolute", top: -6, fontSize: 12, lineHeight: 1, animation: "hsBolt 0.7s linear " + (k * 0.23) + "s infinite" } }, "⚡"); }) : null),
+        // 那罐暖意
+        h("div", { onClick: plug, style: { flexShrink: 0, width: 66, height: 84, borderRadius: "10px 10px 14px 14px", background: "rgba(255,255,255,0.08)", border: "2.5px solid " + (full ? "#8fd16a" : "#d9b45f"), position: "relative", overflow: "hidden", cursor: "pointer", boxShadow: full ? "0 0 16px rgba(143,209,106,0.7)" : "0 6px 14px rgba(0,0,0,0.4)" } },
+          h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: level + "%", background: full ? "linear-gradient(180deg,#b7ec8a,#6fbf5a)" : "linear-gradient(180deg,#ffd98a,#f0a64a)", transition: "height 0.5s cubic-bezier(.2,1,.4,1)" } },
+            h("div", { style: { position: "absolute", left: 0, top: -6, width: "200%", height: 12, background: "radial-gradient(circle at 10px 6px, " + (full ? "#c9f3a0" : "#ffe9b0") + " 6px, transparent 7px) 0 0/20px 12px repeat-x", animation: "hsWave 1.6s linear infinite", opacity: 0.9 } }),
+            zapping ? [0, 1, 2, 3].map(function (k) { return h("div", { key: k, style: { position: "absolute", left: (12 + k * 14) + "px", bottom: 4, width: 5, height: 5, borderRadius: "50%", background: "rgba(255,255,255,0.7)", animation: "hsBubble 0.9s ease-out " + (k * 0.2) + "s infinite" } }); }) : null),
+          h("div", { style: { position: "absolute", left: 0, right: 0, top: 6, textAlign: "center", fontWeight: 900, fontSize: "0.98rem", color: "#fdf6e8", textShadow: "0 1px 3px rgba(0,0,0,0.5)", fontFamily: "Georgia,serif" } }, level + "%"),
+          h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 5, textAlign: "center", fontSize: "0.5rem", fontWeight: 800, color: "rgba(253,246,232,0.85)" } }, full ? "满电 ✨" : "暖意")),
+        h("div", { style: { flexShrink: 0, width: 44, textAlign: "center", position: "relative" } },
+          h("div", { style: { fontSize: 26, lineHeight: 1, animation: zapping ? "hsPurr 0.5s ease-in-out infinite" : "none" } }, zapping ? "😽" : "🐈"),
+          purr ? h("div", { style: { position: "absolute", left: "50%", top: -20, transform: "translateX(-50%)", background: "#fdf6e8", color: "#4a3f30", fontSize: "0.56rem", fontWeight: 800, borderRadius: 8, padding: "3px 6px", whiteSpace: "nowrap", animation: "bkRise 0.3s ease both" } }, purr) : null),
+        // 飘上去的字
+        floats.map(function (f) { return h("div", { key: f.id, style: { position: "absolute", left: f.x + "%", top: 10, fontSize: "0.72rem", fontWeight: 900, color: "#ffe08a", textShadow: "0 1px 3px rgba(0,0,0,0.6)", animation: "hsFloat 1.5s ease-out both", pointerEvents: "none", whiteSpace: "nowrap" } }, f.t); })),
+      // 下面：四节回忆电池
+      h("div", { style: { position: "relative", display: "flex", gap: 8, marginTop: 20 } }, CELLS.map(cell)),
+      h("div", { style: { position: "relative", marginTop: 10, fontSize: "0.58rem", color: "rgba(253,246,232,0.55)", textAlign: "center" } }, "点插座充一下 · 点回忆吸一口 · 翻开进去看")));
 }
 function HomeDeck(_refHD) {
   var h = React.createElement;
