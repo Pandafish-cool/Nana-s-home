@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-256";
+var NANA_VER = "v2026.8.2-257";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26089,7 +26089,7 @@ function BakerFacade(_refBF) {
     for (var j = 0; j < 8; j++) out.push(h("circle", { key: "l" + j, cx: x + j * w / 7, cy: y + 1, r: 2.4, fill: "#4f8a5a" }));
     return h("g", null, out);
   };
-  var building = h("svg", { viewBox: "0 0 360 420", style: { width: "100%", display: "block", overflow: "visible" } },
+  var building = h("svg", { viewBox: "7 0 346 420", style: { width: "100%", display: "block", overflow: "visible" } },
     h("defs", null,
       h("linearGradient", { id: "bfWarm", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe9b8" }), h("stop", { offset: "100%", stopColor: "#f0b65e" })),
       h("linearGradient", { id: "bfDay", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d4e0ea" }), h("stop", { offset: "100%", stopColor: "#93a9bc" })),
@@ -26234,9 +26234,9 @@ function BakerFacade(_refBF) {
     h("circle", { cx: 19, cy: 242, r: 1.5, fill: "url(#bfBrass)" }),
     h("g", holdProps(PG.bad),
       h("rect", { x: 4, y: 236, width: 30, height: 120, fill: "rgba(0,0,0,0.01)" }),
-      h("rect", { x: 3, y: 298, width: 32, height: 17, rx: 1, fill: holdingIs("bad") ? "#f5c9cb" : "#f1e4c4", stroke: "#8a5a5a", strokeWidth: 0.6, transform: "rotate(-4 19 306)", style: holdingIs("bad") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
-      h("text", { x: 19, y: 305, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 19 306)" }, "今天"),
-      h("text", { x: 19, y: 311.6, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 19 306)" }, "有点长 🌧️")));
+      h("rect", { x: 8, y: 298, width: 30, height: 17, rx: 1, fill: holdingIs("bad") ? "#f5c9cb" : "#f1e4c4", stroke: "#8a5a5a", strokeWidth: 0.6, transform: "rotate(-4 23 306)", style: holdingIs("bad") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
+      h("text", { x: 23, y: 305, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 23 306)" }, "今天"),
+      h("text", { x: 23, y: 311.6, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 23 306)" }, "有点长 🌧️")));
   var pill = function (t) { return h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, t); };
   return h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden" } },
     h("style", null,
@@ -26265,7 +26265,7 @@ function BakerFacade(_refBF) {
       h("div", { style: { marginTop: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine),
       h("div", { style: { height: 10 } })),
     // 楼
-    h("div", { style: { position: "relative", marginTop: 2, padding: "0 10px" } },
+    h("div", { style: { position: "relative", marginTop: 2, padding: "0 2px" } },
       building,
       // 松手之后窗里飘出来的那句、寄没寄到，都浮在楼上；「今天有点长」的两格贴在路面上
       (pgSay || pgMsg) ? h("div", { style: { position: "absolute", left: "10%", right: "10%", top: "47%", textAlign: "center", zIndex: 4, pointerEvents: "none" } },
