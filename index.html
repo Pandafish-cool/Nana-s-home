@@ -20591,7 +20591,7 @@ function LondonRoom(_refLD) {
   var onBack = _refLD.onBack;
   var h = React.createElement;
   var full = ldFullOpen();
-  var _tb = useState("now"); var tab = _tb[0], setTab = _tb[1];
+  var _tb = useState(function () { var w = ldWantTab; ldWantTab = null; return w || "now"; }); var tab = _tb[0], setTab = _tb[1];
   var _op = useState(function () {
     try {
       var k = "nana-london-open";
@@ -23652,7 +23652,13 @@ function LondonRoom(_refLD) {
   var ldTabBody = tab === "now" ? nowTab : tab === "care" ? careTab : tab === "pack" ? packTab : tab === "eat" ? eatTab : tab === "live" ? liveTab : calTab;
   // ── 📖 回家之后：这间房变成「伦敦的四十二天」，工具收进一个折叠里 ──
   var backHome = ldBackHome();
-  var _to = useState(false); var toolsOpen = _to[0], setToolsOpen = _to[1];
+  var _to = useState(function () { return backHome && tab !== "now"; }); var toolsOpen = _to[0], setToolsOpen = _to[1];
+  // 已经在这间房里的时候再从门口点短波，也要跳过去
+  useEffect(function () {
+    var go = function () { if (ldWantTab) { setTab(ldWantTab); setToolsOpen(true); ldWantTab = null; } };
+    window.addEventListener("nana-go-london", go);
+    return function () { window.removeEventListener("nana-go-london", go); };
+  }, []);
   var _mn = useState(function () { return NANA_SHARED_ROWS || null; }); var memoNotes = _mn[0], setMemoNotes = _mn[1];
   useEffect(function () {
     if (!backHome) return;
@@ -25614,7 +25620,7 @@ var BK_GREET = [
 ];
 function BakerHouse(_refBK) {
   var h = React.createElement;
-  var onEnter = _refBK.onEnter, cozy = _refBK.cozy, time = _refBK.time;
+  var onEnter = _refBK.onEnter, onBack = _refBK.onBack;
   var _fd = useState(bkHuntRead); var found = _fd[0], setFound = _fd[1];
   var _ms = useState(0); var msg = _ms[0], setMsg = _ms[1];
   var _fa = useState(true); var fade = _fa[0], setFade = _fa[1];
@@ -25654,7 +25660,18 @@ function BakerHouse(_refBK) {
     var next = {}; for (var k in found) next[k] = found[k];
     next[hunt.id] = new Date().toISOString().slice(0, 10);
     setFound(next); bkHuntSave(next);
-    setGot(hunt);
+    // 集满五件，钱包里多一张兑换券
+    var cnt = 0; for (var kk in next) cnt++;
+    var prize = null;
+    if (cnt > 0 && cnt % 5 === 0) {
+      var no = cnt / 5;
+      prize = { type: "hunt", icon: "🔍", title: "证物集齐 " + cnt + " 件 · 兑换券", sub: "贝克街的案子破了 " + cnt + " 桩。凭券兑换一件想要的东西，Nana 说了算，时间随时约 🔍", serial: "NANA-HUNT-" + (no < 10 ? "00" : "0") + no };
+      try {
+        var have = nanaGetRewards().some(function (x) { return x.serial === prize.serial; });
+        if (!have) nanaAddReward(prize); else prize = null;
+      } catch (_) { prize = null; }
+    }
+    setGot({ e: hunt.e, n: hunt.n, prize: prize });
     setTimeout(function () { setGot(null); }, 3200);
   };
   // 藏在屋里的那一小点：只在今天这间、还没找到的时候画
@@ -25752,22 +25769,11 @@ function BakerHouse(_refBK) {
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkPop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}60%{transform:translate(-50%,-50%) scale(1.06);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}"),
-    // ── 天空 + 问候 ──
-    h("div", { style: { background: "linear-gradient(180deg," + sky.join(",") + ")", padding: "calc(14px + env(safe-area-inset-top,0px)) 18px 0", position: "relative", overflow: "hidden" } },
-      isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44]].map(function (p, i) {
-        return h("div", { key: i, style: { position: "absolute", left: p[0] + "%", top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.8, animation: "bkLamp " + (2 + i % 3) + "s ease-in-out infinite" } });
-      }) : null,
-      isNight ? h("div", { style: { position: "absolute", right: 22, top: 18, width: 30, height: 30, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 24px rgba(243,233,184,0.6)" } }) : null,
-      h("div", { style: { position: "relative", zIndex: 1 } },
-        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-          h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
-          h("div", { style: { display: "flex", gap: 6 } },
-            h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, time || ""),
-            h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, "🔥 " + cozy + "%"))),
-        h("div", { style: { marginTop: 14, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
-        h("div", { style: { marginTop: 4, marginBottom: 10, color: skyText, opacity: 0.75, fontSize: "0.72rem", fontWeight: 700 } }, huntDone ? "今天的证物已经归档了 · 明天再来一案" : "今天屋里藏了一样东西，线索在房子下面那张案卷上 🔍")),
-      // 雾
-      h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: -6, height: 40, background: "linear-gradient(180deg, rgba(255,255,255,0) , rgba(255,255,255," + (isNight ? 0.12 : 0.55) + "))", filter: "blur(6px)", animation: "bkFog 9s ease-in-out infinite alternate", pointerEvents: "none" } })),
+    // ── 抬头：出门 / 这是屋里 ──
+    h("div", { style: { background: BK_NAVY2, padding: "calc(10px + env(safe-area-inset-top,0px)) 14px 10px", display: "flex", alignItems: "center", gap: 10 } },
+      h("button", { onClick: onBack, style: { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: BK_CREAM, borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer" } }, "← 出门"),
+      h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "INSIDE 221B"),
+      h("div", { style: { marginLeft: "auto", color: BK_CREAM, fontSize: "0.68rem", fontWeight: 800, opacity: 0.85 } }, huntDone ? "今天的证物已归档 ✓" : "今天藏了 1 件 · 找找看 🔍")),
     // ── 房子 ──
     h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky[2] + "," + sky[2] + ")" } },
       // 屋顶 + 烟囱
@@ -25807,7 +25813,8 @@ function BakerHouse(_refBK) {
       got ? h("div", { style: { position: "absolute", left: "50%", top: "46%", transform: "translate(-50%,-50%)", background: BK_CREAM, color: "#22303f", borderRadius: 16, padding: "14px 20px", textAlign: "center", boxShadow: "0 16px 40px rgba(0,0,0,0.5)", zIndex: 9, animation: "bkPop 0.45s cubic-bezier(.34,1.3,.64,1) both", border: "2px solid " + BK_GOLD } },
         h("div", { style: { fontSize: 40, lineHeight: 1 } }, got.e),
         h("div", { style: { fontSize: "0.95rem", fontWeight: 900, marginTop: 6 } }, "找到了：" + got.n),
-        h("div", { style: { fontSize: "0.68rem", color: "#6a5a40", marginTop: 3 } }, "已钉到证物板上 📌")) : null),
+        h("div", { style: { fontSize: "0.68rem", color: "#6a5a40", marginTop: 3 } }, "已钉到证物板上 📌"),
+        got.prize ? h("div", { style: { marginTop: 8, background: "linear-gradient(135deg,#fff3e0,#ffe0ec)", border: "2px dashed #d8924a", borderRadius: 10, padding: "6px 10px", fontSize: "0.72rem", fontWeight: 800, color: "#c0563a" } }, "🎁 " + got.prize.title + "，已经放进钱包") : null) : null),
     // ── 案卷 + 证物板 ──
     h("div", { style: { padding: "12px 16px 0" } },
       h("div", { style: { background: "linear-gradient(180deg,#fbf3df,#f1e4c4)", border: "1px solid #d7c9a3", borderRadius: 6, padding: "12px 14px 12px 16px", position: "relative", boxShadow: "0 6px 16px rgba(80,60,20,0.14)", fontFamily: "Georgia,'PingFang SC',serif" } },
@@ -25821,6 +25828,182 @@ function BakerHouse(_refBK) {
       h("div", { onClick: function () { setBoard(!board); }, style: { marginTop: 10, background: BK_NAVY2, borderRadius: 12, padding: "10px 12px", cursor: "pointer", border: "1px solid rgba(217,180,95,0.25)" } },
         h("div", { style: { display: "flex", alignItems: "center", color: BK_CREAM, fontSize: "0.74rem", fontWeight: 800 } }, "📌 证物板", h("span", { style: { marginLeft: 8, color: BK_GOLD, fontSize: "0.62rem" } }, nFound + " / " + BK_HUNT.length), h("span", { style: { marginLeft: "auto", color: "rgba(253,246,232,0.6)", fontSize: "0.62rem" } }, board ? "收起 ▲" : "展开 ▼")),
         board ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, padding: "8px 4px 2px", justifyContent: "center" } }, evidence) : null)));
+}
+// ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
+var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
+var nanaGoCare = function () {
+  ldWantTab = "care";
+  try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
+};
+function BakerFacade(_refBF) {
+  var h = React.createElement;
+  var onInside = _refBF.onInside, onEnter = _refBF.onEnter, cozy = _refBF.cozy, time = _refBF.time;
+  var _ms = useState(0); var msg = _ms[0], setMsg = _ms[1];
+  var _fa = useState(true); var fade = _fa[0], setFade = _fa[1];
+  var _dr = useState(false); var doorOpen = _dr[0], setDoorOpen = _dr[1];
+  var _kn = useState(null); var knock = _kn[0], setKnock = _kn[1];
+  var _tk = useState(0); var tick = _tk[0], setTick = _tk[1];
+  var _fd = useState(bkHuntRead); var found = _fd[0];
+  // 来信：跟伦敦那间房同一套判断（缓存 + 共用那一趟拉取，看过的 id 记在本机）
+  var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
+  var letters = _lt[0], setLetters = _lt[1];
+  useEffect(function () { nanaSharedFetch(false, function (err, rows) { if (!err && rows) setLetters(rows); }); }, []);
+  var newLetter = (function () {
+    var me = "", seen = "";
+    try { me = localStorage.getItem("nana-author") || ""; seen = localStorage.getItem(ldWKey("nana-letter-seen")) || ""; } catch (_) {}
+    if (!me) return null;
+    for (var i = 0; i < letters.length; i++) { var n = letters[i]; if (n && n.author && n.author !== me) return (n.id && n.id !== seen) ? n : null; }
+    return null;
+  })();
+  var hunt = bkHuntToday();
+  var huntDone = !!found[hunt.id];
+  var nFound = 0; for (var k in found) nFound++;
+  var now = new Date(), hr = now.getHours();
+  var isNight = hr >= 19 || hr < 6, isDusk = hr >= 17 && hr < 19, isDawn = hr >= 6 && hr < 8;
+  var lit = isNight || isDusk;
+  var sky = isNight ? ["#0b1020", "#1a2238", "#39405a"] : isDusk ? ["#3a2a48", "#8a4a3a", "#d9a070"] : isDawn ? ["#3a3a58", "#9a8aa0", "#e0c0a0"] : ["#aebfcf", "#c9d5de", "#e6eaee"];
+  var skyText = isNight || isDusk || isDawn ? BK_CREAM : "#2b3446";
+  var justHome = (function () { try { return ldBackHome() && now < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
+  var greets = justHome ? ["欢迎回家，Nana 🏡", "四十二天，你回来了", "这次是真的到家了"] : (function () { for (var i = 0; i < BK_GREET.length; i++) { if (hr < BK_GREET[i].to) return BK_GREET[i].a; } return BK_GREET[0].a; })();
+  useEffect(function () {
+    var id = setInterval(function () { setFade(false); setTimeout(function () { setMsg(function (i) { return i + 1; }); setFade(true); }, 350); }, 3800);
+    var id2 = setInterval(function () { setTick(function (t) { return t + 1; }); }, 900);
+    return function () { clearInterval(id); clearInterval(id2); };
+  }, []);
+  var goIn = function () {
+    if (doorOpen) return;
+    setDoorOpen(true);
+    setTimeout(function () { if (onInside) onInside(); setDoorOpen(false); }, 620);
+  };
+  var doKnock = function (e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    setKnock(BK_KNOCK[Math.floor(Math.random() * BK_KNOCK.length)]);
+    setTimeout(function () { setKnock(null); }, 2600);
+  };
+  // 一扇窗：白框、玻璃、六格、窗帘、窗台。晚上亮暖光，偶尔有一扇是黑的
+  var win = function (x, y, w, hh, on, key, extra) {
+    var glass = on ? "url(#bfWarm)" : (isNight ? "#1b2233" : "url(#bfDay)");
+    return h("g", { key: key },
+      h("rect", { x: x - 4, y: y - 4, width: w + 8, height: hh + 8, fill: "#ece6d6" }),
+      h("rect", { x: x, y: y, width: w, height: hh, fill: glass }),
+      on ? h("rect", { x: x, y: y, width: w, height: hh, fill: "#ffd98a", opacity: 0.12 + (tick % 3) * 0.03 }) : null,
+      h("rect", { x: x, y: y, width: w * 0.22, height: hh, fill: "#8a3a3a", opacity: 0.85 }),
+      h("rect", { x: x + w * 0.78, y: y, width: w * 0.22, height: hh, fill: "#8a3a3a", opacity: 0.85 }),
+      h("line", { x1: x + w / 2, y1: y, x2: x + w / 2, y2: y + hh, stroke: "#ece6d6", strokeWidth: 2.2 }),
+      h("line", { x1: x, y1: y + hh / 2, x2: x + w, y2: y + hh / 2, stroke: "#ece6d6", strokeWidth: 2.2 }),
+      h("line", { x1: x, y1: y + hh / 4, x2: x + w, y2: y + hh / 4, stroke: "#ece6d6", strokeWidth: 1 }),
+      h("line", { x1: x, y1: y + hh * 3 / 4, x2: x + w, y2: y + hh * 3 / 4, stroke: "#ece6d6", strokeWidth: 1 }),
+      h("rect", { x: x - 7, y: y + hh + 4, width: w + 14, height: 5, fill: "#d9d2c0" }),
+      extra || null);
+  };
+  var W = [55, 155, 255];
+  var building = h("svg", { viewBox: "0 0 360 400", style: { width: "100%", display: "block", overflow: "visible" } },
+    h("defs", null,
+      h("linearGradient", { id: "bfWarm", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe6ac" }), h("stop", { offset: "100%", stopColor: "#f0b45e" })),
+      h("linearGradient", { id: "bfDay", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdbe6" }), h("stop", { offset: "100%", stopColor: "#9fb3c4" })),
+      h("pattern", { id: "bfBrick", width: 22, height: 12, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 22, height: 12, fill: "#3a4256" }),
+        h("rect", { x: 0, y: 0, width: 10.5, height: 5.5, fill: "#2f3749" }), h("rect", { x: 11.5, y: 0, width: 10.5, height: 5.5, fill: "#333b4f" }),
+        h("rect", { x: 5.5, y: 6.5, width: 10.5, height: 5.5, fill: "#333b4f" }), h("rect", { x: -5, y: 6.5, width: 10, height: 5.5, fill: "#2f3749" }), h("rect", { x: 17, y: 6.5, width: 10, height: 5.5, fill: "#2f3749" }))),
+    // 烟囱 + 烟
+    h("rect", { x: 262, y: 8, width: 24, height: 46, fill: "#2a3142" }), h("rect", { x: 258, y: 4, width: 32, height: 7, fill: "#1e2636" }),
+    h("rect", { x: 264, y: -4, width: 7, height: 9, fill: "#3a4256" }), h("rect", { x: 276, y: -4, width: 7, height: 9, fill: "#3a4256" }),
+    [0, 1, 2].map(function (i) { return h("circle", { key: "sm" + i, cx: 274, cy: -6, r: 5, fill: "rgba(220,220,230,0.5)", style: { animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }); }),
+    // 屋顶：石板坡 + 天窗
+    h("polygon", { points: "22,62 180,14 338,62", fill: "#1e2636" }),
+    h("polygon", { points: "34,60 180,22 326,60", fill: "#2f3849" }),
+    h("rect", { x: 152, y: 30, width: 56, height: 30, fill: "#2a3142" }),
+    h("polygon", { points: "146,32 180,16 214,32", fill: "#1e2636" }),
+    win(160, 36, 40, 20, lit, "attic"),
+    // 檐口 + 墙
+    h("rect", { x: 22, y: 60, width: 316, height: 8, fill: "#d9d2c0" }),
+    h("rect", { x: 30, y: 68, width: 300, height: 260, fill: "url(#bfBrick)" }),
+    h("rect", { x: 30, y: 68, width: 300, height: 260, fill: "none", stroke: "#1e2636", strokeWidth: 3 }),
+    h("rect", { x: 30, y: 146, width: 300, height: 3, fill: "#d9d2c0", opacity: 0.6 }),
+    h("rect", { x: 30, y: 226, width: 300, height: 3, fill: "#d9d2c0", opacity: 0.6 }),
+    // 三层窗
+    W.map(function (x, i) { return win(x, 84, 50, 46, lit && i !== 2, "f2" + i, i === 0 ? h("text", { x: x + 25, y: 126, textAnchor: "middle", fontSize: 14 }, "🐈") : null); }),
+    W.map(function (x, i) { return win(x, 164, 50, 46, lit, "f1" + i, i === 1 ? h("text", { x: x + 25, y: 198, textAnchor: "middle", fontSize: 15, opacity: 0.9 }, lit ? "🕯️" : "🎻") : null); }),
+    win(55, 244, 50, 46, lit, "g0", h("text", { x: 80, y: 278, textAnchor: "middle", fontSize: 15 }, "🪴")),
+    win(255, 244, 50, 46, lit && tick % 7 !== 0, "g1"),
+    // 门套：白色门柱 + 门楣 + 扇形气窗
+    h("rect", { x: 142, y: 224, width: 76, height: 104, fill: "#ece6d6" }),
+    h("rect", { x: 146, y: 230, width: 8, height: 98, fill: "#d9d2c0" }), h("rect", { x: 206, y: 230, width: 8, height: 98, fill: "#d9d2c0" }),
+    h("rect", { x: 136, y: 218, width: 88, height: 8, fill: "#e8e2d2" }),
+    h("path", { d: "M154 262 a26 26 0 0 1 52 0 Z", fill: lit ? "url(#bfWarm)" : "#b8c6d2" }),
+    [-2, -1, 0, 1, 2].map(function (i) { return h("line", { key: "fan" + i, x1: 180, y1: 262, x2: 180 + Math.sin(i * 0.5) * 26, y2: 262 - Math.cos(i * 0.5) * 26, stroke: "#ece6d6", strokeWidth: 1.6 }); }),
+    // 门：原版黑门，黄铜 221B、门环、信箱口
+    h("g", { onClick: goIn, style: { cursor: "pointer" } },
+      h("rect", { x: 154, y: 262, width: 52, height: 66, fill: "#0b0d12" }),
+      h("g", { style: { transformOrigin: "154px 295px", transform: doorOpen ? "scaleX(0.12)" : "scaleX(1)", transition: "transform 0.55s cubic-bezier(.4,0,.2,1)" } },
+        h("rect", { x: 154, y: 262, width: 52, height: 66, fill: "#111418", style: knock ? { animation: "bkKnock 0.5s ease" } : null }),
+        h("rect", { x: 159, y: 267, width: 18, height: 16, rx: 1, fill: "#1a1e26", stroke: "#0a0c10" }), h("rect", { x: 183, y: 267, width: 18, height: 16, rx: 1, fill: "#1a1e26", stroke: "#0a0c10" }),
+        h("rect", { x: 159, y: 300, width: 18, height: 22, rx: 1, fill: "#1a1e26", stroke: "#0a0c10" }), h("rect", { x: 183, y: 300, width: 18, height: 22, rx: 1, fill: "#1a1e26", stroke: "#0a0c10" }),
+        h("text", { x: 180, y: 295, textAnchor: "middle", fontSize: 9.5, fontWeight: "bold", fill: BK_GOLD, fontFamily: "Georgia,serif", letterSpacing: 1 }, "221B"),
+        h("circle", { cx: 180, cy: 306, r: 3.2, fill: "none", stroke: BK_GOLD, strokeWidth: 1.4 }),
+        h("rect", { x: 172, y: 316, width: 16, height: 3, rx: 1.5, fill: BK_GOLD }),
+        h("circle", { cx: 199, cy: 296, r: 1.8, fill: BK_GOLD })),
+      doorOpen ? h("rect", { x: 154, y: 262, width: 52, height: 66, fill: "url(#bfWarm)", opacity: 0.85 }) : null),
+    // 台阶 + 地下室栏杆
+    h("rect", { x: 140, y: 328, width: 80, height: 7, fill: "#cfc8b6" }), h("rect", { x: 134, y: 335, width: 92, height: 7, fill: "#bfb8a6" }),
+    h("rect", { x: 30, y: 328, width: 104, height: 24, fill: "#12161f" }), h("rect", { x: 226, y: 328, width: 104, height: 24, fill: "#12161f" }),
+    win(52, 333, 34, 14, lit, "b0"), win(274, 333, 34, 14, lit, "b1"),
+    [30, 226].map(function (x0, gi) { return h("g", { key: "rail" + gi }, h("rect", { x: x0, y: 326, width: 104, height: 2.2, fill: "#0a0c10" }), Array.apply(null, Array(12)).map(function (_, i) { return h("rect", { key: i, x: x0 + 4 + i * 9, y: 320, width: 1.6, height: 32, fill: "#0a0c10" }); })); }),
+    // 人行道 + 煤气灯 + 雾
+    h("rect", { x: 0, y: 352, width: 360, height: 20, fill: "#4a505c" }), h("rect", { x: 0, y: 372, width: 360, height: 28, fill: "#262a33" }),
+    h("line", { x1: 0, y1: 386, x2: 360, y2: 386, stroke: "rgba(255,255,255,0.18)", strokeWidth: 1.5, strokeDasharray: "8 8" }),
+    h("rect", { x: 22, y: 296, width: 3, height: 58, fill: "#0a0c10" }), h("rect", { x: 17, y: 284, width: 13, height: 14, rx: 2, fill: lit ? BK_WARM : "#cfd9e2", style: lit ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.9))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
+    h("rect", { x: 20, y: 280, width: 7, height: 4, fill: "#0a0c10" }),
+    h("text", { x: 300, y: 66, textAnchor: "middle", fontSize: 11 }, "🕊️"));
+  var pill = function (t) { return h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, t); };
+  return h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden" } },
+    h("style", null,
+      "@keyframes bkKnock{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}" +
+      "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
+      "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
+      "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
+      "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
+      "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(120px) scaleX(1)}50%{transform:translateX(120px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
+      "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
+      "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}"),
+    isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44], [66, 48]].map(function (p, i) {
+      return h("div", { key: i, style: { position: "absolute", left: p[0] + "%", top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.8, animation: "bkLamp " + (2 + i % 3) + "s ease-in-out infinite" } });
+    }) : null,
+    isNight ? h("div", { style: { position: "absolute", right: 26, top: 22, width: 30, height: 30, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 24px rgba(243,233,184,0.6)" } }) : null,
+    // 问候
+    h("div", { style: { position: "relative", zIndex: 1, padding: "calc(14px + env(safe-area-inset-top,0px)) 18px 0" } },
+      h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+        h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
+        h("div", { style: { display: "flex", gap: 6 } }, pill(time || ""), pill("🔥 " + cozy + "%"))),
+      h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
+      h("div", { style: { marginTop: 3, color: skyText, opacity: 0.75, fontSize: "0.72rem", fontWeight: 700 } }, newLetter ? "邮筒里有一封新的信 ✉️" : (huntDone ? "今天的证物已经归档了 · 明天再来一案" : "今天屋里藏了一样东西，推门进去找 🔍"))),
+    // 楼
+    h("div", { style: { position: "relative", marginTop: 6, padding: "0 6px" } },
+      building,
+      // 门口那些能点的：邮筒 → 221B 的信；短波 → 安心；门 → 进屋；门铃 → 敲门
+      h("div", { onClick: nanaGo221B, title: "去 221B 看信", style: { position: "absolute", left: "17%", top: "75.5%", width: "11%", cursor: "pointer", zIndex: 2 } },
+        h("div", { style: { width: "100%" } }, ldPostBox(!!newLetter, 44)),
+        h("div", { style: { textAlign: "center", color: BK_GOLD, fontSize: "0.5rem", fontWeight: 900, marginTop: -6, whiteSpace: "nowrap" } }, newLetter ? "有新信" : "221B 的信")),
+      h("div", { onClick: nanaGoCare, title: "短波 · 安心", style: { position: "absolute", left: "60.8%", top: "67%", width: "7.6%", cursor: "pointer", zIndex: 2 } },
+        h("div", { style: { background: "linear-gradient(180deg,#e8cf8a,#b8913a)", borderRadius: 4, padding: "5px 0 4px", boxShadow: "0 1px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.5)", textAlign: "center", position: "relative" } },
+          h("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,3px)", gap: 3, justifyContent: "center" } }, [0, 1, 2, 3, 4, 5].map(function (i) { return h("div", { key: i, style: { width: 4, height: 4, borderRadius: "50%", background: "#3a2a10" } }); })),
+          h("div", { style: { width: 5, height: 5, borderRadius: "50%", background: "#3fbf6a", margin: "4px auto 0", boxShadow: "0 0 5px #3fbf6a", animation: "bfLed 2s ease-in-out infinite" } })),
+        h("div", { style: { textAlign: "center", color: BK_GOLD, fontSize: "0.5rem", fontWeight: 900, marginTop: 2, whiteSpace: "nowrap" } }, "短波 · 留言")),
+      h("div", { onClick: doKnock, title: "门铃", style: { position: "absolute", left: "36.5%", top: "70%", width: 12, height: 12, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f2dfa8,#8a6a2a)", cursor: "pointer", zIndex: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.6)" } }),
+      knock ? h("div", { style: { position: "absolute", left: "50%", top: "50%", transform: "translateX(-50%)", background: "rgba(253,246,232,0.96)", color: "#22303f", fontSize: "0.7rem", fontWeight: 700, lineHeight: 1.5, padding: "7px 11px", borderRadius: 10, zIndex: 4, whiteSpace: "nowrap", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", animation: "bkRise 0.3s ease both" } }, knock) : null,
+      h("div", { style: { position: "absolute", left: "70%", top: "86%", fontSize: 16, lineHeight: 1, animation: "bkCat 18s linear infinite", zIndex: 2 } }, "🐈"),
+      h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: 0, height: 40, background: "rgba(255,255,255," + (isNight ? 0.1 : 0.35) + ")", filter: "blur(10px)", animation: "bkFog 8s ease-in-out infinite alternate", pointerEvents: "none" } })),
+    // 门口的案卷：今天的线索，进屋去找
+    h("div", { style: { padding: "0 16px 14px", position: "relative", zIndex: 1 } },
+      h("div", { onClick: goIn, style: { background: "linear-gradient(180deg,#fbf3df,#f1e4c4)", border: "1px solid #d7c9a3", borderRadius: 6, padding: "10px 12px 10px 16px", position: "relative", boxShadow: "0 6px 16px rgba(0,0,0,0.25)", fontFamily: "Georgia,'PingFang SC',serif", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 } },
+        h("div", { style: { position: "absolute", left: 0, top: 8, bottom: 8, width: 4, background: "#c0392b", borderRadius: "0 3px 3px 0" } }),
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+            h("div", { style: { fontSize: "0.54rem", letterSpacing: 2, fontWeight: 900, color: "#8a6a30" } }, "CASE FILE No." + (bkCaseNo(hunt) < 10 ? "0" : "") + bkCaseNo(hunt)),
+            h("div", { style: { fontSize: "0.54rem", fontWeight: 800, color: huntDone ? "#2e7d4f" : "#c0392b", border: "1.5px solid currentColor", borderRadius: 3, padding: "0 5px", transform: "rotate(-4deg)" } }, huntDone ? "已归档" : "未结"),
+            h("div", { style: { marginLeft: "auto", fontSize: "0.56rem", fontWeight: 800, color: "#8a6a30" } }, "📌 " + nFound + "/" + BK_HUNT.length)),
+          h("div", { style: { marginTop: 4, fontSize: "0.8rem", lineHeight: 1.5, color: "#22303f", fontWeight: 700 } }, huntDone ? ("证物 " + hunt.e + " " + hunt.n + " 已归档。明天屋里会藏新的。") : "「" + hunt.clue + "」")),
+        h("div", { style: { flexShrink: 0, background: "#111418", color: BK_GOLD, borderRadius: 999, padding: "8px 12px", fontSize: "0.7rem", fontWeight: 900, whiteSpace: "nowrap" } }, "推门进去 →"))));
 }
 function HomeDeck(_refHD) {
   var h = React.createElement;
@@ -26382,6 +26565,8 @@ function NanasHome() {
     _useState324 = _slicedToArray(_useState323, 2),
     room = _useState324[0],
     setRoom = _useState324[1];
+  var _inside = useState(false); var inside = _inside[0], setInside = _inside[1];   // 推开门进了屋里
+  var home = !room && !inside;
   var _useState325 = useState(null),
     _useState326 = _slicedToArray(_useState325, 2),
     activity = _useState326[0],
@@ -26512,14 +26697,18 @@ function NanasHome() {
     onClose: function onClose() {
       return setShowEgg4(false);
     }
-  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && NANA_BAKER && /*#__PURE__*/React.createElement(BakerHouse, {
+  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && inside && /*#__PURE__*/React.createElement(BakerHouse, {
     onEnter: enterRoom,
+    onBack: function () { setInside(false); try { window.scrollTo(0, 0); } catch (_) {} }
+  }), home && NANA_BAKER && /*#__PURE__*/React.createElement(BakerFacade, {
+    onEnter: enterRoom,
+    onInside: function () { setInside(true); try { window.scrollTo(0, 0); } catch (_) {} },
     time: time,
     cozy: cozy
-  }), !room && !NANA_BAKER && /*#__PURE__*/React.createElement(HeroBanner, {
+  }), home && !NANA_BAKER && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
-  }), !room && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), !room && /*#__PURE__*/React.createElement("div", {
+  }), home && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), home && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 2px"
     }
@@ -26596,11 +26785,11 @@ function NanasHome() {
         desc: "昨天的迪士尼"
       });
     }
-  })))), !room && /*#__PURE__*/React.createElement("div", {
+  })))), home && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 0"
     }
-  }, /*#__PURE__*/React.createElement(BarTastingList, null)), !room && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(BarTastingList, null)), home && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 16px 0"
     }
@@ -26612,7 +26801,7 @@ function NanasHome() {
     style: {
       padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
     }
-  }, !room && !NANA_BAKER && /*#__PURE__*/React.createElement(HouseMap, {
+  }, home && !NANA_BAKER && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
   }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && room.id !== "meisha" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
@@ -26802,6 +26991,7 @@ function NanasHome() {
     onHome: function onHome() {
       setRoom(null);
       setActivity(null);
+      setInside(false);
     }
   }), toast && /*#__PURE__*/React.createElement("div", {
     style: {
