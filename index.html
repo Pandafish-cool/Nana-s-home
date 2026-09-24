@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-258";
+var NANA_VER = "v2026.8.2-259";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20664,6 +20664,12 @@ function LondonRoom(_refLD) {
   var _mmB = useState(false); var mmBusy = _mmB[0], setMmBusy = _mmB[1];
   var _praw = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-rows") || "[]"); } catch (_) { return []; } }); var packRaw = _praw[0], setPackRaw = _praw[1];
   var scrRef = useRef({ n: "", x: 0, y: 0, d: 0, s: 0, t: null });
+  // 封面：一叠能翻的照片 + 盖上去的章 + 点一下换一句
+  var _cv = useState(0); var cvIdx = _cv[0], setCvIdx = _cv[1];
+  var _cf = useState(false); var cvFlip = _cf[0], setCvFlip = _cf[1];
+  var _cl = useState(0); var cvLine = _cl[0], setCvLine = _cl[1];
+  var _cst = useState(false); var cvStamp = _cst[0], setCvStamp = _cst[1];
+  useEffect(function () { var t = setTimeout(function () { setCvStamp(true); }, 700); return function () { clearTimeout(t); }; }, []);
   var _pb = useState(""); var pageBusy = _pb[0], setPageBusy = _pb[1];
   var _pm = useState(""); var pageMsg = _pm[0], setPageMsg = _pm[1];
   var _bo = useState(false); var badOpen = _bo[0], setBadOpen = _bo[1];
@@ -23730,17 +23736,48 @@ function LondonRoom(_refLD) {
         h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#6a5a48", marginTop: 3 } }, unit),
         note ? h("div", { style: { fontSize: "0.58rem", color: "rgba(106,90,72,0.75)", marginTop: 2 } }, note) : null);
     };
-    // 封面
-    var cover = h("div", { style: { position: "relative", borderRadius: 20, overflow: "hidden", background: "linear-gradient(165deg,#1c2a44 0%,#243a5c 58%,#2f5470 100%)", color: "#f4efe3", padding: "26px 20px 20px", marginBottom: 14, boxShadow: "0 14px 34px rgba(28,42,68,0.3)" } },
-      h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", fontWeight: 700 } }, "THE LONDON DAYS"),
-      h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.9rem", marginTop: 6, letterSpacing: "0.04em" } }, "伦敦的四十二天"),
-      h("div", { style: { fontSize: "0.76rem", color: "rgba(244,239,227,0.8)", marginTop: 6, lineHeight: 1.6 } }, "2026 年 8 月 15 日 → 9 月 26 日", h("br"), "Canary Wharf 港 → 家里 113°E"),
-      h("div", { style: { display: "flex", gap: 7, marginTop: 18, overflow: "hidden" } },
-        LD_COVER_PICS.map(function (f, i) {
-          return h("div", { key: f, style: { flex: "0 0 auto", width: 64, background: "#fff", padding: "4px 4px 11px", borderRadius: 2, transform: "rotate(" + ((i % 2 ? 1 : -1) * (2 + (i % 3))) + "deg)", boxShadow: "0 6px 14px rgba(0,0,0,0.32)", marginTop: i % 2 ? 7 : 0 } },
-            h("img", { src: "ld/" + f + "_t.jpg", alt: "", style: { width: "100%", height: 56, objectFit: "cover", display: "block" } }));
-        })),
-      h("div", { style: { marginTop: 18, fontSize: "0.7rem", color: "rgba(244,239,227,0.62)", fontStyle: "italic" } }, "「这座城你熟了。」"));
+    // 封面：左边是书名和章，右边一叠照片 —— 点一下翻到背面看写的字，再点一下换下一张
+    var cvN = LD_COVER_PICS.length;
+    var cvTap = function () {
+      if (!cvFlip) { setCvFlip(true); return; }
+      setCvFlip(false);
+      setTimeout(function () { setCvIdx(function (i) { return (i + 1) % cvN; }); }, 260);
+    };
+    var cvFindPlace = function (k) {
+      for (var i = 0; i < wallShown.length; i++) { if (wallShown[i].la && String(wallShown[i].n).indexOf(k) >= 0) return wallShown[i].n; }
+      return "";
+    };
+    var cvCard = function (f, depth) {
+      var bk = LD_COVER_BACK[f] || { t: f, s: "", k: "" };
+      var top = depth === 0;
+      var rot = top ? 0 : (depth % 2 ? 4 : -5) * (1 + depth * 0.25);
+      var face = { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", WebkitBackfaceVisibility: "hidden", backfaceVisibility: "hidden", borderRadius: 3, background: "#fff", boxShadow: "0 10px 24px rgba(0,0,0,0.45)" };
+      return h("div", { key: f, style: { position: "absolute", left: "50%", top: "50%", width: 122, height: 148, marginLeft: -61, marginTop: -74, transform: "translate(" + (top ? 0 : depth * 3) + "px," + (top ? 0 : -depth * 4) + "px) rotate(" + rot + "deg)", transition: "transform 0.35s ease", zIndex: 10 - depth, perspective: 700 } },
+        h("div", { style: { position: "relative", width: "100%", height: "100%", transformStyle: "preserve-3d", transition: "transform 0.5s cubic-bezier(.4,0,.2,1)", transform: (top && cvFlip) ? "rotateY(180deg)" : "rotateY(0deg)" } },
+          h("div", { style: Object.assign({}, face, { padding: "6px 6px 0" }) },
+            h("img", { src: "ld/" + f + "_t.jpg", alt: "", style: { width: "100%", height: 108, objectFit: "cover", display: "block", borderRadius: 1, background: "#e8e0d0" } }),
+            h("div", { style: { fontFamily: LDHAND, fontSize: "0.72rem", color: "#4a3f30", textAlign: "center", marginTop: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, bk.t)),
+          h("div", { style: Object.assign({}, face, { transform: "rotateY(180deg)", background: "linear-gradient(180deg,#fdf6e6,#f1e4c4)", padding: "12px 10px", boxSizing: "border-box", display: "flex", flexDirection: "column" }) },
+            h("div", { style: { fontSize: "0.52rem", letterSpacing: 2, color: "#8a6a30", fontFamily: "Georgia,serif", fontWeight: 800 } }, "LONDON · " + (cvIdx + 1) + "/" + cvN),
+            h("div", { style: { fontFamily: SERIF, fontWeight: 800, fontSize: "0.86rem", color: "#2d3a4a", marginTop: 6 } }, bk.t),
+            h("div", { style: { fontFamily: LDHAND, fontSize: "0.76rem", color: "#4a3f30", lineHeight: 1.6, marginTop: 6, flex: 1 } }, bk.s),
+            cvFindPlace(bk.k) ? h("div", { onClick: function (e) { e.stopPropagation(); setScrSel(cvFindPlace(bk.k)); }, style: { fontSize: "0.62rem", fontWeight: 800, color: "#a3701a", textAlign: "right" } }, "翻到这个地方 →") : null)));
+    };
+    var cvOrder = []; for (var ci = 0; ci < cvN; ci++) cvOrder.push(LD_COVER_PICS[(cvIdx + ci) % cvN]);
+    var cover = h("div", { style: { position: "relative", borderRadius: 20, overflow: "hidden", background: "linear-gradient(165deg,#1c2a44 0%,#243a5c 58%,#2f5470 100%)", color: "#f4efe3", padding: "22px 18px 18px", marginBottom: 14, boxShadow: "0 14px 34px rgba(28,42,68,0.35)" } },
+      h("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(244,239,227,0.07) 1px, transparent 1.2px)", backgroundSize: "16px 16px", pointerEvents: "none" } }),
+      h("div", { style: { display: "flex", gap: 10, alignItems: "stretch", position: "relative" } },
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", fontWeight: 700 } }, "THE LONDON DAYS"),
+          h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.7rem", marginTop: 6, letterSpacing: "0.04em", lineHeight: 1.15 } }, "伦敦的", h("br"), "四十二天"),
+          h("div", { style: { fontSize: "0.7rem", color: "rgba(244,239,227,0.8)", marginTop: 8, lineHeight: 1.6 } }, "2026.8.15 → 9.26", h("br"), "Canary Wharf → 113°E"),
+          // 章：盖上去的那一下
+          h("div", { style: { marginTop: 14, display: "inline-block", transform: cvStamp ? "rotate(-8deg) scale(1)" : "rotate(-8deg) scale(1.8)", opacity: cvStamp ? 0.92 : 0, transition: "transform 0.28s cubic-bezier(.2,1.4,.5,1), opacity 0.2s", border: "2.5px solid #e8746e", color: "#e8746e", borderRadius: 6, padding: "4px 8px", fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.62rem", letterSpacing: 1.5, lineHeight: 1.3, textAlign: "center" } }, "42 DAYS", h("br"), h("span", { style: { fontSize: "0.5rem", letterSpacing: 1 } }, "ARRIVED · HOME")),
+          h("div", { onClick: function () { setCvLine(function (i) { return (i + 1) % LD_SH_HOME.length; }); }, style: { marginTop: 14, fontSize: "0.7rem", color: "rgba(244,239,227,0.7)", fontStyle: "italic", cursor: "pointer" } }, "「" + LD_SH_HOME[cvLine % LD_SH_HOME.length] + "」", h("span", { style: { fontSize: "0.52rem", opacity: 0.6, marginLeft: 6, fontStyle: "normal" } }, "点一下换一句"))),
+        // 一叠照片
+        h("div", { onClick: cvTap, style: { flex: "0 0 150px", position: "relative", height: 178, cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
+          cvOrder.slice().reverse().map(function (f) { return cvCard(f, cvOrder.indexOf(f)); }))),
+      h("div", { style: { position: "relative", marginTop: 10, fontSize: "0.6rem", color: "rgba(244,239,227,0.55)", textAlign: "right" } }, cvFlip ? "再点一下，换下一张" : "点照片翻过来，背面有字 · " + (cvIdx + 1) + "/" + cvN));
     // 数字墙
     var numbers = ukCard([
       screws,
@@ -25737,6 +25774,15 @@ function NanaMixtapeCard(_refNM) {
 }
 // ── 🏡 新家首页上那张「伦敦的四十二天」：一本合着的册子，点开进纪念册 ──
 var LD_COVER_PICS = ["221b-door", "greenwich-clock", "tate-ghost", "platform934", "serpentine-swan", "bigben-blue"];
+// 每张封面照片翻过来背面写的字，和它在地图上是哪一处（按名字里的关键字找）
+var LD_COVER_BACK = {
+  "221b-door":       { t: "贝克街 221B",      s: "那扇门后面，现在是家的样子。", k: "221B" },
+  "greenwich-clock": { t: "格林威治的钟",     s: "0° 就在脚下，另一只脚在东半球。", k: "格林威治天文台" },
+  "tate-ghost":      { t: "泰特的小鬼",       s: "Gustavo 也怕生，跟你一样先躲一下。", k: "泰特" },
+  "platform934":     { t: "九又四分之三站台", s: "推车卡在墙里，你站在旁边笑。", k: "九又四分之三" },
+  "serpentine-swan": { t: "九曲湖的天鹅",     s: "它先看了你一眼，才慢慢游开。", k: "九曲湖" },
+  "bigben-blue":     { t: "蓝调时刻的大本钟", s: "天刚蓝下来那几分钟，钟也慢了。", k: "蓝调" }
+};
 function HomeLondonCard() {
   var h = React.createElement;
   var _n = useState(function () { return NANA_SHARED_ROWS ? NANA_SHARED_ROWS.length : 0; }); var nLetters = _n[0], setNLetters = _n[1];
