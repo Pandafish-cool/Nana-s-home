@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-247";
+var NANA_VER = "v2026.8.2-248";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -25611,8 +25611,18 @@ function HomeLondonCard() {
 // ── 🏚️ 221B 大宅：首页就是一整栋贝克街的房子 ──
 // 从阁楼到地下室一层一层剖开，每扇窗都是一间屋，点哪扇进哪间。
 // 屋里每天藏一件证物（今日线索在房子下面那张案卷上），找到了钉到证物板上。
-// NANA_BAKER 关掉就回到原来的首页（英雄区 + 小房子地图）。
-var NANA_BAKER = true;
+// 先只给熊猫鱼看：本机身份是 panda 才是 221B 门面，Nana 那边还是原来的首页。
+// ?baker=1 / ?baker=0 可以强开强关（记在本机 nana-baker）。
+var nanaBakerOn = function () {
+  try {
+    var q = (location.search || "").match(/[?&]baker=([01])/);
+    if (q) localStorage.setItem("nana-baker", q[1]);
+    var p = localStorage.getItem("nana-baker");
+    if (p === "1") return true;
+    if (p === "0") return false;
+    return (localStorage.getItem("nana-author") || "") === "panda";
+  } catch (_) { return false; }
+};
 var BK_NAVY = "#2b3446", BK_NAVY2 = "#1e2636", BK_GOLD = "#d9b45f", BK_CREAM = "#fdf6e8", BK_WARM = "#ffe6ac", BK_DOOR = "#16452f";
 // 证物：藏在哪间、怎么提示、藏在屋里的哪个角落
 var BK_HUNT = [
@@ -26849,12 +26859,12 @@ function NanasHome() {
   }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && inside && /*#__PURE__*/React.createElement(BakerHouse, {
     onEnter: enterRoom,
     onBack: function () { setInside(false); try { window.scrollTo(0, 0); } catch (_) {} }
-  }), home && NANA_BAKER && /*#__PURE__*/React.createElement(BakerFacade, {
+  }), home && nanaBakerOn() && /*#__PURE__*/React.createElement(BakerFacade, {
     onEnter: enterRoom,
     onInside: function () { setInside(true); try { window.scrollTo(0, 0); } catch (_) {} },
     time: time,
     cozy: cozy
-  }), home && !NANA_BAKER && /*#__PURE__*/React.createElement(HeroBanner, {
+  }), home && !nanaBakerOn() && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
   }), home && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), home && /*#__PURE__*/React.createElement("div", {
@@ -26950,7 +26960,7 @@ function NanasHome() {
     style: {
       padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
     }
-  }, home && !NANA_BAKER && /*#__PURE__*/React.createElement(HouseMap, {
+  }, home && !nanaBakerOn() && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
   }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && room.id !== "meisha" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
