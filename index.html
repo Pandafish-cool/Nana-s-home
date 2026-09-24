@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-246";
+var NANA_VER = "v2026.8.2-247";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -18553,7 +18553,9 @@ var LD_DEPART = "2026-08-15";
 var LD_BACK = "2026-09-26";
 // 她到家的日子。从这天起：开门不再直接落到伦敦，「伦敦航海家」变成纪念册，首页变成新家。
 // 带 ?home=1 / ?home=0 打开可以强行开关（预览用），记在本机；不带参数就按日子来。
-var LD_HOME = "2026-09-25";
+// 按伦敦时间 9/25 零点生效（她那会儿还在伦敦，北京时间是 9/25 早上 7 点）。
+// 注意：下面另有一个 LD_HOME 数组（家里的问候语），这里不能叫 LD_HOME。
+var LD_HOME_AT = "2026-09-25T00:00:00+01:00";
 var ldBackHome = function () {
   try {
     var q = (location.search || "").match(/[?&]home=([01])/);
@@ -18562,7 +18564,7 @@ var ldBackHome = function () {
     if (p === "1") return true;
     if (p === "0") return false;
   } catch (_) {}
-  try { return new Date() >= new Date(LD_HOME + "T00:00:00+08:00"); } catch (_) { return false; }
+  try { return new Date() >= new Date(LD_HOME_AT); } catch (_) { return false; }
 };
 // 回家之后这间房换个名字（ROOMS 在上面已经定义好了）
 try {
