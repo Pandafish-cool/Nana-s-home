@@ -25563,6 +25563,265 @@ function HomeLondonCard() {
         h("span", null, "📍 " + LD_WALL.filter(function (x) { return x.n && x.n !== "待填"; }).length + " 个地方"),
         h("span", { style: { marginLeft: "auto", fontWeight: 800, color: "#f0c46a" } }, "翻开 →"))));
 }
+// ── 🏚️ 221B 大宅：首页就是一整栋贝克街的房子 ──
+// 从阁楼到地下室一层一层剖开，每扇窗都是一间屋，点哪扇进哪间。
+// 屋里每天藏一件证物（今日线索在房子下面那张案卷上），找到了钉到证物板上。
+// NANA_BAKER 关掉就回到原来的首页（英雄区 + 小房子地图）。
+var NANA_BAKER = true;
+var BK_NAVY = "#2b3446", BK_NAVY2 = "#1e2636", BK_GOLD = "#d9b45f", BK_CREAM = "#fdf6e8", BK_WARM = "#ffe6ac", BK_DOOR = "#16452f";
+// 证物：藏在哪间、怎么提示、藏在屋里的哪个角落
+var BK_HUNT = [
+  { id: "violin", e: "🎻", n: "小提琴",   room: "music",    at: { left: "12%", top: "30%" },   clue: "他想事情的时候会拉它。去最顶上那层听听。" },
+  { id: "hat",    e: "🧢", n: "猎鹿帽",   room: "window",   at: { right: "12%", top: "26%" },  clue: "挂在他看街的那扇窗边。" },
+  { id: "glass",  e: "🔍", n: "放大镜",   room: "living",   at: { left: "14%", bottom: "34%" }, clue: "看电视的时候顺手塞进了沙发缝里。" },
+  { id: "pipe",   e: "🪈", n: "烟斗",     room: "cigar",    at: { right: "14%", top: "28%" },  clue: "有威士忌和爵士乐的地方，烟斗不会离开太远。" },
+  { id: "key",    e: "🗝️", n: "一把钥匙", room: "garage",   at: { left: "16%", top: "28%" },   clue: "能把东西开出去的那间屋。" },
+  { id: "letter", e: "💌", n: "一封信",   room: "sitting",  at: { right: "10%", top: "22%" },  clue: "壁炉那层。他把信钉在墙上，你比他细心。" },
+  { id: "bun",    e: "🍪", n: "肉桂卷",   room: "kitchen",  at: { right: "12%", top: "30%" },  clue: "Hudson 太太刚烤好，还热着。" },
+  { id: "cat",    e: "🐈", n: "好好",     room: "bedroom",  at: { left: "14%", bottom: "36%" }, clue: "在被子上打呼的那只。" },
+  { id: "flask",  e: "🧪", n: "试剂瓶",   room: "bath",     at: { right: "14%", bottom: "36%" }, clue: "他把实验室搬进了有水的那间。" },
+  { id: "dart",   e: "🎯", n: "飞镖",     room: "basement", at: { left: "14%", top: "28%" },   clue: "往下走，有街机的地方。" },
+  { id: "cup",    e: "🍸", n: "一杯",     room: "bar",      at: { right: "12%", top: "26%" },  clue: "灯最暗、歌最好听的那间。" },
+  { id: "tulip",  e: "🌷", n: "郁金香",   room: "garden",   at: { left: "30%", top: "8%" },    clue: "不在屋里。门口那一小片绿。" },
+  { id: "ticket", e: "🎟️", n: "票根",     room: "gaming",   at: { left: "6%", top: "44%" },    clue: "看戏那天的票根，夹在有弹孔的那面墙。" },
+  { id: "book",   e: "📖", n: "四十二天", room: "london",   at: { right: "8%", bottom: "30%" }, clue: "桌上那本。翻开就是伦敦。" },
+  { id: "duck",   e: "🦆", n: "小黄鸭",   room: "pool",     at: { right: "14%", top: "30%" },  clue: "最底下，有水的地方漂着。" }
+];
+var bkHuntRead = function () { try { return JSON.parse(localStorage.getItem("nana-hunt") || "{}"); } catch (_) { return {}; } };
+var bkHuntSave = function (o) { try { localStorage.setItem("nana-hunt", JSON.stringify(o)); } catch (_) {} };
+// 今天藏哪件：按日子轮，?hunt=id 可以指定（预览用）
+var bkHuntToday = function () {
+  var i;
+  try {
+    var q = (location.search || "").match(/[?&]hunt=([a-z0-9]+)/);
+    if (q) { for (i = 0; i < BK_HUNT.length; i++) { if (BK_HUNT[i].id === q[1]) return BK_HUNT[i]; } }
+  } catch (_) {}
+  var d = 0;
+  try { d = Math.floor((Date.now() - new Date("2026-09-26T00:00:00+08:00").getTime()) / 86400000); } catch (_) {}
+  if (d < 0) d = 0;
+  return BK_HUNT[d % BK_HUNT.length];
+};
+var bkCaseNo = function (item) { for (var i = 0; i < BK_HUNT.length; i++) { if (BK_HUNT[i].id === item.id) return i + 1; } return 0; };
+var bkRoom = function (id) { for (var i = 0; i < ROOMS.length; i++) { if (ROOMS[i].id === id) return ROOMS[i]; } return null; };
+var BK_KNOCK = ["Hudson 太太：来了来了，别敲了", "门里传来小提琴声。他在想事情。", "「进来吧，门没锁。」", "楼梯有十七级。他数过。", "门后面贴着一张纸：Nana 的家，闲人免进 🐈"];
+var BK_GREET = [
+  { to: 5,  a: ["Nana，还没睡？灯给你留着", "夜里的贝克街很安静", "这个点了，上楼躺下吧"] },
+  { to: 9,  a: ["早，Nana ☀️ 雾还没散", "Hudson 太太在楼下煎蛋", "今天想先去哪间屋"] },
+  { to: 13, a: ["上午好，Nana", "屋里每间都亮着，随便逛", "中午记得吃饭，这是命令"] },
+  { to: 17, a: ["下午好，Nana 🌿", "累了就在窗边坐坐", "今天的证物还没找到呢"] },
+  { to: 20, a: ["回来啦，Nana 🏡", "壁炉已经生好了", "今天辛苦了，进屋吧"] },
+  { to: 24, a: ["晚上好，Nana 🌙", "街灯亮了，屋里也亮着", "今晚什么都不用做"] }
+];
+function BakerHouse(_refBK) {
+  var h = React.createElement;
+  var onEnter = _refBK.onEnter, cozy = _refBK.cozy, time = _refBK.time;
+  var _fd = useState(bkHuntRead); var found = _fd[0], setFound = _fd[1];
+  var _ms = useState(0); var msg = _ms[0], setMsg = _ms[1];
+  var _fa = useState(true); var fade = _fa[0], setFade = _fa[1];
+  var _kn = useState(null); var knock = _kn[0], setKnock = _kn[1];
+  var _got = useState(null); var got = _got[0], setGot = _got[1];
+  var _bd = useState(false); var board = _bd[0], setBoard = _bd[1];
+  var hunt = bkHuntToday();
+  var huntDone = !!found[hunt.id];
+  var now = new Date(), hr = now.getHours();
+  var isNight = hr >= 19 || hr < 6, isDusk = hr >= 17 && hr < 19, isDawn = hr >= 6 && hr < 8;
+  var sky = isNight ? ["#0b1020", "#1a2238", "#2b3446"] : isDusk ? ["#3a2a48", "#8a4a3a", "#c98a5a"] : isDawn ? ["#3a3a58", "#9a8aa0", "#d9b08a"] : ["#aebfcf", "#c9d5de", "#e3e8ec"];
+  var skyText = isNight || isDusk || isDawn ? BK_CREAM : "#2b3446";
+  var lit = isNight || isDusk;   // 窗里的暖光
+  var justHome = (function () { try { return ldBackHome() && now < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
+  var greets = justHome ? ["欢迎回家，Nana 🏡", "四十二天，你回来了", "这次是真的到家了"] : (function () { for (var i = 0; i < BK_GREET.length; i++) { if (hr < BK_GREET[i].to) return BK_GREET[i].a; } return BK_GREET[0].a; })();
+  useEffect(function () {
+    var id = setInterval(function () {
+      setFade(false);
+      setTimeout(function () { setMsg(function (i) { return i + 1; }); setFade(true); }, 350);
+    }, 3800);
+    return function () { clearInterval(id); };
+  }, []);
+  var go = function (id) {
+    return function () {
+      if (id === "sitting") return;
+      if (id === "london") { try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} return; }
+      if (id === "letters") { try { window.dispatchEvent(new Event("nana-go-221b")); } catch (_) {} return; }
+      var r = bkRoom(id); if (r && onEnter) onEnter(r);
+    };
+  };
+  var doKnock = function () {
+    setKnock(BK_KNOCK[Math.floor(Math.random() * BK_KNOCK.length)]);
+    setTimeout(function () { setKnock(null); }, 2800);
+  };
+  var grab = function (e) {
+    e.stopPropagation();
+    var next = {}; for (var k in found) next[k] = found[k];
+    next[hunt.id] = new Date().toISOString().slice(0, 10);
+    setFound(next); bkHuntSave(next);
+    setGot(hunt);
+    setTimeout(function () { setGot(null); }, 3200);
+  };
+  // 藏在屋里的那一小点：只在今天这间、还没找到的时候画
+  var spot = function (roomId) {
+    if (huntDone || hunt.room !== roomId) return null;
+    var st = { position: "absolute", fontSize: 15, lineHeight: 1, zIndex: 3, cursor: "pointer", animation: "bkGlint 2.4s ease-in-out infinite", filter: "drop-shadow(0 0 4px rgba(255,230,160,0.9))" };
+    for (var k in hunt.at) st[k] = hunt.at[k];
+    return h("div", { onClick: grab, style: st }, hunt.e);
+  };
+  var plate = function (label) {
+    return h("div", { style: { position: "absolute", left: "50%", bottom: 6, transform: "translateX(-50%)", background: BK_GOLD, color: BK_NAVY2, fontSize: "0.56rem", fontWeight: 900, letterSpacing: "0.08em", padding: "2px 7px", borderRadius: 3, whiteSpace: "nowrap", boxShadow: "0 1px 0 rgba(0,0,0,0.35)", fontFamily: "Georgia,'PingFang SC',serif" } }, label);
+  };
+  var deco = function (e, st) {
+    var s = { position: "absolute", fontSize: 15, lineHeight: 1, opacity: 0.92, pointerEvents: "none", zIndex: 1 };
+    for (var k in st) s[k] = st[k];
+    return h("div", { style: s }, e);
+  };
+  // 一间屋：墙纸、窗里的光、家具、门牌
+  var cell = function (id, label, big, wall, flex, extras, dark) {
+    return h("div", { key: id, onClick: go(id), style: { flex: flex || 1, position: "relative", background: wall, borderRight: "4px solid " + BK_NAVY2, overflow: "hidden", cursor: "pointer", minWidth: 0 } },
+      lit ? h("div", { style: { position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 30%, rgba(255,226,150,0.32), rgba(255,200,110,0.06) 70%)", pointerEvents: "none" } }) : null,
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 8, background: "rgba(0,0,0,0.12)" } }),
+      h("div", { style: { position: "absolute", left: "50%", top: "44%", transform: "translate(-50%,-50%)", fontSize: 30, lineHeight: 1, filter: "drop-shadow(0 3px 3px rgba(0,0,0,0.25))" } }, big),
+      extras || null,
+      spot(id),
+      h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, background: "linear-gradient(180deg,#8a6a48,#5a4230)" } }),
+      plate(label));
+  };
+  // 起居室：那间最有名的屋子，一整层，四个能点的角落
+  var hot = function (id, e, label, st, big) {
+    var s = { position: "absolute", textAlign: "center", cursor: "pointer", zIndex: 2 };
+    for (var k in st) s[k] = st[k];
+    return h("div", { onClick: function (ev) { ev.stopPropagation(); go(id)(); }, style: s },
+      h("div", { style: { fontSize: big || 24, lineHeight: 1, filter: "drop-shadow(0 3px 3px rgba(0,0,0,0.4))" } }, e),
+      h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 2, letterSpacing: "0.04em", whiteSpace: "nowrap" } }, label));
+  };
+  var sitting = h("div", { key: "sitting", style: { position: "relative", height: 156, background: "#1f3d44", backgroundImage: "radial-gradient(rgba(217,180,95,0.16) 1.2px, transparent 1.4px)", backgroundSize: "14px 14px", overflow: "hidden" } },
+    lit ? h("div", { style: { position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 70%, rgba(255,150,60,0.28), transparent 60%)", pointerEvents: "none" } }) : null,
+    // 壁炉：炉膛、火、壁炉架，架子上钉着信
+    h("div", { style: { position: "absolute", left: "50%", bottom: 9, transform: "translateX(-50%)", width: 96, height: 92 } },
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 0, height: 10, background: "linear-gradient(180deg,#f0e2c4,#c9b48c)", borderRadius: 2, boxShadow: "0 2px 0 rgba(0,0,0,0.35)" } }),
+      h("div", { style: { position: "absolute", left: 8, right: 8, top: 10, bottom: 0, background: "#3b2a22", borderRadius: "0 0 2px 2px" } }),
+      h("div", { style: { position: "absolute", left: 20, right: 20, top: 24, bottom: 6, background: "#120a08", borderRadius: "22px 22px 2px 2px" } }),
+      h("div", { style: { position: "absolute", left: "50%", bottom: 8, transform: "translateX(-50%)", fontSize: 26, lineHeight: 1, animation: "bkFlame 0.9s ease-in-out infinite alternate", transformOrigin: "50% 100%" } }, "🔥"),
+      h("div", { onClick: function (ev) { ev.stopPropagation(); go("letters")(); }, style: { position: "absolute", left: "50%", top: -44, transform: "translateX(-50%)", textAlign: "center", cursor: "pointer", zIndex: 2 } },
+        h("div", { style: { fontSize: 22, lineHeight: 1, position: "relative", display: "inline-block" } }, "📜", h("span", { style: { position: "absolute", left: 8, top: -8, fontSize: 12, transform: "rotate(45deg)" } }, "🔪")),
+        h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 1, whiteSpace: "nowrap" } }, "221B 的信"))),
+    // 左墙：VR 弹孔 → 游乐场；扶手椅上搭着帽子
+    hot("gaming", h("span", { style: { fontFamily: "Georgia,serif", fontWeight: 900, color: BK_GOLD, letterSpacing: 2, textShadow: "0 0 6px rgba(217,180,95,0.5)" } }, "VR"), "游乐场", { left: "9%", top: 14 }, 20),
+    deco("•", { left: "13%", top: 30, color: "#0d1a1e", fontSize: 10 }), deco("•", { left: "20%", top: 26, color: "#0d1a1e", fontSize: 10 }), deco("•", { left: "17%", top: 38, color: "#0d1a1e", fontSize: 10 }),
+    deco("🪑", { left: "8%", bottom: 22, fontSize: 30 }), deco("🎩", { left: "13%", bottom: 46, fontSize: 14 }),
+    // 右边：窗、书桌上那本四十二天
+    h("div", { style: { position: "absolute", right: "9%", top: 12, width: 44, height: 46, background: lit ? "linear-gradient(180deg,#1a2238,#2b3446)" : "linear-gradient(180deg,#cfd9e2,#e3e8ec)", border: "3px solid #e8dcc0", borderRadius: "22px 22px 2px 2px", boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.2)" } },
+      h("div", { style: { position: "absolute", left: "50%", top: 0, bottom: 0, width: 2, background: "#e8dcc0" } })),
+    deco("🪵", { right: "6%", bottom: 12, fontSize: 30 }),
+    hot("london", "📖", "四十二天", { right: "8%", bottom: 40 }, 24),
+    deco("🕯️", { right: "24%", bottom: 46, fontSize: 13 }),
+    spot("sitting"), spot("london"), spot("gaming"),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, background: "linear-gradient(180deg,#8a6a48,#5a4230)" } }),
+    plate("起居室 · 一楼"));
+  // 门厅：绿门、扇形气窗、门牌
+  var hall = h("div", { key: "hall", onClick: doKnock, style: { flex: "0 0 22%", position: "relative", background: BK_NAVY, borderRight: "4px solid " + BK_NAVY2, cursor: "pointer", overflow: "hidden" } },
+    h("div", { style: { position: "absolute", left: "50%", bottom: 9, transform: "translateX(-50%)", width: 56, height: 92 } },
+      h("div", { style: { position: "absolute", left: -4, right: -4, top: -6, height: 26, background: "#3a4358", borderRadius: "30px 30px 0 0" } }),
+      h("div", { style: { position: "absolute", left: 2, right: 2, top: -2, height: 16, background: lit ? BK_WARM : "#cfd9e2", borderRadius: "26px 26px 0 0", boxShadow: lit ? "0 0 10px rgba(255,230,170,0.7)" : "none" } }),
+      h("div", { style: { position: "absolute", left: 0, right: 0, top: 18, bottom: 0, background: BK_DOOR, borderRadius: "2px 2px 0 0", animation: knock ? "bkKnock 0.5s ease" : "none" } },
+        h("div", { style: { position: "absolute", left: 7, top: 8, width: 16, height: 22, background: "#1c5238", borderRadius: 2 } }),
+        h("div", { style: { position: "absolute", right: 7, top: 8, width: 16, height: 22, background: "#1c5238", borderRadius: 2 } }),
+        h("div", { style: { position: "absolute", left: 7, top: 38, width: 16, height: 28, background: "#1c5238", borderRadius: 2 } }),
+        h("div", { style: { position: "absolute", right: 7, top: 38, width: 16, height: 28, background: "#1c5238", borderRadius: 2 } }),
+        h("div", { style: { position: "absolute", right: 10, top: 46, width: 5, height: 5, borderRadius: "50%", background: BK_GOLD } })),
+      h("div", { style: { position: "absolute", left: "50%", top: 22, transform: "translateX(-50%)", background: BK_GOLD, color: BK_NAVY2, fontFamily: "Georgia,serif", fontWeight: 900, fontSize: 11, padding: "1px 6px", borderRadius: 2, letterSpacing: 1 } }, "221B")),
+    knock ? h("div", { style: { position: "absolute", left: 4, right: 4, top: 6, background: "rgba(253,246,232,0.96)", color: "#22303f", fontSize: "0.56rem", fontWeight: 700, lineHeight: 1.4, padding: "5px 6px", borderRadius: 8, zIndex: 4, animation: "bkRise 0.3s ease both" } }, knock) : null,
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, background: "linear-gradient(180deg,#6a6f7a,#4a4f5a)" } }));
+  var floor = function (children, hgt) {
+    return h("div", { style: { display: "flex", height: hgt, borderBottom: "7px solid #3a2a1e", boxShadow: "inset 0 -2px 0 rgba(0,0,0,0.3)" } }, children);
+  };
+  var brick = { background: BK_NAVY, backgroundImage: "repeating-linear-gradient(0deg, transparent 0 9px, rgba(0,0,0,0.22) 9px 11px), repeating-linear-gradient(90deg, transparent 0 21px, rgba(0,0,0,0.12) 21px 23px)" };
+  var evidence = BK_HUNT.map(function (it) {
+    var ok = !!found[it.id];
+    return h("div", { key: it.id, title: it.n, style: { width: 40, height: 46, borderRadius: 4, background: ok ? BK_CREAM : "rgba(255,255,255,0.06)", border: ok ? "1px solid #d7c9a3" : "1px dashed rgba(217,180,95,0.35)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, transform: "rotate(" + (((bkCaseNo(it) % 3) - 1) * 3) + "deg)", boxShadow: ok ? "0 3px 6px rgba(0,0,0,0.3)" : "none", position: "relative" } },
+      h("div", { style: { position: "absolute", top: -4, left: "50%", marginLeft: -3, width: 6, height: 6, borderRadius: "50%", background: ok ? "#c0392b" : "rgba(217,180,95,0.35)" } }),
+      h("div", { style: { fontSize: 18, lineHeight: 1, opacity: ok ? 1 : 0.35 } }, ok ? it.e : "❔"),
+      h("div", { style: { fontSize: "0.42rem", fontWeight: 800, color: ok ? "#5a4a30" : "rgba(217,180,95,0.5)", whiteSpace: "nowrap" } }, ok ? it.n : "No." + (bkCaseNo(it) < 10 ? "0" : "") + bkCaseNo(it)));
+  });
+  var nFound = 0; for (var k in found) nFound++;
+  return h("div", { style: { position: "relative" } },
+    h("style", null,
+      "@keyframes bkGlint{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:1;transform:scale(1.2)}}" +
+      "@keyframes bkFlame{from{transform:translateX(-50%) scaleY(.92) scaleX(1.05)}to{transform:translateX(-50%) scaleY(1.08) scaleX(.95)}}" +
+      "@keyframes bkKnock{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}" +
+      "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
+      "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
+      "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(150px) scaleX(1)}50%{transform:translateX(150px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
+      "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
+      "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
+      "@keyframes bkPop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}60%{transform:translate(-50%,-50%) scale(1.06);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}"),
+    // ── 天空 + 问候 ──
+    h("div", { style: { background: "linear-gradient(180deg," + sky.join(",") + ")", padding: "calc(14px + env(safe-area-inset-top,0px)) 18px 0", position: "relative", overflow: "hidden" } },
+      isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44]].map(function (p, i) {
+        return h("div", { key: i, style: { position: "absolute", left: p[0] + "%", top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.8, animation: "bkLamp " + (2 + i % 3) + "s ease-in-out infinite" } });
+      }) : null,
+      isNight ? h("div", { style: { position: "absolute", right: 22, top: 18, width: 30, height: 30, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 24px rgba(243,233,184,0.6)" } }) : null,
+      h("div", { style: { position: "relative", zIndex: 1 } },
+        h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
+          h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
+          h("div", { style: { display: "flex", gap: 6 } },
+            h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, time || ""),
+            h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, "🔥 " + cozy + "%"))),
+        h("div", { style: { marginTop: 14, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
+        h("div", { style: { marginTop: 4, marginBottom: 10, color: skyText, opacity: 0.75, fontSize: "0.72rem", fontWeight: 700 } }, huntDone ? "今天的证物已经归档了 · 明天再来一案" : "今天屋里藏了一样东西，线索在房子下面那张案卷上 🔍")),
+      // 雾
+      h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: -6, height: 40, background: "linear-gradient(180deg, rgba(255,255,255,0) , rgba(255,255,255," + (isNight ? 0.12 : 0.55) + "))", filter: "blur(6px)", animation: "bkFog 9s ease-in-out infinite alternate", pointerEvents: "none" } })),
+    // ── 房子 ──
+    h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky[2] + "," + sky[2] + ")" } },
+      // 屋顶 + 烟囱
+      h("div", { style: { position: "relative", height: 64 } },
+        h("svg", { viewBox: "0 0 360 64", preserveAspectRatio: "none", style: { position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" } },
+          h("polygon", { points: "0,64 180,4 360,64", fill: BK_NAVY2 }),
+          h("polygon", { points: "14,64 180,12 346,64", fill: "#343d52" }),
+          h("rect", { x: 262, y: 14, width: 22, height: 40, fill: BK_NAVY }),
+          h("rect", { x: 258, y: 10, width: 30, height: 6, fill: BK_NAVY2 }),
+          h("rect", { x: 150, y: 40, width: 60, height: 24, fill: "#2f3849" }),
+          h("rect", { x: 160, y: 46, width: 40, height: 18, rx: 9, fill: lit ? BK_WARM : "#cfd9e2" })),
+        [0, 1, 2].map(function (i) { return h("div", { key: i, style: { position: "absolute", left: "75%", top: 4, width: 12, height: 12, borderRadius: "50%", background: "rgba(220,220,230,0.5)", animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }); })),
+      h("div", { style: _objectSpread({ padding: "0 14px", borderTop: "8px solid " + BK_NAVY2 }, brick) },
+        floor([cell("music", "琴房", "🎹", "#2a2540", 1, [deco("🎼", { right: "12%", top: "16%" }), deco("🎻", { left: "14%", bottom: "30%", fontSize: 18 })]), cell("window", "窗边", "🪟", "#dfe9f2", 1, [deco("☁️", { right: "10%", top: "14%", fontSize: 14 }), deco("☕", { left: "12%", bottom: "30%" })])], 100),
+        floor([cell("bedroom", "卧室", "🌙", "#efe3ea", 1, [deco("🛏️", { right: "10%", bottom: "28%", fontSize: 22 }), deco("🧸", { left: "12%", top: "18%" })]), cell("bath", "盥洗室", "🛁", "#d8eef7", 1, [deco("🫧", { left: "12%", top: "16%" }), deco("🪞", { right: "12%", top: "18%" })])], 106),
+        sitting,
+        floor([cell("kitchen", "厨房", "🍳", "#f3e4cf", "0 0 27%", [deco("🫖", { left: "10%", top: "16%" }), deco("🥧", { right: "10%", bottom: "30%" })]), hall, cell("living", "客厅", "🛋️", "#f6e8e6", "0 0 27%", [deco("📺", { right: "10%", top: "16%" }), deco("🪴", { left: "10%", bottom: "30%" })]), cell("garage", "车库", "🚗", "#4a505c", 1, [deco("🛞", { left: "10%", top: "16%" }), deco("🧰", { right: "10%", bottom: "30%" })])], 120),
+        floor([cell("basement", "地下室", "🕹️", "#2a2340", 1, [deco("🎯", { right: "10%", top: "14%" })]), cell("bar", "Bar", "🍸", "#1a0a2a", 1, [deco("🎵", { left: "10%", top: "16%" })]), cell("cigar", "雪茄房", "🥃", "#3a2a22", 1, [deco("🎷", { right: "10%", top: "16%" })]), cell("pool", "泳池", "🏊", "#0f4d66", 1, [deco("🌊", { left: "10%", bottom: "30%" })])], 100)),
+      // ── 街 ──
+      h("div", { style: { position: "relative", height: 82, background: "linear-gradient(180deg,#3d434e 0 44%,#2a2f38 44% 48%,#1f232b 48%)" } },
+        h("div", { onClick: go("garden"), style: { position: "absolute", left: 0, top: 0, width: "22%", height: "44%", background: "linear-gradient(180deg,#3f6a3a,#2f5230)", borderRight: "3px solid #1f232b", cursor: "pointer", zIndex: 2 } },
+          deco("🌷", { left: "8%", top: 2, fontSize: 16 }), deco("🌿", { right: "10%", top: 8, fontSize: 14 }), deco("🌷", { left: "44%", top: 12, fontSize: 13 }),
+          spot("garden"),
+          h("div", { style: { position: "absolute", left: 4, bottom: 3, color: BK_GOLD, fontSize: "0.48rem", fontWeight: 900, letterSpacing: 1 } }, "前院")),
+        // 煤气灯
+        h("div", { style: { position: "absolute", left: "34%", top: 14, width: 3, height: 24, background: "#0c0f16", boxShadow: "1px 0 0 rgba(255,255,255,0.1)" } }),
+        h("div", { style: { position: "absolute", left: "34%", top: 2, marginLeft: -5, width: 13, height: 14, background: lit ? BK_WARM : "#cfd9e2", borderRadius: "3px 3px 6px 6px", boxShadow: lit ? "0 0 26px 8px rgba(255,220,140,0.45)" : "none", animation: lit ? "bkLamp 1.8s ease-in-out infinite" : "none" } }),
+        // 邮筒 → 221B 的信
+        h("div", { onClick: go("letters"), style: { position: "absolute", right: "9%", top: -6, textAlign: "center", cursor: "pointer", zIndex: 2 } },
+          h("div", { style: { fontSize: 30, lineHeight: 1, filter: "drop-shadow(0 3px 3px rgba(0,0,0,0.5))" } }, "📮"),
+          h("div", { style: { color: BK_GOLD, fontSize: "0.48rem", fontWeight: 900, marginTop: -2 } }, "寄信")),
+        // 猫
+        h("div", { style: { position: "absolute", left: "38%", top: 12, fontSize: 18, lineHeight: 1, animation: "bkCat 16s linear infinite" } }, "🐈"),
+        h("div", { style: { position: "absolute", left: 0, right: 0, top: "52%", borderTop: "2px dashed rgba(255,255,255,0.18)" } }),
+        h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 30, overflow: "hidden", pointerEvents: "none" } }, h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: -12, height: 34, background: "rgba(255,255,255," + (isNight ? 0.1 : 0.4) + ")", filter: "blur(10px)", animation: "bkFog 7s ease-in-out infinite alternate" } }))),
+      // 找到了！
+      got ? h("div", { style: { position: "absolute", left: "50%", top: "46%", transform: "translate(-50%,-50%)", background: BK_CREAM, color: "#22303f", borderRadius: 16, padding: "14px 20px", textAlign: "center", boxShadow: "0 16px 40px rgba(0,0,0,0.5)", zIndex: 9, animation: "bkPop 0.45s cubic-bezier(.34,1.3,.64,1) both", border: "2px solid " + BK_GOLD } },
+        h("div", { style: { fontSize: 40, lineHeight: 1 } }, got.e),
+        h("div", { style: { fontSize: "0.95rem", fontWeight: 900, marginTop: 6 } }, "找到了：" + got.n),
+        h("div", { style: { fontSize: "0.68rem", color: "#6a5a40", marginTop: 3 } }, "已钉到证物板上 📌")) : null),
+    // ── 案卷 + 证物板 ──
+    h("div", { style: { padding: "12px 16px 0" } },
+      h("div", { style: { background: "linear-gradient(180deg,#fbf3df,#f1e4c4)", border: "1px solid #d7c9a3", borderRadius: 6, padding: "12px 14px 12px 16px", position: "relative", boxShadow: "0 6px 16px rgba(80,60,20,0.14)", fontFamily: "Georgia,'PingFang SC',serif" } },
+        h("div", { style: { position: "absolute", left: 0, top: 10, bottom: 10, width: 4, background: "#c0392b", borderRadius: "0 3px 3px 0" } }),
+        h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+          h("div", { style: { fontSize: "0.56rem", letterSpacing: 2, fontWeight: 900, color: "#8a6a30" } }, "CASE FILE No." + (bkCaseNo(hunt) < 10 ? "0" : "") + bkCaseNo(hunt)),
+          h("div", { style: { marginLeft: "auto", fontSize: "0.56rem", fontWeight: 800, color: huntDone ? "#2e7d4f" : "#c0392b", border: "1.5px solid currentColor", borderRadius: 3, padding: "1px 6px", transform: "rotate(-4deg)" } }, huntDone ? "已归档" : "未结")),
+        h("div", { style: { marginTop: 6, fontSize: "0.92rem", fontWeight: 900, color: "#22303f" } }, huntDone ? ("证物：" + hunt.e + " " + hunt.n) : "今日线索"),
+        h("div", { style: { marginTop: 4, fontSize: "0.8rem", lineHeight: 1.65, color: "#4a3f2a" } }, huntDone ? "找到了。明天屋里会藏新的。" : "「" + hunt.clue + "」"),
+        huntDone ? null : h("div", { style: { marginTop: 6, fontSize: "0.62rem", color: "#8a7a5a" } }, "提示：它会一闪一闪的，很小，在屋里找。")),
+      h("div", { onClick: function () { setBoard(!board); }, style: { marginTop: 10, background: BK_NAVY2, borderRadius: 12, padding: "10px 12px", cursor: "pointer", border: "1px solid rgba(217,180,95,0.25)" } },
+        h("div", { style: { display: "flex", alignItems: "center", color: BK_CREAM, fontSize: "0.74rem", fontWeight: 800 } }, "📌 证物板", h("span", { style: { marginLeft: 8, color: BK_GOLD, fontSize: "0.62rem" } }, nFound + " / " + BK_HUNT.length), h("span", { style: { marginLeft: "auto", color: "rgba(253,246,232,0.6)", fontSize: "0.62rem" } }, board ? "收起 ▲" : "展开 ▼")),
+        board ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, padding: "8px 4px 2px", justifyContent: "center" } }, evidence) : null)));
+}
 function HomeDeck(_refHD) {
   var h = React.createElement;
   var rc = h;
@@ -26253,7 +26512,11 @@ function NanasHome() {
     onClose: function onClose() {
       return setShowEgg4(false);
     }
-  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && /*#__PURE__*/React.createElement(HeroBanner, {
+  }), !showSplash && /*#__PURE__*/React.createElement(React.Fragment, null, !room && NANA_BAKER && /*#__PURE__*/React.createElement(BakerHouse, {
+    onEnter: enterRoom,
+    time: time,
+    cozy: cozy
+  }), !room && !NANA_BAKER && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
   }), !room && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), !room && /*#__PURE__*/React.createElement("div", {
@@ -26349,7 +26612,7 @@ function NanasHome() {
     style: {
       padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
     }
-  }, !room && /*#__PURE__*/React.createElement(HouseMap, {
+  }, !room && !NANA_BAKER && /*#__PURE__*/React.createElement(HouseMap, {
     onEnter: enterRoom
   }), room && !activity && room.id !== "bedroom" && room.id !== "living" && room.id !== "basement" && room.id !== "london" && room.id !== "travel" && room.id !== "disney" && room.id !== "meisha" && /*#__PURE__*/React.createElement("div", null, room.id !== "gaming" && /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
