@@ -25770,7 +25770,12 @@ function BakerHouse(_refBK) {
       h("div", { style: { position: "absolute", left: 20, right: 20, top: 24, bottom: 6, background: "#120a08", borderRadius: "22px 22px 2px 2px" } }),
       h("div", { style: { position: "absolute", left: "50%", bottom: 8, transform: "translateX(-50%)", fontSize: 26, lineHeight: 1, animation: "bkFlame 0.9s ease-in-out infinite alternate", transformOrigin: "50% 100%" } }, "🔥"),
       h("div", { onClick: function (ev) { ev.stopPropagation(); go("letters")(); }, style: { position: "absolute", left: "50%", top: -44, transform: "translateX(-50%)", textAlign: "center", cursor: "pointer", zIndex: 2 } },
-        h("div", { style: { fontSize: 22, lineHeight: 1, position: "relative", display: "inline-block", animation: newLetter ? "bkBob 2.6s ease-in-out infinite" : "none", filter: newLetter ? "drop-shadow(0 0 7px rgba(255,230,160,0.95))" : "none" } }, newLetter ? "📃" : "📜", h("span", { style: { position: "absolute", left: 8, top: -8, fontSize: 12, transform: "rotate(45deg)" } }, "🔪")),
+        h("div", { style: { fontSize: 22, lineHeight: 1, position: "relative", display: "inline-block", animation: newLetter ? "bkBob 2.6s ease-in-out infinite" : "none", filter: newLetter ? "drop-shadow(0 0 7px rgba(255,230,160,0.95))" : "none" } }, newLetter
+            ? h("div", { style: { width: 20, height: 26, margin: "0 auto", background: "linear-gradient(180deg,#fdf6e8,#f1e4c4)", borderRadius: "2px 2px 3px 6px", boxShadow: "0 2px 5px rgba(0,0,0,0.45)", position: "relative" } },
+                [7, 11, 15, 19].map(function (y, i) { return h("div", { key: i, style: { position: "absolute", left: 4, right: i === 3 ? 9 : 4, top: y, height: 1.4, background: "rgba(169,127,46,0.55)", borderRadius: 1 } }); }),
+                h("div", { style: { position: "absolute", right: 3, bottom: 3, width: 5, height: 5, borderRadius: "50%", background: "#c0392b", boxShadow: "0 0 0 1px rgba(255,255,255,0.5)" } }))
+            : "📜",
+          h("span", { style: { position: "absolute", left: 8, top: -8, fontSize: 12, transform: "rotate(45deg)" } }, "🔪")),
         h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 1, whiteSpace: "nowrap" } }, "221B 的信"))),
     // 左墙：VR 弹孔 → 游乐场；扶手椅上搭着帽子
     hot("gaming", h("span", { style: { fontFamily: "Georgia,serif", fontWeight: 900, color: BK_GOLD, letterSpacing: 2, textShadow: "0 0 6px rgba(217,180,95,0.5)" } }, "VR"), "游乐场", { left: "9%", top: 14 }, 20),
