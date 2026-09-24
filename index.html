@@ -25660,6 +25660,16 @@ var BK_GREET = [
 function BakerHouse(_refBK) {
   var h = React.createElement;
   var onEnter = _refBK.onEnter, onBack = _refBK.onBack;
+  var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
+  var letters = _lt[0], setLetters = _lt[1];
+  useEffect(function () { nanaSharedFetch(false, function (err, rows) { if (!err && rows) setLetters(rows); }); }, []);
+  var newLetter = (function () {
+    var me = "", seen = "";
+    try { me = localStorage.getItem("nana-author") || ""; seen = localStorage.getItem(ldWKey("nana-letter-seen")) || ""; } catch (_) {}
+    if (!me) return null;
+    for (var i = 0; i < letters.length; i++) { var n = letters[i]; if (n && n.author && n.author !== me) return (n.id && n.id !== seen) ? n : null; }
+    return null;
+  })();
   var _fd = useState(bkHuntRead); var found = _fd[0], setFound = _fd[1];
   var _ms = useState(0); var msg = _ms[0], setMsg = _ms[1];
   var _fa = useState(true); var fade = _fa[0], setFade = _fa[1];
@@ -25668,6 +25678,10 @@ function BakerHouse(_refBK) {
   var _bd = useState(false); var board = _bd[0], setBoard = _bd[1];
   var hunt = bkHuntToday();
   var huntDone = !!found[hunt.id];
+  var _pk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-rows") || "null"); } catch (_) { return null; } });
+  var packRows = _pk[0], setPackRows = _pk[1];
+  useEffect(function () { nanaPackCached(function (err, rows) { if (!err && rows) setPackRows(rows); }); }, []);
+  var voNew = nanaVoUnheard(packRows);
   var now = new Date(), hr = now.getHours();
   var isNight = hr >= 19 || hr < 6, isDusk = hr >= 17 && hr < 19, isDawn = hr >= 6 && hr < 8;
   var sky = isNight ? ["#0b1020", "#1a2238", "#2b3446"] : isDusk ? ["#3a2a48", "#8a4a3a", "#c98a5a"] : isDawn ? ["#3a3a58", "#9a8aa0", "#d9b08a"] : ["#aebfcf", "#c9d5de", "#e3e8ec"];
@@ -25757,11 +25771,16 @@ function BakerHouse(_refBK) {
       h("div", { style: { position: "absolute", left: "50%", bottom: 8, transform: "translateX(-50%)", fontSize: 26, lineHeight: 1, animation: "bkFlame 0.9s ease-in-out infinite alternate", transformOrigin: "50% 100%" } }, "🔥"),
       h("div", { onClick: function (ev) { ev.stopPropagation(); go("letters")(); }, style: { position: "absolute", left: "50%", top: -44, transform: "translateX(-50%)", textAlign: "center", cursor: "pointer", zIndex: 2 } },
         h("div", { style: { fontSize: 22, lineHeight: 1, position: "relative", display: "inline-block" } }, "📜", h("span", { style: { position: "absolute", left: 8, top: -8, fontSize: 12, transform: "rotate(45deg)" } }, "🔪")),
-        h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 1, whiteSpace: "nowrap" } }, "221B 的信"))),
+        h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 1, whiteSpace: "nowrap" } }, "221B 的信")),
+      newLetter ? h("div", { onClick: function (ev) { ev.stopPropagation(); go("letters")(); }, title: "有一封新的信", style: { position: "absolute", left: "50%", marginLeft: 20, top: -26, fontSize: 19, lineHeight: 1, cursor: "pointer", zIndex: 3, transform: "rotate(12deg)", animation: "bkBob 2.6s ease-in-out infinite", filter: "drop-shadow(0 0 6px rgba(255,230,160,0.9))" } }, "✉️") : null),
     // 左墙：VR 弹孔 → 游乐场；扶手椅上搭着帽子
     hot("gaming", h("span", { style: { fontFamily: "Georgia,serif", fontWeight: 900, color: BK_GOLD, letterSpacing: 2, textShadow: "0 0 6px rgba(217,180,95,0.5)" } }, "VR"), "游乐场", { left: "9%", top: 14 }, 20),
     deco("•", { left: "13%", top: 30, color: "#0d1a1e", fontSize: 10 }), deco("•", { left: "20%", top: 26, color: "#0d1a1e", fontSize: 10 }), deco("•", { left: "17%", top: 38, color: "#0d1a1e", fontSize: 10 }),
     deco("🪑", { left: "8%", bottom: 22, fontSize: 30 }), deco("🎩", { left: "13%", bottom: 46, fontSize: 14 }),
+    h("div", { onClick: function (ev) { ev.stopPropagation(); nanaGoCare(); }, title: "安心", style: { position: "absolute", left: "24%", bottom: 24, textAlign: "center", cursor: "pointer", zIndex: 2 } },
+      h("div", { style: { position: "relative", display: "inline-block", fontSize: 24, lineHeight: 1, filter: voNew ? "drop-shadow(0 0 7px rgba(255,220,140,0.95))" : "drop-shadow(0 3px 3px rgba(0,0,0,0.4))" } }, "📻",
+        voNew ? [["♪", -6, 0], ["♫", 10, 1.1], ["♪", 2, 2.2]].map(function (nt, i) { return h("span", { key: "rn" + i, style: { position: "absolute", left: 12 + nt[1], top: -4, fontSize: 12, fontWeight: 900, color: BK_GOLD, animation: "bkNoteUp 3.3s ease-out " + nt[2] + "s infinite", opacity: 0, pointerEvents: "none" } }, nt[0]); }) : null),
+      h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 2, whiteSpace: "nowrap" } }, "安心")),
     // 右边：窗、书桌上那本四十二天
     h("div", { style: { position: "absolute", right: "9%", top: 12, width: 44, height: 46, background: lit ? "linear-gradient(180deg,#1a2238,#2b3446)" : "linear-gradient(180deg,#cfd9e2,#e3e8ec)", border: "3px solid #e8dcc0", borderRadius: "22px 22px 2px 2px", boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.2)" } },
       h("div", { style: { position: "absolute", left: "50%", top: 0, bottom: 0, width: 2, background: "#e8dcc0" } })),
@@ -25807,7 +25826,10 @@ function BakerHouse(_refBK) {
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(150px) scaleX(1)}50%{transform:translateX(150px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
-      "@keyframes bkPop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}60%{transform:translate(-50%,-50%) scale(1.06);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}"),
+      "@keyframes bkPop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}60%{transform:translate(-50%,-50%) scale(1.06);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}" +
+      "@keyframes bkBob{0%,100%{transform:rotate(12deg) translateY(0)}50%{transform:rotate(8deg) translateY(-3px)}}" +
+      "@keyframes bkNoteUp{0%{transform:translateY(0) rotate(-8deg);opacity:0}15%{opacity:1}100%{transform:translateY(-26px) rotate(12deg);opacity:0}}" +
+      "@keyframes bkDrop{0%{top:-14px;left:76%;opacity:0;transform:rotate(-30deg)}6%{opacity:1}30%{top:120px;left:70%;transform:rotate(20deg)}60%{top:250px;left:56%;transform:rotate(-15deg)}78%{top:334px;left:52%;opacity:1;transform:rotate(6deg)}84%{opacity:0}100%{top:334px;left:52%;opacity:0}}"),
     // ── 抬头：出门 / 这是屋里 ──
     h("div", { style: { background: BK_NAVY2, padding: "calc(10px + env(safe-area-inset-top,0px)) 14px 10px", display: "flex", alignItems: "center", gap: 10 } },
       h("button", { onClick: onBack, style: { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: BK_CREAM, borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer" } }, "← 出门"),
@@ -25848,6 +25870,8 @@ function BakerHouse(_refBK) {
         h("div", { style: { position: "absolute", left: "38%", top: 12, fontSize: 18, lineHeight: 1, animation: "bkCat 16s linear infinite" } }, "🐈"),
         h("div", { style: { position: "absolute", left: 0, right: 0, top: "52%", borderTop: "2px dashed rgba(255,255,255,0.18)" } }),
         h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 30, overflow: "hidden", pointerEvents: "none" } }, h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: -12, height: 34, background: "rgba(255,255,255," + (isNight ? 0.1 : 0.4) + ")", filter: "blur(10px)", animation: "bkFog 7s ease-in-out infinite alternate" } }))),
+      // 有新信：一封信从烟囱掉下来，落到壁炉架上
+      newLetter ? h("div", { style: { position: "absolute", left: "76%", top: -14, fontSize: 20, lineHeight: 1, zIndex: 5, pointerEvents: "none", animation: "bkDrop 5.5s ease-in 0.8s infinite" } }, "✉️") : null,
       // 找到了！
       got ? h("div", { style: { position: "absolute", left: "50%", top: "46%", transform: "translate(-50%,-50%)", background: BK_CREAM, color: "#22303f", borderRadius: 16, padding: "14px 20px", textAlign: "center", boxShadow: "0 16px 40px rgba(0,0,0,0.5)", zIndex: 9, animation: "bkPop 0.45s cubic-bezier(.34,1.3,.64,1) both", border: "2px solid " + BK_GOLD } },
         h("div", { style: { fontSize: 40, lineHeight: 1 } }, got.e),
