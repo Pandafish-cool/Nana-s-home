@@ -20612,6 +20612,7 @@ function LondonRoom(_refLD) {
   var h = React.createElement;
   var full = ldFullOpen();
   var _tb = useState(function () { var w = ldWantTab; ldWantTab = null; return w || "now"; }); var tab = _tb[0], setTab = _tb[1];
+  var _door = useState(function () { return ldBackHome() && tab === "care"; }); var door = _door[0], setDoor = _door[1];   // 从门口的传声筒进来的
   var _op = useState(function () {
     try {
       var k = "nana-london-open";
@@ -22852,7 +22853,7 @@ function LondonRoom(_refLD) {
     var hint = LD_VO_HINT[(voList.length + LD_VO_HINT.length) % LD_VO_HINT.length];
     return ukCard([
       screws,
-      ukHead("短波", readOnly ? "调到这个频率就有人在 · 录在「安心」那一页" : "调到这个频率就有人在",
+      ukHead("传声筒", readOnly ? "对着它说，那头就有人在 · 录在「安心」那一页" : "对着它说，那头就有人在",
         h("span", { style: { fontSize: "1rem" } }, "\uD83D\uDCFB")),
       voErr ? h("div", { key: "ve", style: { marginBottom: 9, background: "rgba(180,53,58,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#8d2b30", fontWeight: 700 } }, voErr) : null,
       voNote ? h("div", { key: "vn", style: { marginBottom: 9, background: "rgba(31,111,104,0.1)", borderRadius: 8, padding: "8px 11px", fontSize: "0.72rem", color: "#1a5c56", fontWeight: 700, lineHeight: 1.55 } }, voNote) : null,
@@ -23682,7 +23683,7 @@ function LondonRoom(_refLD) {
   var _to = useState(function () { return backHome && tab !== "now"; }); var toolsOpen = _to[0], setToolsOpen = _to[1];
   // 已经在这间房里的时候再从门口点短波，也要跳过去
   useEffect(function () {
-    var go = function () { if (ldWantTab) { setTab(ldWantTab); setToolsOpen(true); ldWantTab = null; } };
+    var go = function () { if (ldWantTab) { setTab(ldWantTab); setToolsOpen(true); setDoor(ldWantTab === "care"); ldWantTab = null; } };
     window.addEventListener("nana-go-london", go);
     return function () { window.removeEventListener("nana-go-london", go); };
   }, []);
@@ -23783,6 +23784,17 @@ function LondonRoom(_refLD) {
         h("span", { style: { fontSize: "0.72rem", fontWeight: 800, color: "#8a6a2e" } }, toolsOpen ? "收起 ▲" : "展开 ▼")));
     memoir = h("div", null, cover, numbers, days, momentCard, wallSection, photos, lastPage, toolbox);
   }
+  // 传声筒那一页：安心的内容一样不少，只是换了 221B 的壳
+  var doorPage = h("div", { style: { margin: "calc(-16px - env(safe-area-inset-top,0px)) -16px 0", background: "#e9e1d1", minHeight: "100vh" } },
+    h("div", { style: { background: "linear-gradient(180deg,#1e2636,#2b3446)", padding: "calc(12px + env(safe-area-inset-top,0px)) 16px 44px", position: "relative", overflow: "hidden" } },
+      h("div", { style: { position: "absolute", right: -10, top: 6, fontSize: 96, lineHeight: 1, opacity: 0.08, transform: "rotate(-12deg)", pointerEvents: "none" } }, "📻"),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+        h("button", { onClick: onBack, style: { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.72rem", cursor: "pointer" } }, "← 回门口"),
+        h("button", { onClick: function () { setDoor(false); setToolsOpen(false); try { window.scrollTo(0, 0); } catch (_) {} }, style: { marginLeft: "auto", background: "none", border: "none", color: "rgba(253,246,232,0.7)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "翻开四十二天 →")),
+      h("div", { style: { marginTop: 18, color: "#d9b45f", fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B · SPEAKING TUBE"),
+      h("div", { style: { marginTop: 4, color: "#fdf6e8", fontSize: "1.5rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.04em" } }, "传声筒"),
+      h("div", { style: { marginTop: 4, color: "rgba(253,246,232,0.72)", fontSize: "0.74rem", fontWeight: 700 } }, "对着它说，那头就有人在 · 安心那一页原样在这儿，记录都留着")),
+    h("div", { style: { padding: "0 14px 24px", marginTop: -26 } }, careTab));
   return h("div", null,
     opening ? h(LondonOpening, { onDone: function () { setOpening(false); } }) : null,
     h("style", null,
@@ -23853,7 +23865,7 @@ function LondonRoom(_refLD) {
       "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}" +
       // 挂在房子周围那几个小牌子，很轻地上下飘
       "@keyframes hsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}"),
-    backHome ? memoir : h(LondonHarbour, {
+    backHome ? (door ? doorPage : memoir) : h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
       title: "\uD83E\uDDED 伦敦航海家",
@@ -23871,7 +23883,7 @@ function LondonRoom(_refLD) {
     }),
     backHome ? null : ldTabBar,
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    backHome ? (toolsOpen ? h("div", null, ldTabBar, ldTabBody) : null) : ldTabBody,
+    backHome ? (door ? null : (toolsOpen ? h("div", null, ldTabBar, ldTabBody) : null)) : ldTabBody,
     shotModal,
     bigShot,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
@@ -26029,9 +26041,9 @@ function BakerFacade(_refBF) {
       h("circle", { cx: 157, cy: 304, r: 1.4, fill: "url(#bfBrass)" }),
       newLetter ? h("g", { style: { transformOrigin: "157px 288px", animation: "mpBob 2.6s ease-in-out infinite" } },
         h("g", { transform: "rotate(-12 157 286)" },
-          h("rect", { x: 148, y: 279, width: 18, height: 11, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.8 }),
-          h("path", { d: "M148 280 L157 286 L166 280", fill: "none", stroke: "#c8b48e", strokeWidth: 0.8 }),
-          h("circle", { cx: 157, cy: 285.5, r: 1.6, fill: "#c0392b" }))) : null,
+          h("rect", { x: 150.5, y: 281.5, width: 13, height: 8, rx: 1, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.7 }),
+          h("path", { d: "M150.5 282.3 L157 286.3 L163.5 282.3", fill: "none", stroke: "#c8b48e", strokeWidth: 0.7 }),
+          h("circle", { cx: 157, cy: 286, r: 1.1, fill: "#c0392b" }))) : null,
       h("text", { x: 157, y: 318, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "221B 的信")),
     // 📻 短波：黄铜对讲板，刻着电波和 SHORT WAVE，一盏小灯
     h("g", { onClick: nanaGoCare, style: { cursor: "pointer" } },
@@ -26042,12 +26054,11 @@ function BakerFacade(_refBF) {
       [[-3.5, -1], [0.5, -1], [-1.5, 2], [-3.5, -4], [0.5, -4], [2.5, 2], [-1.5, -1]].map(function (p, i) { return h("circle", { key: "gr" + i, cx: 285 + p[0] + 1, cy: 300 + p[1] + 1, r: 0.9, fill: "url(#bfBrass)" }); }),
       h("path", { d: "M276 300 a9 9 0 0 1 3 -6", fill: "none", stroke: "#3a2a10", strokeWidth: 1.1, strokeLinecap: "round" }),
       h("path", { d: "M294 300 a9 9 0 0 0 -3 -6", fill: "none", stroke: "#3a2a10", strokeWidth: 1.1, strokeLinecap: "round" }),
-      h("text", { x: 285, y: 313, textAnchor: "middle", fontSize: 3.6, fontWeight: "bold", fill: "#3a2a10", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "SHORT WAVE"),
-      h("circle", { cx: 285, cy: 317, r: 1.6, fill: voNew ? "#e8453c" : "#3fbf6a", style: { filter: "drop-shadow(0 0 2px " + (voNew ? "#e8453c" : "#3fbf6a") + ")", animation: (voNew ? "bfLed 0.7s" : "bfLed 2s") + " ease-in-out infinite" } }),
+      h("text", { x: 285, y: 313, textAnchor: "middle", fontSize: 3.1, fontWeight: "bold", fill: "#3a2a10", fontFamily: "Georgia,serif", letterSpacing: 0.5 }, "SPEAKING TUBE"),
+      h("circle", { cx: 285, cy: 317, r: 1.6, fill: "#3fbf6a", style: { filter: "drop-shadow(0 0 2px #3fbf6a)", animation: "bfLed 2s ease-in-out infinite" } }),
       voNew ? [0, 1, 2].map(function (i) { return h("circle", { key: "rp" + i, cx: 285, cy: 300, r: 8, fill: "none", stroke: BK_GOLD, strokeWidth: 1.2, style: { transformOrigin: "285px 300px", animation: "bfRipple 2.4s ease-out " + (i * 0.8) + "s infinite" } }); }) : null,
       voNew ? [["♪", 279, 0], ["♫", 290, 1.1], ["♪", 285, 2.2]].map(function (nt, i) { return h("text", { key: "nt" + i, x: nt[1], y: 292, textAnchor: "middle", fontSize: 7, fontWeight: "bold", fill: BK_GOLD, style: { transformOrigin: nt[1] + "px 292px", animation: "bfNote 3.3s ease-out " + nt[2] + "s infinite", opacity: 0 } }, nt[0]); }) : null,
-      voNew ? h("g", null, h("circle", { cx: 299, cy: 289, r: 5, fill: "#e8453c", stroke: "#fdf6e8", strokeWidth: 1 }), h("text", { x: 299, y: 291.2, textAnchor: "middle", fontSize: 6, fontWeight: "bold", fill: "#fff", fontFamily: "Georgia,serif" }, voNew > 9 ? "9+" : String(voNew))) : null,
-      h("text", { x: 285, y: 283, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "短波 · 留言")),
+      h("text", { x: 285, y: 283, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "传声筒")),
     // 门铃
     h("circle", { cx: 258, cy: 300, r: 3.2, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 0.8, onClick: doKnock, style: { cursor: "pointer" } }),
     // 台阶 + 花盆 + 刮泥器
