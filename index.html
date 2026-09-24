@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-249";
+var NANA_VER = "v2026.8.2-250";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -25801,7 +25801,12 @@ function BakerHouse(_refBK) {
         h("div", { style: { fontSize: 20, lineHeight: 1 } }, "🎡"),
         h("div", { style: { fontSize: "0.4rem", color: BK_GOLD, letterSpacing: 1, fontFamily: "Georgia,serif", fontWeight: 900, marginTop: 2, whiteSpace: "nowrap" } }, "42 DAYS")),
       h("div", { style: { display: "inline-block", fontSize: "0.56rem", fontWeight: 900, color: BK_NAVY2, marginTop: 3, background: BK_GOLD, borderRadius: 3, padding: "2px 6px", whiteSpace: "nowrap", boxShadow: "0 1px 0 rgba(0,0,0,0.4)" } }, "伦敦的四十二天 →")),
-    deco("🕯️", { right: "24%", bottom: 46, fontSize: 13 }),
+    h("div", { onClick: function (ev) { ev.stopPropagation(); nanaSheet("music"); }, title: "留声机", style: { position: "absolute", right: "22%", bottom: 24, textAlign: "center", cursor: "pointer", zIndex: 2 } },
+      h("div", { style: { position: "relative", width: 28, height: 30, margin: "0 auto" } },
+        h("div", { style: { position: "absolute", left: 4, bottom: 0, width: 20, height: 13, background: "linear-gradient(180deg,#7a4a2a,#4a2c18)", borderRadius: 2, boxShadow: "0 2px 4px rgba(0,0,0,0.5)" } }),
+        h("div", { style: { position: "absolute", left: 6, bottom: 4, width: 8, height: 2, background: BK_GOLD, borderRadius: 1 } }),
+        h("div", { style: { position: "absolute", left: 1, top: -4, fontSize: 22, lineHeight: 1, transform: "rotate(-24deg)", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.5))" } }, "📯")),
+      h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: BK_GOLD, marginTop: 2, whiteSpace: "nowrap" } }, "留声机")),
     spot("sitting"), spot("london"), spot("gaming"),
     h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, background: "linear-gradient(180deg,#8a6a48,#5a4230)" } }),
     plate("起居室 · 一楼"));
@@ -25817,6 +25822,9 @@ function BakerHouse(_refBK) {
         h("div", { style: { position: "absolute", right: 7, top: 38, width: 16, height: 28, background: "#1c5238", borderRadius: 2 } }),
         h("div", { style: { position: "absolute", right: 10, top: 46, width: 5, height: 5, borderRadius: "50%", background: BK_GOLD } })),
       h("div", { style: { position: "absolute", left: "50%", top: 22, transform: "translateX(-50%)", background: BK_GOLD, color: BK_NAVY2, fontFamily: "Georgia,serif", fontWeight: 900, fontSize: 11, padding: "1px 6px", borderRadius: 2, letterSpacing: 1 } }, "221B")),
+    h("div", { onClick: function (ev) { ev.stopPropagation(); nanaSheet("postcards"); }, title: "明信片", style: { position: "absolute", right: 1, bottom: 11, textAlign: "center", cursor: "pointer", zIndex: 3 } },
+      h("div", { style: { fontSize: 15, lineHeight: 1, transform: "rotate(-8deg)", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.6))" } }, "🏞️"),
+      h("div", { style: { fontSize: "0.42rem", fontWeight: 800, color: BK_GOLD, marginTop: 1, whiteSpace: "nowrap" } }, "明信片")),
     knock ? h("div", { style: { position: "absolute", left: 4, right: 4, top: 6, background: "rgba(253,246,232,0.96)", color: "#22303f", fontSize: "0.56rem", fontWeight: 700, lineHeight: 1.4, padding: "5px 6px", borderRadius: 8, zIndex: 4, animation: "bkRise 0.3s ease both" } }, knock) : null,
     h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 9, background: "linear-gradient(180deg,#6a6f7a,#4a4f5a)" } }));
   var floor = function (children, hgt) {
@@ -25866,7 +25874,10 @@ function BakerHouse(_refBK) {
         floor([cell("music", "琴房", "🎹", "#2a2540", 1, [deco("🎼", { right: "12%", top: "16%" }), deco("🎻", { left: "14%", bottom: "30%", fontSize: 18 })]), cell("window", "窗边", "🪟", "#dfe9f2", 1, [deco("☁️", { right: "10%", top: "14%", fontSize: 14 }), deco("☕", { left: "12%", bottom: "30%" })])], 100),
         floor([cell("bedroom", "卧室", "🌙", "#efe3ea", 1, [deco("🛏️", { right: "10%", bottom: "28%", fontSize: 22 }), deco("🧸", { left: "12%", top: "18%" })]), cell("bath", "盥洗室", "🛁", "#d8eef7", 1, [deco("🫧", { left: "12%", top: "16%" }), deco("🪞", { right: "12%", top: "18%" })])], 106),
         sitting,
-        floor([cell("kitchen", "厨房", "🍳", "#f3e4cf", "0 0 27%", [deco("🫖", { left: "10%", top: "16%" }), deco("🥧", { right: "10%", bottom: "30%" })]), hall, cell("living", "客厅", "🛋️", "#f6e8e6", "0 0 27%", [deco("📺", { right: "10%", top: "16%" }), deco("🪴", { left: "10%", bottom: "30%" })]), cell("garage", "车库", "🚗", "#4a505c", 1, [deco("🛞", { left: "10%", top: "16%" }), deco("🧰", { right: "10%", bottom: "30%" })])], 120),
+        floor([cell("kitchen", "厨房", "🍳", "#f3e4cf", "0 0 27%", [deco("🫖", { left: "10%", top: "16%" }), deco("🥧", { right: "10%", bottom: "30%" }),
+          h("div", { key: "meal", onClick: function (ev) { ev.stopPropagation(); nanaSheet("meal"); }, title: "饭点", style: { position: "absolute", left: "8%", bottom: 22, textAlign: "center", cursor: "pointer", zIndex: 3 } },
+            h("div", { style: { fontSize: 15, lineHeight: 1, filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" } }, "🍽️"),
+            h("div", { style: { fontSize: "0.42rem", fontWeight: 800, color: "#6a4a20", marginTop: 1, whiteSpace: "nowrap" } }, "饭点"))]), hall, cell("living", "客厅", "🛋️", "#f6e8e6", "0 0 27%", [deco("📺", { right: "10%", top: "16%" }), deco("🪴", { left: "10%", bottom: "30%" })]), cell("garage", "车库", "🚗", "#4a505c", 1, [deco("🛞", { left: "10%", top: "16%" }), deco("🧰", { right: "10%", bottom: "30%" })])], 120),
         floor([cell("basement", "地下室", "🕹️", "#2a2340", 1, [deco("🎯", { right: "10%", top: "14%" })]), cell("bar", "Bar", "🍸", "#1a0a2a", 1, [deco("🎵", { left: "10%", top: "16%" })]), cell("cigar", "雪茄房", "🥃", "#3a2a22", 1, [deco("🎷", { right: "10%", top: "16%" })]), cell("pool", "泳池", "🏊", "#0f4d66", 1, [deco("🌊", { left: "10%", bottom: "30%" })])], 100)),
       // ── 街 ──
       h("div", { style: { position: "relative", height: 82, background: "linear-gradient(180deg,#3d434e 0 44%,#2a2f38 44% 48%,#1f232b 48%)" } },
@@ -25910,6 +25921,7 @@ function BakerHouse(_refBK) {
 // ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
 var NANA_DOOR = false;                      // 正开着门口进来的那页安心（底部导航算小屋）
+var nanaSheet = function (k) { try { window.dispatchEvent(new CustomEvent("nana-sheet", { detail: k })); } catch (_) {} };
 var nanaGoCare = function () {
   ldWantTab = "care";
   try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
@@ -26139,7 +26151,7 @@ function BakerFacade(_refBF) {
     h("div", { style: { position: "relative", zIndex: 1, padding: "calc(14px + env(safe-area-inset-top,0px)) 18px 0" } },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
-        h("div", { style: { display: "flex", gap: 6 } }, pill(time || ""), pill("🔥 " + cozy + "%"))),
+        h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
       h("div", { style: { height: 8 } })),
     // 楼
@@ -26754,6 +26766,12 @@ function NanasHome() {
     window.addEventListener("nana-go-london", go);
     return function () { window.removeEventListener("nana-go-london", go); };
   }, []);
+  var _sheet = useState(null); var sheet = _sheet[0], setSheet = _sheet[1];   // 屋里点开的抽屉：music / postcards / meal
+  useEffect(function () {
+    var on = function (e) { setSheet(e && e.detail ? e.detail : null); };
+    window.addEventListener("nana-sheet", on);
+    return function () { window.removeEventListener("nana-sheet", on); };
+  }, []);
   var _doorTick = useState(0); var setDoorTick = _doorTick[1];
   useEffect(function () {
     var bump = function () { setDoorTick(function (n) { return n + 1; }); };
@@ -26870,7 +26888,7 @@ function NanasHome() {
   }), home && !nanaBakerOn() && /*#__PURE__*/React.createElement(HeroBanner, {
     time: time,
     cozy: cozy
-  }), home && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), home && /*#__PURE__*/React.createElement("div", {
+  }), home && ldBackHome() && /*#__PURE__*/React.createElement(HomeLondonCard, null), home && !nanaBakerOn() && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "12px 16px 2px"
     }
@@ -26951,15 +26969,30 @@ function NanasHome() {
     style: {
       padding: "12px 16px 0"
     }
-  }, /*#__PURE__*/React.createElement(BarTastingList, null)), home && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(BarTastingList, null)), home && !nanaBakerOn() && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: "10px 16px 0"
     }
-  }, /*#__PURE__*/React.createElement(MealCheckIn, null)), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(MealCheckIn, null)), !nanaBakerOn() && /*#__PURE__*/React.createElement("div", {
     style: {
       padding: room ? 0 : "12px 16px 0"
     }
-  }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: room })), /*#__PURE__*/React.createElement("main", {
+  }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: room })),
+  // 221B 模式：留声机一直挂着（音乐不断），明信片和饭点点开才有
+  nanaBakerOn() && /*#__PURE__*/React.createElement("div", { style: { display: sheet ? "block" : "none", position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9990 } },
+    /*#__PURE__*/React.createElement("div", { onClick: function () { setSheet(null); }, style: { position: "absolute", left: 0, top: 0, right: 0, bottom: 0, background: "rgba(10,14,24,0.62)" } }),
+    /*#__PURE__*/React.createElement("div", { style: { position: "absolute", left: "50%", bottom: 0, transform: "translateX(-50%)", width: "100%", maxWidth: 600, maxHeight: "86vh", overflowY: "auto", background: "#f3ece0", borderRadius: "22px 22px 0 0", boxShadow: "0 -12px 40px rgba(0,0,0,0.5)", paddingBottom: "calc(16px + env(safe-area-inset-bottom,0px))" } },
+      /*#__PURE__*/React.createElement("div", { style: { position: "sticky", top: 0, zIndex: 2, background: "linear-gradient(180deg,#1e2636,#2b3446)", color: "#fdf6e8", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, borderRadius: "22px 22px 0 0" } },
+        /*#__PURE__*/React.createElement("div", { style: { color: "#d9b45f", fontSize: "0.56rem", letterSpacing: 3, fontFamily: "Georgia,serif", fontWeight: 800 } }, "221B"),
+        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🍽️ 饭点"),
+        /*#__PURE__*/React.createElement("button", { onClick: function () { setSheet(null); }, style: { marginLeft: "auto", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "收起 ▾")),
+      /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: sheet === "music" ? "block" : "none" } }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: null })),
+      sheet === "postcards" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: "grid", gap: 12 } },
+        /*#__PURE__*/React.createElement(MeishaMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "meisha", emoji: "\uD83C\uDFD6\uFE0F", name: "\u5927\u6885\u6c99", color: "#1a4a5c", desc: "\u4e0a\u5468\u4e94\u7684\u6d77\u8fb9" }); } }),
+        /*#__PURE__*/React.createElement(HKMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" }); } }),
+        /*#__PURE__*/React.createElement(DisneyMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" }); } })) : null,
+      sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MealCheckIn, null)) : null)),
+  /*#__PURE__*/React.createElement("main", {
     style: {
       padding: room ? "calc(16px + env(safe-area-inset-top,0px)) 16px 80px" : "16px 16px 80px"
     }
