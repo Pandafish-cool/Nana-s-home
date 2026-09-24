@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-259";
+var NANA_VER = "v2026.8.2-260";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -23720,8 +23720,10 @@ function LondonRoom(_refLD) {
     var byPlace = {}, placeOrder = [];
     herShots.forEach(function (x) { var k = x.n || "别的地方"; if (!byPlace[k]) { byPlace[k] = []; placeOrder.push(k); } byPlace[k].push(x); });
     var SERIF = "Georgia,'PingFang SC',serif";
-    var num = function (v, unit, note) {
-      return h("div", { key: unit, style: { background: "rgba(255,255,255,0.62)", border: "1px solid rgba(120,100,70,0.16)", borderRadius: 12, padding: "12px 8px 10px", textAlign: "center" } },
+    var mmGo = function (id) { try { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {} };
+    var num = function (v, unit, note, go) {
+      return h("div", { key: unit, onClick: go || null, style: { background: "rgba(255,255,255,0.62)", border: "1px solid rgba(120,100,70,0.16)", borderRadius: 12, padding: "12px 8px 10px", textAlign: "center", cursor: go ? "pointer" : "default", position: "relative" } },
+        go ? h("div", { style: { position: "absolute", right: 6, top: 5, fontSize: "0.6rem", color: "rgba(163,112,26,0.8)", fontWeight: 800 } }, "→") : null,
         h("div", { style: { fontFamily: SERIF, fontWeight: 800, fontSize: "1.5rem", color: "#2d3a4a", lineHeight: 1.1 } }, v),
         h("div", { style: { fontSize: "0.7rem", fontWeight: 800, color: "#6a5a48", marginTop: 3 } }, unit),
         note ? h("div", { style: { fontSize: "0.58rem", color: "rgba(106,90,72,0.75)", marginTop: 2 } }, note) : null);
@@ -23773,20 +23775,20 @@ function LondonRoom(_refLD) {
       screws,
       ukHead("数出来的部分", "都是真的，一封一段一张地数", h("span", { style: { fontSize: "1rem" } }, "🔢")),
       h("div", { key: "grid", style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 6 } }, [
-        num("42", "天"),
-        num(realLetters.length ? String(realLetters.length) : "…", "封信", nWords ? (Math.round(nWords / 1000) + " 千多字") : null),
-        num(String(voList.length), "段声音", Math.round(nVoSec / 60) + " 分钟"),
-        num(String(herShots.length), "张照片", "你拍的"),
-        num(String(wallShown.length), "个地方", "去过的"),
-        num("1", "个大坡", "先滚了个够")
+        num("42", "天", "点开看那几天", function () { mmGo("mm-days"); }),
+        num(realLetters.length ? String(realLetters.length) : "…", "封信", nWords ? (Math.round(nWords / 1000) + " 千多字") : null, function () { nanaGo221B(); }),
+        num(String(voList.length), "段声音", Math.round(nVoSec / 60) + " 分钟", function () { setTab("care"); setToolsOpen(true); setTimeout(function () { mmGo("mm-tools"); }, 80); }),
+        num(String(herShots.length), "张照片", "你拍的", function () { mmGo("mm-photos"); }),
+        num(String(wallShown.length), "个地方", "去过的", function () { mmGo("mm-map"); }),
+        num("1", "个大坡", "先滚了个够", function () { mmGo("mm-moment"); })
       ])
     ]);
     // 那几天
     var DAYS = [
       { d: "8.15", e: "🛬", t: "落地", s: "到了。这儿也是家。" },
+      { d: "8.18", e: "🎻", t: "BBC Proms · Royal Albert Hall", s: "站票。候场时坐在台子上，和小孩儿对视。你说这是最喜欢的一晚。", fav: 1 },
       { d: "8.23", e: "🌿", t: "The Spaniards 后面那片草坪", s: "不用等大坡了 —— 先滚了个够。" },
       { d: "9.12", e: "🎤", t: "Hamilton", s: "Victoria Palace · 14:30 · 熊猫鱼订的票" },
-      { d: "9.19", e: "👗", t: "London Fashion Week", s: "看秀那天，早到挑了个好位置" },
       { d: "9.26", e: "🏡", t: "回家", s: "从本初子午线 0° 回到 113°E" }
     ];
     var days = ukCard([
@@ -23797,7 +23799,7 @@ function LondonRoom(_refLD) {
           h("div", { style: { flexShrink: 0, width: 44, fontFamily: SERIF, fontWeight: 800, fontSize: "0.86rem", color: "#2d3a4a", paddingTop: 2 } }, x.d),
           h("div", { style: { flexShrink: 0, fontSize: "1.1rem", lineHeight: 1.2 } }, x.e),
           h("div", { style: { flex: 1, minWidth: 0 } },
-            h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#3a3226" } }, x.t),
+            h("div", { style: { fontWeight: 800, fontSize: "0.86rem", color: "#3a3226" } }, x.t, x.fav ? h("span", { style: { marginLeft: 6, fontSize: "0.56rem", fontWeight: 800, color: "#a3701a", background: "rgba(232,163,58,0.18)", borderRadius: 999, padding: "2px 7px", verticalAlign: "middle" } }, "⭐ 最喜欢") : null),
             h("div", { style: { fontSize: "0.7rem", color: "rgba(90,75,60,0.85)", marginTop: 2, lineHeight: 1.55 } }, x.s)));
       }))
     ]);
@@ -23962,7 +23964,7 @@ function LondonRoom(_refLD) {
                   h("button", { onClick: saveMm, disabled: !mmT.trim() || mmBusy, style: { marginTop: 8, width: "100%", border: "none", borderRadius: 999, padding: "10px 0", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: mmT.trim() ? "pointer" : "default", background: mmT.trim() ? "linear-gradient(135deg,#f0c46a,#d99b31)" : "rgba(170,160,140,0.3)", color: mmT.trim() ? "#4a3510" : "#fff" } }, mmBusy ? "存着…" : "留在这儿")) : null))));
       }
     }
-    memoir = h("div", null, cover, scratchMap, numbers, days, momentCard, wallSection, photos, lastPage, toolbox, placeSheet);
+    memoir = h("div", null, cover, h("div", { id: "mm-map" }, scratchMap), numbers, h("div", { id: "mm-days" }, days), h("div", { id: "mm-moment" }, momentCard), wallSection, h("div", { id: "mm-photos" }, photos), lastPage, h("div", { id: "mm-tools" }, toolbox), placeSheet);
   }
   // 门口进来的安心页：只有短波和它的记录；哮喘、路线那些伦敦的卡还留在伦敦那间房的安心里
   var doorPage = h("div", { style: { margin: "calc(-16px - env(safe-area-inset-top,0px)) -16px 0", background: "#e9e1d1", minHeight: "100vh" } },
