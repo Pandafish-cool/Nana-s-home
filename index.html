@@ -18600,6 +18600,26 @@ var nanaPackList = function (cb) {
   };
   step();
 };
+var NANA_PACK_ROWS = null, NANA_PACK_AT = 0;
+var nanaPackCached = function (cb) {
+  if (NANA_PACK_ROWS && Date.now() - NANA_PACK_AT < 60000) return cb(null, NANA_PACK_ROWS);
+  nanaPackList(function (err, rows) {
+    if (!err && rows) { NANA_PACK_ROWS = rows; NANA_PACK_AT = Date.now(); }
+    cb(err, rows);
+  });
+};
+// 别人寄来的、还没听过的短波有几段（听过 = 真的翻到过安心那一页）
+var nanaVoUnheard = function (rows) {
+  var me = "", seen = 0, n = 0;
+  try { me = localStorage.getItem("nana-author") || ""; seen = +(localStorage.getItem(ldWKey("nana-vo-seen")) || 0); } catch (_) {}
+  if (!me) return 0;
+  (rows || []).forEach(function (r) {
+    if (!r.id || r.id.indexOf("vo-") !== 0) return;
+    var vo = null; try { vo = JSON.parse(r.who); } catch (_) { vo = null; }
+    if (vo && vo.vo && vo.a && vo.a !== me && (vo.ts || 0) > seen) n++;
+  });
+  return n;
+};
 var nanaPackAdd = function (row, cb) { nanaSyncReq("POST", "shared_pack", row, cb); };
 var nanaPackDel = function (id, cb) { nanaSyncReq("DELETE", "shared_pack?id=eq." + encodeURIComponent(id), null, cb); };
 var nanaPackTxt = function (id) { return id.indexOf("x-") === 0; };
@@ -20644,6 +20664,13 @@ function LondonRoom(_refLD) {
   var pgDown = useRef(0);
   // 🎙 家里的声音
   var _vo = useState([]); var voList = _vo[0], setVoList = _vo[1];
+  useEffect(function () {
+    if (tab !== "care" || !voList.length) return;
+    var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+    if (!me) return;
+    var mx = 0; voList.forEach(function (v) { if (v.a && v.a !== me && (v.ts || 0) > mx) mx = v.ts; });
+    if (mx) { try { localStorage.setItem(ldWKey("nana-vo-seen"), String(mx)); } catch (_) {} }
+  }, [tab, voList]);
   var _vrec = useState(""); var voRec = _vrec[0], setVoRec = _vrec[1];      // 正在录的那一格
   var _vsec = useState(0); var voSec = _vsec[0], setVoSec = _vsec[1];
   var _vup = useState(""); var voUp = _vup[0], setVoUp = _vup[1];           // 正在上传的那一格
@@ -25848,6 +25875,10 @@ function BakerFacade(_refBF) {
   var _lt = useState(function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } });
   var letters = _lt[0], setLetters = _lt[1];
   useEffect(function () { nanaSharedFetch(false, function (err, rows) { if (!err && rows) setLetters(rows); }); }, []);
+  var _pk = useState(function () { try { return JSON.parse(localStorage.getItem("nana-pack-rows") || "null"); } catch (_) { return null; } });
+  var packRows = _pk[0], setPackRows = _pk[1];
+  useEffect(function () { nanaPackCached(function (err, rows) { if (!err && rows) setPackRows(rows); }); }, []);
+  var voNew = nanaVoUnheard(packRows);
   var newLetter = (function () {
     var me = "", seen = "";
     try { me = localStorage.getItem("nana-author") || ""; seen = localStorage.getItem(ldWKey("nana-letter-seen")) || ""; } catch (_) {}
@@ -26012,7 +26043,10 @@ function BakerFacade(_refBF) {
       h("path", { d: "M276 300 a9 9 0 0 1 3 -6", fill: "none", stroke: "#3a2a10", strokeWidth: 1.1, strokeLinecap: "round" }),
       h("path", { d: "M294 300 a9 9 0 0 0 -3 -6", fill: "none", stroke: "#3a2a10", strokeWidth: 1.1, strokeLinecap: "round" }),
       h("text", { x: 285, y: 313, textAnchor: "middle", fontSize: 3.6, fontWeight: "bold", fill: "#3a2a10", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "SHORT WAVE"),
-      h("circle", { cx: 285, cy: 317, r: 1.6, fill: "#3fbf6a", style: { filter: "drop-shadow(0 0 2px #3fbf6a)", animation: "bfLed 2s ease-in-out infinite" } }),
+      h("circle", { cx: 285, cy: 317, r: 1.6, fill: voNew ? "#e8453c" : "#3fbf6a", style: { filter: "drop-shadow(0 0 2px " + (voNew ? "#e8453c" : "#3fbf6a") + ")", animation: (voNew ? "bfLed 0.7s" : "bfLed 2s") + " ease-in-out infinite" } }),
+      voNew ? [0, 1, 2].map(function (i) { return h("circle", { key: "rp" + i, cx: 285, cy: 300, r: 8, fill: "none", stroke: BK_GOLD, strokeWidth: 1.2, style: { transformOrigin: "285px 300px", animation: "bfRipple 2.4s ease-out " + (i * 0.8) + "s infinite" } }); }) : null,
+      voNew ? [["♪", 279, 0], ["♫", 290, 1.1], ["♪", 285, 2.2]].map(function (nt, i) { return h("text", { key: "nt" + i, x: nt[1], y: 292, textAnchor: "middle", fontSize: 7, fontWeight: "bold", fill: BK_GOLD, style: { transformOrigin: nt[1] + "px 292px", animation: "bfNote 3.3s ease-out " + nt[2] + "s infinite", opacity: 0 } }, nt[0]); }) : null,
+      voNew ? h("g", null, h("circle", { cx: 299, cy: 289, r: 5, fill: "#e8453c", stroke: "#fdf6e8", strokeWidth: 1 }), h("text", { x: 299, y: 291.2, textAnchor: "middle", fontSize: 6, fontWeight: "bold", fill: "#fff", fontFamily: "Georgia,serif" }, voNew > 9 ? "9+" : String(voNew))) : null,
       h("text", { x: 285, y: 283, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "短波 · 留言")),
     // 门铃
     h("circle", { cx: 258, cy: 300, r: 3.2, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 0.8, onClick: doKnock, style: { cursor: "pointer" } }),
@@ -26042,7 +26076,9 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(120px) scaleX(1)}50%{transform:translateX(120px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
-      "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}"),
+      "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfRipple{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.2);opacity:0}}" +
+      "@keyframes bfNote{0%{transform:translateY(0) rotate(-8deg);opacity:0}15%{opacity:1}100%{transform:translateY(-26px) rotate(10deg);opacity:0}}"),
     isNight ? [[8, 14], [24, 30], [41, 10], [58, 26], [73, 12], [88, 32], [95, 8], [33, 44], [66, 48]].map(function (p, i) {
       return h("div", { key: i, style: { position: "absolute", left: p[0] + "%", top: p[1], width: 2, height: 2, borderRadius: "50%", background: "#fff", opacity: 0.8, animation: "bkLamp " + (2 + i % 3) + "s ease-in-out infinite" } });
     }) : null,
@@ -26053,7 +26089,7 @@ function BakerFacade(_refBF) {
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6 } }, pill(time || ""), pill("🔥 " + cozy + "%"))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
-      h("div", { style: { marginTop: 3, color: skyText, opacity: 0.75, fontSize: "0.72rem", fontWeight: 700 } }, newLetter ? "邮筒里有一封新的信 ✉️" : (huntDone ? "今天的证物已经归档了 · 明天再来一案" : "今天屋里藏了一样东西，推门进去找 🔍"))),
+      h("div", { style: { height: 8 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 6, padding: "0 6px" } },
       building,
