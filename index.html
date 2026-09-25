@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-276";
+var NANA_VER = "v2026.8.2-277";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26435,6 +26435,7 @@ function BakerFacade(_refBF) {
       h("pattern", { id: "bfCobble", width: 14, height: 8, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 14, height: 8, fill: "#2a2e37" }),
         h("ellipse", { cx: 3.5, cy: 2, rx: 3.2, ry: 1.7, fill: "#343945" }), h("ellipse", { cx: 10.5, cy: 6, rx: 3.2, ry: 1.7, fill: "#343945" })),
+      h("linearGradient", { id: "bfWater", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#5aa7c8" }), h("stop", { offset: "100%", stopColor: "#2f6f8a" })),
       h("pattern", { id: "bfWaves", width: 24, height: 8, patternUnits: "userSpaceOnUse" },
         h("path", { d: "M0 6 q6 -4 12 0 t12 0", fill: "none", stroke: "rgba(200,235,250,0.45)", strokeWidth: 1 })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
@@ -26564,19 +26565,22 @@ function BakerFacade(_refBF) {
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
     // 人行道 + 路
     h("rect", { x: 0, y: 353, width: 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: 360, height: 3, fill: "#5f6572" }),
-    h("rect", { x: 0, y: 375, width: 360, height: 45, fill: "url(#bfCobble)" }),
-    // 码头：右半边是水，停着从伦敦开回来的船，岸上一块牌子
+    // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
+    h("rect", { x: 0, y: 375, width: 360, height: 45, fill: "url(#bfWater)" }),
+    h("rect", { x: 0, y: 380, width: 360, height: 40, fill: "url(#bfWaves)" }),
+    h("rect", { x: 0, y: 375, width: 360, height: 5, fill: "#8a6a48" }), h("rect", { x: 0, y: 380, width: 360, height: 2, fill: "rgba(0,0,0,0.3)" }),
+    [30, 110, 190, 270, 350].map(function (x, i) { return h("rect", { key: "pl" + i, x: x, y: 372, width: 4, height: 12, rx: 1, fill: "#5a4230" }); }),
+    // 路灯在水里的倒影
+    lit ? h("rect", { x: 12, y: 382, width: 14, height: 36, fill: "rgba(255,220,140,0.18)", style: { filter: "blur(2px)" } }) : null,
+    // 码头：停着从伦敦开回来的船，岸上一块牌子
     h("g", { onClick: nanaGoOldLondon, title: "上一站 · 伦敦港口", style: { cursor: "pointer" } },
-      h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "#2f6f8a" }),
-      h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "url(#bfWaves)" }),
-      h("rect", { x: 192, y: 375, width: 6, height: 45, fill: "#5a4230" }), h("rect", { x: 196, y: 375, width: 164, height: 3, fill: "#8a6a48" }),
       h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-voyage")); } catch (_) {} }, title: "再看一遍返航", style: { transformOrigin: "300px 400px", animation: "bfBob 2.6s ease-in-out infinite", cursor: "pointer" } },
         h("path", { d: "M262 400 L338 400 L332 412 L268 412 Z", fill: "#1c2a44" }), h("path", { d: "M262 400 L338 400 L337 404 L263 404 Z", fill: "#2f5470" }),
         h("rect", { x: 284, y: 390, width: 30, height: 10, rx: 1.5, fill: "#fdf6e8" }), h("rect", { x: 306, y: 383, width: 5, height: 8, fill: "#c0392b" }),
         h("line", { x1: 276, y1: 390, x2: 276, y2: 372, stroke: "#4a3a30", strokeWidth: 1.4 }), h("path", { d: "M277 373 L293 380 L277 387 Z", fill: "#f0c46a" }),
         h("text", { x: 300, y: 409, textAnchor: "middle", fontSize: 4.6, fill: "rgba(253,246,232,0.85)", fontFamily: "Georgia,serif", letterSpacing: 1 }, "LONDON")),
-      h("line", { x1: 200, y1: 384, x2: 264, y2: 400, stroke: "#c9a24a", strokeWidth: 1 }),
-      h("rect", { x: 198, y: 380, width: 5, height: 7, rx: 1, fill: "#0a0c10" }),
+      h("line", { x1: 232, y1: 384, x2: 264, y2: 400, stroke: "#c9a24a", strokeWidth: 1 }),
+      h("rect", { x: 229, y: 379, width: 5, height: 7, rx: 1, fill: "#0a0c10" }),
       // 牌子
       h("rect", { x: 324, y: 370, width: 2.4, height: 10, fill: "#5a4230" }),
       h("rect", { x: 294, y: 355, width: 62, height: 16, rx: 2, fill: "#f1e4c4", stroke: "#8a6a48", strokeWidth: 1 }),
