@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-271";
+var NANA_VER = "v2026.8.2-272";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20436,6 +20436,8 @@ function LondonOpening(_refSO) {
 // ── 🧭 港口全景：天色跟着伦敦当地时间走，伦敦眼在转，船在开 ──
 // 落地之后伦敦就是首页，顶上要有一句对 nana 说的话。按伦敦当地时间换。
 var LD_HELLO_LAND = ["到了。这儿也是家。", "行李先放下，坐一会儿", "Nana，欢迎回家 🏠"];
+// 回家之后再回这个港口，顶上换成这几句
+var LD_HELLO_BYE = ["希望伦敦给你留了很多好回忆 🌉", "这座城记得你走过的每一条街", "船靠岸了，四十二天都收在船舱里", "伦敦欢迎你下次再来探险 🧭"];
 var LD_HELLO = [
   { to: 5,  a: ["Nana，还没睡？", "夜里也在的，灯留着", "这个点了，早点躺下"] },
   { to: 8,  a: ["早，Nana ☀️", "伦敦醒了，你呢", "今天想去哪儿"] },
@@ -24071,17 +24073,17 @@ function LondonRoom(_refLD) {
       "@keyframes hsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}"),
     (backHome && !oldView) ? (door ? doorPage : (toolsPg ? toolsPage : memoir)) : h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
-      eyebrow: "LONDON VOYAGER",
-      title: "\uD83E\uDDED 伦敦航海家",
-      sub: "Canary Wharf 港 · Fraser Place 号船舱 \u2693",
-      foot: "从本初子午线 0° 到家里 113°E",
-      hello: ldLanded() ? ldHello(lonH) : null,
+      eyebrow: oldView ? "LONDON HARBOUR · 上一站" : "LONDON VOYAGER",
+      title: oldView ? "\u2693 伦敦港口" : "\uD83E\uDDED 伦敦航海家",
+      sub: oldView ? "Nana 号已靠岸 · 四十二天的航海记 \u26F5" : "Canary Wharf 港 · Fraser Place 号船舱 \u2693",
+      foot: oldView ? "从 0° 回到 113°E · 下次再来" : "从本初子午线 0° 到家里 113°E",
+      hello: oldView ? LD_HELLO_BYE : (ldLanded() ? ldHello(lonH) : null),
       sm: ldLanded(),
       strip: {
         lon: lonT, gz: gzT,
         hh: parseInt(lonT.slice(0, 2), 10) || 0, mm: parseInt(lonT.slice(3, 5), 10) || 0,
         addr: LD_ADDR, map: ldMap(LD_ADDR_Q),
-        today: todayCard,
+        today: oldView ? null : todayCard,
         onToday: function () { setTab("cal"); setSub("cal"); setCalSel(todayStr); }
       }
     }),
@@ -26599,7 +26601,17 @@ function BakerFacade(_refBF) {
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       h("div", { style: { marginTop: 12, minHeight: 34, color: skyText, fontSize: "1.32rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", textShadow: isNight || isDusk ? "0 2px 12px rgba(0,0,0,0.5)" : "none" } }, greets[msg % greets.length]),
       h("div", { style: { marginTop: 6, color: skyText, opacity: 0.82, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.6 } }, subLine),
-      h("div", { style: { height: 10 } })),
+      // 港口卡：Nana 号靠在这儿，上一站伦敦
+      h("div", { style: { marginTop: 12, marginBottom: 6, display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,rgba(31,74,99,0.92),rgba(18,58,82,0.92))", border: "1px solid rgba(217,180,95,0.5)", borderRadius: 14, padding: "10px 12px", boxShadow: "0 8px 20px rgba(0,0,0,0.25)", color: BK_CREAM } },
+        h("div", { style: { flexShrink: 0, width: 40, height: 40, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f3dc9a,#b8862b)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, boxShadow: "0 3px 8px rgba(0,0,0,0.4)" } }, "\u2693"),
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { fontSize: "0.56rem", letterSpacing: 2, color: BK_GOLD, fontFamily: "Georgia,serif", fontWeight: 800 } }, "HARBOUR"),
+          h("div", { style: { fontWeight: 900, fontSize: "0.86rem", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "港口 · Nana 号已靠岸"),
+          h("div", { style: { fontSize: "0.64rem", opacity: 0.8, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "上一站 伦敦 0° → 家 113°E")),
+        h("div", { style: { flexShrink: 0, display: "flex", flexDirection: "column", gap: 5 } },
+          h("button", { onClick: nanaGoOldLondon, style: { border: "1px solid rgba(217,180,95,0.6)", background: "rgba(217,180,95,0.16)", color: "#f3dc9a", borderRadius: 999, padding: "5px 10px", fontFamily: "inherit", fontWeight: 900, fontSize: "0.64rem", cursor: "pointer", whiteSpace: "nowrap" } }, "伦敦港口 →"),
+          h("button", { onClick: function () { try { window.dispatchEvent(new Event("nana-voyage")); } catch (_) {} }, style: { border: "1px solid rgba(255,255,255,0.22)", background: "rgba(255,255,255,0.08)", color: BK_CREAM, borderRadius: 999, padding: "5px 10px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.64rem", cursor: "pointer", whiteSpace: "nowrap" } }, "再看返航 \u26F5"))),
+      h("div", { style: { height: 4 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 2, padding: "0 2px" } },
       building,
