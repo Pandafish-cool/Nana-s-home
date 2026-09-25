@@ -26190,7 +26190,7 @@ function HomecomingVoyage(_refHV) {
     // 夜：伦敦那边的夜色，船一开就慢慢褪掉
     h("div", { style: { position: "absolute", inset: 0, background: "linear-gradient(180deg,#0b1020 0%,#1a2238 42%,#1f4a63 58%,#123a52 100%)", opacity: day ? 0 : 1, transition: "opacity 4.6s linear", pointerEvents: "none" } }),
     // 下午的太阳
-    h("div", { style: { position: "absolute", right: "14%", top: "11%", width: 54, height: 54, borderRadius: "50%", background: "#ffe08a", boxShadow: "0 0 44px rgba(255,224,138,0.75)", opacity: day ? 1 : 0, transition: "opacity 4.6s linear", pointerEvents: "none" } }),
+    h("div", { style: { position: "absolute", left: "14%", top: day ? "10%" : "30%", width: 54, height: 54, borderRadius: "50%", background: "#ffe08a", boxShadow: "0 0 44px rgba(255,224,138,0.75)", opacity: day ? 1 : 0, transition: "opacity 4.6s linear, top 4.6s ease-out", pointerEvents: "none" } }),
     h("style", null,
       "@keyframes hvSail{0%{left:6%}100%{left:70%}}" +
       "@keyframes hvBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}" +
@@ -26242,7 +26242,7 @@ function HomecomingVoyage(_refHV) {
     [[24, 30], [40, 24]].map(function (p, i) { return h("div", { key: "g" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", color: "rgba(244,239,227,0.75)", fontSize: 14, animation: "hvGull " + (3 + i) + "s ease-in-out infinite alternate" } }, "〰"); }),
     // 字
     h("div", { style: { position: "absolute", left: 0, right: 0, top: "calc(12% + env(safe-area-inset-top,0px))", textAlign: "center", padding: "0 28px", color: ink, transition: "color 1.4s" } },
-      h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: 800 } }, "HOMEWARD BOUND"),
+      h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: stage >= 2 ? "#b8862b" : "#d9b45f", fontFamily: "Georgia,serif", fontWeight: 800, transition: "color 1.4s" } }, "HOMEWARD BOUND"),
       h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 900, fontSize: "1.6rem", marginTop: 8, letterSpacing: "0.04em" } }, stage >= 3 ? "欢迎回家，Nana 🏡" : "返航"),
       h("div", { key: "l" + stage, style: { marginTop: 10, fontSize: "0.86rem", lineHeight: 1.7, opacity: 0.88, animation: "hvIn 0.6s ease both", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, line)),
     // 靠岸
