@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-266";
+var NANA_VER = "v2026.8.2-267";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20621,8 +20621,9 @@ function LondonRoom(_refLD) {
   var _old = useState(function () { var w = ldWantOld; ldWantOld = false; return ldBackHome() && w; }); var oldView = _old[0], setOldView = _old[1];   // 门口港口开回来的：原来那个伦敦小屋
   useEffect(function () {
     NANA_DOOR = !!door || !!toolsPg || !!oldView;
+    NANA_PORT = !!oldView;
     try { window.dispatchEvent(new Event("nana-door")); } catch (_) {}
-    return function () { NANA_DOOR = false; try { window.dispatchEvent(new Event("nana-door")); } catch (_) {} };
+    return function () { NANA_DOOR = false; NANA_PORT = false; try { window.dispatchEvent(new Event("nana-door")); } catch (_) {} };
   }, [door, toolsPg, oldView]);
   var _op = useState(function () {
     try {
@@ -24899,7 +24900,7 @@ function BottomNav(_ref135) {
       key: "home",
       emoji: "\uD83C\uDFE1",
       label: ldHome ? "\u5c0f\u5c4b" : "\u9996\u9875",
-      active: !room || NANA_DOOR,
+      active: (!room || NANA_DOOR) && !NANA_PORT,
       onClick: onHome
     });
     var roomBtns = pinnedRooms.map(function (r) {
@@ -24913,6 +24914,11 @@ function BottomNav(_ref135) {
         }
       });
     });
+    // 221B 模式：小屋第一，伦敦港口第二（开回原来那个伦敦小屋），后面是客厅、地下室、游乐场
+    if (baker) {
+      var portBtn = /*#__PURE__*/React.createElement(NavBtn, { key: "port", emoji: "\u2693", label: "\u4f26\u6566\u6e2f\u53e3", active: NANA_PORT, onClick: function () { nanaGoOldLondon(); } });
+      return [homeBtn, portBtn].concat(roomBtns);
+    }
     // 落地之后，伦敦排在最前面，首页跟在它后面
     return ldHome ? [roomBtns[0], homeBtn].concat(roomBtns.slice(1)) : [homeBtn].concat(roomBtns);
   })(), /*#__PURE__*/React.createElement("button", {
@@ -26229,6 +26235,7 @@ function HomecomingVoyage(_refHV) {
 // ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
 var NANA_DOOR = false;                      // 正开着门口进来的那页安心（底部导航算小屋）
+var NANA_PORT = false;                      // 正开着原来那个伦敦小屋（底部导航亮在「伦敦港口」）
 var nanaSheet = function (k) { try { window.dispatchEvent(new CustomEvent("nana-sheet", { detail: k })); } catch (_) {} };
 var NANA_MUSIC = "";                        // 随身听正在放的歌名（没放就是空）
 var nanaGoCare = function () {
