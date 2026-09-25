@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-274";
+var NANA_VER = "v2026.8.2-276";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26357,6 +26357,13 @@ function BakerFacade(_refBF) {
   var greets = justHome ? ["欢迎回家，Nana 🏡", "你回来了", "这次是真的到家了"] : (function () { for (var i = 0; i < BK_GREET.length; i++) { if (hr < BK_GREET[i].to) return BK_GREET[i].a; } return BK_GREET[0].a; })();
   var subLine = justHome ? LD_BOOK + "收好了，都在屋里。今天怎么样？📖" : (function () { for (var i = 0; i < BK_SUB.length; i++) { if (hr < BK_SUB[i].to) return BK_SUB[i].s; } return BK_SUB[0].s; })();
   var goLondon = function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} };
+  // 明信片跟着一天走：清晨粉白、上午奶黄、下午杏色、傍晚玫瑰橘、夜里薰衣草蓝
+  var pc = hr < 6 ? { bg: "linear-gradient(135deg,#eceefc,#e3e6fb 60%,#dcdff7)", ac: "138,130,200", ink: "#2b3446", sub: "#575a7a" }
+         : hr < 9 ? { bg: "linear-gradient(135deg,#fff7f4,#ffeef0 60%,#fde6ea)", ac: "232,150,160", ink: "#2b3446", sub: "#5a4a4a" }
+         : hr < 13 ? { bg: "linear-gradient(135deg,#fffbef,#fff3d6 60%,#ffedc8)", ac: "225,170,70", ink: "#2b3446", sub: "#5a4a30" }
+         : hr < 17 ? { bg: "linear-gradient(135deg,#fff8f1,#ffeae3 60%,#fde4dc)", ac: "232,116,110", ink: "#2b3446", sub: "#5a4a4a" }
+         : hr < 20 ? { bg: "linear-gradient(135deg,#fff0e6,#ffdccb 60%,#fdd0c4)", ac: "214,100,80", ink: "#2b3446", sub: "#5a4038" }
+         : { bg: "linear-gradient(135deg,#eceefc,#e3e6fb 60%,#dcdff7)", ac: "138,130,200", ink: "#2b3446", sub: "#575a7a" };
   useEffect(function () {
     var id = setInterval(function () { setFade(false); setTimeout(function () { setMsg(function (i) { return i + 1; }); setFade(true); }, 350); }, 3800);
     var id2 = setInterval(function () { setTick(function (t) { return t + 1; }); }, 900);
@@ -26601,19 +26608,26 @@ function BakerFacade(_refBF) {
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
       // 一张明信片：问候和港口写在一起
-      h("div", { style: { position: "relative", marginTop: 12, background: "linear-gradient(135deg,#fff8f1,#ffeae3 60%,#fde4dc)", borderRadius: 18, padding: "14px 14px 12px 16px", boxShadow: "0 10px 26px rgba(0,0,0,0.22), inset 0 0 0 1.5px rgba(232,116,110,0.25)", color: "#2b3446", overflow: "hidden" } },
-        h("div", { style: { position: "absolute", inset: 6, border: "1.5px dashed rgba(232,116,110,0.35)", borderRadius: 13, pointerEvents: "none" } }),
+      h("div", { style: { position: "relative", marginTop: 18, background: pc.bg, borderRadius: 18, padding: "16px 14px 12px 16px", boxShadow: "0 10px 26px rgba(0,0,0,0.22), inset 0 0 0 1.5px rgba(" + pc.ac + ",0.25)", color: pc.ink, transition: "background 1s", transform: "rotate(-1.2deg)" } },
+        h("div", { style: { position: "absolute", inset: 6, border: "1.5px dashed rgba(" + pc.ac + ",0.35)", borderRadius: 13, pointerEvents: "none" } }),
+        // 两条和纸胶带
+        h("div", { style: { position: "absolute", left: 18, top: -9, width: 64, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(" + pc.ac + ",0.35) 6px 12px)", transform: "rotate(-7deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
+        h("div", { style: { position: "absolute", right: 70, bottom: -9, width: 58, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(143,209,224,0.55) 6px 12px)", transform: "rotate(6deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
+        // 猫从卡片顶上探出来
+        h("div", { style: { position: "absolute", right: 74, top: -21, fontSize: 24, lineHeight: 1, transform: "scaleX(-1) rotate(-8deg)", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.25))" } }, "🐈"),
+        // 邮戳
+        h("div", { style: { position: "absolute", right: 46, top: 30, width: 44, height: 44, borderRadius: "50%", border: "1.5px solid rgba(" + pc.ac + ",0.55)", boxShadow: "inset 0 0 0 3px transparent, inset 0 0 0 4.5px rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.42rem", fontWeight: 900, letterSpacing: 1, color: "rgba(" + pc.ac + ",0.85)", fontFamily: "Georgia,serif", transform: "rotate(-14deg)", textAlign: "center", lineHeight: 1.3, pointerEvents: "none" } }, "HOME", h("br"), "09·26"),
         // 右上角一枚邮票：家
-        h("div", { style: { position: "absolute", right: 14, top: 12, width: 40, height: 46, background: "#fff", boxShadow: "0 0 0 3px #fff, 0 0 0 4px rgba(232,116,110,0.35)", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: "rotate(6deg)" } },
-          h("div", { style: { fontSize: 20, lineHeight: 1 } }, "🏡"),
-          h("div", { style: { fontSize: "0.4rem", fontWeight: 900, letterSpacing: 1, color: "#e8746e", marginTop: 3, fontFamily: "Georgia,serif" } }, "113°E")),
+        h("div", { style: { position: "absolute", right: 14, top: 12, width: 40, height: 46, background: "#fff", boxShadow: "0 0 0 3px #fff, 0 0 0 4px rgba(" + pc.ac + ",0.35)", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: "rotate(6deg)" } },
+          h("div", { style: { fontSize: 20, lineHeight: 1 } }, isNight ? "🌙" : "🏡"),
+          h("div", { style: { fontSize: "0.4rem", fontWeight: 900, letterSpacing: 1, color: "rgb(" + pc.ac + ")", marginTop: 3, fontFamily: "Georgia,serif" } }, "113°E")),
         h("div", { style: { paddingRight: 56 } },
           h("div", { style: { minHeight: 30, fontSize: "1.28rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", color: "#2b3446" } }, greets[msg % greets.length]),
-          h("div", { style: { marginTop: 6, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: "#5a4a4a" } }, subLine)),
+          h("div", { style: { marginTop: 6, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: pc.sub } }, subLine)),
         // 底下一行：港口
-        h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(232,116,110,0.35)", display: "flex", alignItems: "center", gap: 8 } },
+        h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", gap: 8 } },
           h("div", { style: { flexShrink: 0, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f3dc9a,#c9a24a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, boxShadow: "0 2px 5px rgba(0,0,0,0.25)" } }, "\u2693"),
-          h("div", { style: { flex: 1, minWidth: 0, fontSize: "0.68rem", fontWeight: 800, color: "#6a5a5a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "港口 · Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E"),
+          h("div", { style: { flex: 1, minWidth: 0, fontSize: "0.68rem", fontWeight: 800, color: pc.sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "港口 · Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E"),
           h("div", { style: { flexShrink: 0, fontSize: 18, lineHeight: 1, animation: "bfBoat 2.6s ease-in-out infinite" } }, "\u26F5"))),
       h("div", { style: { height: 4 } })),
     // 楼
