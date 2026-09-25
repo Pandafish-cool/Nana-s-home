@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-268";
+var NANA_VER = "v2026.8.2-269";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26551,7 +26551,7 @@ function BakerFacade(_refBF) {
       h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "#2f6f8a" }),
       h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "url(#bfWaves)" }),
       h("rect", { x: 192, y: 375, width: 6, height: 45, fill: "#5a4230" }), h("rect", { x: 196, y: 375, width: 164, height: 3, fill: "#8a6a48" }),
-      h("g", { style: { transformOrigin: "300px 400px", animation: "bfBob 2.6s ease-in-out infinite" } },
+      h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-voyage")); } catch (_) {} }, title: "再看一遍返航", style: { transformOrigin: "300px 400px", animation: "bfBob 2.6s ease-in-out infinite", cursor: "pointer" } },
         h("path", { d: "M262 400 L338 400 L332 412 L268 412 Z", fill: "#1c2a44" }), h("path", { d: "M262 400 L338 400 L337 404 L263 404 Z", fill: "#2f5470" }),
         h("rect", { x: 284, y: 390, width: 30, height: 10, rx: 1.5, fill: "#fdf6e8" }), h("rect", { x: 306, y: 383, width: 5, height: 8, fill: "#c0392b" }),
         h("line", { x1: 276, y1: 390, x2: 276, y2: 372, stroke: "#4a3a30", strokeWidth: 1.4 }), h("path", { d: "M277 373 L293 380 L277 387 Z", fill: "#f0c46a" }),
@@ -27288,6 +27288,11 @@ function NanasHome() {
     setRoom = _useState324[1];
   var _inside = useState(false); var inside = _inside[0], setInside = _inside[1];   // 推开门进了屋里
   var _voy = useState(nanaVoyageWanted); var voyage = _voy[0], setVoyage = _voy[1];   // 回家第一次开门：先看返航
+  useEffect(function () {
+    var again = function () { setVoyage(true); try { window.scrollTo(0, 0); } catch (_) {} };   // 码头上的船：再看一遍
+    window.addEventListener("nana-voyage", again);
+    return function () { window.removeEventListener("nana-voyage", again); };
+  }, []);
   var home = !room && !inside;
   var _useState325 = useState(null),
     _useState326 = _slicedToArray(_useState325, 2),
