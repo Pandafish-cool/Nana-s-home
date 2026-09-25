@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-267";
+var NANA_VER = "v2026.8.2-268";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26183,8 +26183,14 @@ function HomecomingVoyage(_refHV) {
     return function () { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
   var done = function () { try { localStorage.setItem("nana-voyage-seen", "1"); } catch (_) {} if (onDone) onDone(); };
-  var line = ["伦敦港 · 0°", "在海上。四十二天，一页一页都在船舱里。", "看见灯了。", "到家了，Nana。"][stage];
-  return h("div", { onClick: function () { if (stage >= 3) done(); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "linear-gradient(180deg,#0b1020 0%,#1a2238 42%,#1f4a63 58%,#123a52 100%)", overflow: "hidden", fontFamily: "'Plus Jakarta Sans','Nunito','PingFang SC',system-ui,sans-serif" } },
+  var line = ["伦敦港 · 0° · 夜里出发", "在海上。天慢慢亮了，四十二天一页一页都在船舱里。", "下午了，看见岸了。", "到家了，Nana。"][stage];
+  var day = stage >= 1;                                  // 船一开，夜就慢慢退成下午
+  var ink = stage >= 2 ? "#2b3446" : "#f4efe3";
+  return h("div", { onClick: function () { if (stage >= 3) done(); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "linear-gradient(180deg,#8fc4e8 0%,#c9e2f2 40%,#f6dccb 58%,#f6dccb 100%)", overflow: "hidden", fontFamily: "'Plus Jakarta Sans','Nunito','PingFang SC',system-ui,sans-serif" } },
+    // 夜：伦敦那边的夜色，船一开就慢慢褪掉
+    h("div", { style: { position: "absolute", inset: 0, background: "linear-gradient(180deg,#0b1020 0%,#1a2238 42%,#1f4a63 58%,#123a52 100%)", opacity: day ? 0 : 1, transition: "opacity 4.6s linear", pointerEvents: "none" } }),
+    // 下午的太阳
+    h("div", { style: { position: "absolute", right: "14%", top: "11%", width: 54, height: 54, borderRadius: "50%", background: "#ffe08a", boxShadow: "0 0 44px rgba(255,224,138,0.75)", opacity: day ? 1 : 0, transition: "opacity 4.6s linear", pointerEvents: "none" } }),
     h("style", null,
       "@keyframes hvSail{0%{left:6%}100%{left:70%}}" +
       "@keyframes hvBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}" +
@@ -26194,9 +26200,10 @@ function HomecomingVoyage(_refHV) {
       "@keyframes hvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}" +
       "@keyframes hvGlow{0%,100%{opacity:.5}50%{opacity:1}}" +
       "@keyframes hvSmoke{0%{transform:translate(0,0) scale(.6);opacity:.7}100%{transform:translate(-10px,-22px) scale(1.4);opacity:0}}"),
-    // 星星和月亮
-    [[6, 10], [18, 22], [30, 8], [44, 18], [58, 6], [72, 20], [86, 12], [94, 26], [38, 30], [66, 32]].map(function (p, i) { return h("div", { key: "s" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: 2, height: 2, borderRadius: "50%", background: "#fff", animation: "hvTwinkle " + (1.8 + (i % 4) * 0.6) + "s ease-in-out infinite" } }); }),
-    h("div", { style: { position: "absolute", right: "12%", top: "9%", width: 44, height: 44, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 34px rgba(243,233,184,0.55)" } }),
+    // 星星和月亮：跟着夜一起退
+    h("div", { style: { position: "absolute", inset: 0, opacity: day ? 0 : 1, transition: "opacity 3.2s linear", pointerEvents: "none" } },
+      [[6, 10], [18, 22], [30, 8], [44, 18], [58, 6], [72, 20], [86, 12], [94, 26], [38, 30], [66, 32]].map(function (p, i) { return h("div", { key: "s" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: 2, height: 2, borderRadius: "50%", background: "#fff", animation: "hvTwinkle " + (1.8 + (i % 4) * 0.6) + "s ease-in-out infinite" } }); }),
+      h("div", { style: { position: "absolute", right: "12%", top: "9%", width: 44, height: 44, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 34px rgba(243,233,184,0.55)" } })),
     // 左边：伦敦的剪影（大本钟、伦敦眼、塔桥）
     h("div", { style: { position: "absolute", left: 0, bottom: "42%", width: "44%", height: 120, opacity: stage >= 2 ? 0.25 : 0.9, transition: "opacity 1.6s" } },
       h("svg", { viewBox: "0 0 200 120", preserveAspectRatio: "xMinYMax meet", style: { width: "100%", height: "100%", display: "block" } },
@@ -26216,9 +26223,10 @@ function HomecomingVoyage(_refHV) {
         h("rect", { x: 121, y: 42, width: 10, height: 8, fill: stage >= 2 ? "#ffe08a" : "#3a3f4a", style: stage >= 2 ? { filter: "drop-shadow(0 0 8px #ffe08a)", animation: "hvGlow 1.4s ease-in-out infinite" } : null }),
         h("rect", { x: 52, y: 70, width: 14, height: 16, fill: stage >= 3 ? "#ffe08a" : "#1a2238", style: { transition: "fill 0.8s" } }), h("rect", { x: 78, y: 70, width: 14, height: 16, fill: stage >= 3 ? "#ffe08a" : "#1a2238", style: { transition: "fill 0.8s" } }),
         h("rect", { x: 66, y: 96, width: 12, height: 24, fill: stage >= 3 ? "#ffe08a" : "#2e7c86" }),
-        h("text", { x: 152, y: 14, textAnchor: "end", fontSize: 8, fill: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", letterSpacing: 2 }, "HOME · 113°E"))),
-    // 海：两层浪
-    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "42%", background: "linear-gradient(180deg,#1f5a74,#0f3448)" } }),
+        h("text", { x: 152, y: 14, textAnchor: "end", fontSize: 8, fill: day ? "rgba(43,52,70,0.7)" : "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", letterSpacing: 2, style: { transition: "fill 2s" } }, "HOME · 113°E"))),
+    // 海：夜里深蓝，下午变亮；两层浪
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "42%", background: "linear-gradient(180deg,#5ab0d0,#2f8ab0)" } }),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "42%", background: "linear-gradient(180deg,#1f5a74,#0f3448)", opacity: day ? 0 : 1, transition: "opacity 4.6s linear" } }),
     [0, 1].map(function (k) { return h("div", { key: "w" + k, style: { position: "absolute", left: 0, bottom: "calc(42% - " + (k * 6 + 4) + "px)", width: "200%", height: 14, backgroundImage: "radial-gradient(circle at 14px 8px, " + (k ? "rgba(120,190,215,0.55)" : "rgba(90,160,190,0.7)") + " 8px, transparent 9px)", backgroundSize: "36px 14px", backgroundRepeat: "repeat-x", animation: "hvWave " + (k ? 5.5 : 3.8) + "s linear infinite" } }); }),
     // 船：从左开到右
     h("div", { style: { position: "absolute", bottom: "calc(42% - 6px)", width: 120, marginLeft: -60, animation: "hvSail 5.2s cubic-bezier(.3,.05,.3,1) 0.6s both", left: "6%" } },
@@ -26233,14 +26241,14 @@ function HomecomingVoyage(_refHV) {
     // 海鸥
     [[24, 30], [40, 24]].map(function (p, i) { return h("div", { key: "g" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", color: "rgba(244,239,227,0.75)", fontSize: 14, animation: "hvGull " + (3 + i) + "s ease-in-out infinite alternate" } }, "〰"); }),
     // 字
-    h("div", { style: { position: "absolute", left: 0, right: 0, top: "calc(12% + env(safe-area-inset-top,0px))", textAlign: "center", padding: "0 28px", color: "#f4efe3" } },
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: "calc(12% + env(safe-area-inset-top,0px))", textAlign: "center", padding: "0 28px", color: ink, transition: "color 1.4s" } },
       h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: 800 } }, "HOMEWARD BOUND"),
       h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 900, fontSize: "1.6rem", marginTop: 8, letterSpacing: "0.04em" } }, stage >= 3 ? "欢迎回家，Nana 🏡" : "返航"),
-      h("div", { key: "l" + stage, style: { marginTop: 10, fontSize: "0.86rem", lineHeight: 1.7, color: "rgba(244,239,227,0.85)", animation: "hvIn 0.6s ease both", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, line)),
+      h("div", { key: "l" + stage, style: { marginTop: 10, fontSize: "0.86rem", lineHeight: 1.7, opacity: 0.88, animation: "hvIn 0.6s ease both", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, line)),
     // 靠岸
     stage >= 3 ? h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(8% + env(safe-area-inset-bottom,0px))", textAlign: "center", animation: "hvIn 0.6s ease both" } },
       h("button", { onClick: function (e) { e.stopPropagation(); done(); }, style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", border: "none", borderRadius: 999, padding: "13px 30px", fontFamily: "inherit", fontWeight: 900, fontSize: "0.98rem", cursor: "pointer", boxShadow: "0 10px 26px rgba(0,0,0,0.45)" } }, "上岸 🏡"),
-      h("div", { style: { marginTop: 10, fontSize: "0.64rem", color: "rgba(244,239,227,0.55)" } }, "从本初子午线 0° 回到 113°E · 四十二天")) : h("div", { onClick: function (e) { e.stopPropagation(); done(); }, style: { position: "absolute", right: 16, top: "calc(14px + env(safe-area-inset-top,0px))", fontSize: "0.64rem", color: "rgba(244,239,227,0.5)", cursor: "pointer" } }, "跳过"));
+      h("div", { style: { marginTop: 10, fontSize: "0.64rem", color: "rgba(43,52,70,0.6)" } }, "夜里从 0° 出发，下午回到 113°E · 四十二天")) : h("div", { onClick: function (e) { e.stopPropagation(); done(); }, style: { position: "absolute", right: 16, top: "calc(14px + env(safe-area-inset-top,0px))", fontSize: "0.64rem", color: day ? "rgba(43,52,70,0.55)" : "rgba(244,239,227,0.5)", cursor: "pointer", transition: "color 2s" } }, "跳过"));
 }
 // ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
