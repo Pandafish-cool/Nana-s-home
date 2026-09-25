@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-265";
+var NANA_VER = "v2026.8.2-266";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -20618,11 +20618,12 @@ function LondonRoom(_refLD) {
   var _tb = useState(function () { var w = ldWantTab; ldWantTab = null; return w || "now"; }); var tab = _tb[0], setTab = _tb[1];
   var _door = useState(function () { return ldBackHome() && tab === "care"; }); var door = _door[0], setDoor = _door[1];   // 从门口进来的安心
   var _tpg = useState(function () { var w = ldWantTools; ldWantTools = false; return ldBackHome() && w; }); var toolsPg = _tpg[0], setToolsPg = _tpg[1];   // 阁楼行李箱打开的那一页
+  var _old = useState(function () { var w = ldWantOld; ldWantOld = false; return ldBackHome() && w; }); var oldView = _old[0], setOldView = _old[1];   // 门口港口开回来的：原来那个伦敦小屋
   useEffect(function () {
-    NANA_DOOR = !!door || !!toolsPg;
+    NANA_DOOR = !!door || !!toolsPg || !!oldView;
     try { window.dispatchEvent(new Event("nana-door")); } catch (_) {}
     return function () { NANA_DOOR = false; try { window.dispatchEvent(new Event("nana-door")); } catch (_) {} };
-  }, [door, toolsPg]);
+  }, [door, toolsPg, oldView]);
   var _op = useState(function () {
     try {
       var k = "nana-london-open";
@@ -23716,8 +23717,9 @@ function LondonRoom(_refLD) {
   // 已经在这间房里的时候再从门口点短波，也要跳过去
   useEffect(function () {
     var go = function () {
-      if (ldWantTools) { ldWantTools = false; ldWantTab = null; setTab("now"); setDoor(false); setToolsPg(true); try { window.scrollTo(0, 0); } catch (_) {} return; }
-      if (ldWantTab) { setTab(ldWantTab); setToolsOpen(true); setDoor(ldWantTab === "care"); setToolsPg(false); ldWantTab = null; }
+      if (ldWantOld) { ldWantOld = false; ldWantTab = null; setTab("now"); setDoor(false); setToolsPg(false); setOldView(true); try { window.scrollTo(0, 0); } catch (_) {} return; }
+      if (ldWantTools) { ldWantTools = false; ldWantTab = null; setTab("now"); setDoor(false); setToolsPg(true); setOldView(false); try { window.scrollTo(0, 0); } catch (_) {} return; }
+      if (ldWantTab) { setTab(ldWantTab); setToolsOpen(true); setDoor(ldWantTab === "care"); setToolsPg(false); setOldView(false); ldWantTab = null; }
     };
     window.addEventListener("nana-go-london", go);
     return function () { window.removeEventListener("nana-go-london", go); };
@@ -24076,7 +24078,7 @@ function LondonRoom(_refLD) {
       "@keyframes hsChip{0%{opacity:0;transform:translateY(6px)}12%{opacity:1;transform:translateY(0)}88%{opacity:1}100%{opacity:0}}" +
       // 挂在房子周围那几个小牌子，很轻地上下飘
       "@keyframes hsFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}"),
-    backHome ? (door ? doorPage : (toolsPg ? toolsPage : memoir)) : h(LondonHarbour, {
+    (backHome && !oldView) ? (door ? doorPage : (toolsPg ? toolsPage : memoir)) : h(LondonHarbour, {
       sk: hbSky, frac: hbFrac, isDay: hbDay,
       eyebrow: "LONDON VOYAGER",
       title: "\uD83E\uDDED 伦敦航海家",
@@ -24092,9 +24094,9 @@ function LondonRoom(_refLD) {
         onToday: function () { setTab("cal"); setSub("cal"); setCalSel(todayStr); }
       }
     }),
-    backHome ? null : ldTabBar,
+    (backHome && !oldView) ? null : ldTabBar,
     craveMsg ? h("div", { style: { background: "rgba(110,205,150,0.14)", border: "1px solid rgba(90,180,130,0.4)", borderRadius: 12, padding: "10px 12px", fontSize: "0.74rem", color: "#2b7d55", fontWeight: 700, marginBottom: 12, textAlign: "center", lineHeight: 1.6 } }, craveMsg) : null,
-    backHome ? ((door || toolsPg) ? null : (toolsOpen ? h("div", null, ldTabBar, ldTabBody) : null)) : ldTabBody,
+    (backHome && !oldView) ? ((door || toolsPg) ? null : (toolsOpen ? h("div", null, ldTabBar, ldTabBody) : null)) : ldTabBody,
     shotModal,
     bigShot,
     craveOpen ? h("div", { onClick: function () { setCraveOpen(false); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9998, background: "rgba(25,72,68,0.5)", display: "flex", flexDirection: "column", justifyContent: "flex-end", fontFamily: "'Nunito','PingFang SC',system-ui" } },
@@ -26156,6 +26158,84 @@ function BakerHouse(_refBK) {
         h("div", { style: { display: "flex", alignItems: "center", color: BK_CREAM, fontSize: "0.74rem", fontWeight: 800 } }, "📌 证物板", h("span", { style: { marginLeft: 8, color: BK_GOLD, fontSize: "0.62rem" } }, nFound + " / " + BK_HUNT.length), h("span", { style: { marginLeft: "auto", color: "rgba(253,246,232,0.6)", fontSize: "0.62rem" } }, board ? "收起 ▲" : "展开 ▼")),
         board ? h("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, padding: "8px 4px 2px", justifyContent: "center" } }, evidence) : null)));
 }
+// ── ⛵ 返航：回家之后第一次开门，先看一段从伦敦港开回家的船 ──
+var nanaVoyageWanted = function () {
+  try {
+    if (/[?&]voyage=1/.test(location.search || "")) return true;
+    if (!ldBackHome()) return false;
+    return localStorage.getItem("nana-voyage-seen") !== "1";
+  } catch (_) { return false; }
+};
+function HomecomingVoyage(_refHV) {
+  var h = React.createElement;
+  var onDone = _refHV.onDone;
+  var _st = useState(0); var stage = _st[0], setStage = _st[1];     // 0 出港 1 海上 2 靠岸 3 到家
+  useEffect(function () {
+    var t1 = setTimeout(function () { setStage(1); }, 900);
+    var t2 = setTimeout(function () { setStage(2); }, 4600);
+    var t3 = setTimeout(function () { setStage(3); }, 6000);
+    return function () { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+  var done = function () { try { localStorage.setItem("nana-voyage-seen", "1"); } catch (_) {} if (onDone) onDone(); };
+  var line = ["伦敦港 · 0°", "在海上。四十二天，一页一页都在船舱里。", "看见灯了。", "到家了，Nana。"][stage];
+  return h("div", { onClick: function () { if (stage >= 3) done(); }, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 9996, background: "linear-gradient(180deg,#0b1020 0%,#1a2238 42%,#1f4a63 58%,#123a52 100%)", overflow: "hidden", fontFamily: "'Plus Jakarta Sans','Nunito','PingFang SC',system-ui,sans-serif" } },
+    h("style", null,
+      "@keyframes hvSail{0%{left:6%}100%{left:70%}}" +
+      "@keyframes hvBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}" +
+      "@keyframes hvWave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}" +
+      "@keyframes hvTwinkle{0%,100%{opacity:.35}50%{opacity:1}}" +
+      "@keyframes hvGull{0%{transform:translate(0,0)}50%{transform:translate(14px,-6px)}100%{transform:translate(28px,0)}}" +
+      "@keyframes hvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}" +
+      "@keyframes hvGlow{0%,100%{opacity:.5}50%{opacity:1}}" +
+      "@keyframes hvSmoke{0%{transform:translate(0,0) scale(.6);opacity:.7}100%{transform:translate(-10px,-22px) scale(1.4);opacity:0}}"),
+    // 星星和月亮
+    [[6, 10], [18, 22], [30, 8], [44, 18], [58, 6], [72, 20], [86, 12], [94, 26], [38, 30], [66, 32]].map(function (p, i) { return h("div", { key: "s" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", width: 2, height: 2, borderRadius: "50%", background: "#fff", animation: "hvTwinkle " + (1.8 + (i % 4) * 0.6) + "s ease-in-out infinite" } }); }),
+    h("div", { style: { position: "absolute", right: "12%", top: "9%", width: 44, height: 44, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 34px rgba(243,233,184,0.55)" } }),
+    // 左边：伦敦的剪影（大本钟、伦敦眼、塔桥）
+    h("div", { style: { position: "absolute", left: 0, bottom: "42%", width: "44%", height: 120, opacity: stage >= 2 ? 0.25 : 0.9, transition: "opacity 1.6s" } },
+      h("svg", { viewBox: "0 0 200 120", preserveAspectRatio: "xMinYMax meet", style: { width: "100%", height: "100%", display: "block" } },
+        h("g", { fill: "#0a0f1c" },
+          h("rect", { x: 10, y: 30, width: 14, height: 90 }), h("polygon", { points: "10,30 17,14 24,30" }), h("circle", { cx: 17, cy: 44, r: 4.5, fill: "#f3e9b8" }),
+          h("rect", { x: 30, y: 74, width: 40, height: 46 }), h("rect", { x: 76, y: 60, width: 10, height: 60 }), h("rect", { x: 96, y: 82, width: 30, height: 38 }),
+          h("circle", { cx: 160, cy: 70, r: 34, fill: "none", stroke: "#0a0f1c", strokeWidth: 4 }), h("circle", { cx: 160, cy: 70, r: 22, fill: "none", stroke: "#0a0f1c", strokeWidth: 2 }),
+          h("line", { x1: 160, y1: 36, x2: 160, y2: 104, stroke: "#0a0f1c", strokeWidth: 2 }), h("line", { x1: 126, y1: 70, x2: 194, y2: 70, stroke: "#0a0f1c", strokeWidth: 2 }),
+          h("polygon", { points: "146,120 160,70 174,120" })),
+        h("text", { x: 8, y: 12, fontSize: 8, fill: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", letterSpacing: 2 }, "LONDON · 0°"))),
+    // 右边：家（一盏灯、一栋小楼）
+    h("div", { style: { position: "absolute", right: 0, bottom: "42%", width: "34%", height: 120, opacity: stage >= 1 ? 1 : 0.35, transition: "opacity 1.6s" } },
+      h("svg", { viewBox: "0 0 160 120", preserveAspectRatio: "xMaxYMax meet", style: { width: "100%", height: "100%", display: "block" } },
+        h("g", { fill: "#0a0f1c" },
+          h("rect", { x: 120, y: 40, width: 12, height: 80 }), h("polygon", { points: "116,40 126,22 136,40" }),
+          h("rect", { x: 40, y: 56, width: 64, height: 64 }), h("polygon", { points: "34,58 72,30 110,58" }), h("rect", { x: 92, y: 36, width: 8, height: 20 })),
+        h("rect", { x: 121, y: 42, width: 10, height: 8, fill: stage >= 2 ? "#ffe08a" : "#3a3f4a", style: stage >= 2 ? { filter: "drop-shadow(0 0 8px #ffe08a)", animation: "hvGlow 1.4s ease-in-out infinite" } : null }),
+        h("rect", { x: 52, y: 70, width: 14, height: 16, fill: stage >= 3 ? "#ffe08a" : "#1a2238", style: { transition: "fill 0.8s" } }), h("rect", { x: 78, y: 70, width: 14, height: 16, fill: stage >= 3 ? "#ffe08a" : "#1a2238", style: { transition: "fill 0.8s" } }),
+        h("rect", { x: 66, y: 96, width: 12, height: 24, fill: stage >= 3 ? "#ffe08a" : "#2e7c86" }),
+        h("text", { x: 152, y: 14, textAnchor: "end", fontSize: 8, fill: "rgba(244,239,227,0.6)", fontFamily: "Georgia,serif", letterSpacing: 2 }, "HOME · 113°E"))),
+    // 海：两层浪
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "42%", background: "linear-gradient(180deg,#1f5a74,#0f3448)" } }),
+    [0, 1].map(function (k) { return h("div", { key: "w" + k, style: { position: "absolute", left: 0, bottom: "calc(42% - " + (k * 6 + 4) + "px)", width: "200%", height: 14, backgroundImage: "radial-gradient(circle at 14px 8px, " + (k ? "rgba(120,190,215,0.55)" : "rgba(90,160,190,0.7)") + " 8px, transparent 9px)", backgroundSize: "36px 14px", backgroundRepeat: "repeat-x", animation: "hvWave " + (k ? 5.5 : 3.8) + "s linear infinite" } }); }),
+    // 船：从左开到右
+    h("div", { style: { position: "absolute", bottom: "calc(42% - 6px)", width: 120, marginLeft: -60, animation: "hvSail 5.2s cubic-bezier(.3,.05,.3,1) 0.6s both", left: "6%" } },
+      h("div", { style: { animation: "hvBob 2.2s ease-in-out infinite", transformOrigin: "50% 100%" } },
+        h("svg", { viewBox: "0 0 120 80", style: { width: "100%", display: "block", overflow: "visible" } },
+          [0, 1, 2].map(function (k) { return h("circle", { key: k, cx: 80, cy: 22, r: 4, fill: "rgba(240,240,250,0.7)", style: { animation: "hvSmoke 2s linear " + (k * 0.66) + "s infinite" } }); }),
+          h("rect", { x: 74, y: 24, width: 10, height: 20, fill: "#c0392b" }), h("rect", { x: 72, y: 22, width: 14, height: 4, fill: "#8a2a20" }),
+          h("rect", { x: 40, y: 40, width: 56, height: 14, rx: 2, fill: "#fdf6e8" }), [46, 58, 70, 82].map(function (x) { return h("circle", { key: x, cx: x, cy: 47, r: 2.6, fill: "#ffe08a" }); }),
+          h("path", { d: "M8 54 L112 54 L104 74 L20 74 Z", fill: "#1c2a44" }), h("path", { d: "M8 54 L112 54 L110 60 L12 60 Z", fill: "#2f5470" }),
+          h("line", { x1: 30, y1: 40, x2: 30, y2: 6, stroke: "#4a3a30", strokeWidth: 2 }), h("path", { d: "M32 8 L62 22 L32 34 Z", fill: "#f0c46a" }),
+          h("text", { x: 60, y: 70, textAnchor: "middle", fontSize: 7, fill: "rgba(253,246,232,0.8)", fontFamily: "Georgia,serif", letterSpacing: 1.5 }, "NANA")))),
+    // 海鸥
+    [[24, 30], [40, 24]].map(function (p, i) { return h("div", { key: "g" + i, style: { position: "absolute", left: p[0] + "%", top: p[1] + "%", color: "rgba(244,239,227,0.75)", fontSize: 14, animation: "hvGull " + (3 + i) + "s ease-in-out infinite alternate" } }, "〰"); }),
+    // 字
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: "calc(12% + env(safe-area-inset-top,0px))", textAlign: "center", padding: "0 28px", color: "#f4efe3" } },
+      h("div", { style: { fontSize: "0.6rem", letterSpacing: "0.34em", color: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: 800 } }, "HOMEWARD BOUND"),
+      h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 900, fontSize: "1.6rem", marginTop: 8, letterSpacing: "0.04em" } }, stage >= 3 ? "欢迎回家，Nana 🏡" : "返航"),
+      h("div", { key: "l" + stage, style: { marginTop: 10, fontSize: "0.86rem", lineHeight: 1.7, color: "rgba(244,239,227,0.85)", animation: "hvIn 0.6s ease both", fontFamily: "'ZCOOL KuaiLe','PingFang SC',cursive" } }, line)),
+    // 靠岸
+    stage >= 3 ? h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(8% + env(safe-area-inset-bottom,0px))", textAlign: "center", animation: "hvIn 0.6s ease both" } },
+      h("button", { onClick: function (e) { e.stopPropagation(); done(); }, style: { background: "linear-gradient(135deg,#f0c46a,#d99b31)", color: "#4a3510", border: "none", borderRadius: 999, padding: "13px 30px", fontFamily: "inherit", fontWeight: 900, fontSize: "0.98rem", cursor: "pointer", boxShadow: "0 10px 26px rgba(0,0,0,0.45)" } }, "上岸 🏡"),
+      h("div", { style: { marginTop: 10, fontSize: "0.64rem", color: "rgba(244,239,227,0.55)" } }, "从本初子午线 0° 回到 113°E · 四十二天")) : h("div", { onClick: function (e) { e.stopPropagation(); done(); }, style: { position: "absolute", right: 16, top: "calc(14px + env(safe-area-inset-top,0px))", fontSize: "0.64rem", color: "rgba(244,239,227,0.5)", cursor: "pointer" } }, "跳过"));
+}
 // ── 🏛️ 221B 门面：首页是这栋楼的外观。门口收信、留言（短波），推门进去才是屋里和寻宝 ──
 var ldWantTab = null;                       // 想直接打开伦敦那间房的哪个 tab（安心 = care）
 var NANA_DOOR = false;                      // 正开着门口进来的那页安心（底部导航算小屋）
@@ -26163,6 +26243,11 @@ var nanaSheet = function (k) { try { window.dispatchEvent(new CustomEvent("nana-
 var NANA_MUSIC = "";                        // 随身听正在放的歌名（没放就是空）
 var nanaGoCare = function () {
   ldWantTab = "care";
+  try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
+};
+var ldWantOld = false;                      // 门口的港口：开回原来那个伦敦小屋（港口 + 六个 tab）
+var nanaGoOldLondon = function () {
+  ldWantTab = "now"; ldWantOld = true;
   try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
 };
 var ldWantTools = false;                    // 阁楼的行李箱：直接开那六个工具那一页
@@ -26326,6 +26411,8 @@ function BakerFacade(_refBF) {
       h("pattern", { id: "bfCobble", width: 14, height: 8, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 14, height: 8, fill: "#2a2e37" }),
         h("ellipse", { cx: 3.5, cy: 2, rx: 3.2, ry: 1.7, fill: "#343945" }), h("ellipse", { cx: 10.5, cy: 6, rx: 3.2, ry: 1.7, fill: "#343945" })),
+      h("pattern", { id: "bfWaves", width: 24, height: 8, patternUnits: "userSpaceOnUse" },
+        h("path", { d: "M0 6 q6 -4 12 0 t12 0", fill: "none", stroke: "rgba(200,235,250,0.45)", strokeWidth: 1 })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
     // 烟囱 + 烟囱管帽 + 烟
@@ -26454,6 +26541,23 @@ function BakerFacade(_refBF) {
     // 人行道 + 路
     h("rect", { x: 0, y: 353, width: 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: 360, height: 3, fill: "#5f6572" }),
     h("rect", { x: 0, y: 375, width: 360, height: 45, fill: "url(#bfCobble)" }),
+    // 码头：右半边是水，停着从伦敦开回来的船，岸上一块牌子
+    h("g", { onClick: nanaGoOldLondon, title: "上一站 · 伦敦港口", style: { cursor: "pointer" } },
+      h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "#2f6f8a" }),
+      h("rect", { x: 196, y: 378, width: 164, height: 42, fill: "url(#bfWaves)" }),
+      h("rect", { x: 192, y: 375, width: 6, height: 45, fill: "#5a4230" }), h("rect", { x: 196, y: 375, width: 164, height: 3, fill: "#8a6a48" }),
+      h("g", { style: { transformOrigin: "300px 400px", animation: "bfBob 2.6s ease-in-out infinite" } },
+        h("path", { d: "M262 400 L338 400 L332 412 L268 412 Z", fill: "#1c2a44" }), h("path", { d: "M262 400 L338 400 L337 404 L263 404 Z", fill: "#2f5470" }),
+        h("rect", { x: 284, y: 390, width: 30, height: 10, rx: 1.5, fill: "#fdf6e8" }), h("rect", { x: 306, y: 383, width: 5, height: 8, fill: "#c0392b" }),
+        h("line", { x1: 276, y1: 390, x2: 276, y2: 372, stroke: "#4a3a30", strokeWidth: 1.4 }), h("path", { d: "M277 373 L293 380 L277 387 Z", fill: "#f0c46a" }),
+        h("text", { x: 300, y: 409, textAnchor: "middle", fontSize: 4.6, fill: "rgba(253,246,232,0.85)", fontFamily: "Georgia,serif", letterSpacing: 1 }, "LONDON")),
+      h("line", { x1: 200, y1: 384, x2: 264, y2: 400, stroke: "#c9a24a", strokeWidth: 1 }),
+      h("rect", { x: 198, y: 380, width: 5, height: 7, rx: 1, fill: "#0a0c10" }),
+      // 牌子
+      h("rect", { x: 212, y: 356, width: 2.4, height: 20, fill: "#5a4230" }),
+      h("rect", { x: 200, y: 344, width: 62, height: 15, rx: 2, fill: "#f1e4c4", stroke: "#8a6a48", strokeWidth: 1 }),
+      h("text", { x: 231, y: 351, textAnchor: "middle", fontSize: 4.6, fontWeight: "bold", fill: "#8a5a52", fontFamily: "'PingFang SC',sans-serif" }, "⚓ 上一站"),
+      h("text", { x: 231, y: 357, textAnchor: "middle", fontSize: 5.2, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "伦敦港口 →")),
     // 煤气灯：细杆、横臂、尖顶灯罩
     h("rect", { x: 17, y: 262, width: 3, height: 92, fill: "#0a0c10" }), h("rect", { x: 11, y: 296, width: 15, height: 1.6, fill: "#0a0c10" }),
     h("polygon", { points: "12,252 26,252 19,244", fill: "#0a0c10" }),
@@ -26472,7 +26576,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
-      "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(120px) scaleX(1)}50%{transform:translateX(120px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
+      "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
@@ -27178,6 +27282,7 @@ function NanasHome() {
     room = _useState324[0],
     setRoom = _useState324[1];
   var _inside = useState(false); var inside = _inside[0], setInside = _inside[1];   // 推开门进了屋里
+  var _voy = useState(nanaVoyageWanted); var voyage = _voy[0], setVoyage = _voy[1];   // 回家第一次开门：先看返航
   var home = !room && !inside;
   var _useState325 = useState(null),
     _useState326 = _slicedToArray(_useState325, 2),
@@ -27300,7 +27405,7 @@ function NanasHome() {
     }
   }, /*#__PURE__*/React.createElement("style", null, "\n                html, body { background: #FFF8F7; }\n        * { -webkit-tap-highlight-color: transparent; }\n        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n        @keyframes bounceIn { 0%{transform:scale(0.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }\n        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }\n      "), showFrog && /*#__PURE__*/React.createElement(PhotoOpeningEgg, {
     onClose: function onClose() { setShowFrog(false); }
-  }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
+  }), !showSplash && voyage && /*#__PURE__*/React.createElement(HomecomingVoyage, { onDone: function () { setVoyage(false); } }), showSplash && /*#__PURE__*/React.createElement(SplashScreen, {
     onEnter: function onEnter() {
       setShowSplash(false);
       var _ed = new Date();
