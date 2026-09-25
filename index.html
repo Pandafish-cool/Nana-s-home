@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-279";
+var NANA_VER = "v2026.8.2-280";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26530,11 +26530,12 @@ function BakerFacade(_refBF) {
       h("rect", { x: 146, y: 293, width: 22, height: 7, rx: 1, fill: "url(#bfBrass)" }),
       h("text", { x: 157, y: 298.3, textAnchor: "middle", fontSize: 3.6, fontWeight: "bold", fill: "#2b2410", fontFamily: "Georgia,serif", letterSpacing: 0.5 }, "LETTERS"),
       h("circle", { cx: 157, cy: 304, r: 1.4, fill: "url(#bfBrass)" }),
-      newLetter ? h("g", { style: { transformOrigin: "157px 288px", animation: "mpBob 2.6s ease-in-out infinite" } },
-        h("g", { transform: "rotate(-12 157 286)" },
-          h("rect", { x: 150.5, y: 281.5, width: 13, height: 8, rx: 1, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.7 }),
-          h("path", { d: "M150.5 282.3 L157 286.3 L163.5 282.3", fill: "none", stroke: "#c8b48e", strokeWidth: 0.7 }),
-          h("circle", { cx: 157, cy: 286, r: 1.1, fill: "#c0392b" }))) : null),
+      // 有新信：一封白信放在顶上圆圆的那块里
+      newLetter ? h("g", { style: { transformOrigin: "157px 269px", animation: "mpBob 2.6s ease-in-out infinite" } },
+        h("g", { transform: "rotate(-8 157 269)" },
+          h("rect", { x: 150.5, y: 265, width: 13, height: 8, rx: 1, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.7 }),
+          h("path", { d: "M150.5 265.8 L157 269.8 L163.5 265.8", fill: "none", stroke: "#c8b48e", strokeWidth: 0.7 }),
+          h("circle", { cx: 157, cy: 269.5, r: 1.1, fill: "#c0392b" }))) : null),
       h("text", { x: 157, y: 319, textAnchor: "middle", fontSize: 7.6, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "221B 的信")),
     // 📻 短波：黄铜对讲板，刻着电波和 SHORT WAVE，一盏小灯
     h("g", { onClick: nanaGoCare, style: { cursor: "pointer" } },
