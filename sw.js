@@ -51,7 +51,13 @@ var rescue = function () { return new Response(RESCUE, { headers: { "Content-Typ
 self.addEventListener("activate", function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
     return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+  }).then(function () {
+    return caches.open(CACHE).then(function (c) {
+      return c.keys().then(function (reqs) {
+        return Promise.all(reqs.filter(function (r) { return /[?&]fresh=/.test(r.url); }).map(function (r) { return c.delete(r); }));
+      });
+    });
+  })["catch"](function () {}).then(function () { return self.clients.claim(); }));
 });
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
@@ -69,6 +75,8 @@ self.addEventListener("fetch", function (e) {
   // 而且每次都带一个新的 ?t=，落到下面那个缓存优先的分支里，
   // 等于每隔半分钟往缓存里塞一条永远命中不了的垃圾。直连，别管。
   if (/(^|\/)version\.txt$/.test(url.pathname)) return;
+  // 页面自己拉新版本用的 ?fresh=：本来就是要绕过缓存的，也别往缓存里塞（以前每次都塞一份两兆的）
+  if (/[?&]fresh=/.test(url.search)) return;
   // 跨域数据接口（Supabase 等）不走缓存，直连
   var isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (url.origin !== self.location.origin && !isFont) return;

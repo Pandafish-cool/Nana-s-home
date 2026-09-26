@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-285";
+var NANA_VER = "v2026.8.2-286";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8497,49 +8497,141 @@ var nanaVoMime = function () {
   } catch (_) { return null; }
 };
 // Service Worker 是缓存优先（为了秒开），代价是永远慢一个版本。
-// 这里开门几秒后拿几个字节的 version.txt 比一下，有新版就换掉缓存里的页面再重载一次。
+// 这里开门几秒后拿几个字节的 version.txt 比一下，有新版就把新页面下下来换掉缓存，再重载一次。
+// 跨境链路常把两兆的页面下到一半就断，所以：
+//   1) 下完要验：够长、结尾完整、版本号对得上、每段脚本都能编译 —— 残页面绝不进缓存（进了就是白屏）
+//   2) 整页下不下来就分段（Range）下，哪段断了只重下那段
+//   3) 没成功不记「已试过」，过一会儿再试（1、2、4…分钟），不会一次失败就卡在老版本
+//   4) 「更多」里能看到线上版本、上次查的结果，也能手动点一下
+var NANA_UPD = { at: 0, online: "", state: "idle", note: "" };
+try { var _nuLog = JSON.parse(localStorage.getItem("nana-upd-log") || "null"); if (_nuLog && typeof _nuLog === "object" && _nuLog.at) NANA_UPD = _nuLog; } catch (_) {}
+var nanaUpdSet = function (state, note, online) {
+  NANA_UPD = { at: Date.now(), online: online || NANA_UPD.online || "", state: state, note: note || "" };
+  try { localStorage.setItem("nana-upd-log", JSON.stringify(NANA_UPD)); } catch (_) {}
+  try { window.dispatchEvent(new Event("nana-upd")); } catch (_) {}
+};
+var nanaUpdLine = function () {
+  var u = NANA_UPD || {};
+  if (!u.at) return "还没查过线上版本";
+  var d = new Date(u.at), hh = d.getHours(), mm = d.getMinutes();
+  var when = Date.now() - u.at < 60000 ? "刚刚" : (hh < 10 ? "0" : "") + hh + ":" + (mm < 10 ? "0" : "") + mm;
+  return (u.online ? "线上 " + u.online + " · " : "") + (u.note || "") + " · " + when;
+};
+// 新页面合不合格：不合格返回原因，合格返回空串
+var nanaHtmlCheck = function (t, ver) {
+  if (!t || t.length < 400000 || t.lastIndexOf("</html>") < t.length - 400) return "页面只下到一半";
+  if (ver && t.indexOf('NANA_VER = "' + ver + '"') < 0) return "线上页面还没换到 " + ver;
+  var re = /<script\b[^>]*>([\s\S]*?)<\/script>/g, m;
+  while ((m = re.exec(t))) {
+    if (/\ssrc=/.test(m[0].slice(0, 120))) continue;
+    try { new Function(m[1]); } catch (e) { return "页面下坏了"; }
+  }
+  return "";
+};
+var nanaFetchWhole = function (ver) {
+  return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (r) {
+    if (!r || !r.ok) { var e0 = new Error("网络没通" + (r ? "（" + r.status + "）" : "")); e0.chunks = 1; throw e0; }
+    return r.text();
+  }, function () { var e1 = new Error("网络没通"); e1.chunks = 1; throw e1; }).then(function (t) {
+    var bad = nanaHtmlCheck(t, ver);
+    if (bad) { var e = new Error(bad); e.chunks = bad === "页面只下到一半"; throw e; }
+    return t;
+  });
+};
+// 分段下：每段 400KB，一段最多试 3 次；服务器不认 Range（回 200）就当整页收下
+var nanaFetchChunks = function (ver) {
+  var SZ = 400000, bufs = [], total = 0;
+  var one = function (from, tries) {
+    return fetch("index.html?fresh=" + Date.now() + "-" + from, { cache: "no-store", headers: { Range: "bytes=" + from + "-" + (from + SZ - 1) } }).then(function (r) {
+      if (!r) throw new Error("无响应");
+      if (r.status === 200) return r.arrayBuffer().then(function (b) { return { full: b }; });
+      if (r.status !== 206) throw new Error("网络没通（" + r.status + "）");
+      var cr = /bytes (\d+)-(\d+)\/(\d+)/.exec(r.headers.get("Content-Range") || "");
+      return r.arrayBuffer().then(function (b) {
+        var p = { b: b, from: cr ? +cr[1] : from, to: cr ? +cr[2] : from + b.byteLength - 1, total: cr ? +cr[3] : 0 };
+        if (!p.total || p.b.byteLength !== p.to - p.from + 1) throw new Error("段没下全");
+        return p;
+      });
+    })["catch"](function (e) { if (tries > 1) return one(from, tries - 1); throw e; });
+  };
+  var next = function (from) {
+    return one(from, 3).then(function (p) {
+      if (p.full) return p.full;
+      bufs.push(p.b); total = p.total;
+      if (p.to + 1 >= total) return null;
+      nanaUpdSet("downloading", "分段下载新版本 " + Math.round((p.to + 1) * 100 / total) + "%", ver);
+      return next(p.to + 1);
+    });
+  };
+  return next(0).then(function (full) {
+    var u, i, n = 0, o = 0;
+    if (full) u = new Uint8Array(full);
+    else {
+      for (i = 0; i < bufs.length; i++) n += bufs[i].byteLength;
+      u = new Uint8Array(n);
+      for (i = 0; i < bufs.length; i++) { u.set(new Uint8Array(bufs[i]), o); o += bufs[i].byteLength; }
+    }
+    var t = new TextDecoder("utf-8").decode(u);
+    var bad = nanaHtmlCheck(t, ver);
+    if (bad) throw new Error(bad);
+    return t;
+  });
+};
 (function () {
   if (typeof caches === "undefined" || typeof fetch === "undefined") return;
-  var last = 0, busy = 0;
-  var check = function () {
+  var last = 0, busy = 0, fails = 0, nextTry = 0;
+  var install = function (t, ver) {
+    return caches.keys().then(function (ks) {
+      return Promise.all(ks.map(function (k) {
+        return caches.open(k).then(function (c) {
+          return c.put("index.html", new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }));
+        });
+      }));
+    }).then(function () {
+      try { sessionStorage.setItem("nana-upd", ver); } catch (_) {}
+      nanaUpdSet("done", "已换成 " + ver + "，正在重开", ver);
+      location.reload();
+    });
+  };
+  var check = function (force) {
     var now = Date.now();
-    if (NANA_RECORDING || NANA_AUDIO_BUSY) return;     // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
-    if (busy || (last && now - last < 30000)) return;   // 别一直问，最多半分钟一次（就十几个字节）
+    if (NANA_RECORDING || NANA_AUDIO_BUSY) { if (force) nanaUpdSet("wait", "刚录完音，等一会儿再查"); return; }   // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
+    if (busy) return;
+    if (!force && last && now - last < 30000) return;   // 别一直问，最多半分钟一次（就十几个字节）
+    if (!force && now < nextTry) return;                // 上次没下成，按退避等一等
     last = now; busy = 1;
+    nanaUpdSet("checking", "正在问线上版本…");
     fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
       return r && r.ok ? r.text() : null;
     }).then(function (t) {
       t = t ? String(t).trim() : "";
-      if (!t || t === NANA_VER) return;
-      try {
-        if (sessionStorage.getItem("nana-upd") === t) return;   // 同一版本只重载一次，防止打转
-        sessionStorage.setItem("nana-upd", t);
-      } catch (_) {}
-      return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (res) {
-        if (!res || !res.ok) return null;
-        return res.text();
-      }).then(function (t) {
-        // 跨境链路会把大文件截断。残的 HTML 存进缓存 = 下次打开白屏，宁可不更新。
-        if (!t || t.length < 400000 || t.lastIndexOf("</html>") < t.length - 400) return null;
-        return caches.keys().then(function (ks) {
-          return Promise.all(ks.map(function (k) {
-            return caches.open(k).then(function (c) {
-              return c.put("index.html", new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }));
-            });
-          }));
-        }).then(function () { return 1; });
-      }).then(function (ok) { if (ok) location.reload(); });
-    })["catch"](function () {}).then(function () { busy = 0; }, function () { busy = 0; });
+      if (!t || t.length > 40) { nanaUpdSet("err", "线上版本没拿到，网可能不太好"); return; }
+      if (t === NANA_VER) { fails = 0; nanaUpdSet("ok", "已是最新", t); return; }
+      var done = "";
+      try { done = sessionStorage.getItem("nana-upd") || ""; } catch (_) {}
+      if (done === t && !force) { nanaUpdSet("ok", "已经换成 " + t + " 了，关掉小屋重开一次就是新的", t); return; }   // 同一版本只自动重载一次，防止打转
+      nanaUpdSet("downloading", "有新版本 " + t + "，正在下载…", t);
+      return nanaFetchWhole(t)["catch"](function (e1) {
+        if (!e1 || !e1.chunks || typeof TextDecoder === "undefined") throw e1;
+        nanaUpdSet("downloading", "整页没下全，改成分段下…", t);
+        return nanaFetchChunks(t);
+      }).then(function (html) { return install(html, t); })["catch"](function (e) {
+        fails++;
+        nextTry = Date.now() + Math.min(20 * 60000, 60000 * Math.pow(2, fails - 1));   // 1、2、4、8、16、20 分钟
+        nanaUpdSet("err", "新版本 " + t + " 没换成：" + ((e && e.message) || "下载失败") + "，过会儿再试", t);
+      });
+    })["catch"](function () { nanaUpdSet("err", "线上版本没拿到，网可能不太好"); }).then(function () { busy = 0; }, function () { busy = 0; });
   };
-  setTimeout(check, 3000);
+  window.nanaCheckUpdate = function () { check(true); };
+  setTimeout(function () { check(); }, 3000);
   // 装在主屏上的 PWA 从后台切回来不会重新加载页面，只靠上面那一次检查会一直停在老版本。
   // 切回前台、或者从 bfcache 里恢复的时候，再问一次。
   try {
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) setTimeout(check, 1200);
+      if (!document.hidden) setTimeout(function () { check(); }, 1200);
     });
     window.addEventListener("pageshow", function (e) {
-      if (e && e.persisted) setTimeout(check, 1200);
+      if (e && e.persisted) setTimeout(function () { check(); }, 1200);
     });
   } catch (_) {}
 })();
@@ -24732,6 +24824,12 @@ function BottomNav(_ref135) {
     _useState316 = _slicedToArray(_useState315, 2),
     drawerOpen = _useState316[0],
     setDrawerOpen = _useState316[1];
+  var _updT = useState(0), setUpdTick = _updT[1];
+  useEffect(function () {
+    var f = function () { setUpdTick(function (x) { return x + 1; }); };
+    window.addEventListener("nana-upd", f);
+    return function () { window.removeEventListener("nana-upd", f); };
+  }, []);
   var baker = nanaBakerOn();
   var pinned = baker ? ["living", "basement", "gaming"] : ["living", "london", "basement", "gaming"];
   var pinnedRooms = rooms.filter(function (r) {
@@ -24889,7 +24987,11 @@ function BottomNav(_ref135) {
     }, r.name.split(" ")[0]));
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
-  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C " + NANA_VER + (function () { try { return " · 返航" + (localStorage.getItem("nana-voyage-seen") === "2" ? "已看" : "未看") + " · home=" + (localStorage.getItem("nana-home") || "自动") + " · " + (localStorage.getItem("nana-author") || "?"); } catch (_) { return ""; } })())), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C " + NANA_VER + (function () { try { return " · 返航" + (localStorage.getItem("nana-voyage-seen") === "2" ? "已看" : "未看") + " · home=" + (localStorage.getItem("nana-home") || "自动") + " · " + (localStorage.getItem("nana-author") || "?"); } catch (_) { return ""; } })()),
+  /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.6)", margin: "0 0 8px", fontWeight: 700, lineHeight: 1.6, padding: "0 16px" } },
+    nanaUpdLine(), " ",
+    /*#__PURE__*/React.createElement("button", { onClick: function () { try { window.nanaCheckUpdate(); } catch (_) {} }, style: { border: "1px solid rgba(150,120,110,0.35)", background: "rgba(255,255,255,0.7)", color: "#8a6a64", borderRadius: 999, padding: "3px 10px", fontFamily: "inherit", fontSize: "0.56rem", fontWeight: 800, cursor: "pointer", marginLeft: 4, verticalAlign: "middle" } },
+      (NANA_UPD && (NANA_UPD.state === "checking" || NANA_UPD.state === "downloading")) ? "正在查…" : "检查更新"))), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       bottom: 0,
