@@ -142,15 +142,18 @@ GTFO · cédes · Easy Interlude · 月の光〜good night(压轴·午夜彩蛋)
 
 加歌：mp3 放仓库根目录（文件名用英文），在 `NanaMixtapeCard` 的 `tracks` 加一行。
 
-## 上线时别忘了 index.bin
+## 上线：app.html 才是小屋，index.html 是引导页
 
-`index.bin` 是 `index.html` 的一模一样的副本（git 里是同一个 blob，不占地方）。
-手机上的自动更新按字节分段下它（256KB 一段，下到哪存到哪，关掉再开接着下）。
-**一定要在 main 上、cherry-pick 之后再拷**（分支上的 index.html 带着不上线的东西，
-拷过去就等于把它发出去了）：
+真正的小屋在 `app.html`（改代码改这个）。线上的 `index.html` 是 `tools/build.js` 生成的引导页：
+很小（压缩后几 KB），打开后按 256KB 一段把 `index.bin`（app.html 的原样副本）搬进缓存，
+下到哪存到哪，关掉再开接着搬，搬好直接进屋。老版本的更新代码只会整页下 index.html，
+两兆多经常下不完 —— 换成引导页之后它一秒就能装上，然后由引导页把新小屋搬进来。
+
+**一定在 main 上、cherry-pick 之后跑 build**（分支上的 app.html 带着不上线的东西）：
 
     git checkout main && git cherry-pick -x <分支提交>
-    cp index.html index.bin && cmp index.html index.bin && git add index.bin && git commit -m "index.bin 跟上 vXXX"
-    grep -c 'hand()' index.html index.bin     # 两个都得是 0
+    node tools/build.js          # 生成 index.html / index.bin / version.txt
+    grep -c 'hand()' app.html index.bin     # 两个都得是 0
+    git add index.html index.bin version.txt && git commit -m "build vXXX" && git push
 
-忘了拷也不会坏：更新代码会发现 index.bin 里的版本号和 version.txt 对不上，改走整页下载那条路。
+忘了跑 build 也不会坏：手机上会发现 index.bin 里的版本号和 version.txt 对不上，改走整页那条路。

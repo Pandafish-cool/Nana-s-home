@@ -2,7 +2,8 @@ var CACHE = "nana-home-v6";
 // 跨境链路会把大文件截断成"下了一半但连接正常关闭"。index.html 有一百多万字节，
 // 一旦把残文件存进缓存，下次打开就是白屏。存之前和取出来之前都验一遍完整性。
 var HTML_MIN = 400000;
-var htmlOk = function (t) { return !!t && t.length > HTML_MIN && t.lastIndexOf("</html>") > t.length - 400; };
+// 线上的 index.html 现在是个引导页（带 nana-bootstrap 标记），它只负责把真正的页面搬进缓存，自己不能进缓存
+var htmlOk = function (t) { return !!t && t.length > HTML_MIN && t.lastIndexOf("</html>") > t.length - 400 && t.indexOf("<!--nana-" + "bootstrap-->") < 0; };
 var putHtml = function (t) {
   if (!htmlOk(t)) return;
   caches.open(CACHE).then(function (c) {
@@ -55,6 +56,8 @@ self.addEventListener("activate", function (e) {
     return caches.open(CACHE).then(function (c) {
       return c.keys().then(function (reqs) {
         return Promise.all(reqs.filter(function (r) { return /[?&]fresh=/.test(r.url); }).map(function (r) { return c.delete(r); }));
+      }).then(function () {   // 旧 SW 可能把引导页存进来了，扔掉，下次导航会重新搬
+        return c.match("index.html").then(function (r) { return r ? r.clone().text().then(function (t) { if (!htmlOk(t)) return c.delete("index.html"); }) : null; });
       });
     });
   })["catch"](function () {}).then(function () { return self.clients.claim(); }));
