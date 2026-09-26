@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png">
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#FFF8F7;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,"PingFang SC","Nunito",system-ui,sans-serif;color:#5a4340;padding:28px}.b{max-width:320px;width:100%;text-align:center}.h{font-size:3rem;line-height:1;animation:bob 1.6s ease-in-out infinite}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}h1{font-size:1.1rem;margin:14px 0 6px;font-weight:800}p{font-size:.82rem;line-height:1.7;color:#8a6a64}.t{margin:18px 0 8px;height:10px;border-radius:999px;background:#f3e3e6;overflow:hidden}.f{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#f7a1b8,#e0607f);transition:width .4s}.s{font-size:.74rem;color:#a08a86;min-height:2.6em;line-height:1.5;margin-top:6px}.n{font-size:.68rem;color:#b8a4a0;margin-top:14px}button{margin-top:12px;border:none;border-radius:999px;padding:9px 20px;font-size:.8rem;font-weight:800;background:#fff;color:#b45b78;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;font-family:inherit}</style></head>
+<body><!--nana-bootstrap--><div class="b"><div class="h">🏡</div><h1>小屋在换新家具</h1><p>东西正在搬进来，稍等一下下</p><div class="t"><div class="f" id="bar"></div></div><div id="pct" style="font-size:.8rem;font-weight:800;color:#d9537a">0%</div><div class="s" id="st">正在把小屋搬过来…</div><button id="retry">现在再试</button><div class="n">关掉再打开也会接着搬 · 写的信和清单都在云上，不会丢</div></div>
+<script>
+(function () {
+  var VER = "__VER__", running = 0, fails = 0;
+  var $ = function (id) { return document.getElementById(id); };
+  var say = function (t) { try { $("st").textContent = t; } catch (_) {} };
+  var bar = function (p) { try { $("bar").style.width = p + "%"; $("pct").textContent = p + "%"; } catch (_) {} };
+  var check = function (t) {
+    if (!t || t.length < 400000 || t.lastIndexOf("</html>") < t.length - 400) return "页面只下到一半";
+    if (t.indexOf("<!--nana-" + "bootstrap-->") >= 0) return "拿到的还是引导页";
+    if (t.indexOf('NANA_VER = "' + VER + '"') < 0) return "线上页面版本对不上";
+    var re = /<script\b[^>]*>([\s\S]*?)<\/script>/g, m;
+    while ((m = re.exec(t))) { if (/\ssrc=/.test(m[0].slice(0, 120))) continue; try { new Function(m[1]); } catch (e) { return "页面下坏了"; } }
+    return "";
+  };
+  var fetchT = function (url, opts, ms) {
+    var ac = null, timer = null;
+    try { if (typeof AbortController !== "undefined") { ac = new AbortController(); opts.signal = ac.signal; } } catch (_) { ac = null; }
+    return new Promise(function (resolve, reject) {
+      timer = setTimeout(function () { timer = null; try { if (ac) ac.abort(); } catch (_) {} reject(new Error("等太久没回来")); }, ms);
+      fetch(url, opts).then(function (r) { if (timer) { clearTimeout(timer); resolve(r); } }, function (e) { if (timer) { clearTimeout(timer); reject(e); } });
+    });
+  };
+  // 分段下、下到哪算哪：256KB 一段，每段存进 Cache Storage，关掉再开接着下
+  var parts = function () {
+    if (!window.caches || typeof TextDecoder === "undefined") return Promise.reject(new Error("这台机不支持分段"));
+    var SZ = 262144, key = function (i) { return "./__upd/" + VER + "/" + i; };
+    return caches.open("nana-upd-parts").then(function (c) {
+      return c.keys().then(function (reqs) {
+        return Promise.all(reqs.filter(function (r) { return r.url.indexOf("/__upd/" + VER + "/") < 0; }).map(function (r) { return c["delete"](r); }));
+      }).then(function () { return c; });
+    }).then(function (c) {
+      var total = 0, bufs = [];
+      var getPart = function (i, tries) {
+        return c.match(key(i)).then(function (hit) {
+          if (hit) return hit.arrayBuffer().then(function (b) { var tl = +(hit.headers.get("x-total") || 0); if (tl) total = tl; return b; });
+          var from = i * SZ;
+          return fetchT("index.bin?v=" + encodeURIComponent(VER), { cache: "no-store", headers: { Range: "bytes=" + from + "-" + (from + SZ - 1) } }, 45000).then(function (r) {
+            if (!r) throw new Error("无响应");
+            if (r.status === 200) return r.arrayBuffer().then(function (b) { return { full: b }; });
+            if (r.status !== 206) throw new Error("网络没通（" + r.status + "）");
+            var cr = /bytes (\d+)-(\d+)\/(\d+)/.exec(r.headers.get("Content-Range") || "");
+            if (!cr) throw new Error("服务器没说总长");
+            return r.arrayBuffer().then(function (b) {
+              if (b.byteLength !== (+cr[2]) - (+cr[1]) + 1) throw new Error("段没下全");
+              total = +cr[3];
+              return c.put(key(i), new Response(b, { headers: { "x-total": String(total) } })).then(function () { return b; }, function () { return b; });
+            });
+          })["catch"](function (e) { if (tries > 1) return getPart(i, tries - 1); throw e; });
+        });
+      };
+      var loop = function (i) {
+        return getPart(i, 3).then(function (b) {
+          if (b && b.full) return b.full;
+          bufs.push(b);
+          if (!total) throw new Error("服务器没说总长");
+          var p = Math.min(99, Math.round((i + 1) * SZ * 100 / total));
+          bar(p); say("正在搬 " + p + "%，关掉再开也会接着搬");
+          if ((i + 1) * SZ >= total) return null;
+          return loop(i + 1);
+        });
+      };
+      return loop(0).then(function (full) {
+        var u, i, n = 0, o = 0;
+        if (full) u = new Uint8Array(full);
+        else { for (i = 0; i < bufs.length; i++) n += bufs[i].byteLength; u = new Uint8Array(n); for (i = 0; i < bufs.length; i++) { u.set(new Uint8Array(bufs[i]), o); o += bufs[i].byteLength; } }
+        var t = new TextDecoder("utf-8").decode(u), bad = check(t);
+        if (bad) return c.keys().then(function (reqs) { return Promise.all(reqs.map(function (r) { return c["delete"](r); })); })["catch"](function () {}).then(function () { throw new Error(bad); });
+        return t;
+      });
+    });
+  };
+  var whole = function () {
+    say("换整页下…");
+    return fetchT("app.html?fresh=" + Date.now(), { cache: "no-store" }, 150000).then(function (r) {
+      if (!r || !r.ok) throw new Error("网络没通" + (r ? "（" + r.status + "）" : ""));
+      return r.text();
+    }).then(function (t) { var bad = check(t); if (bad) throw new Error(bad); return t; });
+  };
+  var install = function (html) {
+    bar(100); say("搬好了，进屋 🏡");
+    var p = Promise.resolve();
+    if (window.caches) {
+      p = caches.open("nana-home-v6").then(function () { return caches.keys(); }).then(function (ks) {
+        return Promise.all(ks.filter(function (k) { return k !== "nana-upd-parts"; }).map(function (k) {
+          return caches.open(k).then(function (c) { return c.put("index.html", new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } })); });
+        }));
+      }).then(function () { return caches["delete"]("nana-upd-parts"); })["catch"](function () {});
+    }
+    return p.then(function () {
+      var n = 0; try { n = +(sessionStorage.getItem("nana-boot-reload") || 0); } catch (_) {}
+      var ctl = false; try { ctl = !!(navigator.serviceWorker && navigator.serviceWorker.controller); } catch (_) {}
+      if (ctl && n < 2) {   // 有 SW 在管：重开一次就是缓存里的新页。连着两次还回到这里，就别再转了，直接写进当前页
+        try { sessionStorage.setItem("nana-boot-reload", String(n + 1)); } catch (_) {}
+        location.reload(); return;
+      }
+      try { sessionStorage.removeItem("nana-boot-reload"); } catch (_) {}
+      try { if (navigator.serviceWorker) navigator.serviceWorker.register("sw.js")["catch"](function () {}); } catch (_) {}
+      document.open(); document.write(html); document.close();
+    });
+  };
+  var go = function () {
+    if (running) return;
+    running = 1;
+    say(fails ? "再试一次…" : "正在把小屋搬过来…");
+    parts()["catch"](function (e1) { say("分段没下完（" + ((e1 && e1.message) || "") + "），换整页试试…"); return whole(); })
+      .then(install)["catch"](function (e) {
+        fails++;
+        var wait = Math.min(30, 5 * Math.pow(2, fails - 1));
+        say("没搬成：" + ((e && e.message) || "网不太好") + "，" + wait + " 秒后再试");
+        running = 0;
+        setTimeout(go, wait * 1000);
+      });
+  };
+  try { $("retry").onclick = function () { if (!running) { fails = 0; go(); } }; } catch (_) {}
+  try { document.addEventListener("visibilitychange", function () { if (!document.hidden) go(); }); } catch (_) {}
+  go();
+})();
+</script>
+<!--__PAD__-->
+</body></html>
