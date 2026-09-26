@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-286";
+var NANA_VER = "v2026.8.2-287";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8528,8 +8528,18 @@ var nanaHtmlCheck = function (t, ver) {
   }
   return "";
 };
+// 带超时的 fetch：iOS 上切到后台前一刻发出的请求可能永远不回来，不能让它把后面的检查都堵死
+var nanaFetchT = function (url, opts, ms) {
+  var ac = null;
+  try { if (typeof AbortController !== "undefined") { ac = new AbortController(); opts.signal = ac.signal; } } catch (_) { ac = null; }
+  var timer = null;
+  return new Promise(function (resolve, reject) {
+    timer = setTimeout(function () { timer = null; try { if (ac) ac.abort(); } catch (_) {} reject(new Error("等太久没回来")); }, ms);
+    fetch(url, opts).then(function (r) { if (timer) { clearTimeout(timer); resolve(r); } }, function (e) { if (timer) { clearTimeout(timer); reject(e); } });
+  });
+};
 var nanaFetchWhole = function (ver) {
-  return fetch("index.html?fresh=" + Date.now(), { cache: "no-store" }).then(function (r) {
+  return nanaFetchT("index.html?fresh=" + Date.now(), { cache: "no-store" }, 150000).then(function (r) {
     if (!r || !r.ok) { var e0 = new Error("网络没通" + (r ? "（" + r.status + "）" : "")); e0.chunks = 1; throw e0; }
     return r.text();
   }, function () { var e1 = new Error("网络没通"); e1.chunks = 1; throw e1; }).then(function (t) {
@@ -8542,7 +8552,7 @@ var nanaFetchWhole = function (ver) {
 var nanaFetchChunks = function (ver) {
   var SZ = 400000, bufs = [], total = 0;
   var one = function (from, tries) {
-    return fetch("index.html?fresh=" + Date.now() + "-" + from, { cache: "no-store", headers: { Range: "bytes=" + from + "-" + (from + SZ - 1) } }).then(function (r) {
+    return nanaFetchT("index.html?fresh=" + Date.now() + "-" + from, { cache: "no-store", headers: { Range: "bytes=" + from + "-" + (from + SZ - 1) } }, 45000).then(function (r) {
       if (!r) throw new Error("无响应");
       if (r.status === 200) return r.arrayBuffer().then(function (b) { return { full: b }; });
       if (r.status !== 206) throw new Error("网络没通（" + r.status + "）");
@@ -8579,7 +8589,7 @@ var nanaFetchChunks = function (ver) {
 };
 (function () {
   if (typeof caches === "undefined" || typeof fetch === "undefined") return;
-  var last = 0, busy = 0, fails = 0, nextTry = 0;
+  var last = 0, busy = 0, busyAt = 0, fails = 0, nextTry = 0;
   var install = function (t, ver) {
     return caches.keys().then(function (ks) {
       return Promise.all(ks.map(function (k) {
@@ -8596,12 +8606,13 @@ var nanaFetchChunks = function (ver) {
   var check = function (force) {
     var now = Date.now();
     if (NANA_RECORDING || NANA_AUDIO_BUSY) { if (force) nanaUpdSet("wait", "刚录完音，等一会儿再查"); return; }   // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
+    if (busy && now - busyAt > 240000) busy = 0;   // 上一轮卡了四分钟还没完（多半是请求挂了），别让它堵死后面的
     if (busy) return;
     if (!force && last && now - last < 30000) return;   // 别一直问，最多半分钟一次（就十几个字节）
     if (!force && now < nextTry) return;                // 上次没下成，按退避等一等
-    last = now; busy = 1;
+    last = now; busy = 1; busyAt = now;
     nanaUpdSet("checking", "正在问线上版本…");
-    fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then(function (r) {
+    nanaFetchT("version.txt?t=" + Date.now(), { cache: "no-store" }, 20000).then(function (r) {
       return r && r.ok ? r.text() : null;
     }).then(function (t) {
       t = t ? String(t).trim() : "";
@@ -8624,6 +8635,7 @@ var nanaFetchChunks = function (ver) {
   };
   window.nanaCheckUpdate = function () { check(true); };
   setTimeout(function () { check(); }, 3000);
+  setInterval(function () { check(); }, 10 * 60000);   // 小屋一直开着也每十分钟问一下（就十几个字节）
   // 装在主屏上的 PWA 从后台切回来不会重新加载页面，只靠上面那一次检查会一直停在老版本。
   // 切回前台、或者从 bfcache 里恢复的时候，再问一次。
   try {
