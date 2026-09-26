@@ -141,3 +141,13 @@ Have You Ever · Still A Rose · You're On My Mind · All I Have · You Didn't N
 GTFO · cédes · Easy Interlude · 月の光〜good night(压轴·午夜彩蛋)
 
 加歌：mp3 放仓库根目录（文件名用英文），在 `NanaMixtapeCard` 的 `tracks` 加一行。
+
+## 上线时别忘了 index.bin
+
+`index.bin` 是 `index.html` 的一模一样的副本（git 里是同一个 blob，不占地方）。
+手机上的自动更新按字节分段下它（256KB 一段，下到哪存到哪，关掉再开接着下）。
+所以每次改完 `index.html` 上线前都要 `cp index.html index.bin`，三个文件一起提交：
+
+    cp index.html index.bin && git add index.html index.bin version.txt
+
+忘了也不会坏：更新代码会发现 index.bin 里的版本号和 version.txt 对不上，改走整页下载那条路。
