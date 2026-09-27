@@ -3,7 +3,7 @@
 <body><!--nana-bootstrap--><div class="b"><div class="h">🏡</div><h1>小屋在换新家具</h1><p>东西正在搬进来，稍等一下下</p><div class="t"><div class="f" id="bar"></div></div><div id="pct" style="font-size:.8rem;font-weight:800;color:#d9537a">0%</div><div class="s" id="st">正在把小屋搬过来…</div><button id="retry">现在再试</button><div class="n">关掉再打开也会接着搬 · 写的信和清单都在云上，不会丢</div></div>
 <script>
 (function () {
-  var VER = "v2026.8.2-290", running = 0, fails = 0;
+  var VER = "v2026.8.2-291", running = 0, fails = 0;
   var $ = function (id) { return document.getElementById(id); };
   var say = function (t) { try { $("st").textContent = t; } catch (_) {} };
   var bar = function (p) { try { $("bar").style.width = p + "%"; $("pct").textContent = p + "%"; } catch (_) {} };

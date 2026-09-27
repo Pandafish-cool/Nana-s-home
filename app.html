@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-290";
+var NANA_VER = "v2026.8.2-291";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26674,6 +26674,12 @@ function BakerFacade(_refBF) {
           h("rect", { x: 150.5, y: 268, width: 13, height: 8, rx: 1, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.7 }),
           h("path", { d: "M150.5 268.8 L157 272.8 L163.5 268.8", fill: "none", stroke: "#c8b48e", strokeWidth: 0.7 }),
           h("circle", { cx: 157, cy: 272.5, r: 1.1, fill: "#c0392b" }))) : null)),
+    // 有新信：一封信从右边烟囱冒出来，晃晃悠悠飘下来，落进门口的信箱
+    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfChimneyDrop 7s ease-in-out 1s infinite", opacity: 0 } },
+      h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } },
+        h("rect", { x: -8, y: -5, width: 16, height: 10, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.8 }),
+        h("path", { d: "M-8 -4.2 L0 1 L8 -4.2", fill: "none", stroke: "#c8b48e", strokeWidth: 0.8 }),
+        h("circle", { cx: 0, cy: 0.8, r: 1.4, fill: "#c0392b" }))) : null,
     // 📻 短波：黄铜对讲板，刻着电波和 SHORT WAVE，一盏小灯
     h("g", { onClick: nanaGoCare, style: { cursor: "pointer" } },
       h("rect", { x: 270, y: 288, width: 30, height: 34, rx: 3, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 1 }),
@@ -26745,6 +26751,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
+      "@keyframes bfChimneyDrop{0%{transform:translate(306px,22px) scale(.3) rotate(0deg);opacity:0}6%{transform:translate(306px,6px) scale(.9) rotate(-10deg);opacity:1}20%{transform:translate(286px,34px) scale(1) rotate(14deg)}38%{transform:translate(246px,100px) scale(1) rotate(-12deg)}56%{transform:translate(204px,172px) scale(.95) rotate(12deg)}74%{transform:translate(170px,240px) scale(.85) rotate(-8deg)}84%{transform:translate(158px,270px) scale(.6) rotate(-3deg);opacity:1}90%{transform:translate(157px,277px) scale(.35) rotate(0deg);opacity:0}100%{transform:translate(157px,277px) scale(.35);opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
       "@keyframes bfBoat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}" +
