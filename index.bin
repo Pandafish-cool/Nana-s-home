@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-291";
+var NANA_VER = "v2026.8.2-292";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26031,6 +26031,34 @@ var BK_GREET = [
   { to: 20, a: ["回来啦，Nana 🏡", "壁炉已经生好了", "今天辛苦了，进屋吧"] },
   { to: 24, a: ["晚上好，Nana 🌙", "街灯亮了，屋里也亮着", "今晚什么都不用做"] }
 ];
+// 送信的帕丁顿：红帽子、蓝色粗呢大衣、棕色小熊，左手拿着信。原点在身子中间，大约 30×32。
+var nanaPadBear = function (h, letterAnim) {
+  return [
+    h("ellipse", { key: "f1", cx: -3.2, cy: 12.2, rx: 2.6, ry: 1.4, fill: "#3a2616" }),
+    h("ellipse", { key: "f2", cx: 3.2, cy: 12.2, rx: 2.6, ry: 1.4, fill: "#3a2616" }),
+    h("path", { key: "coat", d: "M-7 11.5 Q-8 3 -5.5 -1 L5.5 -1 Q8 3 7 11.5 Z", fill: "#2d5d9f", stroke: "#1e4478", strokeWidth: 0.6 }),
+    h("path", { key: "hood", d: "M-5.8 -0.6 Q0 2.6 5.8 -0.6", fill: "none", stroke: "#1e4478", strokeWidth: 0.7 }),
+    h("rect", { key: "t1", x: -1.8, y: 3, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }),
+    h("rect", { key: "t2", x: -1.8, y: 6.2, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }),
+    h("path", { key: "arm", d: "M5.2 1.5 Q9 4.5 7.6 8", fill: "none", stroke: "#2d5d9f", strokeWidth: 3, strokeLinecap: "round" }),
+    h("circle", { key: "paw2", cx: 7.6, cy: 8.3, r: 1.5, fill: "#9a6234" }),
+    h("circle", { key: "e1", cx: -5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }),
+    h("circle", { key: "e2", cx: 5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }),
+    h("circle", { key: "head", cx: 0, cy: -6, r: 6.2, fill: "#a86d3a" }),
+    h("ellipse", { key: "muz", cx: 0, cy: -3.6, rx: 3.3, ry: 2.4, fill: "#dcb88c" }),
+    h("ellipse", { key: "nose", cx: 0, cy: -4.6, rx: 1.2, ry: 0.9, fill: "#2b1a10" }),
+    h("circle", { key: "ey1", cx: -2.4, cy: -7.2, r: 0.85, fill: "#2b1a10" }),
+    h("circle", { key: "ey2", cx: 2.4, cy: -7.2, r: 0.85, fill: "#2b1a10" }),
+    h("path", { key: "crown", d: "M-4.8 -10.6 Q-4.6 -16 0 -16 Q4.6 -16 4.8 -10.6 Z", fill: "#c8322f" }),
+    h("ellipse", { key: "brim", cx: 0, cy: -10.6, rx: 8.4, ry: 2, fill: "#b02a28" }),
+    h("path", { key: "band", d: "M-4.7 -11.6 Q0 -10.6 4.7 -11.6", fill: "none", stroke: "#8a1e1c", strokeWidth: 0.8 }),
+    h("g", { key: "letter", style: letterAnim ? { animation: letterAnim } : null },
+      h("rect", { x: -14, y: 0.5, width: 9.5, height: 6.4, rx: 0.8, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6, transform: "rotate(-10 -9 3.7)" }),
+      h("path", { d: "M-13.8 1.4 L-9.3 4.1 L-4.7 1.4", fill: "none", stroke: "#c8b48e", strokeWidth: 0.6, transform: "rotate(-10 -9 3.7)" }),
+      h("circle", { cx: -9.2, cy: 4, r: 0.9, fill: "#c0392b" })),
+    h("circle", { key: "paw1", cx: -5.4, cy: 3.6, r: 1.6, fill: "#9a6234" })
+  ];
+};
 function BakerHouse(_refBK) {
   var h = React.createElement;
   var onEnter = _refBK.onEnter, onBack = _refBK.onBack;
@@ -26274,7 +26302,8 @@ function BakerHouse(_refBK) {
         h("div", { style: { position: "absolute", left: 0, right: 0, top: "52%", borderTop: "2px dashed rgba(255,255,255,0.18)" } }),
         h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: 30, overflow: "hidden", pointerEvents: "none" } }, h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: -12, height: 34, background: "rgba(255,255,255," + (isNight ? 0.1 : 0.4) + ")", filter: "blur(10px)", animation: "bkFog 7s ease-in-out infinite alternate" } }))),
       // 有新信：一封信从烟囱掉下来，落到壁炉架上
-      newLetter ? h("div", { style: { position: "absolute", left: "76%", top: 4, fontSize: 20, lineHeight: 1, zIndex: 5, pointerEvents: "none", animation: "bkDrop 5.5s ease-in 0.8s infinite" } }, "✉️") : null,
+      newLetter ? h("div", { style: { position: "absolute", left: "76%", top: 4, width: 30, height: 32, marginLeft: -15, zIndex: 5, pointerEvents: "none", animation: "bkDrop 5.5s ease-in 0.8s infinite" } },
+        h("svg", { viewBox: "-15 -17 30 31", width: 30, height: 32, style: { display: "block", overflow: "visible", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.35))" } }, nanaPadBear(h))) : null,
       // 找到了！
       got ? h("div", { style: { position: "absolute", left: "50%", top: "46%", transform: "translate(-50%,-50%)", background: BK_CREAM, color: "#22303f", borderRadius: 16, padding: "14px 20px", textAlign: "center", boxShadow: "0 16px 40px rgba(0,0,0,0.5)", zIndex: 9, animation: "bkPop 0.45s cubic-bezier(.34,1.3,.64,1) both", border: "2px solid " + BK_GOLD } },
         h("div", { style: { fontSize: 40, lineHeight: 1 } }, got.e),
@@ -26665,11 +26694,9 @@ function BakerFacade(_refBF) {
           h("path", { d: "M150.5 268.8 L157 272.8 L163.5 268.8", fill: "none", stroke: "#c8b48e", strokeWidth: 0.7 }),
           h("circle", { cx: 157, cy: 272.5, r: 1.1, fill: "#c0392b" }))) : null)),
     // 有新信：一封信从右边烟囱冒出来，晃晃悠悠飘下来，落进门口的信箱
-    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfChimneyDrop 7s ease-in-out 1s infinite", opacity: 0 } },
-      h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } },
-        h("rect", { x: -8, y: -5, width: 16, height: 10, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.8 }),
-        h("path", { d: "M-8 -4.2 L0 1 L8 -4.2", fill: "none", stroke: "#c8b48e", strokeWidth: 0.8 }),
-        h("circle", { cx: 0, cy: 0.8, r: 1.4, fill: "#c0392b" }))) : null,
+    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfPadGo 8s ease-in-out 1s infinite", opacity: 0 } },
+      h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } }, nanaPadBear(h, "bfPadPost 8s ease-in-out 1s infinite")),
+      h("text", { x: 2, y: -18, textAnchor: "middle", fontSize: 6, fill: "#e0607f", style: { animation: "bfPadHeart 8s ease-out 1s infinite", opacity: 0 } }, "♥")) : null,
     // 📻 短波：黄铜对讲板，刻着电波和 SHORT WAVE，一盏小灯
     h("g", { onClick: nanaGoCare, style: { cursor: "pointer" } },
       h("rect", { x: 270, y: 288, width: 30, height: 34, rx: 3, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 1 }),
@@ -26741,7 +26768,9 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
-      "@keyframes bfChimneyDrop{0%{transform:translate(306px,22px) scale(.3) rotate(0deg);opacity:0}6%{transform:translate(306px,6px) scale(.9) rotate(-10deg);opacity:1}20%{transform:translate(286px,34px) scale(1) rotate(14deg)}38%{transform:translate(246px,100px) scale(1) rotate(-12deg)}56%{transform:translate(204px,172px) scale(.95) rotate(12deg)}74%{transform:translate(170px,240px) scale(.85) rotate(-8deg)}84%{transform:translate(158px,270px) scale(.6) rotate(-3deg);opacity:1}90%{transform:translate(157px,277px) scale(.35) rotate(0deg);opacity:0}100%{transform:translate(157px,277px) scale(.35);opacity:0}}" +
+      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(175px,268px) scale(.8) rotate(0deg)}90%{transform:translate(175px,268px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(175px,262px) scale(.8);opacity:0}100%{transform:translate(175px,262px) scale(.8);opacity:0}}" +
+      "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
+      "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
       "@keyframes bfBoat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}" +
