@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-293";
+var NANA_VER = "v2026.8.2-294";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26440,76 +26440,40 @@ var nanaGoTools = function () {
   ldWantTab = "now"; ldWantTools = true;
   try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {}
 };
-// 广州的天气：温度、湿度、今天最高最低、PM2.5（Open-Meteo，免费、不用 key）。
-// 半小时问一次，存在本机；拿不到就不说天气，只说按钟点的话。超过 6 小时的旧数据不用。
-var NANA_WX_KEY = "nana-wx";
-var nanaWxRead = function () {
-  try { var w = JSON.parse(localStorage.getItem(NANA_WX_KEY) || "null"); return w && w.at && Date.now() - w.at < 6 * 3600000 ? w : null; } catch (_) { return null; }
-};
-var nanaWxFetch = function (cb) {
-  var old = nanaWxRead();
-  if (old && Date.now() - old.at < 30 * 60000) { cb(old); return; }
-  var j = function (u) { return nanaFetchT(u, { cache: "no-store" }, 8000).then(function (r) { return r && r.ok ? r.json() : null; })["catch"](function () { return null; }); };
-  Promise.all([
-    j("https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&timezone=Asia%2FShanghai&forecast_days=1&current=temperature_2m,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min"),
-    j("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=23.13&longitude=113.26&timezone=Asia%2FShanghai&current=pm2_5")
-  ]).then(function (a) {
-    var f = a[0], q = a[1];
-    if (!f || !f.current || !f.daily || f.current.temperature_2m == null) { if (old) cb(old); return; }
-    var w = { at: Date.now(), t: Math.round(f.current.temperature_2m), rh: Math.round(f.current.relative_humidity_2m),
-      hi: Math.round(f.daily.temperature_2m_max[0]), lo: Math.round(f.daily.temperature_2m_min[0]),
-      pm: q && q.current && q.current.pm2_5 != null ? Math.round(q.current.pm2_5) : null };
-    try { localStorage.setItem(NANA_WX_KEY, JSON.stringify(w)); } catch (_) {}
-    cb(w);
-  })["catch"](function () {});
-};
-// 刚回家那几天，按钟点的大字问候
-var NANA_HOME_GREET = [
-  { to: 5,  a: ["Nana，还醒着吗", "睡不着也没关系", "灯给你留着 🌙"] },
-  { to: 9,  a: ["早，Nana ☀️", "睡得还好吗", "慢慢醒，今天不赶"] },
-  { to: 13, a: ["上午好，Nana", "欢迎回家 🏡", "在家吃饭最香"] },
-  { to: 17, a: ["下午好，Nana 🌿", "困了就眯一会儿", "你回来了真好"] },
-  { to: 21, a: ["回来啦，Nana 🏡", "今天辛苦了", "家里暖暖的"] },
-  { to: 24, a: ["晚上好，Nana 🌙", "今晚早点睡", "被窝已经暖好了"] }
+// 首页卡片的话：按钟点分组，逗她一下又暖暖的。大字轮播 a，下面那句 s 每次打开（或切回来）换一句。
+var NANA_FUN = [
+  { to: 5, a: ["Nana，被我抓到了 👀", "这个点还醒着？", "月亮都打哈欠了 🌙"], s: [
+    "侦探守则第一条：凌晨不破案，只睡觉 🕵️‍♀️",
+    "鼻子说它想下班了，你也跟着一起吧 👃💤",
+    "数羊数到第 221 只就可以睡了，那只叫 B 🐑",
+    "睡不着就闭眼躺着，这也算睡觉，本屋认证 ✅",
+    "帕丁顿已经睡了，他让我转告你：果酱明天还有 🍯"] },
+  { to: 9, a: ["早，Nana ☀️", "起床气已签收", "被窝又赢了吗"], s: [
+    "被窝打赢了没关系，它是主场作战 🛏️",
+    "先喝杯温水，等鼻子醒了你再醒 👃☀️",
+    "今天唯一的 KPI：把早饭吃饱 🍳",
+    "镜子里那个人很好看，别怀疑，就是你 ✨"] },
+  { to: 13, a: ["上午好，Nana", "今日份可爱已到账", "摸鱼请往这边走 🐟"], s: [
+    "中午记得吃饭。不吃也行，我会一直念 🍚",
+    "今天也请把自己当 VIP 对待 👑",
+    "打喷嚏三下是有人想你，两下是鼻子在撒娇 🤧",
+    "广州的饭比伦敦香，这个案子不用破 🍜"] },
+  { to: 17, a: ["下午好，Nana 🌿", "困了？很正常", "奶茶时间到了吗 🧋"], s: [
+    "下午犯困不是你的错，是下午的错 😪",
+    "眯十分钟，世界不会发现的 🤫",
+    "谁惹你了？写下名字，交给 221B 处理 🕵️‍♀️",
+    "今天也在认真生活，给自己盖个章 💮"] },
+  { to: 21, a: ["回来啦，Nana 🧸", "今日打工结束 🎉", "欢迎回到本屋"], s: [
+    "下班了，把烦恼挂在门口的衣帽钩上 🧥",
+    "今晚的饭只负责好吃，不负责减肥 🍲",
+    "本屋颁发「今天也很棒」奖一枚，请查收 🏅",
+    "帕丁顿说你今天很棒，他从不撒谎（果酱的事除外）🐻"] },
+  { to: 24, a: ["晚上好，Nana 🌙", "今晚早点睡", "被窝已就位"], s: [
+    "手机再刷五分钟就放下，我在数着呢 📱⏳",
+    "睡前把窗关小一点，鼻子会感谢你一整晚 👃🌙",
+    "今天的烦恼已归档，明天再说 🗂️",
+    "早睡的人会梦到好吃的，这是科学（我编的）🍰"] }
 ];
-var NANA_HOME_SUB = [
-  { to: 5,  s: "睡不着也没关系，闭上眼睛歇着就好。灯给你留着 🌙" },
-  { to: 9,  s: "早呀。在自己的床上醒来，感觉怎么样？先喝杯温水 ☀️" },
-  { to: 13, s: "回家的头几天，什么都慢慢来。中午好好吃饭 🍚" },
-  { to: 17, s: "下午困了就睡一会儿，倒时差不用硬撑 🌿" },
-  { to: 21, s: "欢迎回家。今天辛苦了，吃点热乎的 🍲" },
-  { to: 24, s: "今晚早点躺下吧。外面的事都留在门口了 🌙" }
-];
-// 卡片下面那句：先看天气对鼻子和睡觉有没有影响，没有就说按钟点的话
-var nanaCareLine = function (hr, wx, justHome, jetlag) {
-  var night = hr >= 21 || hr < 5, late = hr < 5;
-  var swing = wx ? wx.hi - wx.lo : 0;
-  var dry = !!wx && wx.rh < 45, damp = !!wx && wx.rh >= 85, cold = !!wx && wx.lo <= 15, hot = !!wx && wx.hi >= 33;
-  var dirty = !!wx && wx.pm != null && wx.pm >= 75;
-  if (late) return jetlag ? "时差还在倒，醒了也别看手机，闭上眼睛歇着就好 🌙" : "睡不着也没关系，闭上眼睛歇着就好。灯给你留着 🌙";
-  if (night) {
-    if (dry) return "今晚有点干，床头放杯温水，鼻子会舒服些。早点睡 🌙";
-    if (damp) return "今晚潮潮的，睡前开会儿除湿，被子别盖太厚，好睡一点 🌙";
-    if (swing >= 8 || cold) return "夜里会凉下来，空调别开太低，盖好被子，鼻子怕凉 🌙";
-    if (jetlag) return "刚回来，身体还在慢慢倒时差。今晚早点躺下，睡不着就听听歌 🎧";
-  } else {
-    if (dirty) return "今天空气不太好，出门戴个口罩，回家洗把脸、洗洗鼻子 😷";
-    if (swing >= 8) return "今天早晚差 " + swing + "°，出门带件薄外套，鼻子怕凉 🧣";
-    if (cold) return "降温了，早晚凉，鼻子怕冷，薄围巾可以拿出来了 🧣";
-    if (dry) return "今天有点干，多喝温水，鼻子不舒服就洗一洗 💧";
-    if (damp) return "今天潮，开窗不如开除湿，鼻子会好受一点 🌫️";
-    if (hot) return "外面热，进空调房别对着出风口吹，鼻子受不了 ❄️";
-  }
-  var tbl = justHome ? NANA_HOME_SUB : BK_SUB;
-  for (var i = 0; i < tbl.length; i++) { if (hr < tbl[i].to) return tbl[i].s; }
-  return tbl[0].s;
-};
-// 大字里轮播的一句天气：只报温度和体感，不吓人
-var nanaWxGreet = function (wx) {
-  if (!wx) return null;
-  var feel = wx.rh < 45 ? "有点干" : wx.rh >= 85 ? "有点潮" : (wx.hi - wx.lo >= 8 ? "早晚凉" : "刚刚好");
-  return "广州 " + wx.t + "° · " + feel;
-};
 function BakerFacade(_refBF) {
   var h = React.createElement;
   var onInside = _refBF.onInside, onEnter = _refBF.onEnter, cozy = _refBF.cozy, time = _refBF.time;
@@ -26602,18 +26566,16 @@ function BakerFacade(_refBF) {
   var sky = isNight ? ["#0b1020", "#1a2238", "#39405a"] : isDusk ? ["#3a2a48", "#8a4a3a", "#d9a070"] : isDawn ? ["#3a3a58", "#9a8aa0", "#e0c0a0"] : ["#f6dccb", "#e2edf2", "#eef3f5"];
   var skyText = isNight || isDusk || isDawn ? BK_CREAM : "#4a3f44";
   var justHome = (function () { try { return ldBackHome() && now < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
-  var _wx = useState(nanaWxRead); var wx = _wx[0], setWx = _wx[1];
+  // 下面那句每次打开、每次切回小屋都换一句
+  var _fs = useState(function () { return Math.random(); }); var funSeed = _fs[0], setFunSeed = _fs[1];
   useEffect(function () {
-    var alive = true, get = function () { nanaWxFetch(function (w) { if (alive) setWx(w); }); };
-    get();
-    var id = setInterval(get, 30 * 60000);
-    return function () { alive = false; clearInterval(id); };
+    var f = function () { if (!document.hidden) setFunSeed(Math.random()); };
+    document.addEventListener("visibilitychange", f);
+    return function () { document.removeEventListener("visibilitychange", f); };
   }, []);
-  var jetlag = justHome && now < new Date("2026-09-30T00:00:00+08:00");
-  var greets = (function () { var T = justHome ? NANA_HOME_GREET : BK_GREET; for (var i = 0; i < T.length; i++) { if (hr < T[i].to) return T[i].a; } return T[0].a; })();
-  var wxG = nanaWxGreet(wx);
-  if (wxG) greets = greets.concat([wxG]);
-  var subLine = nanaCareLine(hr, wx, justHome, jetlag);
+  var funB = (function () { for (var i = 0; i < NANA_FUN.length; i++) { if (hr < NANA_FUN[i].to) return NANA_FUN[i]; } return NANA_FUN[0]; })();
+  var greets = justHome ? ["欢迎回家，Nana 🏡"].concat(funB.a) : funB.a;
+  var subLine = funB.s[Math.floor(funSeed * funB.s.length) % funB.s.length];
   var goLondon = function (ev) { if (ev && ev.stopPropagation) ev.stopPropagation(); try { window.dispatchEvent(new Event("nana-go-london")); } catch (_) {} };
   // 明信片跟着一天走：清晨粉白、上午奶黄、下午杏色、傍晚玫瑰橘、夜里薰衣草蓝
   var pc = hr < 6 ? { bg: "linear-gradient(135deg,#eceefc,#e3e6fb 60%,#dcdff7)", ac: "138,130,200", ink: "#2b3446", sub: "#575a7a" }
