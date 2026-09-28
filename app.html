@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-300";
+var NANA_VER = "v2026.8.2-301";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8625,7 +8625,8 @@ var nanaFetchParts = function (ver, onProgress) {
   };
   var check = function (force) {
     var now = Date.now();
-    if (NANA_RECORDING || NANA_AUDIO_BUSY) { if (force) nanaUpdSet("wait", "刚录完音，等一会儿再查"); return; }   // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
+    if (NANA_RECORDING || NANA_AUDIO_BUSY) { if (force) nanaUpdSet("wait", "刚录完音，等一会儿再查"); return; }
+    if (typeof NANA_UPLOADS !== "undefined" && NANA_UPLOADS > 0) { if (force) nanaUpdSet("wait", "照片还在上传，传完再查"); return; }   // 还在说话、或者刚录完还没落盘，这时候重载等于把录音扔了
     if (busy && now - busyAt > 240000) busy = 0;   // 上一轮卡了四分钟还没完（多半是请求挂了），别让它堵死后面的
     if (busy) return;
     if (!force && last && now - last < 30000) return;   // 别一直问，最多半分钟一次（就十几个字节）
@@ -8668,13 +8669,73 @@ var nanaFetchParts = function (ver, onProgress) {
   } catch (_) {}
 })();
 // 跨境链路一抖上传就断，多试几次再认输
+// 正在传的照片有几张：自动更新看到不是 0 就先不重载（重载会把上传掐断，信寄出去了照片却不在云上）
+var NANA_UPLOADS = 0;
 var nanaSharedUploadRetry = function (dataUrl, id, tries, cb) {
-  nanaSharedUpload(dataUrl, id, function (err, url) {
-    if (!err && url) return cb(null, url);
-    if (tries <= 1) return cb(err || new Error("上传失败"));
-    setTimeout(function () { nanaSharedUploadRetry(dataUrl, id, tries - 1, cb); }, 1500);
+  NANA_UPLOADS++;
+  var done = false;
+  var fin = function (e, u) { if (done) return; done = true; NANA_UPLOADS = Math.max(0, NANA_UPLOADS - 1); cb(e, u); };
+  var go = function (n) {
+    nanaSharedUpload(dataUrl, id, function (err, url) {
+      if (!err && url) return fin(null, url);
+      if (n <= 1) return fin(err || new Error("上传失败"));
+      setTimeout(function () { go(n - 1); }, 1500);
+    });
+  };
+  go(tries);
+};
+// 这张照片云上到底有没有：Supabase 没有这个文件会回 400/404。网不通（0）或服务器 5xx 就算查不了，不拦人。
+var nanaUrlAlive = function (u, cb) {
+  nanaFetchT(u + (u.indexOf("?") < 0 ? "?" : "&") + "chk=" + Date.now(), { cache: "no-store", headers: { Range: "bytes=0-0" } }, 12000)
+    .then(function (r) { cb(r ? r.status : 0); }, function () { cb(0); });
+};
+// 确保一张信里的照片真的在云上：不在就用本机存着的那份补传（原图 + 缩略图）
+var nanaEnsureUploaded = function (u, cb) {
+  var pre = NANA_SYNC.url + "/storage/v1/object/public/notes/";
+  if (!u || typeof u !== "string" || u.indexOf(pre) !== 0 || !/\.jpg$/.test(u)) return cb(null);
+  nanaUrlAlive(u, function (st) {
+    if (!(st >= 400 && st < 500)) return cb(null);
+    nanaCloudGet(u, function (data) {
+      if (!data) return cb(new Error("本机也没有这张"));
+      var pid = u.slice(pre.length).replace(/\.jpg$/, "");
+      nanaSharedUploadRetry(data, pid, 3, function (e) {
+        if (e) return cb(e);
+        var tu = nanaThumbUrl(u);
+        if (!tu) return cb(null);
+        nanaCloudGet(tu, function (td) { if (!td) return cb(null); nanaSharedUploadRetry(td, pid + "_t", 2, function () { cb(null); }); });
+      });
+    });
   });
 };
+var nanaPuList = function (pu) {
+  if (!pu) return [];
+  if (typeof pu === "string" && pu.charAt(0) === "[") { try { pu = JSON.parse(pu); } catch (_) { return []; } }
+  return (Array.isArray(pu) ? pu : [pu]).filter(function (x) { return typeof x === "string" && /\.jpg$/.test(x); });
+};
+// 开门几秒后顺手查一遍：我最近寄出去的信里，照片有没有哪张没传上云。有就从本机补传。查过没问题的记下来，不再查。
+(function () {
+  setTimeout(function () {
+    var me = "", ok = {};
+    try { me = localStorage.getItem("nana-author") || ""; ok = JSON.parse(localStorage.getItem("nana-heal-ok") || "{}") || {}; } catch (_) {}
+    if (!me) return;
+    nanaSyncReq("GET", "shared_notes?select=id,pu,created_at&author=eq." + encodeURIComponent(me) + "&pu=not.is.null&order=created_at.desc&limit=20", null, function (err, rows) {
+      if (err || !rows) return;
+      var cut = Date.now() - 45 * 86400000, urls = [];
+      rows.forEach(function (r) {
+        var t = Date.parse(r.created_at || "") || 0;
+        if (t && t < cut) return;
+        nanaPuList(r.pu).forEach(function (u) { if (!ok[u] && urls.indexOf(u) < 0) urls.push(u); });
+      });
+      var i = 0;
+      var next = function () {
+        if (i >= urls.length) { try { localStorage.setItem("nana-heal-ok", JSON.stringify(ok)); } catch (_) {} return; }
+        var u = urls[i++];
+        nanaEnsureUploaded(u, function (e) { if (!e) ok[u] = Date.now(); next(); });
+      };
+      next();
+    });
+  }, 6000);
+})();
 // 云图加载失败的占位（网络抽风时不至于一片空白）
 var NANA_IMG_FALLBACK = "data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='128' height='100'><rect width='128' height='100' fill='#f2e9e2'/><text x='64' y='44' font-size='24' text-anchor='middle'>🌫️</text><text x='64' y='68' font-size='11' fill='#a89686' text-anchor='middle' font-family='sans-serif'>图片没下来 · 点一下重试</text></svg>");
 var nanaImgFallback = function (e) { var el = e && e.target; if (el && el.src !== NANA_IMG_FALLBACK) { el.onerror = null; el.src = NANA_IMG_FALLBACK; } };
@@ -9390,6 +9451,21 @@ function ReadingRoomActivity(_refRR) {
   };
   useEffect(function () { return function () { shStopTimer(); try { if (shAud.current) shAud.current.pause(); } catch (_) {} }; }, []);
   var postShared = function () {
+    var t0 = (sharedDraft || "").trim(); if ((!t0 && !sharedDraftPs.length && !shVo) || sharedPosting || sharedUploading) return;
+    if (!sharedDraftPs.length) return postSharedNow();
+    setSharedUploading(true); setSharedErr(null);
+    var list = sharedDraftPs.slice(), i = 0;
+    var next = function () {
+      if (i >= list.length) { setSharedUploading(false); return postSharedNow(); }
+      var u = list[i++];
+      nanaEnsureUploaded(u, function (e) {
+        if (e) { setSharedUploading(false); setSharedErr("有一张照片没传上去，撕掉重贴一次再寄？"); return; }
+        next();
+      });
+    };
+    next();
+  };
+  var postSharedNow = function () {
     var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftPs.length && !shVo) || sharedPosting) return;
     var dt = new Date();
     var all = sharedDraftPs.concat(shVo ? [shVo] : []);
