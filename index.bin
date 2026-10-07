@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-309";
+var NANA_VER = "v2026.8.2-310";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -24699,7 +24699,7 @@ var MB_CARDS = [
   { k: "water", sp: "Aguamenti!", cn: "清水如泉", t: "魔杖尖冒出一股清泉：喝下两大杯水才能解除，拍给熊猫鱼验货", e: "💧" },
   { k: "bed", sp: "Nox!", cn: "熄灯咒", t: "全屋的灯被咒灭了：12 点前钻进被窝，猫头鹰在窗外巡逻", e: "🌙" },
   { k: "breakfast", sp: "Accio 早餐!", cn: "召唤咒", t: "明天的早饭由熊猫鱼挥魔杖召唤，召来什么吃什么", e: "🍳" },
-  { k: "sorry", sp: "Riddikulus!", cn: "滑稽滑稽", t: "罚抄羊皮纸一行：「我错了，但我是全伦敦最可爱的巫师」", e: "📜" },
+  { k: "sorry", sp: "Riddikulus!", cn: "滑稽滑稽", t: "在羊皮纸上写一行：「我错了，但我是全伦敦最可爱的巫师」", e: "📜" },
   { k: "squat", sp: "Wingardium Leviosa!", cn: "漂浮咒", t: "你飘起来了！原地蹦 10 下才能落回地面", e: "🪶" },
   { k: "phone", sp: "Petrificus Totalus!", cn: "石化咒", t: "你的魔镜（手机）被石化了，今晚放远一点让它休息", e: "🗿" },
   { k: "sing", sp: "Sonorus!", cn: "声音洪亮咒", t: "嗓门被放大了：给熊猫鱼唱一句歌，录在安心里", e: "🎵" },
@@ -24829,13 +24829,13 @@ function MagicBar() {
       h("div", { style: { fontSize: 46 } }, "🔒"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", marginTop: 6, fontFamily: "Georgia,serif" } }, "今晚暂停营业"), h("div", { style: { fontSize: "0.76rem", color: "#c9b8e8", marginTop: 4 } }, "老板娘说：昨晚喝太多，今晚坩埚放假。猫头鹰在门口值班。")) : null);
   var cardOver = card ? h("div", { onClick: function () { setCard(null); }, style: { position: "fixed", inset: 0, zIndex: 10001, background: "rgba(8,4,20,.78)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } },
     h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 320, background: "linear-gradient(160deg,#fff6e0,#f3e2ff)", borderRadius: 18, padding: "20px 18px", textAlign: "center", border: "3px solid " + gold, boxShadow: "0 0 40px rgba(201,160,255,.6)", animation: "mbFlip .6s cubic-bezier(.2,.9,.3,1.2) both" } },
-      h("div", { style: { fontSize: "0.7rem", letterSpacing: 4, color: "#9a6a2a", fontWeight: 800, fontFamily: "Georgia,serif" } }, "MINISTRY NOTICE · 魔法部罚单"),
+      h("div", { style: { fontSize: "0.7rem", letterSpacing: 4, color: "#9a6a2a", fontWeight: 800, fontFamily: "Georgia,serif" } }, "SPELL CARD · 你中了一个小魔咒"),
       h("div", { style: { fontSize: 50, margin: "6px 0 2px" } }, card.e),
       card.sp ? h("div", { style: { fontFamily: "Georgia,serif", fontStyle: "italic", fontWeight: 900, fontSize: "1.35rem", color: "#9a5a1a", textShadow: "0 0 10px rgba(233,196,106,.6)" } }, card.sp) : null,
       card.cn ? h("div", { style: { fontSize: "0.72rem", color: "#9a7a4a", fontWeight: 800, letterSpacing: 2, marginBottom: 8 } }, "—— " + card.cn + " ——") : null,
       h("div", { style: { fontSize: "1rem", fontWeight: 900, color: "#4a1e7a", lineHeight: 1.5 } }, card.t),
-      h("div", { style: { fontSize: "0.74rem", color: "#7a5a9a", marginTop: 10, lineHeight: 1.6 } }, "巫师守则第 3 条：一晚最多三杯魔药。罚单已经由猫头鹰送到" + (me === "nana" ? "熊猫鱼" : "Nana") + "手上，她会来盯着你的。"),
-      h("button", { onClick: function () { setCard(null); }, style: { marginTop: 14, border: "none", borderRadius: 12, padding: "10px 22px", background: "linear-gradient(135deg,#7a4ae0,#c26ae8)", color: "#fff", fontWeight: 900, fontFamily: "inherit", cursor: "pointer" } }, "接受魔法制裁 🪄"))) : null;
+      h("div", { style: { fontSize: "0.74rem", color: "#7a5a9a", marginTop: 10, lineHeight: 1.6 } }, "坩埚有点小脾气：一晚超过三杯，就会冒出小魔咒。猫头鹰已经把这张卡送给" + (me === "nana" ? "熊猫鱼" : "Nana") + "，她会来陪你解咒。"),
+      h("button", { onClick: function () { setCard(null); }, style: { marginTop: 14, border: "none", borderRadius: 12, padding: "10px 22px", background: "linear-gradient(135deg,#7a4ae0,#c26ae8)", color: "#fff", fontWeight: 900, fontFamily: "inherit", cursor: "pointer" } }, "收下这个小魔咒 🪄"))) : null;
   var jar = function (g) {
     var on = sel.indexOf(g.k) >= 0;
     return h("button", { key: g.k, onClick: function () { toggle(g.k); }, disabled: closed, style: { position: "relative", border: "1px solid " + (on ? gold : "rgba(217,180,95,.45)"), borderRadius: "12px 12px 16px 16px", padding: "9px 4px 8px", background: on ? "linear-gradient(180deg,rgba(201,160,255,.32),rgba(127,240,200,.12))" : "rgba(255,255,255,.05)", boxShadow: on ? "0 0 0 1px " + gold + ", 0 0 16px rgba(201,160,255,.7)" : "none", color: "#efe2ff", fontFamily: "inherit", cursor: "pointer", textAlign: "center" } },
@@ -24857,10 +24857,10 @@ function MagicBar() {
   };
   var cups = h("div", { style: { display: "flex", alignItems: "center", gap: 6, justifyContent: "center", margin: "2px 0 10px" } },
     [0, 1, 2].map(function (i) { return h("div", { key: "cup" + i, style: { fontSize: 20, opacity: i < Math.min(cnt, 3) ? 1 : 0.28, filter: i < Math.min(cnt, 3) ? "drop-shadow(0 0 6px #c9a0ff)" : "grayscale(1)" } }, "🍸"); }),
-    h("div", { style: { fontSize: "0.7rem", color: tempting ? "#ffb3d0" : "#b9a6dc", fontWeight: 800, marginLeft: 6 } }, tempting ? "今晚的 3 杯已经喝完" + (cnt > 3 ? "（另收到魔法部罚单 " + (cnt - 3) + " 张）" : "") : "今晚还能喝 " + (3 - cnt) + " 杯"));
+    h("div", { style: { fontSize: "0.7rem", color: tempting ? "#ffb3d0" : "#b9a6dc", fontWeight: 800, marginLeft: 6 } }, tempting ? "今晚的 3 杯已经喝完" + (cnt > 3 ? "（另中了 " + (cnt - 3) + " 个小魔咒）" : "") : "今晚还能喝 " + (3 - cnt) + " 杯"));
   var btnTxt = closed ? "🔒 今晚暂停营业" : stir ? "搅拌中……" : !gin ? "先选一款金酒" : sel.length < 2 ? "再挑两样材料（" + sel.length + "/2）" : tempting ? "✨ 再来一杯？今晚特供，免费！" : "🪄 用魔杖搅三下";
   var myOpen = cards.filter(function (c) { return c.v.a === me; }).slice(0, 4), theirs = cards.filter(function (c) { return c.v.a !== me; }).slice(0, 6);
-  var stTxt = function (st) { return st === "done" ? "👀 已盯梢" : st === "pardon" ? "🕊️ 已赦免" : "⏳ 等待盯梢"; };
+  var stTxt = function (st) { return st === "done" ? "✨ 解咒啦" : st === "pardon" ? "🕊️ 这次免了" : "⏳ 等着解咒"; };
   return h("div", { style: { margin: "-12px -14px -8px", background: "#0e0a1f", color: "#f1e6ff", fontFamily: "'PingFang SC',serif" } },
     h("style", null, "@keyframes mbRise{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-120px) translateX(10px);opacity:0}}@keyframes mbStir{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}@keyframes mbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes mbHic{0%,100%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}75%{transform:translate(6px,-3px)}}@keyframes mbFlip{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}@keyframes mbRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}@keyframes mbVortex{0%{opacity:0;transform:rotate(var(--a)) translateX(150px) scale(1.4)}15%{opacity:1}100%{opacity:0;transform:rotate(calc(var(--a) + 540deg)) translateX(0) scale(.3)}}@keyframes mbStar{0%{opacity:0;transform:rotate(var(--a)) translateY(0) scale(.4)}25%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(-110px) scale(1.1)}}@keyframes mbFlash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}"),
     scene,
@@ -24883,12 +24883,12 @@ function MagicBar() {
       msg ? h("div", { style: { marginTop: 8, textAlign: "center", fontSize: "0.72rem", color: "#ffe38a" } }, msg) : null,
       // 惩罚卡记录：对方的可以监督 / 放过；自己的看状态
       theirs.length || myOpen.length ? h("div", { style: { marginTop: 18, borderTop: "1px solid rgba(233,196,106,.3)", paddingTop: 12 } },
-        h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.86rem", color: "#ffd0ee", marginBottom: 8 } }, "📜 魔法部罚单"),
+        h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.86rem", color: "#ffd0ee", marginBottom: 8 } }, "🔮 小魔咒记录"),
         theirs.map(function (c) { return h("div", { key: c.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", marginBottom: 6, borderRadius: 12, background: "rgba(255,255,255,.06)" } },
           h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, who(c.v.a) + " · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t),
           c.v.st === "open" ? h("div", { style: { display: "flex", flexDirection: "column", gap: 4 } },
-            h("button", { onClick: function () { mark(c, "done"); }, style: { border: "none", borderRadius: 99, padding: "4px 10px", background: "#7a4ae0", color: "#fff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "已盯梢 👀"),
-            h("button", { onClick: function () { mark(c, "pardon"); }, style: { border: "1px solid rgba(255,255,255,.3)", borderRadius: 99, padding: "4px 10px", background: "transparent", color: "#efe2ff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "施咒赦免 🕊️")) :
+            h("button", { onClick: function () { mark(c, "done"); }, style: { border: "none", borderRadius: 99, padding: "4px 10px", background: "#7a4ae0", color: "#fff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "陪她解咒 ✨"),
+            h("button", { onClick: function () { mark(c, "pardon"); }, style: { border: "1px solid rgba(255,255,255,.3)", borderRadius: 99, padding: "4px 10px", background: "transparent", color: "#efe2ff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "这次免了 🕊️")) :
             h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); }),
         myOpen.map(function (c) { return h("div", { key: c.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", marginBottom: 6, borderRadius: 12, background: "rgba(255,255,255,.04)" } },
           h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, "我 · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t), h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); })) : null),
