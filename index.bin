@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&family=UnifrakturMaguntia&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&family=UnifrakturMaguntia&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
  * @license React
  * react.production.min.js
  *
@@ -27058,6 +27058,24 @@ var NANA_FUN = [
     "今天的烦恼已归档，明天再调卷。",
     "早睡不是认输，是战术。"] }
 ];
+// 《The Nana Times》头条（按时段，每次打开换一条）、黄历宜忌、分类广告
+var NEWS_H = {
+  morning: ["本报讯：Nana 今早成功起床，贝克街交通恢复正常", "早间快讯：今日第一杯热水已就位，鼻子表示满意", "独家：帕丁顿凌晨四点做好果酱三明治，坚称“是给 Nana 的”", "晨报社论：今天的任务只有一个——好好的"],
+  noon: ["午间要闻：午饭时间到，一切会议一律让路", "突发：221B 厨房飘出香味，整条街集体探头", "本报评论：好好吃饭，是今天最重要的 KPI"],
+  afternoon: ["下午快讯：Nana 犯困属正常生理现象，本报不予追究", "深度调查：下午三点的咖啡，到底会不会偷走睡眠？", "独家专访：帕丁顿谈“如何在下午保持优雅”"],
+  evening: ["晚间头条：Nana 平安到家，221B 全体起立鼓掌", "本报讯：今日辛苦值已达标，剩下的时间全归 Nana", "号外：月影杂货铺今晚照常营业，敲砖请轻"],
+  night: ["深夜特刊：手机再看五分钟，本报已开始计时", "夜间提醒：窗关小一点，鼻子会记住你的好", "本报讯：今天的烦恼已全部归档，明日再审", "睡前快讯：帕丁顿已熄灯，请 Nana 同步执行"]
+};
+var NEWS_YI = ["早睡", "喝热水", "晒太阳", "发呆十分钟", "吃顿好的", "给熊猫鱼发个表情", "听一首老歌", "出门走走", "夸自己一句", "窗边坐一会儿"];
+var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门"];
+var NEWS_AD = [
+  "寻物启事：Nana 的好心情一份，如有拾获请送回 221B，必有重谢（一个拥抱）。",
+  "招聘：221B 诚聘全职被宠爱人员一名，限 Nana，待遇面议，即日上岗。",
+  "失物招领：帕丁顿在沙发缝里找到半块果酱三明治，失主请勿认领。",
+  "出租：贝克街 221B 一楼窗边座位一个，阳光充足，租金：坐满十分钟。",
+  "征友：戴红帽子的小熊一只，爱好果酱，诚征一起发呆的人。",
+  "转让：熊猫鱼的唠叨若干，九成新，仅限 Nana 认领。"
+];
 var BAR_KEYS = [17, 10, 7];   // 敲砖的顺序：从下往上数第 4 排右边、第 6 排左边、第 7 排右边
 // 🌦️ 小屋二楼的墙面颜色跟着家里的天气变（家在 113°E：广州）。Open-Meteo 免费接口，两小时最多问一次；拿不到天气就按日子轮换
 var NANA_WX_URL = "https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&current=weather_code,temperature_2m&timezone=auto";
@@ -27274,27 +27292,61 @@ function BakerFacade(_refBF) {
         h("div", { style: { fontSize: "0.42rem", fontWeight: 800 } }, (now.getMonth() + 1) + "·" + now.getDate())),
       h("div", { style: { margin: "10px 14px 0", fontFamily: MONO, fontSize: "0.6rem", fontWeight: 700, color: "#8a7c66" } }, "经由 伦敦 0° → 家 113°E · Nana 号已靠岸"));
   } else {
-    // 报纸：今日头条是问候，导语是那句俏皮话，底下一条「号外」滚动
-    topCard = h("div", { style: { position: "relative", marginTop: 16, background: "linear-gradient(180deg,#fbf6ea,#f3ebd9)", borderRadius: 4, padding: "11px 14px 0", boxShadow: "0 12px 26px rgba(0,0,0,0.22)", color: "#1d1b18", overflow: "hidden" } },
-      h("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.56rem", fontWeight: 800, color: "#5a5248", letterSpacing: 0.5 } },
-        h("span", null, "VOL. 221B · " + dateCn), h("span", null, "伦敦限定版 · 免费")),
-      h("div", { style: { borderTop: "1.5px solid #1d1b18", borderBottom: "0.5px solid #1d1b18", height: 2, marginTop: 5 } }),
-      h("div", { style: { textAlign: "center", fontFamily: SERIF, fontWeight: 900, fontStyle: "italic", fontSize: "1.55rem", letterSpacing: "0.01em", lineHeight: 1.15, margin: "4px 0 2px" } }, "The Nana Times"),
-      h("div", { style: { borderTop: "0.5px solid #1d1b18", borderBottom: "1.5px solid #1d1b18", height: 2 } }),
-      h("div", { style: { display: "flex", gap: 12, alignItems: "stretch", marginTop: 10 } },
+    // 报纸：报头、期号、定价、头条、署名、两栏正文、简讯、宜忌、分类广告 —— 头条和导语每次打开都换，简讯用的是家里真实的数据
+    var NEWS_HEAD = hr < 5 ? NEWS_H.night : hr < 11 ? NEWS_H.morning : hr < 14 ? NEWS_H.noon : hr < 18 ? NEWS_H.afternoon : hr < 21 ? NEWS_H.evening : NEWS_H.night;
+    var headline = NEWS_HEAD[Math.floor(funSeed * 977) % NEWS_HEAD.length];
+    var edition = hr < 5 ? "深夜特刊" : hr < 11 ? "早间版" : hr < 14 ? "午间版" : hr < 18 ? "下午版" : hr < 21 ? "晚间版" : "深夜特刊";
+    var dayN = Math.floor((now - new Date(now.getFullYear(), 0, 1)) / 86400000);
+    var homeDays = Math.max(1, Math.floor((now - new Date("2026-09-26T00:00:00+08:00")) / 86400000) + 1);
+    var pick2 = function (arr, seed) { var a = arr[seed % arr.length], b = arr[(seed * 7 + 3) % arr.length]; if (b === a) b = arr[(seed + 1) % arr.length]; return a + " · " + b; };
+    var nk = nookToday(), nkd = nookDrink(nk.d);
+    var briefs = [
+      ["回家", "Nana 回家第 " + homeDays + " 天，适应良好，本报持续关注。"],
+      ["信箱", newLetter ? "221B 信箱有新信待取，邮差帕丁顿已在门口候着。" : "221B 信箱今日暂无新信，邮差帕丁顿原地待命。"],
+      ["窗边", nkd ? "窗边角落今日特饮：" + nkd.n + "。" : "一楼窗边的座位空着，阳光很好，等你来坐。"]
+    ];
+    var rule2 = function (top) { return h("div", { style: { borderTop: (top ? 2 : 0.6) + "px solid #1d1b18", borderBottom: (top ? 0.6 : 2) + "px solid #1d1b18", height: 2.5 } }); };
+    var small = { fontSize: "0.5rem", fontWeight: 700, color: "#4a443b", letterSpacing: 0.3 };
+    var ear = function (t1, t2) { return h("div", { style: { flexShrink: 0, width: 50, border: "0.6px solid #1d1b18", padding: "2px 3px", textAlign: "center", lineHeight: 1.25 } }, h("div", { style: { fontSize: "0.5rem", fontWeight: 900 } }, t1), h("div", { style: { fontSize: "0.42rem", fontWeight: 700, color: "#5a5248" } }, t2)); };
+    topCard = h("div", { style: { position: "relative", marginTop: 16, background: "repeating-linear-gradient(0deg, rgba(0,0,0,0.012) 0 1px, transparent 1px 3px), linear-gradient(180deg,#f8f3e6,#efe6d2)", borderRadius: 2, padding: "9px 12px 10px", boxShadow: "0 12px 26px rgba(0,0,0,0.22), inset 0 0 0 0.5px rgba(0,0,0,0.12)", color: "#1d1b18", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-0.6deg)" } },
+      // 报眉
+      h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
+        h("span", { style: small }, "第 " + (homeDays + 220) + " 期"), h("span", { style: small }, now.getFullYear() + " 年 " + dateCn), h("span", { style: small }, "定价：一个拥抱")),
+      h("div", { style: { marginTop: 3 } }, rule2(true)),
+      // 报头
+      h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "4px 0" } },
+        ear(edition, "EDITION"),
+        h("div", { style: { flex: 1, textAlign: "center", fontFamily: "'UnifrakturMaguntia','Old English Text MT',Georgia,serif", fontSize: "1.85rem", lineHeight: 1.05, letterSpacing: "0.01em" } }, "The Nana Times"),
+        ear("伦敦限定", "LONDON 0°")),
+      rule2(false),
+      h("div", { style: { textAlign: "center", fontSize: "0.48rem", fontWeight: 700, color: "#5a5248", letterSpacing: 1.5, margin: "2px 0 7px" } }, "发自贝克街 221B · 家 113°E · 只报好消息"),
+      // 头条
+      h("div", { style: { fontSize: "0.56rem", fontWeight: 900, color: "#b8323a", letterSpacing: 0.5, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, "▍" + greetNow),
+      h("div", { style: { marginTop: 2, fontFamily: SERIF, fontWeight: 900, fontSize: "1.12rem", lineHeight: 1.3, letterSpacing: "0.01em" } }, headline),
+      h("div", { style: { marginTop: 3, fontSize: "0.5rem", fontStyle: "italic", color: "#6a6258" } }, "本报记者 帕丁顿 | 贝克街 221B 现场报道"),
+      h("div", { style: { borderTop: "0.6px solid rgba(29,27,24,0.5)", margin: "6px 0 7px" } }),
+      // 两栏：导语 + 简讯
+      h("div", { style: { display: "flex", gap: 9 } },
+        h("div", { style: { flex: 1.45, minWidth: 0 } },
+          h("div", { style: { float: "left", width: 44, marginRight: 7, marginBottom: 2 } },
+            h("div", { style: { width: 44, height: 46, background: "#ddd4c0", border: "0.6px solid rgba(29,27,24,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
+              h("svg", { viewBox: "-12 -18 24 30", width: 40, height: 50, style: { filter: "grayscale(1) contrast(1.1)" } }, nanaPadBear(h, null))),
+            h("div", { style: { fontSize: "0.4rem", color: "#6a6258", marginTop: 1, lineHeight: 1.2 } }, "图：本报记者在岗")),
+          h("div", { style: { fontSize: "0.68rem", fontWeight: 600, lineHeight: 1.6, color: "#2e2a24", textAlign: "justify" } },
+            h("span", { style: { float: "left", fontFamily: SERIF, fontWeight: 900, fontSize: "1.65rem", lineHeight: 0.92, margin: "2px 3px 0 0" } }, subLine.charAt(0)), subLine.slice(1))),
+        h("div", { style: { flex: 1, minWidth: 0, borderLeft: "0.6px solid rgba(29,27,24,0.5)", paddingLeft: 8 } },
+          h("div", { style: { fontSize: "0.56rem", fontWeight: 900, letterSpacing: 2, borderBottom: "0.6px solid #1d1b18", paddingBottom: 2, marginBottom: 3 } }, "简讯 BRIEFS"),
+          briefs.map(function (b, i) { return h("div", { key: "br" + i, style: { fontSize: "0.56rem", fontWeight: 600, lineHeight: 1.5, color: "#2e2a24", marginBottom: 3 } }, h("b", { style: { color: "#23443a" } }, "【" + b[0] + "】"), b[1]); }))),
+      h("div", { style: { clear: "both", borderTop: "2px solid #1d1b18", margin: "7px 0 6px" } }),
+      // 宜忌 + 分类广告
+      h("div", { style: { display: "flex", gap: 9 } },
         h("div", { style: { flex: 1, minWidth: 0 } },
-          h("div", { style: { fontSize: "0.56rem", fontWeight: 900, color: "#b8323a", letterSpacing: 1 } }, "今日头条"),
-          h("div", { style: { marginTop: 2, fontFamily: SERIF, fontWeight: 900, fontSize: "1.3rem", lineHeight: 1.25, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
-          h("div", { style: { marginTop: 6, fontSize: "0.78rem", fontWeight: 600, lineHeight: 1.65, color: "#3d3830", textAlign: "justify" } },
-            h("span", { style: { float: "left", fontFamily: SERIF, fontWeight: 900, fontSize: "1.9rem", lineHeight: 0.9, margin: "3px 5px 0 0", color: "#23443a" } }, subLine.charAt(0)), subLine.slice(1))),
-        // 右边一栏「本报记者」：帕丁顿
-        h("div", { style: { flexShrink: 0, width: 66, borderLeft: "0.5px solid rgba(29,27,24,0.4)", paddingLeft: 9, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 } },
-          h("div", { style: { width: 54, height: 54, background: "#e9e1cf", border: "1px solid rgba(29,27,24,0.35)", display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
-            h("svg", { viewBox: "-12 -18 24 30", width: 48, height: 60, style: { filter: "grayscale(0.35) sepia(0.25)" } }, nanaPadBear(h, null))),
-          h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: "#5a5248", textAlign: "center", lineHeight: 1.35 } }, "本报记者", h("br"), "帕丁顿"))),
-      h("div", { style: { margin: "10px -14px 0", background: "#1d1b18", color: "#fbf6ea", display: "flex", alignItems: "center", overflow: "hidden", height: 24 } },
-        h("div", { style: { flexShrink: 0, height: "100%", display: "flex", alignItems: "center", padding: "0 8px", background: "#b8323a", fontSize: "0.62rem", fontWeight: 900, letterSpacing: 1, zIndex: 1 } }, "号外"),
-        h("div", { style: { whiteSpace: "nowrap", fontSize: "0.66rem", fontWeight: 700, animation: "bfTicker 16s linear infinite", paddingLeft: "100%" } }, "港口快讯：Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E · 本报记者帕丁顿现场报道 · 果酱已备好")));
+          h("div", { style: { fontSize: "0.52rem", fontWeight: 900, letterSpacing: 1.5, marginBottom: 2 } }, "今日黄历"),
+          h("div", { style: { fontSize: "0.58rem", fontWeight: 700, lineHeight: 1.6 } }, h("span", { style: { display: "inline-block", background: "#b8323a", color: "#fbf6ea", padding: "0 3px", marginRight: 4, fontSize: "0.5rem" } }, "宜"), pick2(NEWS_YI, dayN)),
+          h("div", { style: { fontSize: "0.58rem", fontWeight: 700, lineHeight: 1.6 } }, h("span", { style: { display: "inline-block", background: "#1d1b18", color: "#fbf6ea", padding: "0 3px", marginRight: 4, fontSize: "0.5rem" } }, "忌"), pick2(NEWS_JI, dayN + 2))),
+        h("div", { style: { flex: 1.25, minWidth: 0, border: "0.6px solid #1d1b18", padding: "3px 6px" } },
+          h("div", { style: { fontSize: "0.48rem", fontWeight: 900, letterSpacing: 1.5, textAlign: "center", borderBottom: "0.6px dashed rgba(29,27,24,0.5)", paddingBottom: 1, marginBottom: 2 } }, "分类广告 CLASSIFIEDS"),
+          h("div", { style: { fontSize: "0.54rem", fontWeight: 600, lineHeight: 1.5, color: "#2e2a24" } }, NEWS_AD[dayN % NEWS_AD.length]))));
   }
   var goIn = function () {
     if (doorOpen) return;
