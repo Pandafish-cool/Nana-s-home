@@ -24676,7 +24676,13 @@ var MB_INGS = [
   { k: "marm", n: "帕丁顿橘子酱", s: "熊亲自熬的", w: "橘子酱", c: "#ffb347", e: "嘴里甜甜的" },
   { k: "mandrake", n: "曼德拉草根", s: "别听它叫", w: "曼德拉", c: "#8fd17a", e: "烦恼被吼跑了" },
   { k: "galaxy", n: "一勺星河", s: "会发光", w: "星河", c: "#c9a0ff", e: "梦里是满天星星" },
-  { k: "bolt", n: "勇气闪电", s: "明天能赢", w: "闪电", c: "#ffe34a", e: "明天谁都赢不过你" }
+  { k: "bolt", n: "勇气闪电", s: "明天能赢", w: "闪电", c: "#ffe34a", e: "明天谁都赢不过你" },
+  { k: "tonic", n: "汤力气泡", s: "气泡噼啪响", w: "气泡", c: "#d6f4ff", e: "气泡在嘴里放小烟花" },
+  { k: "lime", n: "青柠月牙", s: "酸一下醒醒", w: "青柠", c: "#c8f07a", e: "酸得眼睛眯起来" },
+  { k: "rosemary", n: "迷迭香枝", s: "森林的味道", w: "迷迭香", c: "#9fd8a8", e: "像在森林边散了个步" },
+  { k: "elderdew", n: "接骨木花露", s: "我们的最爱 · 再来一份", w: "花露", c: "#fff3c4", e: "花香跟着呼吸飘出来", fav: 1 },
+  { k: "butterbeer", n: "黄油啤酒泡沫", s: "暖乎乎的", w: "黄油泡沫", c: "#f2cf8a", e: "胃里暖乎乎的" },
+  { k: "unicorn", n: "独角兽眼泪", s: "亮晶晶的", w: "星泪", c: "#f6e6ff", e: "整个人亮晶晶的" }
 ];
 var MB_GINS = [
   { k: "elder", n: "接骨木花金", s: "我们俩的最爱 ♥", w: "接骨木花", c: "#fff1b8", e: "是我们俩都喜欢的味道", fav: 1 },
@@ -24709,6 +24715,8 @@ var mbBrew = function (ginK, keys) {
   var gin = MB_GINS[0]; for (var g = 0; g < MB_GINS.length; g++) if (MB_GINS[g].k === ginK) gin = MB_GINS[g];
   var ings = keys.map(function (k) { for (var i = 0; i < MB_INGS.length; i++) if (MB_INGS[i].k === k) return MB_INGS[i]; return MB_INGS[0]; });
   var hsh = mbHash(ginK + ":" + keys.slice().sort().join("+"));
+  if (gin.k === "elder" && keys.indexOf("elderdew") >= 0 && keys.indexOf("tonic") >= 0)
+    return { name: "「双倍接骨木花金汤力」", parts: "接骨木花金 + 接骨木花露 + 汤力气泡 · 隐藏配方", eff: "喝下去：整个人被接骨木花包住了，气泡一颗一颗往上冒，是我们俩最爱的那一杯。", colors: ["#fff1b8", "#fff3c4", "#d6f4ff"], secret: 1 };
   if (gin.k === "elder" && keys.indexOf("marm") >= 0 && keys.indexOf("galaxy") >= 0)
     return { name: "「我们俩的接骨木花之夜」", parts: "接骨木花金 + 帕丁顿橘子酱 + 一勺星河 · 隐藏配方", eff: "喝下去：满天星星，嘴里甜甜的，旁边坐着最喜欢的人。", colors: ["#fff1b8", "#ffd27a", "#c9a0ff"], secret: 1 };
   var colors = gin.k === "butterfly" ? ["#7a8cff", "#c9a0ff", "#ff9fd0"] : [gin.c, ings[0].c, ings[1].c];
@@ -24817,6 +24825,7 @@ function MagicBar() {
     var on = sel.indexOf(g.k) >= 0;
     return h("button", { key: g.k, onClick: function () { toggle(g.k); }, disabled: closed, style: { position: "relative", border: "1px solid " + (on ? gold : "rgba(217,180,95,.45)"), borderRadius: "12px 12px 16px 16px", padding: "9px 4px 8px", background: on ? "linear-gradient(180deg,rgba(201,160,255,.32),rgba(127,240,200,.12))" : "rgba(255,255,255,.05)", boxShadow: on ? "0 0 0 1px " + gold + ", 0 0 16px rgba(201,160,255,.7)" : "none", color: "#efe2ff", fontFamily: "inherit", cursor: "pointer", textAlign: "center" } },
       on ? h("span", { style: { position: "absolute", right: 7, top: 4, color: "#ffe38a" } }, "✦") : null,
+      g.fav ? h("span", { style: { position: "absolute", left: 7, top: 4, color: "#ff9fd0", fontSize: 12 } }, "♥") : null,
       h("svg", { viewBox: "0 0 30 34", width: 30, height: 34, style: { display: "block", margin: "0 auto 4px", filter: "drop-shadow(0 0 6px " + g.c + ")" } }, h("rect", { x: 9, y: 2, width: 12, height: 6, fill: gold }), h("rect", { x: 5, y: 8, width: 20, height: 24, rx: 6, fill: g.c, stroke: gold })),
       h("div", { style: { fontSize: "0.74rem", fontWeight: 800 } }, g.n), h("div", { style: { fontSize: "0.6rem", color: "#b9a6dc", marginTop: 2 } }, g.s));
   };
