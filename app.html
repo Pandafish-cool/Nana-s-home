@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-306";
+var NANA_VER = "v2026.8.2-307";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27045,7 +27045,23 @@ var NANA_FUN = [
     "今天的烦恼已归档，明天再调卷。",
     "早睡不是认输，是战术。"] }
 ];
+var BAR_KEYS = [17, 10, 7];   // 敲砖的顺序：从下往上数第 4 排右边、第 6 排左边、第 7 排右边
 function BakerFacade(_refBF) {
+  var _bo = useState(function () { try { return localStorage.getItem("nana-bar-open") === mbNight(); } catch (_) { return false; } }); var barOpen = _bo[0], setBarOpen = _bo[1];
+  var _bj = useState(false); var barJust = _bj[0], setBarJust = _bj[1];
+  var _bt = useState([]); var barTaps = _bt[0], setBarTaps = _bt[1];
+  var _bw = useState(-1); var barWrong = _bw[0], setBarWrong = _bw[1];
+  var _bh = useState(false); var barHint = _bh[0], setBarHint = _bh[1];
+  useEffect(function () { if (barOpen) return; setBarHint(false); var id = setTimeout(function () { setBarHint(true); }, barTaps.length ? 2500 : 6000); return function () { clearTimeout(id); }; }, [barTaps.length, barOpen]);
+  var tapBrick = function (i) {
+    if (barOpen) return;
+    if (i === BAR_KEYS[barTaps.length]) {
+      var nt = barTaps.concat([i]); setBarTaps(nt);
+      if (nt.length === BAR_KEYS.length) {
+        setTimeout(function () { setBarOpen(true); setBarJust(true); try { localStorage.setItem("nana-bar-open", mbNight()); } catch (_) {} }, 450);
+      }
+    } else { setBarWrong(i); setBarTaps([]); setTimeout(function () { setBarWrong(-1); }, 500); }
+  };
   var fzMeF = ""; try { fzMeF = localStorage.getItem("nana-author") || ""; } catch (_) {}
   var fzTruck = (fzSlotNow() && !fzAteThisSlot(fzMeF || "nana")) ? fzSlotNow() : null;
   useEffect(function () { try { nanaPackCached(function (e, rows) { if (!e) fzMerge(rows); }); } catch (_) {} }, []);
@@ -27357,11 +27373,11 @@ function BakerFacade(_refBF) {
     [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 4; x < seg[1]; x += 9) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
     // 🌙 9¾ 月影杂货铺（里屋是魔药酒馆）：221B 隔壁一栋歪歪扭扭的都铎木架小楼，一层比一层往外探，晚上才亮
-    barOn ? h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-bar")); } catch (_) {} }, style: { cursor: "pointer" } },
+    barOn ? h("g", { onClick: !barOpen ? undefined : function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-bar")); } catch (_) {} }, style: { cursor: barOpen ? "pointer" : "default" } },
       // 弯月 + 变色光晕
       h("path", { d: "M398 4 a16 16 0 1 0 14 24 a12 12 0 1 1 -14 -24Z", fill: "#fff1b8", opacity: 0.95, style: { filter: "drop-shadow(0 0 8px rgba(255,240,180,0.9))" } }),
-      h("ellipse", { cx: 376, cy: 200, rx: 72, ry: 176, fill: "url(#hpHaloP)", style: { animation: "hpHue 6s ease-in-out infinite" } }),
-      h("g", { style: { transformOrigin: "376px 353px", animation: "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" } },
+      barOpen && h("ellipse", { cx: 376, cy: 200, rx: 72, ry: 176, fill: "url(#hpHaloP)", style: { animation: "hpHue 6s ease-in-out infinite" } }),
+      barOpen && h("g", { style: { transformOrigin: "376px 353px", animation: barJust ? "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" : "none" } },
       h("defs", null,
         h("radialGradient", { id: "hpHaloP" }, h("stop", { offset: "0%", stopColor: "rgba(190,140,255,0.42)" }), h("stop", { offset: "60%", stopColor: "rgba(120,220,200,0.14)" }), h("stop", { offset: "100%", stopColor: "rgba(120,220,200,0)" })),
         h("linearGradient", { id: "hpGlow", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe7a8" }), h("stop", { offset: "100%", stopColor: "#f0a040" })),
@@ -27415,11 +27431,18 @@ function BakerFacade(_refBF) {
       // 飘浮的蜡烛
       [[332, 120, 0], [416, 160, 0.8], [330, 236, 1.6], [418, 286, 2.2], [412, 76, 1.1]].map(function (c, i) { return h("g", { key: "hpc" + i, style: { transformOrigin: c[0] + "px " + c[1] + "px", animation: "bfFloat " + (2.6 + i * 0.3) + "s ease-in-out " + c[2] + "s infinite" } },
         h("rect", { x: c[0] - 2, y: c[1], width: 4, height: 11, rx: 1, fill: "#fbf3dc" }), h("path", { d: "M" + c[0] + " " + (c[1] - 7) + " q-3 4 0 7 q3 -3 0 -7Z", fill: "#ffcf5a", style: { filter: "drop-shadow(0 0 4px rgba(255,200,90,1))", transformOrigin: c[0] + "px " + c[1] + "px", animation: "bkLamp " + (0.9 + i * 0.2) + "s ease-in-out infinite" } })); })),
-      // 打开小屋时：一面砖墙往两边退开，小楼从里面浮现
-      h("g", { style: { pointerEvents: "none" } },
+      // 对角巷式的入口：一面砖墙，按顺序敲对 3 块砖才会打开；站久了下一块会隐隐发光
+      !barOpen ? h("g", null,
+        h("rect", { x: 334, y: 66, width: 78, height: 290, fill: "#4a2a22" }),
+        Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0), lit = barTaps.indexOf(i) >= 0, nxt = barHint && i === BAR_KEYS[barTaps.length];
+          return h("g", { key: "kb" + i, onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); tapBrick(i); }, style: { cursor: "pointer", transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: barWrong === i ? "hpWobble .45s ease-in-out" : "none" } },
+            h("rect", { x: x, y: y, width: 30, height: 22, rx: 1.5, fill: lit ? "#d9a05a" : "#8a4a3a", stroke: "#5a2e22", strokeWidth: 1.4, style: lit ? { filter: "drop-shadow(0 0 6px rgba(255,220,140,1))" } : null }),
+            nxt ? h("rect", { x: x + 1, y: y + 1, width: 28, height: 20, rx: 1.5, fill: "rgba(255,220,140,0.55)", style: { animation: "bkLamp 1.4s ease-in-out infinite" } }) : null,
+            lit ? h("text", { x: x + 15, y: y + 15, textAnchor: "middle", fontSize: 9, fill: "#fff8d0" }, "✦") : null); })) :
+      barJust ? h("g", { style: { pointerEvents: "none" } },
         Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0);
           return h("rect", { key: "hpbr" + i, x: x, y: y, width: 30, height: 22, rx: 1.5, fill: "#8a4a3a", stroke: "#5a2e22", strokeWidth: 1.4, style: { transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: "hpBrick" + (c ? "R" : "L") + " 1.6s cubic-bezier(.5,0,.8,.4) " + (0.15 + r * 0.06) + "s both" } }); }),
-        ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); }))) : null,
+        ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); })) : null) : null,
     // 人行道 + 路
     h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 3, fill: "#5f6572" }),
     // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
@@ -27484,6 +27507,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
+      "@keyframes hpWobble{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px) rotate(-3deg)}75%{transform:translateX(3px) rotate(3deg)}}" +
       "@keyframes hpAppear{0%{opacity:0;transform:scaleY(.86) translateY(8px);filter:blur(3px)}55%{opacity:0}100%{opacity:1;transform:none;filter:none}}" +
       "@keyframes hpBrickL{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-46px) rotate(-18deg)}}@keyframes hpBrickR{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(46px) rotate(18deg)}}" +
       "@keyframes hpBurst{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(70px) scale(1)}}" +
