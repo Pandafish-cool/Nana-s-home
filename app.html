@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-319";
+var NANA_VER = "v2026.8.2-320";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9726,35 +9726,36 @@ function ReadingRoomActivity(_refRR) {
             var nt = themeById(n.th);
             var a = nanaAuthorById(n.author);
             var mine = n.author === myAuthor;
-            if (n.th === "call") {
+            if (n.th === "call" || n.th === "spell") {
+              var spl = n.th === "spell";
               var pusC = nanaPuPics(n.pu);
               return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.6 : -0.6) + "deg)", marginBottom: 24 } },
-                h("div", { style: { background: "linear-gradient(180deg,#ffe98a,#ffd24a)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: "0 10px 26px rgba(220,160,40,0.4)", position: "relative" } },
+                h("div", { style: { background: spl ? "linear-gradient(180deg,#c9a7ff,#8f6ae0)" : "linear-gradient(180deg,#ffe98a,#ffd24a)", borderRadius: 20, padding: "12px 14px 12px", border: "2.5px solid #fff", boxShadow: spl ? "0 10px 26px rgba(120,80,200,0.4)" : "0 10px 26px rgba(220,160,40,0.4)", position: "relative" } },
                   h("div", { style: { position: "absolute", right: 24, top: -16, textAlign: "center", transform: "rotate(10deg)", pointerEvents: "none" } },
                     h("div", { style: { width: 2, height: 12, background: "rgba(200,140,40,0.8)", margin: "0 auto" } }),
-                    h("div", { style: { fontSize: "0.85rem", lineHeight: 1 } }, "🐟")),
+                    h("div", { style: { fontSize: "0.85rem", lineHeight: 1 } }, spl ? "🦉" : "🐟")),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
-                    h("span", { style: { fontSize: "0.9rem" } }, "📟"),
-                    h("span", { style: { color: "#0f8a80", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 2, whiteSpace: "nowrap" } }, "CALL · 小呼叫"),
+                    h("span", { style: { fontSize: "0.9rem" } }, spl ? "🔮" : "📟"),
+                    h("span", { style: { color: spl ? "#fff3c4" : "#0f8a80", fontWeight: 800, fontSize: "0.6rem", letterSpacing: 2, whiteSpace: "nowrap" } }, spl ? "SPELL · 月影杂货铺" : "CALL · 小呼叫"),
                     h("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#ff5a3c", boxShadow: "0 0 7px rgba(255,90,60,0.95)", flexShrink: 0 } }),
                     h("div", { style: { marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 } },
                       h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuPics(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                       mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.18)" : "rgba(255,255,255,0.65)", color: sharedDelId === n.id ? "#d05050" : "#a8842a", fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下挂断" : "✕") : null)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "8px 0 7px" } },
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
-                    h("span", { style: { color: "rgba(170,125,40,0.9)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
-                  h("div", { style: { background: "linear-gradient(180deg,#e2f4fb,#c6e7f4)", borderRadius: 10, border: "2px solid #fff", boxShadow: "inset 0 2px 8px rgba(90,140,170,0.25)", padding: "10px 12px" } },
+                    h("span", { style: { color: spl ? "rgba(255,243,196,0.9)" : "rgba(170,125,40,0.9)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
+                  h("div", { style: { background: spl ? "linear-gradient(180deg,#f6efff,#e6d8ff)" : "linear-gradient(180deg,#e2f4fb,#c6e7f4)", borderRadius: 10, border: "2px solid #fff", boxShadow: spl ? "inset 0 2px 8px rgba(120,80,200,0.25)" : "inset 0 2px 8px rgba(90,140,170,0.25)", padding: "10px 12px" } },
                     n.t ? h("div", null, String(n.t).split("\n").map(function (ln, li) {
                       var mono = "'Courier New',Courier,monospace";
                       var mFld = ln.match(/^(▸[^：:]*[：:])([\s\S]*)$/);
                       if (mFld) {
                         var ans = mFld[2].replace(/^\s+/, "");
                         return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: "0.84rem", lineHeight: 1.9, wordBreak: "break-word" } },
-                          h("span", { style: { color: "rgba(35,97,125,0.55)", fontWeight: 700 } }, mFld[1] + " "),
-                          ans ? h("span", { style: { color: "#124b66", fontWeight: 800, background: "rgba(255,255,255,0.6)", borderRadius: 4, padding: "0 5px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" } }, ans) : null);
+                          h("span", { style: { color: spl ? "rgba(90,50,150,0.55)" : "rgba(35,97,125,0.55)", fontWeight: 700 } }, mFld[1] + " "),
+                          ans ? h("span", { style: { color: spl ? "#4a1e7a" : "#124b66", fontWeight: 800, background: "rgba(255,255,255,0.6)", borderRadius: 4, padding: "0 5px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" } }, ans) : null);
                       }
                       var isTpl = ln.indexOf("📟") === 0 || ln.indexOf("收到回封小信") >= 0;
-                      return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: isTpl ? "0.74rem" : "0.84rem", fontWeight: isTpl ? 700 : 800, color: isTpl ? "rgba(35,97,125,0.55)" : "#124b66", lineHeight: 1.9, wordBreak: "break-word" } }, ln || "\u00A0");
+                      return h("div", { key: "ln" + li, style: { fontFamily: mono, fontSize: isTpl ? "0.74rem" : "0.84rem", fontWeight: isTpl ? 700 : 800, color: isTpl ? "rgba(35,97,125,0.55)" : spl ? "#4a1e7a" : "#124b66", lineHeight: 1.9, wordBreak: "break-word" } }, ln || "\u00A0");
                     })) : null,
                     h("div", { style: { fontSize: "0.66rem", color: "rgba(35,97,125,0.45)", marginTop: 3, fontFamily: "'Courier New',Courier,monospace" } }, "▌"),
                     (function () { var vu = nanaPuVo(n.pu); return vu ? h("div", { style: { marginTop: 8 } }, shVoBar(n.id, vu, "#127a92")) : null; })()),
@@ -9763,7 +9764,7 @@ function ReadingRoomActivity(_refRR) {
                       return h("div", { key: u, style: { background: "#fff", padding: "4px 4px 12px", boxShadow: "0 5px 14px rgba(200,150,60,0.4)", transform: "rotate(" + ((i + pi) % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3 } },
                         h(NanaCloudImg, { u: u, thumb: true, onClick: function () { setLightbox(u); }, style: { width: 92, height: 74, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } }));
                     })) : null,
-                  h("div", { style: { textAlign: "center", color: "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, "BEEP · BEEP — 221B PAGER SERVICE")));
+                  h("div", { style: { textAlign: "center", color: spl ? "rgba(255,243,196,0.75)" : "rgba(180,130,50,0.65)", fontSize: "0.54rem", marginTop: 9, letterSpacing: 1.5 } }, spl ? "HOOT · HOOT — 月影猫头鹰邮政" : "BEEP · BEEP — 221B PAGER SERVICE")));
             }
             return h("div", { key: n.id, style: { position: "relative", transform: "rotate(" + (i % 2 ? 0.8 : -0.8) + "deg)", marginBottom: 24 } },
               tape(nt, i % 2 ? 4 : -4, i % 3 === 0 ? "32%" : i % 3 === 1 ? "52%" : "70%"),
@@ -24792,6 +24793,7 @@ function MagicBar() {
         var c0 = pool[Math.floor(Math.random() * pool.length)], mate = me === "nana" ? "熊猫鱼" : "Nana";
         var c = { k: c0.k, sp: c0.sp, cn: c0.cn, e: c0.e, t: c0.t.replace(/熊猫鱼/g, mate) };
         put("mbp-" + at + "-" + Math.random().toString(36).slice(2, 5), { mbp: 1, a: me, night: night, k: c.k, sp: c.sp, cn: c.cn, t: c.t, e: c.e, n: n, at: at, st: "open" });
+        mbMail("🔮 小魔咒 · " + (c.sp || c.cn) + (c.sp && c.cn ? "（" + c.cn + "）" : "") + "\n" + c.t + "\n▸ 今晚第 " + n + " 杯\n▸ 来自：月影杂货铺");
         setHic(true); setTimeout(function () { setHic(false); }, 1800);
         setRes({ water: true, name: "「清醒魔药 · 其实就是白开水」", parts: "猫头鹰趁你不注意，把它换掉了", eff: "嗝！今晚到此为止。" });
         setCard(c);
@@ -24808,7 +24810,15 @@ function MagicBar() {
     setMsg("🦉 猫头鹰出发了，" + who(to) + "打开酒馆就能收到");
     setTimeout(function () { setMsg(""); }, 4000);
   };
-  var mark = function (c, st) { var v2 = {}; for (var k2 in c.v) v2[k2] = c.v[k2]; v2.st = st; v2.by = me; put(c.id, v2); };
+  // 小魔咒的消息也寄一张到 221B 信箱（th: "spell"，信箱里是紫色的「月影杂货铺」卡）
+  var mbMail = function (body) {
+    var dt = new Date();
+    nanaSharedAdd({ id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: me, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "spell", pu: null }, function () {});
+  };
+  var mark = function (c, st) {
+    var v2 = {}; for (var k2 in c.v) v2[k2] = c.v[k2]; v2.st = st; v2.by = me; put(c.id, v2);
+    mbMail((st === "done" ? "✨ 小魔咒解除 · " : "🕊️ 这次免了 · ") + (c.v.sp || c.v.cn || "小魔咒") + "\n" + (st === "done" ? who(c.v.a) + " 身上的小魔咒已经解开了。" : "坩埚这次放 " + who(c.v.a) + " 一马。") + "\n▸ 来自：月影杂货铺");
+  };
   var gold = "#e9c46a";
   // 往下滑去挑材料时，上面的坩埚场景钉在抽屉顶上，只留坩埚那一截，特效一直看得见
   var _cp = useState(false); var compact = _cp[0], setCompact = _cp[1];
@@ -24817,7 +24827,8 @@ function MagicBar() {
     var el = rootRef.current;
     while (el && el !== document.body) { var oy = ""; try { oy = getComputedStyle(el).overflowY; } catch (_) {} if (oy === "auto" || oy === "scroll") break; el = el.parentElement; }
     if (!el || el === document.body) return;
-    var on = function () { setCompact(el.scrollTop > 60); };
+    // 收起和展开用两个不同的门槛：场景一缩，内容会往上挪一截，同一个门槛会来回抖
+    var on = function () { var t = el.scrollTop; setCompact(function (c) { return c ? t > 10 : t > 160; }); };
     el.addEventListener("scroll", on, { passive: true }); on();
     return function () { el.removeEventListener("scroll", on); };
   }, []);
