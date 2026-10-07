@@ -27236,6 +27236,10 @@ function BakerFacade(_refBF) {
     out.push(h("rect", { key: "tr", x: x - 4, y: y, width: w + 8, height: 8, rx: 1, fill: "#23443a" }), h("rect", { key: "tr2", x: x - 4, y: y, width: w + 8, height: 1.4, fill: "#305a4d" }));
     return h("g", null, out);
   };
+  // 二楼墙面（预览用 ?wall= 切换：rose 粉砖 / red 红砖 / ivory 白抹灰 / sage 鼠尾草绿 / blue 雾霾蓝 / pink 奶油粉；默认 honey 黄砖）
+  var NK_WALL = (function () { try { var q = (location.search || "").match(/[?&]wall=(\w+)/); return q ? q[1] : "honey"; } catch (_) { return "honey"; } })();
+  var wallFill = { honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
+  var wallPainted = NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
   var NK_FLAT = (function () { try { return /[?&]roof=flat/.test(location.search || ""); } catch (_) { return false; } })();
   var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
     // 两个人都开放：每晚 6 点半到早上 6 点
@@ -27263,13 +27267,24 @@ function BakerFacade(_refBF) {
       h("linearGradient", { id: "bfWater", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#5aa7c8" }), h("stop", { offset: "100%", stopColor: "#2f6f8a" })),
       h("pattern", { id: "bfWaves", width: 24, height: 8, patternUnits: "userSpaceOnUse" },
         h("path", { d: "M0 6 q6 -4 12 0 t12 0", fill: "none", stroke: "rgba(200,235,250,0.45)", strokeWidth: 1 })),
+      h("pattern", { id: "bfWRose", width: 24, height: 12, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 24, height: 12, fill: "#d8a79b" }),
+        h("rect", { x: 0.5, y: 0.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 12.5, y: 0.5, width: 11, height: 5, fill: "#cf948a" }),
+        h("rect", { x: 6.5, y: 6.5, width: 11, height: 5, fill: "#cf948a" }), h("rect", { x: -5.5, y: 6.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 18.5, y: 6.5, width: 11, height: 5, fill: "#c2857a" })),
+      h("pattern", { id: "bfWRed", width: 36, height: 14, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 36, height: 14, fill: "#e6dccf" }),
+        h("rect", { x: 0.5, y: 0.5, width: 17, height: 6, fill: "#a4513f" }), h("rect", { x: 18.5, y: 0.5, width: 17, height: 6, fill: "#9a4939" }),
+        h("rect", { x: 9.5, y: 7.5, width: 17, height: 6, fill: "#a85845" }), h("rect", { x: -8.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" }), h("rect", { x: 27.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" })),
+      h("linearGradient", { id: "bfWSage", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdac9" }), h("stop", { offset: "100%", stopColor: "#bccbb5" })),
+      h("linearGradient", { id: "bfWBlue", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d3dee5" }), h("stop", { offset: "100%", stopColor: "#c0cfd9" })),
+      h("linearGradient", { id: "bfWPink", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f2dcd5" }), h("stop", { offset: "100%", stopColor: "#e8cac2" })),
       h("linearGradient", { id: "bfIvory", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6f1e7" }), h("stop", { offset: "100%", stopColor: "#ebe4d6" })),
       h("pattern", { id: "bfRust2", width: 60, height: 30, patternUnits: "userSpaceOnUse" }, h("rect", { x: 0, y: 29, width: 60, height: 1, fill: "rgba(0,0,0,0.05)" })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
     // 烟囱 + 烟囱管帽 + 烟
     [44, 294].map(function (cx, i) { return h("g", { key: "ch" + i },
-      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: "url(#bfBrick)" }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
+      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: wallFill }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
       [cx + 3.5, cx + 13.5].map(function (px, j) { return h("g", { key: "pt" + j }, h("path", { d: "M" + px + " 22 l0.8 -8 h5.4 l0.8 8 Z", fill: "#b5653f" }), h("rect", { x: px - 0.3, y: 12.4, width: 7.6, height: 2, rx: 0.6, fill: "#a2552f" })); })); }),
     [0, 1, 2].map(function (i) { return h("text", { key: "sm" + i, x: 311, y: 14, textAnchor: "middle", fontSize: 8, fill: "#f0a0b0", opacity: 0.8, style: { transformOrigin: "311px 10px", animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }, "♥"); }),
     h("text", { x: 56, y: 10, textAnchor: "middle", fontSize: 11 }, "🕊️"),
@@ -27295,7 +27310,7 @@ function BakerFacade(_refBF) {
     h("rect", { x: 24, y: 74, width: 312, height: 10, fill: "#e9e2d2" }),
     h("rect", { x: 24, y: 84, width: 312, height: 3, fill: "rgba(0,0,0,0.28)" }),
     // 上层：砖墙 + 两扇高窗 + 花箱
-    h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfBrick)" }),
+    h("rect", { x: 30, y: 91, width: 300, height: 122, fill: wallFill }), wallPainted ? h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfRust2)" }) : null,
     h("rect", { x: 30, y: 91, width: 7, height: 122, fill: "#efe8da" }), h("rect", { x: 323, y: 91, width: 7, height: 122, fill: "#efe8da" }),
     win(68, 112, 56, 78, lit && !dimAll, "u0", h("g", null,
       lit && !dimAll ? h("circle", { cx: 96, cy: 160, r: 14, fill: "#ffe7b0", opacity: 0.45 }) : null,
