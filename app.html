@@ -27488,6 +27488,7 @@ function BakerFacade(_refBF) {
   var topCard;
   {
     // 📜 羊皮纸卷轴：卷着的时候只是给 Nana 的问候；点一下往下展开，里面是今天的《The Nana Times》
+    var CUTE = "'ZCOOL KuaiLe','PingFang SC',cursive", HAND = "'Patrick Hand','ZCOOL KuaiLe','PingFang SC',cursive";
     var iss = nanaNewsIssue(now);
     var headline = iss.headline, edition = iss.edition, dayN = iss.dayN, issueNo = iss.issueNo;
     var pick2 = function (arr, seed) { var a = nwAt(arr, seed), b = nwAt(arr, seed * 7 + 3); if (b === a) b = nwAt(arr, seed + 1); return a + " · " + b; };
@@ -27513,8 +27514,8 @@ function BakerFacade(_refBF) {
     var briefs = news.concat(filler).slice(0, 3);
     var INK = "#3b2a1a", RULE = "#6b4e2e", RED = "#9a2f2a", GRN = "#2f4a3e";
     var rule2 = function (top) { return h("div", { style: { borderTop: (top ? 1.8 : 0.6) + "px solid " + RULE, borderBottom: (top ? 0.6 : 1.8) + "px solid " + RULE, height: 2.5 } }); };
-    var small = { fontSize: "0.5rem", fontWeight: 700, color: "#6b5236", letterSpacing: 0.3 };
-    var ear = function (t1, t2) { return h("div", { style: { flexShrink: 0, width: 50, border: "0.6px solid " + RULE, padding: "2px 3px", textAlign: "center", lineHeight: 1.25 } }, h("div", { style: { fontSize: "0.5rem", fontWeight: 900 } }, t1), h("div", { style: { fontSize: "0.42rem", fontWeight: 700, color: "#6b5236" } }, t2)); };
+    var small = { fontFamily: HAND, fontSize: "0.56rem", color: "#6b5236", letterSpacing: 0.3 };
+    var ear = function (t1, t2) { return h("div", { style: { flexShrink: 0, width: 50, border: "0.6px solid " + RULE, padding: "2px 3px", textAlign: "center", lineHeight: 1.25 } }, h("div", { style: { fontFamily: CUTE, fontSize: "0.5rem" } }, t1), h("div", { style: { fontFamily: HAND, fontSize: "0.46rem", color: "#6b5236" } }, t2)); };
     var roller = function (k) { return h("div", { key: k, style: { position: "relative", height: 15, margin: "0 2px", borderRadius: 8, background: PARCH_GRAIN + ", linear-gradient(180deg,#c9a466 0%,#f0dcae 36%,#e2c58c 62%,#a47e44 100%)", backgroundSize: "180px 180px, auto", boxShadow: "0 3px 7px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(90,55,20,0.35)", zIndex: 2 } },
       h("div", { style: { position: "absolute", left: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } }),
       h("div", { style: { position: "absolute", right: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } })); };
@@ -27524,39 +27525,39 @@ function BakerFacade(_refBF) {
       h("div", { style: { marginTop: 3 } }, rule2(true)),
       h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "4px 0" } },
         ear(iss.special ? edition.replace(/特刊$/, "") : edition, iss.special ? "SPECIAL" : "EDITION"),
-        h("div", { style: { flex: 1, textAlign: "center", fontFamily: "'UnifrakturMaguntia','Old English Text MT',Georgia,serif", fontSize: "1.7rem", lineHeight: 1.05 } }, "The Nana Times"),
+        h("div", { style: { flex: 1, textAlign: "center", fontFamily: "'Caveat',Georgia,serif", fontWeight: 700, fontSize: "2rem", lineHeight: 1, letterSpacing: "0.01em" } }, "The Nana Times"),
         ear("伦敦限定", "LONDON 0°")),
       rule2(false),
-      h("div", { style: { textAlign: "center", fontSize: "0.48rem", fontWeight: 700, color: "#6b5236", letterSpacing: 1.5, margin: "2px 0 7px" } }, "发自伦敦贝克街 221B · 只报好消息 · EST. 2026"),
-      h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.06rem", lineHeight: 1.3 } }, headline),
-      h("div", { style: { marginTop: 3, fontSize: "0.5rem", fontStyle: "italic", color: "#7a6244" } }, "本报记者 帕丁顿 | 贝克街 221B 现场报道"),
+      h("div", { style: { textAlign: "center", fontFamily: HAND, fontSize: "0.54rem", color: "#6b5236", letterSpacing: 1, margin: "2px 0 7px" } }, "发自伦敦贝克街 221B · 只报好消息 · EST. 2026"),
+      h("div", { style: { fontFamily: CUTE, fontSize: "0.94rem", lineHeight: 1.35, letterSpacing: "0.01em" } }, headline),
+      h("div", { style: { marginTop: 3, fontFamily: CUTE, fontSize: "0.5rem", color: "#7a6244" } }, "本报记者 帕丁顿 | 贝克街 221B 现场报道"),
       h("div", { style: { borderTop: "0.6px solid " + RULE, margin: "6px 0 7px", opacity: 0.6 } }),
       h("div", { style: { display: "flex", gap: 9 } },
         h("div", { style: { flex: 1.3, minWidth: 0 } },
           h("div", { style: { float: "left", width: 44, marginRight: 7 } },
             h("div", { style: { width: 44, height: 46, background: "#e2cfa4", border: "0.6px solid " + RULE, display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
               h("svg", { viewBox: "-12 -18 24 30", width: 40, height: 50, style: { filter: "grayscale(1) sepia(0.6) contrast(1.05)" } }, nanaPadBear(h, null))),
-            h("div", { style: { fontSize: "0.4rem", color: "#7a6244", marginTop: 1 } }, "图：本报记者在岗")),
-          h("div", { style: { fontSize: "0.64rem", fontWeight: 600, lineHeight: 1.6, textAlign: "justify" } }, iss.lead)),
+            h("div", { style: { fontFamily: CUTE, fontSize: "0.42rem", color: "#7a6244", marginTop: 1 } }, "图：本报记者在岗")),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.64rem", lineHeight: 1.7 } }, iss.lead)),
         h("div", { style: { flex: 1, minWidth: 0, borderLeft: "0.6px solid " + RULE, paddingLeft: 8 } },
-          h("div", { style: { fontSize: "0.56rem", fontWeight: 900, letterSpacing: 2, borderBottom: "0.6px solid " + RULE, paddingBottom: 2, marginBottom: 3 } }, "简讯 BRIEFS"),
-          briefs.map(function (b, i) { return h("div", { key: "br" + i, style: { fontSize: "0.56rem", fontWeight: 600, lineHeight: 1.5, marginBottom: 3 } }, h("b", { style: { color: GRN } }, "【" + b[0] + "】"), b[1]); }))),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.58rem", letterSpacing: 1.5, borderBottom: "0.6px solid " + RULE, paddingBottom: 2, marginBottom: 3 } }, "简讯 BRIEFS"),
+          briefs.map(function (b, i) { return h("div", { key: "br" + i, style: { fontFamily: CUTE, fontSize: "0.58rem", lineHeight: 1.55, marginBottom: 3 } }, h("span", { style: { color: GRN } }, "【" + b[0] + "】"), b[1]); }))),
       h("div", { style: { clear: "both", borderTop: "1.8px solid " + RULE, margin: "7px 0 6px" } }),
       h("div", { style: { display: "flex", gap: 9 } },
         h("div", { style: { flex: 1, minWidth: 0 } },
-          h("div", { style: { fontSize: "0.52rem", fontWeight: 900, letterSpacing: 1.5, marginBottom: 2 } }, "今日守则 DOs & DON'Ts"),
-          h("div", { style: { fontSize: "0.58rem", fontWeight: 700, lineHeight: 1.6 } }, h("span", { style: { display: "inline-block", background: RED, color: "#f8ecd0", padding: "0 3px", marginRight: 4, fontSize: "0.5rem" } }, "DO"), pick2(NEWS_YI, dayN)),
-          h("div", { style: { fontSize: "0.58rem", fontWeight: 700, lineHeight: 1.6 } }, h("span", { style: { display: "inline-block", background: INK, color: "#f8ecd0", padding: "0 3px", marginRight: 4, fontSize: "0.5rem" } }, "DON'T"), pick2(NEWS_JI, dayN + 2))),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.56rem", letterSpacing: 1, marginBottom: 2 } }, "今日守则 DOs & DON'Ts"),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.6rem", lineHeight: 1.7 } }, h("span", { style: { display: "inline-block", background: RED, color: "#f8ecd0", padding: "0 4px", marginRight: 4, fontFamily: HAND, fontSize: "0.56rem" } }, "DO"), pick2(NEWS_YI, dayN)),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.6rem", lineHeight: 1.7 } }, h("span", { style: { display: "inline-block", background: INK, color: "#f8ecd0", padding: "0 4px", marginRight: 4, fontFamily: HAND, fontSize: "0.56rem" } }, "DON'T"), pick2(NEWS_JI, dayN + 2))),
         h("div", { style: { flex: 1.25, minWidth: 0, border: "0.6px solid " + RULE, padding: "3px 6px" } },
-          h("div", { style: { fontSize: "0.48rem", fontWeight: 900, letterSpacing: 1.5, textAlign: "center", borderBottom: "0.6px dashed " + RULE, paddingBottom: 1, marginBottom: 2 } }, "分类广告 CLASSIFIEDS"),
-          h("div", { style: { fontSize: "0.54rem", fontWeight: 600, lineHeight: 1.5 } }, nwAt(NEWS_AD, dayN)))),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.52rem", letterSpacing: 1, textAlign: "center", borderBottom: "0.6px dashed " + RULE, paddingBottom: 1, marginBottom: 2 } }, "分类广告 CLASSIFIEDS"),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.56rem", lineHeight: 1.55 } }, nwAt(NEWS_AD, dayN)))),
       // 连载
       h("div", { style: { borderTop: "0.6px solid " + RULE, margin: "8px 0 0", paddingTop: 6 } },
         h("div", { style: { display: "flex", alignItems: "baseline", gap: 6 } },
-          h("span", { style: { fontSize: "0.48rem", fontWeight: 900, color: "#f8ecd0", background: GRN, padding: "1px 4px", letterSpacing: 1 } }, "连载"),
-          h("span", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "0.7rem" } }, "《帕丁顿 221B 日记》"),
-          h("span", { style: { fontSize: "0.5rem", color: "#7a6244", fontWeight: 700 } }, "第 " + issueNo + " 篇")),
-        h("div", { style: { marginTop: 3, fontSize: "0.62rem", fontWeight: 600, lineHeight: 1.65, fontStyle: "italic" } }, nwAt(NEWS_DIARY, issueNo - 1))));
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.5rem", color: "#f8ecd0", background: GRN, padding: "1px 5px", letterSpacing: 1 } }, "连载"),
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.7rem" } }, "《帕丁顿 221B 日记》"),
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.52rem", color: "#7a6244" } }, "第 " + issueNo + " 篇")),
+        h("div", { style: { marginTop: 3, fontFamily: CUTE, fontSize: "0.62rem", lineHeight: 1.7, color: "#4a3420" } }, nwAt(NEWS_DIARY, issueNo - 1))));
     topCard = h("div", { onClick: function () { setScrollOpen(!scrollOpen); }, style: { position: "relative", marginTop: 18, padding: "0 8px", cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
       roller("rt"),
       h("div", { style: { position: "relative", margin: "-7px 4px", filter: "drop-shadow(0 4px 6px rgba(60,35,10,0.28))" } },
@@ -27574,12 +27575,12 @@ function BakerFacade(_refBF) {
         boxShadow: "inset 0 0 26px rgba(105,62,20,0.42), inset 0 0 4px rgba(90,50,15,0.5)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
         // 卷着时：问候 + 那句俏皮话 + 火漆印
         h("div", { style: { position: "relative", paddingRight: 54 } },
-          h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.28rem", minHeight: 30, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
-          h("div", { style: { marginTop: 5, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: "#5a4128" } }, subLine),
-          h("div", { style: { position: "absolute", right: 0, top: 2, width: 42, height: 42, borderRadius: "50%", background: "radial-gradient(circle at 38% 32%,#d0453f,#9a2420 70%,#7a1a17)", boxShadow: "0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 4px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f3cdb8", fontFamily: "'UnifrakturMaguntia',Georgia,serif", fontSize: "1.3rem", transform: scrollOpen ? "rotate(-20deg) scale(0.9)" : "rotate(-8deg)", transition: "transform .5s" } }, "N")),
+          h("div", { style: { fontFamily: CUTE, fontWeight: 400, fontSize: "1.08rem", letterSpacing: "0.02em", minHeight: 26, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
+          h("div", { style: { marginTop: 4, fontFamily: CUTE, fontSize: "0.74rem", lineHeight: 1.65, color: "#5a4128" } }, subLine),
+          h("div", { style: { position: "absolute", right: 0, top: 2, width: 42, height: 42, borderRadius: "50%", background: "radial-gradient(circle at 38% 32%,#d0453f,#9a2420 70%,#7a1a17)", boxShadow: "0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 4px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f3cdb8", fontFamily: "'Caveat',Georgia,serif", fontWeight: 700, fontSize: "1.45rem", transform: scrollOpen ? "rotate(-20deg) scale(0.9)" : "rotate(-8deg)", transition: "transform .5s" } }, "N")),
         // 展开后：今天的报纸
         h("div", { style: { maxHeight: scrollOpen ? 1100 : 0, overflow: "hidden", transition: "max-height 0.7s cubic-bezier(.4,0,.2,1)" } }, paper),
-        h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.6rem", fontWeight: 800, color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾"))),
+        h("div", { style: { marginTop: 8, textAlign: "center", fontFamily: CUTE, fontSize: "0.62rem", color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾"))),
       roller("rb"));
   }
   var goIn = function () {
