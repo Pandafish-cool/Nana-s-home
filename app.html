@@ -27073,6 +27073,15 @@ var NEWS_LEAD = [
   "据可靠消息，Nana 的鼻子今天表现良好。本报对此表示高度赞赏，并呼吁它继续保持。",
   "天气、工作和地铁都可能出状况，但 221B 的灯每天都会亮着。本报承诺：这条新闻永不过期。"
 ];
+// 羊皮纸：左右两边是不整齐的毛边（固定的一组锯齿，免得每次渲染都抖），纸面叠三层纹理——细颗粒、大块斑驳、几块茶渍
+var PARCH_EDGE = (function () {
+  var L = [], R = [], n = 26, i, j;
+  for (i = 0; i <= n; i++) { j = (Math.sin(i * 12.9898) * 43758.5453) % 1; j = j < 0 ? -j : j; L.push((0.4 + j * 2.6).toFixed(2) + "% " + (i * 100 / n).toFixed(2) + "%"); }
+  for (i = n; i >= 0; i--) { j = (Math.sin(i * 78.233 + 3) * 43758.5453) % 1; j = j < 0 ? -j : j; R.push((99.6 - j * 2.6).toFixed(2) + "% " + (i * 100 / n).toFixed(2) + "%"); }
+  return "polygon(" + L.concat(R).join(",") + ")";
+})();
+var PARCH_GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.28 0 0 0 0 0.12 0 0 0 0.32 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
+var PARCH_MOTTLE = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' seed='7'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.32 0 0 0 0 0.1 0 0 0 0.55 -0.12'/></filter><rect width='100%25' height='100%25' filter='url(%23m)'/></svg>\")";
 var NEWS_YI = ["早睡", "喝热水", "晒太阳", "发呆十分钟", "吃顿好的", "给熊猫鱼发个表情", "听一首老歌", "出门走走", "夸自己一句", "窗边坐一会儿"];
 var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门"];
 var NEWS_AD = [
@@ -27317,9 +27326,9 @@ function BakerFacade(_refBF) {
     var rule2 = function (top) { return h("div", { style: { borderTop: (top ? 1.8 : 0.6) + "px solid " + RULE, borderBottom: (top ? 0.6 : 1.8) + "px solid " + RULE, height: 2.5 } }); };
     var small = { fontSize: "0.5rem", fontWeight: 700, color: "#6b5236", letterSpacing: 0.3 };
     var ear = function (t1, t2) { return h("div", { style: { flexShrink: 0, width: 50, border: "0.6px solid " + RULE, padding: "2px 3px", textAlign: "center", lineHeight: 1.25 } }, h("div", { style: { fontSize: "0.5rem", fontWeight: 900 } }, t1), h("div", { style: { fontSize: "0.42rem", fontWeight: 700, color: "#6b5236" } }, t2)); };
-    var roller = function (k) { return h("div", { key: k, style: { position: "relative", height: 15, margin: "0 2px", borderRadius: 8, background: "linear-gradient(180deg,#cfae72 0%,#f3e2b8 38%,#e6cd98 62%,#b08a50 100%)", boxShadow: "0 3px 7px rgba(0,0,0,0.28)", zIndex: 2 } },
-      h("div", { style: { position: "absolute", left: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#a8703e,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } }),
-      h("div", { style: { position: "absolute", right: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#a8703e,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } })); };
+    var roller = function (k) { return h("div", { key: k, style: { position: "relative", height: 15, margin: "0 2px", borderRadius: 8, background: PARCH_GRAIN + ", linear-gradient(180deg,#c9a466 0%,#f0dcae 36%,#e2c58c 62%,#a47e44 100%)", backgroundSize: "180px 180px, auto", boxShadow: "0 3px 7px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(90,55,20,0.35)", zIndex: 2 } },
+      h("div", { style: { position: "absolute", left: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } }),
+      h("div", { style: { position: "absolute", right: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } })); };
     var paper = h("div", { style: { paddingTop: 10 } },
       h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
         h("span", { style: small }, "第 " + (homeDays + 220) + " 期"), h("span", { style: small }, now.getFullYear() + " 年 " + dateCn), h("span", { style: small }, "定价：一个拥抱")),
@@ -27354,7 +27363,19 @@ function BakerFacade(_refBF) {
           h("div", { style: { fontSize: "0.54rem", fontWeight: 600, lineHeight: 1.5 } }, NEWS_AD[dayN % NEWS_AD.length]))));
     topCard = h("div", { onClick: function () { setScrollOpen(!scrollOpen); }, style: { position: "relative", marginTop: 18, padding: "0 8px", cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
       roller("rt"),
-      h("div", { style: { position: "relative", margin: "-7px 6px", padding: "16px 16px 14px", background: "radial-gradient(ellipse at 50% 40%, rgba(255,250,235,0.55), rgba(0,0,0,0) 70%), linear-gradient(180deg,#f2e2bb,#ead39f 55%,#e4c890)", boxShadow: "inset 0 0 22px rgba(120,80,30,0.35), inset 0 0 3px rgba(120,80,30,0.4)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
+      h("div", { style: { position: "relative", margin: "-7px 4px", filter: "drop-shadow(0 4px 6px rgba(60,35,10,0.28))" } },
+      h("div", { style: { position: "relative", padding: "18px 20px 14px", clipPath: PARCH_EDGE, WebkitClipPath: PARCH_EDGE,
+        background: [
+          PARCH_GRAIN,
+          PARCH_MOTTLE,
+          "radial-gradient(circle at 82% 78%, rgba(150,95,35,0.16) 0 7%, rgba(150,95,35,0.07) 7.6%, rgba(0,0,0,0) 8.4%)",
+          "radial-gradient(circle at 12% 22%, rgba(150,95,35,0.10) 0 5%, rgba(0,0,0,0) 5.8%)",
+          "radial-gradient(ellipse at 50% 45%, rgba(255,248,226,0.6), rgba(0,0,0,0) 62%)",
+          "linear-gradient(90deg, rgba(110,65,20,0.35), rgba(0,0,0,0) 7%, rgba(0,0,0,0) 93%, rgba(110,65,20,0.35))",
+          "linear-gradient(180deg,#f1dfb2,#e8cf98 55%,#dfc086)"
+        ].join(","),
+        backgroundSize: "180px 180px, 420px 420px, auto, auto, auto, auto, auto",
+        boxShadow: "inset 0 0 26px rgba(105,62,20,0.42), inset 0 0 4px rgba(90,50,15,0.5)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
         // 卷着时：问候 + 那句俏皮话 + 火漆印
         h("div", { style: { position: "relative", paddingRight: 54 } },
           h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "1.28rem", minHeight: 30, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
@@ -27362,7 +27383,7 @@ function BakerFacade(_refBF) {
           h("div", { style: { position: "absolute", right: 0, top: 2, width: 42, height: 42, borderRadius: "50%", background: "radial-gradient(circle at 38% 32%,#d0453f,#9a2420 70%,#7a1a17)", boxShadow: "0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 4px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f3cdb8", fontFamily: "'UnifrakturMaguntia',Georgia,serif", fontSize: "1.3rem", transform: scrollOpen ? "rotate(-20deg) scale(0.9)" : "rotate(-8deg)", transition: "transform .5s" } }, "N")),
         // 展开后：今天的报纸
         h("div", { style: { maxHeight: scrollOpen ? 700 : 0, overflow: "hidden", transition: "max-height 0.7s cubic-bezier(.4,0,.2,1)" } }, paper),
-        h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.6rem", fontWeight: 800, color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾")),
+        h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.6rem", fontWeight: 800, color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾"))),
       roller("rb"));
   }
   var goIn = function () {
