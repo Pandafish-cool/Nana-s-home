@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-310";
+var NANA_VER = "v2026.8.2-311";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -24728,7 +24728,10 @@ function MagicBar() {
   var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
   var who = function (a) { return a === "nana" ? "Nana" : "熊猫鱼"; };
   var night = mbNight();
-  var _rows = useState(function () { try { return JSON.parse(localStorage.getItem("nana-mb") || "{}") || {}; } catch (_) { return {}; } }); var rows = _rows[0], setRows = _rows[1];
+  var _rows = useState(function () { var m = {}; try { m = JSON.parse(localStorage.getItem("nana-mb") || "{}") || {}; } catch (_) {}
+    // 一次性：清掉手机里残留的试玩记录（云上早已删除）
+    try { if (!localStorage.getItem("nana-mb-clean1")) { ["mbp-1791356309120-pe7", "mbp-1791355646614-rwi", "mbn-panda-2026-10-07", "mbn--2026-10-07"].forEach(function (k) { delete m[k]; }); localStorage.setItem("nana-mb", JSON.stringify(m)); localStorage.setItem("nana-mb-clean1", "1"); } } catch (_) {}
+    return m; }); var rows = _rows[0], setRows = _rows[1];
   var _sel = useState([]); var sel = _sel[0], setSel = _sel[1];
   var _gin = useState(""); var gin = _gin[0], setGin = _gin[1];
   var _res = useState(null); var res = _res[0], setRes = _res[1];
