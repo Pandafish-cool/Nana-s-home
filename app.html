@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-318";
+var NANA_VER = "v2026.8.2-319";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27041,7 +27041,7 @@ var NANA_FUN = [
   { to: 5, a: ["还醒着，Nana？", "天塌了明天再说", "去睡，剩下的明天说"], s: [
     "凌晨的烦恼一律不算数。",
     "手机放下，被子盖好，这是命令。",
-    "你今天很好，不用再证明什么了。",
+    "今天的事已经翻篇，明天再说。",
     "睡饱了，什么事都好办。"] },
   { to: 9, a: ["早，Nana", "今天也是你的主场", "出门，去赢"], s: [
     "早饭吃了再出门，别跟胃过不去。",
@@ -27058,15 +27058,15 @@ var NANA_FUN = [
     "今天的难题，在你面前都不算难。",
     "有人不讲道理？名字报上来。",
     "再撑一会儿，晚上有好吃的。"] },
-  { to: 21, a: ["晚上好，Nana", "今天干得漂亮", "今晚，全归你"], s: [
+  { to: 21, a: ["晚上好，Nana", "今晚好好玩", "今晚，全归你"], s: [
     "外面的事放门口，进屋只管舒服。",
-    "晚饭吃点好的，你值得。",
+    "晚饭挑个最想吃的，别凑合。",
     "今天的你，帅得很稳定。",
     "想干嘛就干嘛，今晚不设规则。"] },
   { to: 24, a: ["晚上好，Nana", "早点睡，明天继续帅", "晚安，好梦"], s: [
     "睡前别想工作，那是明天的事。",
     "窗关小一点，鼻子会感谢你。",
-    "今天的事都过去了，你很好。",
+    "今天的事都过去了，翻篇。",
     "闭眼吧，明天又是你的。"] }
 ];
 // 羊皮纸：左右两边是不整齐的毛边（固定的一组锯齿，免得每次渲染都抖），纸面叠三层纹理——细颗粒、大块斑驳、几块茶渍
@@ -27092,7 +27092,7 @@ var NEWS_H = {
     "快讯：特拉法加广场的鸽子今早集体向 Nana 问好",
     "本报讯：地铁再挤，也挤不掉 Nana 的好心情",
     "晨间提示：出门记得带伞，这是伦敦人的基本修养",
-    "独家：贝克街早餐店称，Nana 今天的笑容值得多加一份培根",
+    "独家：贝克街早餐店今天多送了 Nana 一份培根，理由不明",
     "本报讯：今日伦敦有雾，但 Nana 的心情是晴的",
     "早报评论：今天先把自己照顾好，世界排第二"
   ],
@@ -27115,7 +27115,7 @@ var NEWS_H = {
     "深度调查：下午三点的咖啡，到底会不会偷走睡眠？",
     "独家专访：帕丁顿谈“如何在下午保持优雅”",
     "本报讯：下午茶时间到，司康和伯爵茶已就位",
-    "下午头条：今天已经过去大半，Nana 表现优异",
+    "下午头条：今天已经过去大半，一切按 Nana 的节奏进行",
     "本报观察：累的时候看一眼窗外，比刷手机管用",
     "快讯：贝克街某侦探称“下午最适合发呆”，本报深表赞同",
     "本报评论：事情做不完是常态，人好好的才是重点",
@@ -27126,7 +27126,7 @@ var NEWS_H = {
   ],
   evening: [
     "晚间头条：Nana 平安到家，221B 全体起立鼓掌",
-    "本报讯：今日目标已达成，Nana 再次证明了自己",
+    "本报讯：今日计划全部推进，贝克街交通顺畅",
     "号外：月影杂货铺今晚照常营业，敲砖请轻",
     "晚报特写：门一关，外面的雨就跟这里无关了",
     "本报讯：今晚的饭只负责好吃，别的一概不管",
@@ -27149,7 +27149,7 @@ var NEWS_H = {
     "快讯：失眠的羊已被本报全部收编，请放心入睡",
     "本报提醒：明天的事，明天的 Nana 会处理",
     "深夜观察：夜里想不通的事，天亮一般就通了",
-    "睡前头条：今天到此为止，你做得很好",
+    "睡前头条：今天到此为止，明天见",
     "本报讯：大本钟说晚安，已当面转达",
     "深夜快讯：221B 夜班帕丁顿在岗，Nana 可以安心睡了"
   ]
@@ -27173,8 +27173,8 @@ var NEWS_MON = [
 ];
 var NEWS_FRI = [
   "周五快讯：周末已进入视线范围，请保持冷静",
-  "本报讯：本周辛苦了，今晚可以去酒馆奖励自己（限三杯）",
-  "周五头条：坚持到这里的 Nana，本周 MVP"
+  "本报讯：周末开始倒计时，今晚酒馆照常营业（限三杯）",
+  "周五头条：本周收官，周末归 Nana"
 ];
 var NEWS_LEAD = [
   "据本报记者现场观察，Nana 今日状态稳定，笑容储备充足。专家建议：多喝热水，少操心，有事找 221B。",
@@ -27185,12 +27185,12 @@ var NEWS_LEAD = [
   "本报从可靠渠道获悉：今天伦敦的天空很蓝，蓝得像在跟 Nana 打招呼。消息来源要求匿名，只透露自己是一朵云。",
   "经本报实地调查，221B 的沙发软度达标、毯子厚度达标、等你回家的心情严重超标。",
   "本报记者注意到，Nana 最近走路带风。业内人士分析，这与心情好有直接关系。",
-  "本报提醒：今天不用做到完美，做到“还行”就已经很厉害了。此观点获全体编辑一致通过。",
+  "本报提醒：今天的计划表可以随时改，Nana 说了算。此观点获全体编辑一致通过。",
   "据悉，帕丁顿今天在门口站岗三小时，只为第一个跟 Nana 说“欢迎回来”。本报对其敬业精神表示敬意。",
   "有读者来信问：怎样才能每天都开心？编辑部讨论后认为：先吃饱，再睡好，剩下的交给时间。",
-  "本报统计：Nana 今天的可爱指数比昨天又高了一点。具体数值涉及机密，暂不公布。",
+  "本报统计：贝克街今天的晴天指数比昨天又高了一点。具体数值涉及机密，暂不公布。",
   "据贝克街居民反映，最近 221B 的窗户总亮着暖黄色的灯。经核实，那是给 Nana 留的。",
-  "今日社论：人不需要每天都很厉害，偶尔做一只躺平的熊，也是一种生活智慧。",
+  "今日社论：偶尔做一只躺平的熊，也是一种生活智慧。帕丁顿已身体力行。",
   "本报记者在冰箱门上发现一张字条：“今天也要好好吃饭。”字迹经鉴定，属于帕丁顿（果酱指纹为证）。",
   "据可靠线报，月影杂货铺的坩埚最近脾气不错。老板表示：两杯刚好，三杯打住，第四杯它会冒魔咒。",
   "本报科普：鼻子不舒服的时候，热毛巾敷一敷、热水熏一熏，比什么都管用。请转给需要的人。",
@@ -27203,13 +27203,13 @@ var NEWS_LEAD = [
   "据悉，221B 的冰箱贴墙越来越满。本报认为，每一张都是好好吃饭的证据。",
   "本报驻伦敦记者报道：泰晤士河一切正常，大本钟也很准时，只是它们都有点想 Nana。",
   "今日伦敦气象（心情版）：上午有雾转晴，下午有零星好消息，晚间温暖，适宜窝在壁炉边。",
-  "本报特约评论员帕丁顿发表看法：“今天的 Nana 也是最好的 Nana。”全文完。",
+  "本报特约评论员帕丁顿发表看法：“果酱要涂厚一点。”全文完。",
   "据悉，221B 门口的红色邮筒最近很忙。邮差帕丁顿表示，每一封信他都送得很小心。",
   "本报提醒：今天如果有人惹你不开心，请把名字报给 221B，本报将派帕丁顿前往“友好交流”。",
   "经编辑部反复确认：今天也是 Nana 被好好爱着的一天。本条新闻每天刊登，永不撤稿。"
 ];
 var NEWS_YI = ["泡一壶伯爵茶", "带把伞", "早睡", "晒太阳", "吃块司康", "读几页福尔摩斯", "发呆十分钟", "吃顿好的", "给老朋友打个电话", "听一首披头士",
-  "出门散步", "夸自己一句", "窗边坐一会儿", "泡个热水澡", "早点收工", "喝杯接骨木花", "整理房间", "穿那件风衣", "拍一张天空", "吃点甜的",
+  "出门散步", "听一张黑胶", "窗边坐一会儿", "泡个热水澡", "早点收工", "喝杯接骨木花", "整理房间", "穿那件风衣", "拍一张天空", "吃点甜的",
   "热毛巾敷鼻子", "看一集神探夏洛克", "给自己买束花", "早点关手机", "拥抱", "伸个懒腰", "慢慢吃饭", "哼首歌", "灌个热水袋", "原谅昨天的自己"];
 var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门", "喝第四杯", "跟自己较劲",
   "憋着不说", "加班到很晚", "插队", "吹冷风", "久坐不动", "拖着不吃饭", "太在意别人", "硬撑", "看坏消息", "熬夜追剧",
@@ -27940,8 +27940,8 @@ function BakerFacade(_refBF) {
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
     // ✉️ 门口人行道上的红色邮筒（英国老式圆柱邮筒，小小一只，挂一块 221B 黄铜牌）：有新信就从投信口露出一截信尾，轻轻晃
     h("g", { "data-k": "postbox", onClick: nanaGo221B, style: { cursor: "pointer" } },
-      h("ellipse", { cx: 159, cy: 360.5, rx: 12, ry: 2, fill: "rgba(0,0,0,0.3)" }),
-      h("g", { transform: "translate(159 360) scale(0.92) translate(-159 -360)" },
+      h("ellipse", { cx: 159, cy: 360.5, rx: 13, ry: 2.1, fill: "rgba(0,0,0,0.3)" }),
+      h("g", { transform: "translate(159 360) scale(1) translate(-159 -360)" },
         h("rect", { x: 148, y: 355, width: 22, height: 5, rx: 1, fill: "#17191d" }),
         h("rect", { x: 150, y: 324, width: 18, height: 32, fill: "#c0392b" }),
         h("rect", { x: 150, y: 324, width: 4, height: 32, fill: "rgba(255,255,255,0.12)" }), h("rect", { x: 164, y: 324, width: 4, height: 32, fill: "rgba(0,0,0,0.16)" }),
@@ -28104,7 +28104,7 @@ function BakerFacade(_refBF) {
       "@keyframes hpSwirl{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}50%{transform:translate(8px,-18px)}100%{opacity:0;transform:translate(-6px,-40px)}}" +
       "@keyframes hpHue{0%,100%{opacity:.8;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(70deg)}}" +
       "@keyframes bfTruckIn{0%{transform:translateX(-130px)}100%{transform:translateX(0)}}@keyframes bfTruckIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.8px)}}@keyframes bfWave{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(25deg)}}" +
-      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(178px,309px) scale(.8) rotate(0deg)}90%{transform:translate(178px,309px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(178px,303px) scale(.8);opacity:0}100%{transform:translate(178px,303px) scale(.8);opacity:0}}" +
+      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(178px,306px) scale(.8) rotate(0deg)}90%{transform:translate(178px,306px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(178px,300px) scale(.8);opacity:0}100%{transform:translate(178px,300px) scale(.8);opacity:0}}" +
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
@@ -28163,7 +28163,7 @@ function BakerFacade(_refBF) {
 // 本机存 nana-nook = { day, d: 今天点的饮品, b: 今天翻的书, sat: 今天在窗边坐了几秒 }，早上 5 点换日。
 var NK_DRINKS = [
   { k: "oat", e: "☕", n: "燕麦拿铁", sub: "奶泡打得很厚", col: "#c99c6e", caf: 1, art: 1, say: "燕麦拿铁，奶泡很厚。慢慢喝，不赶时间。" },
-  { k: "flat", e: "☕", n: "澳白", sub: "双份浓缩，少奶", col: "#a8774e", caf: 1, art: 1, say: "澳白，双份。今天值得。" },
+  { k: "flat", e: "☕", n: "澳白", sub: "双份浓缩，少奶", col: "#a8774e", caf: 1, art: 1, say: "澳白，双份。今天就要这个劲儿。" },
   { k: "pour", e: "🫖", n: "手冲 · 埃塞俄比亚", sub: "花香，带一点莓果酸", col: "#7a4a2a", caf: 1, say: "手冲好了。第一口有莓果味，第二口才是咖啡。" },
   { k: "earl", e: "🫖", n: "伯爵红茶 + 一点奶", sub: "从伦敦带回来的习惯", col: "#b98a5e", caf: 1, say: "伯爵加奶。伦敦的下午茶，搬回家了。" },
   { k: "elder", e: "🫧", n: "接骨木花气泡水", sub: "冰的，夏天的味道", col: "#e6ecb8", cold: 1, say: "接骨木花气泡水。气泡一直往上跑，心情也是。" },
@@ -28516,7 +28516,7 @@ function HomeDeck(_refHD) {
     { t: "三点定律", b: "下午犯困不是懒，是电量留给了晚上 🔋" },
     { t: "出门质检", b: "今日形象抽检合格：好看，准予放行 ✅" },
     { t: "家具表决", b: "家具开会一致通过：无条件站Nana 🪑" },
-    { t: "会议勋章", b: "开完长会还活着，值得颁发一枚勋章 🎖️" },
+    { t: "会议勋章", b: "开完长会还活着，勋章已经备好 🎖️" },
     { t: "离谱打包", b: "离谱的事先打包，回家拆开一起笑 📦" },
     { t: "纸箱视察", b: "好好视察完纸箱，批准今日适宜出门 🐾" },
     { t: "喜剧现场", b: "遇到离谱的人，就当看免费喜剧 🎪" },
@@ -28542,7 +28542,7 @@ function HomeDeck(_refHD) {
     { t: "夜灯排班", b: "小夜灯白天补觉，晚上准时为你亮 💡" },
     { t: "泡脚预热", b: "泡脚桶已开始预热，脚请再撑一会 🛁" },
     { t: "A面通勤", b: "磁带已倒好，通勤配乐由A面承包 🎧" },
-    { t: "咔嚓预告", b: "咔嚓小站认证：今天值得拍一张 📸" },
+    { t: "咔嚓预告", b: "咔嚓小站提醒：今天的光很适合拍一张 📸" },
     { t: "门口倒数", b: "门把手目送你出门，随即开启倒计时 🚪" },
     { t: "快递代收", b: "快递由家代收，惊喜先替你保管好 🎁" },
     { t: "鞋子立誓", b: "鞋说今天专挑顺路走，它说到做到 👟" },
@@ -28726,7 +28726,7 @@ function HomeDeck(_refHD) {
     { t: "街机续命", b: "投币声一响，无聊自动清零 🕹️" },
     { t: "电影节开牌", b: "各打各的分，赌一个灵魂同频 🎬" },
     { t: "分歧片预警", b: "分差再大不吵架，盖章收藏更好笑 🍿" },
-    { t: "咔嚓小站", b: "拍立得说：今天的Nana值得存档 📸" },
+    { t: "咔嚓小站", b: "拍立得说：今天光线不错，存一张 📸" },
     { t: "西瓜法则", b: "中间最甜的一勺，理应归Nana 🍉" },
     { t: "逛吃路线", b: "路线只有一条：哪香往哪走 🍡" },
     { t: "零食阅兵", b: "薯片饼干列队完毕，等一声开动 🍟" },
