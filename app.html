@@ -27208,17 +27208,19 @@ function BakerFacade(_refBF) {
   var win = function (x, y, w, hh, on, key, extra, arch) {
     var glass = on ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)");
     var bars = [];
-    var rows = Math.round(hh / 18), cols = 2;
-    for (var r = 1; r < rows; r++) bars.push(h("line", { key: "r" + r, x1: x, y1: y + hh * r / rows, x2: x + w, y2: y + hh * r / rows, stroke: "#f2ece0", strokeWidth: r === Math.round(rows / 2) ? 2.4 : 1.1 }));
-    for (var c = 1; c < cols; c++) bars.push(h("line", { key: "c" + c, x1: x + w * c / cols, y1: y, x2: x + w * c / cols, y2: y + hh, stroke: "#f2ece0", strokeWidth: 1.8 }));
+    // 英式六格推拉窗：上下两扇各 3×2 小格，中间一道粗一点的横档
+    var rows = hh >= 60 ? 6 : Math.max(2, Math.round(hh / 12)), cols = w >= 40 ? 3 : 2;
+    for (var r = 1; r < rows; r++) bars.push(h("line", { key: "r" + r, x1: x, y1: y + hh * r / rows, x2: x + w, y2: y + hh * r / rows, stroke: "#f7f3ea", strokeWidth: r === rows / 2 ? 2.6 : 0.9 }));
+    for (var c = 1; c < cols; c++) bars.push(h("line", { key: "c" + c, x1: x + w * c / cols, y1: y, x2: x + w * c / cols, y2: y + hh, stroke: "#f7f3ea", strokeWidth: 0.9 }));
     return h("g", { key: key },
       h("rect", { x: x - 5, y: y - 5, width: w + 10, height: hh + 10, rx: arch ? w / 2 + 5 : 1, fill: "#e9e2d2" }),
       h("rect", { x: x - 5, y: y + hh + 3, width: w + 10, height: 3, fill: "rgba(0,0,0,0.25)" }),
       h("rect", { x: x, y: y, width: w, height: hh, rx: arch ? w / 2 : 0, fill: glass }),
       h("polygon", { points: (x + 2) + "," + (y + hh - 2) + " " + (x + w - 2) + "," + (y + 2) + " " + (x + w - 2) + "," + (y + hh * 0.35) + " " + (x + 2) + "," + (y + hh - 2 - hh * 0.25), fill: "rgba(255,255,255," + (on ? 0.1 : 0.22) + ")" }),
       on ? h("rect", { x: x, y: y, width: w, height: hh, rx: arch ? w / 2 : 0, fill: "#ffd98a", opacity: 0.1 + (tick % 3) * 0.03 }) : null,
-      w >= 30 ? h("path", { d: "M" + x + " " + y + " q" + (w * 0.18) + " " + (hh * 0.15) + " " + (w * 0.2) + " " + hh + " L" + x + " " + (y + hh) + " Z", fill: "#7fb5bd", opacity: 0.92 }) : null,
-      w >= 30 ? h("path", { d: "M" + (x + w) + " " + y + " q" + (-w * 0.18) + " " + (hh * 0.15) + " " + (-w * 0.2) + " " + hh + " L" + (x + w) + " " + (y + hh) + " Z", fill: "#7fb5bd", opacity: 0.92 }) : null,
+      w >= 30 ? h("path", { d: "M" + x + " " + y + " q" + (w * 0.16) + " " + (hh * 0.2) + " " + (w * 0.15) + " " + hh + " L" + x + " " + (y + hh) + " Z", fill: "#f3ecdf", opacity: on ? 0.82 : 0.92 }) : null,
+      w >= 30 ? h("path", { d: "M" + (x + w) + " " + y + " q" + (-w * 0.16) + " " + (hh * 0.2) + " " + (-w * 0.15) + " " + hh + " L" + (x + w) + " " + (y + hh) + " Z", fill: "#f3ecdf", opacity: on ? 0.82 : 0.92 }) : null,
+      w >= 30 ? h("rect", { x: x, y: y, width: w, height: 3.5, fill: "#e6dccb" }) : null,
       bars,
       arch ? null : h("polygon", { points: (x + w / 2 - 5) + "," + (y - 5) + " " + (x + w / 2 + 5) + "," + (y - 5) + " " + (x + w / 2 + 3.5) + "," + (y - 13) + " " + (x + w / 2 - 3.5) + "," + (y - 13), fill: "#ddd5c3" }),
       h("rect", { x: x - 9, y: y + hh + 5, width: w + 18, height: 5, fill: "#ddd5c3" }),
@@ -27226,10 +27228,14 @@ function BakerFacade(_refBF) {
   };
   // 花箱：窗台下一排小花
   var flowers = function (x, y, w) {
-    var out = [h("rect", { key: "b", x: x - 6, y: y, width: w + 12, height: 8, rx: 1.5, fill: "#2f5a3a" }), h("rect", { key: "b2", x: x - 6, y: y, width: w + 12, height: 2, fill: "#3f7a4c" })];
-    var cols = ["#ff8fa8", "#ffc6d2", "#ffd36a", "#ff8fa8", "#f2a3b8", "#fff0a0", "#ff9db0", "#ffd36a", "#ffc6d2"];
-    for (var i = 0; i < 9; i++) out.push(h("circle", { key: "f" + i, cx: x + 3 + i * (w - 6) / 8, cy: y - 2.5 - (i % 2) * 2.5, r: 3.2, fill: cols[i] }));
-    for (var j = 0; j < 8; j++) out.push(h("circle", { key: "l" + j, cx: x + j * w / 7, cy: y + 1, r: 2.4, fill: "#4f8a5a" }));
+    var out = [];
+    [0.18, 0.5, 0.82].forEach(function (t, i) { out.push(h("circle", { key: "bx" + i, cx: x + w * t, cy: y - 3.5, r: 4.4, fill: "#5b7a52" }), h("circle", { key: "bh" + i, cx: x + w * t - 1.4, cy: y - 5, r: 1.8, fill: "#6f9065" })); });
+    for (var i = 0; i < 8; i++) out.push(h("circle", { key: "wf" + i, cx: x + 4 + i * (w - 8) / 7, cy: y - 0.8 - (i % 2) * 1.2, r: 1.5, fill: i % 3 === 1 ? "#c9b8e0" : "#fbf8f1" }));
+    out.push(h("rect", { key: "tr", x: x - 2, y: y, width: w + 4, height: 6, rx: 0.8, fill: "#2a2e33" }), h("rect", { key: "tr2", x: x - 2, y: y, width: w + 4, height: 1, fill: "#3c4248" }));
+    [[x + 3, 9], [x + w - 5, 11], [x + w * 0.45, 6]].forEach(function (v, i) { out.push(h("path", { key: "ti" + i, d: "M" + v[0] + " " + (y + 5) + " q-2 " + v[1] / 2 + " 0.6 " + v[1], stroke: "#5f8a5c", strokeWidth: 1, fill: "none", strokeLinecap: "round" })); });
+    // 黑铁小阳台：上下两道横杆 + 细竖条
+    out.push(h("rect", { key: "rt", x: x - 7, y: y - 2, width: w + 14, height: 1.3, fill: "#121418" }), h("rect", { key: "rb", x: x - 7, y: y + 8, width: w + 14, height: 1.6, fill: "#121418" }));
+    for (var k = 0; k <= 12; k++) out.push(h("rect", { key: "rv" + k, x: x - 6.5 + k * (w + 12) / 12, y: y - 1, width: 0.7, height: 9, fill: "#121418" }));
     return h("g", null, out);
   };
   var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
@@ -27242,14 +27248,16 @@ function BakerFacade(_refBF) {
       h("linearGradient", { id: "bfDay", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d4e0ea" }), h("stop", { offset: "100%", stopColor: "#93a9bc" })),
       h("linearGradient", { id: "bfNight", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#232c40" }), h("stop", { offset: "100%", stopColor: "#141a28" })),
       h("linearGradient", { id: "bfBrass", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f3dc9a" }), h("stop", { offset: "55%", stopColor: "#c9a24a" }), h("stop", { offset: "100%", stopColor: "#8f6d22" })),
-      h("linearGradient", { id: "bfStucco", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d8d1c1" }), h("stop", { offset: "100%", stopColor: "#c4bcaa" })),
+      h("linearGradient", { id: "bfStucco", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f1ece2" }), h("stop", { offset: "100%", stopColor: "#e2dccf" })),
       h("pattern", { id: "bfBrick", width: 24, height: 12, patternUnits: "userSpaceOnUse" },
-        h("rect", { width: 24, height: 12, fill: "#d8a79b" }),
-        h("rect", { x: 0.5, y: 0.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 12.5, y: 0.5, width: 11, height: 5, fill: "#cf948a" }),
-        h("rect", { x: 6.5, y: 6.5, width: 11, height: 5, fill: "#cf948a" }), h("rect", { x: -5.5, y: 6.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 18.5, y: 6.5, width: 11, height: 5, fill: "#c2857a" })),
+        h("rect", { width: 24, height: 12, fill: "#e6dcc8" }),
+        h("rect", { x: 0.5, y: 0.5, width: 11, height: 5, fill: "#cdb48c" }), h("rect", { x: 12.5, y: 0.5, width: 11, height: 5, fill: "#c4a97f" }),
+        h("rect", { x: 6.5, y: 6.5, width: 11, height: 5, fill: "#c8ad85" }), h("rect", { x: -5.5, y: 6.5, width: 11, height: 5, fill: "#bfa279" }), h("rect", { x: 18.5, y: 6.5, width: 11, height: 5, fill: "#d2bb95" })),
       h("pattern", { id: "bfSlate", width: 16, height: 10, patternUnits: "userSpaceOnUse" },
-        h("rect", { width: 16, height: 10, fill: "#4f8a93" }),
-        h("path", { d: "M0 10 a8 8 0 0 1 16 0 Z", fill: "#5e9aa3" }), h("path", { d: "M-8 5 a8 8 0 0 1 16 0 Z", fill: "#57929b" }), h("path", { d: "M8 5 a8 8 0 0 1 16 0 Z", fill: "#57929b" })),
+        h("rect", { width: 16, height: 10, fill: "#525c67" }),
+        h("rect", { x: 0, y: 4.6, width: 16, height: 0.6, fill: "#454e58" }), h("rect", { x: 0, y: 9.4, width: 16, height: 0.6, fill: "#454e58" }),
+        h("rect", { x: 7.7, y: 0, width: 0.5, height: 4.6, fill: "#454e58" }), h("rect", { x: 0, y: 5.2, width: 0.5, height: 4.2, fill: "#454e58" }),
+        h("rect", { x: 0.6, y: 5.2, width: 7, height: 4.2, fill: "#5a6570" }), h("rect", { x: 8.3, y: 0, width: 7, height: 4.6, fill: "#57616c" })),
       h("pattern", { id: "bfCobble", width: 14, height: 8, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 14, height: 8, fill: "#2a2e37" }),
         h("ellipse", { cx: 3.5, cy: 2, rx: 3.2, ry: 1.7, fill: "#343945" }), h("ellipse", { cx: 10.5, cy: 6, rx: 3.2, ry: 1.7, fill: "#343945" })),
@@ -27260,15 +27268,15 @@ function BakerFacade(_refBF) {
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
     // 烟囱 + 烟囱管帽 + 烟
     [44, 294].map(function (cx, i) { return h("g", { key: "ch" + i },
-      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: "url(#bfBrick)" }), h("rect", { x: cx - 2, y: 22, width: 28, height: 6, fill: "#8a5a52" }),
-      h("rect", { x: cx + 3, y: 12, width: 7, height: 11, rx: 1, fill: "#8a5a52" }), h("rect", { x: cx + 14, y: 12, width: 7, height: 11, rx: 1, fill: "#8a5a52" })); }),
+      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: "url(#bfBrick)" }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
+      [cx + 3.5, cx + 13.5].map(function (px, j) { return h("g", { key: "pt" + j }, h("path", { d: "M" + px + " 22 l0.8 -8 h5.4 l0.8 8 Z", fill: "#b5653f" }), h("rect", { x: px - 0.3, y: 12.4, width: 7.6, height: 2, rx: 0.6, fill: "#a2552f" })); })); }),
     [0, 1, 2].map(function (i) { return h("text", { key: "sm" + i, x: 311, y: 14, textAnchor: "middle", fontSize: 8, fill: "#f0a0b0", opacity: 0.8, style: { transformOrigin: "311px 10px", animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }, "♥"); }),
     h("text", { x: 56, y: 10, textAnchor: "middle", fontSize: 11 }, "🕊️"),
     // 屋顶：石板坡 + 天窗
     h("polygon", { points: "30,74 180,36 330,74", fill: "url(#bfSlate)" }),
-    h("polygon", { points: "30,74 180,36 330,74", fill: "none", stroke: "#3f7079", strokeWidth: 2 }),
-    h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#57929b" }),
-    h("polygon", { points: "144,46 180,28 216,46", fill: "#3f7079" }),
+    h("polygon", { points: "30,74 180,36 330,74", fill: "none", stroke: "#3b434c", strokeWidth: 2 }),
+    h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#ece6da" }), h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "url(#bfRust)" }),
+    h("polygon", { points: "144,46 180,28 216,46", fill: "#3b434c" }), h("polygon", { points: "147,46 180,30.5 213,46", fill: "none", stroke: "#ece6da", strokeWidth: 1.2 }),
     win(166, 50, 28, 22, lit && !dimAll, "attic", null, true),
     // 檐口：奶白石带 + 齿饰
     h("rect", { x: 24, y: 74, width: 312, height: 10, fill: "#e9e2d2" }),
@@ -27277,29 +27285,44 @@ function BakerFacade(_refBF) {
     // 上层：砖墙 + 两扇高窗 + 花箱
     h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfBrick)" }),
     h("rect", { x: 30, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }), h("rect", { x: 324, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }),
-    win(68, 112, 56, 78, lit && !dimAll, "u0", h("text", { x: 96, y: 168, textAnchor: "middle", fontSize: 15 }, lit ? "🕯️" : "🎻")),
-    win(236, 112, 56, 78, lit && !dimAll && tick % 9 !== 0, "u1", h("text", { x: 264, y: 172, textAnchor: "middle", fontSize: 14 }, "🐈")),
+    win(68, 112, 56, 78, lit && !dimAll, "u0", h("g", null,
+      lit && !dimAll ? h("circle", { cx: 96, cy: 160, r: 14, fill: "#ffe7b0", opacity: 0.45 }) : null,
+      h("path", { d: "M90 163 L102 163 L99.5 155 L92.5 155 Z", fill: lit && !dimAll ? "#fff1cf" : "#efe4cf", stroke: "#c9a45a", strokeWidth: 0.5 }),
+      h("rect", { x: 95.4, y: 163, width: 1.2, height: 8, fill: "#c9a45a" }), h("ellipse", { cx: 96, cy: 172, rx: 4, ry: 1.2, fill: "#c9a45a" }))),
+    win(236, 112, 56, 78, lit && !dimAll && tick % 9 !== 0, "u1", h("g", { fill: "#1d1e24" },
+      h("path", { d: "M258 176 q-1 -9 4 -12 q5 3 4 12 Z" }), h("circle", { cx: 262, cy: 162.5, r: 3.4 }),
+      h("path", { d: "M259.2 160.6 l0.6 -3.6 l2 2.4 Z" }), h("path", { d: "M264.8 160.6 l-0.6 -3.6 l-2 2.4 Z" }),
+      h("path", { d: "M265.5 175.5 q5 -0.5 4 -6", fill: "none", stroke: "#1d1e24", strokeWidth: 1.4, strokeLinecap: "round" }))),
     flowers(68, 200, 56), flowers(236, 200, 56),
-    h("g", { onClick: goLondon, style: { cursor: "pointer", transformOrigin: "180px 91px", animation: "bfSwing 4.2s ease-in-out infinite" } },
-      h("rect", { x: 142, y: 91, width: 76, height: 3, fill: "#0a0c10" }),
-      h("line", { x1: 152, y1: 94, x2: 152, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }), h("line", { x1: 208, y1: 94, x2: 208, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }),
-      h("rect", { x: 142, y: 104, width: 76, height: 42, rx: 3, fill: "#1a2238", stroke: "url(#bfBrass)", strokeWidth: 2.2 }),
-      h("rect", { x: 145.5, y: 107.5, width: 69, height: 35, rx: 2, fill: "none", stroke: "rgba(217,180,95,0.45)", strokeWidth: 0.8 }),
-      h("text", { x: 180, y: 123, textAnchor: "middle", fontSize: 13 }, "🎡"),
-      h("text", { x: 180, y: 132.5, textAnchor: "middle", fontSize: 4.8, fill: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: "bold", letterSpacing: 0.9 }, LD_BOOK_EN),
-      h("text", { x: 180, y: 141.2, textAnchor: "middle", fontSize: 6.4, fill: "#fdf6e8", fontWeight: "bold", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
+    h("g", { onClick: goLondon, style: { cursor: "pointer" } },
+      h("circle", { cx: 180, cy: 132, r: 24, fill: "rgba(0,0,0,0.18)", transform: "translate(0.8 1.2)" }),
+      h("circle", { cx: 180, cy: 132, r: 24, fill: "#1f4f8f" }),
+      h("circle", { cx: 180, cy: 132, r: 21.6, fill: "none", stroke: "#f7f3ea", strokeWidth: 1.1 }),
+      h("text", { x: 180, y: 121.2, textAnchor: "middle", fontSize: 2.9, fill: "#f7f3ea", fontFamily: "Georgia,serif", letterSpacing: 0.5 }, "ENGLISH HOME"),
+      h("rect", { x: 168, y: 122.5, width: 24, height: 0.5, fill: "rgba(247,243,234,0.7)" }),
+      h("text", { x: 180, y: 131.6, textAnchor: "middle", fontSize: 7.6, fontWeight: "bold", fill: "#ffffff", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "NANA"),
+      h("text", { x: 180, y: 138.6, textAnchor: "middle", fontSize: 5.2, fontWeight: "bold", fill: "#f7f3ea", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK),
+      h("text", { x: 180, y: 144.2, textAnchor: "middle", fontSize: 2.6, fill: "rgba(247,243,234,0.85)", fontFamily: "Georgia,serif", letterSpacing: 0.3 }, LD_BOOK_EN)),
     // 楼层线
     h("rect", { x: 24, y: 213, width: 312, height: 8, fill: "#e9e2d2" }), h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfStucco)" }),
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfRust)" }),
-    h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#8a5a52", strokeWidth: 2.5 }),
-    // 檐口下一串小彩灯
-    h("path", { d: "M32 90 q37 8 74 0 q37 8 74 0 q37 8 74 0 q37 8 74 0", fill: "none", stroke: "#4a3a36", strokeWidth: 0.8 }),
-    Array.apply(null, Array(16)).map(function (_, i) { var x = 40 + i * 18.7, y = 92 + Math.abs(Math.sin(i * 0.85)) * 5; return h("circle", { key: "bl" + i, cx: x, cy: y, r: 2, fill: ["#ffd36a", "#ff9db0", "#8fd7e0", "#c7f0a0"][i % 4], style: { animation: "bkLamp " + (1.6 + (i % 3) * 0.5) + "s ease-in-out infinite", filter: lit ? "drop-shadow(0 0 3px " + ["#ffd36a", "#ff9db0", "#8fd7e0", "#c7f0a0"][i % 4] + ")" : "none" } }); }),
-    // 墙角爬的藤
-    [[34, 200], [40, 186], [36, 172], [44, 160], [38, 148]].map(function (p, i) { return h("circle", { key: "iv" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
-    [[326, 205], [320, 190], [325, 176], [318, 164]].map(function (p, i) { return h("circle", { key: "iw" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
+    h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#d8cdb6", strokeWidth: 2 }),
+    // 紫藤：从檐口两角垂下来，一串串淡紫色花穗
+    [[34, 1], [326, -1]].map(function (c, ci) { var bx = c[0], dir = c[1];
+      return h("g", { key: "wis" + ci },
+        h("path", { d: "M" + bx + " 92 q" + (dir * 10) + " 14 " + (dir * 2) + " 30 q" + (dir * -6) + " 16 " + (dir * 3) + " 34 q" + (dir * 8) + " 14 " + (dir * 1) + " 30", fill: "none", stroke: "#7a5e46", strokeWidth: 1.4, strokeLinecap: "round" }),
+        h("path", { d: "M" + bx + " 93 q" + (dir * 22) + " 2 " + (dir * 40) + " -1", fill: "none", stroke: "#7a5e46", strokeWidth: 1.1, strokeLinecap: "round" }),
+        [[2, 98, 1], [12, 96, 0.9], [22, 95, 1.05], [32, 94, 0.85], [5, 112, 0.95], [-1, 126, 0.85], [4, 142, 1], [1, 160, 0.9], [3, 176, 0.8]].map(function (f, i) {
+          var x = bx + dir * f[0], y = f[1], k = f[2];
+          return h("g", { key: "wf" + i },
+            h("ellipse", { cx: x + dir * 3, cy: y - 1, rx: 3.2 * k, ry: 1.6 * k, fill: "#7fa06a", transform: "rotate(" + (dir * 25) + " " + (x + dir * 3) + " " + (y - 1) + ")" }),
+            h("path", { d: "M" + (x - 2.6 * k) + " " + y + " q" + (2.6 * k) + " " + (14 * k) + " " + (2.6 * k) + " " + (14 * k) + " q0 0 " + (2.6 * k) + " " + (-14 * k) + " Z", fill: "#b7a2d6" }),
+            h("path", { d: "M" + (x - 1.6 * k) + " " + (y + 1) + " q" + (1.6 * k) + " " + (8 * k) + " " + (1.6 * k) + " " + (8 * k) + " q0 0 " + (1.6 * k) + " " + (-8 * k) + " Z", fill: "#cdbde6" }),
+            h("circle", { cx: x - 1 * k, cy: y + 2, r: 0.7, fill: "#e6dcf3" }));
+        }));
+    }),
     // ☕ 一楼：窗边角落（咖啡 + 书 + 看窗外）。屋里是法式小沙龙：鸭蛋青墙 + 白色护墙线、驼背沙发、大理石小圆桌、水晶吊灯、拱顶书柜。点一下进去坐坐；按住不放还是「今天还不错」
     (function () {
       var nk = nookToday(), dk = nookDrink(nk.d), warm = !dimAll;
@@ -27395,7 +27418,7 @@ function BakerFacade(_refBF) {
     h("rect", { x: 170, y: 234, width: 100, height: 12, fill: "#e9e2d2" }), h("rect", { x: 166, y: 230, width: 108, height: 5, fill: "#f2ece0" }), h("rect", { x: 170, y: 246, width: 100, height: 2.5, fill: "rgba(0,0,0,0.25)" }),
     h("rect", { x: 176, y: 248, width: 12, height: 93, fill: "#e9e2d2" }), h("rect", { x: 252, y: 248, width: 12, height: 93, fill: "#e9e2d2" }),
     h("rect", { x: 174, y: 248, width: 16, height: 6, fill: "#ddd5c3" }), h("rect", { x: 250, y: 248, width: 16, height: 6, fill: "#ddd5c3" }),
-    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#1e5960" }),
+    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#14171c" }),
     h("path", { d: "M191 282 a29 29 0 0 1 58 0 Z", fill: dimAll ? "#2a2f3a" : (lit || glowDoor) ? "url(#bfWarm)" : "#b8c6d2", style: glowDoor ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.95))" } : null }),
     h("path", { d: "M199 282 a21 21 0 0 1 42 0", fill: "none", stroke: "#f2ece0", strokeWidth: 1.4 }),
     [-2, -1, 0, 1, 2].map(function (i) { return h("line", { key: "fan" + i, x1: 220, y1: 282, x2: 220 + Math.sin(i * 0.5) * 29, y2: 282 - Math.cos(i * 0.5) * 29, stroke: "#f2ece0", strokeWidth: 1.6 }); }),
@@ -27403,9 +27426,9 @@ function BakerFacade(_refBF) {
     // 门：原版黑门，六块门板、黄铜 221B、门环、信箱口、门把
     h("g", { onClick: goIn, style: { cursor: "pointer" } },
       h("g", { style: { transformOrigin: "191px 313px", transform: doorOpen ? "scaleX(0.1)" : "scaleX(1)", transition: "transform 0.55s cubic-bezier(.4,0,.2,1)" } },
-        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#2e7c86", style: (knock || doorShake) ? { animation: "bkKnock 0.5s ease" } : null }),
+        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#1b1e24", style: (knock || doorShake) ? { animation: "bkKnock 0.5s ease" } : null }),
         [[195, 289, 22, 12], [223, 289, 22, 12], [195, 305, 22, 14], [223, 305, 22, 14], [195, 323, 22, 14], [223, 323, 22, 14]].map(function (p, i) {
-          return h("rect", { key: "pn" + i, x: p[0], y: p[1], width: p[2], height: p[3], rx: 1, fill: "#2a727b", stroke: "#1e5960", strokeWidth: 1 });
+          return h("g", { key: "pn" + i }, h("rect", { x: p[0], y: p[1], width: p[2], height: p[3], rx: 0.6, fill: "#22262d", stroke: "#0e1013", strokeWidth: 1 }), h("rect", { x: p[0] + 1.2, y: p[1] + 1.2, width: 1, height: p[3] - 2.4, fill: "rgba(255,255,255,0.08)" }));
         }),
         h("text", { x: 220, y: 300, textAnchor: "middle", fontSize: 8.5, fontWeight: "bold", fill: "url(#bfBrass)", fontFamily: "Georgia,serif", letterSpacing: 1.2 }, "221B"),
         h("g", holdProps(PG.knock),
@@ -27463,9 +27486,9 @@ function BakerFacade(_refBF) {
       h("rect", { x: 192, y: 341, width: 56, height: 8.5, rx: 1, fill: holdingIs("home") ? "#8a5a3a" : "#6b4a34", stroke: "#3a2416", strokeWidth: 0.6, style: holdingIs("home") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
       h("text", { x: 220, y: 347.4, textAnchor: "middle", fontSize: 6, fontWeight: "bold", fill: "#f1e4c4", fontFamily: "'PingFang SC',sans-serif", letterSpacing: 0.6 }, "到家了 🏠")),
     [172, 262].map(function (px, i) { return h("g", { key: "pot" + i },
-      h("circle", { cx: px + 7, cy: 322, r: 7, fill: "#6fb07a" }), h("circle", { cx: px + 3, cy: 326, r: 5, fill: "#5a9a64" }), h("circle", { cx: px + 11, cy: 326, r: 5, fill: "#7fbf88" }),
-      h("circle", { cx: px + 4, cy: 320, r: 2.2, fill: "#ff9db0" }), h("circle", { cx: px + 10, cy: 318, r: 2.2, fill: "#ffd36a" }), h("circle", { cx: px + 7, cy: 326.5, r: 2, fill: "#ffc6d2" }),
-      h("polygon", { points: (px) + ",330 " + (px + 14) + ",330 " + (px + 12) + ",342 " + (px + 2) + ",342", fill: "#a8623a" }), h("rect", { x: px - 1, y: 328, width: 16, height: 3.5, fill: "#b8734a" })); }),
+      h("rect", { x: px + 6.4, y: 318, width: 1.2, height: 13, fill: "#6b4a34" }),
+      h("circle", { cx: px + 7, cy: 316, r: 7.2, fill: "#4f6e48" }), h("circle", { cx: px + 5, cy: 313.6, r: 3.6, fill: "#5f8256" }), h("circle", { cx: px + 9.4, cy: 318.4, r: 2.6, fill: "#46633f" }),
+      h("rect", { x: px + 1, y: 330, width: 12, height: 12, fill: "#1f2328" }), h("rect", { x: px, y: 328.5, width: 14, height: 2.5, fill: "#2c3238" }), h("rect", { x: px + 1, y: 340, width: 12, height: 2, fill: "#16191d" })); }),
     // 栏杆：黑铁、金尖
     [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 4; x < seg[1]; x += 9) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
