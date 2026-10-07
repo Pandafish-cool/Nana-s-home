@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-307";
+var NANA_VER = "v2026.8.2-308";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27052,7 +27052,7 @@ function BakerFacade(_refBF) {
   var _bt = useState([]); var barTaps = _bt[0], setBarTaps = _bt[1];
   var _bw = useState(-1); var barWrong = _bw[0], setBarWrong = _bw[1];
   var _bh = useState(false); var barHint = _bh[0], setBarHint = _bh[1];
-  useEffect(function () { if (barOpen) return; setBarHint(false); var id = setTimeout(function () { setBarHint(true); }, barTaps.length ? 2500 : 6000); return function () { clearTimeout(id); }; }, [barTaps.length, barOpen]);
+  useEffect(function () { if (barOpen) return; setBarHint(true); }, [barTaps.length, barOpen]);   // 简单版：该敲的那块一直在发光
   var tapBrick = function (i) {
     if (barOpen) return;
     if (i === BAR_KEYS[barTaps.length]) {
@@ -27060,7 +27060,7 @@ function BakerFacade(_refBF) {
       if (nt.length === BAR_KEYS.length) {
         setTimeout(function () { setBarOpen(true); setBarJust(true); try { localStorage.setItem("nana-bar-open", mbNight()); } catch (_) {} }, 450);
       }
-    } else { setBarWrong(i); setBarTaps([]); setTimeout(function () { setBarWrong(-1); }, 500); }
+    } else { setBarWrong(i); setTimeout(function () { setBarWrong(-1); }, 500); }   // 敲错只抖一下，不清零
   };
   var fzMeF = ""; try { fzMeF = localStorage.getItem("nana-author") || ""; } catch (_) {}
   var fzTruck = (fzSlotNow() && !fzAteThisSlot(fzMeF || "nana")) ? fzSlotNow() : null;
@@ -27437,7 +27437,8 @@ function BakerFacade(_refBF) {
         Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0), lit = barTaps.indexOf(i) >= 0, nxt = barHint && i === BAR_KEYS[barTaps.length];
           return h("g", { key: "kb" + i, onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); tapBrick(i); }, style: { cursor: "pointer", transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: barWrong === i ? "hpWobble .45s ease-in-out" : "none" } },
             h("rect", { x: x, y: y, width: 30, height: 22, rx: 1.5, fill: lit ? "#d9a05a" : "#8a4a3a", stroke: "#5a2e22", strokeWidth: 1.4, style: lit ? { filter: "drop-shadow(0 0 6px rgba(255,220,140,1))" } : null }),
-            nxt ? h("rect", { x: x + 1, y: y + 1, width: 28, height: 20, rx: 1.5, fill: "rgba(255,220,140,0.55)", style: { animation: "bkLamp 1.4s ease-in-out infinite" } }) : null,
+            nxt ? h("rect", { x: x + 1, y: y + 1, width: 28, height: 20, rx: 1.5, fill: "rgba(255,220,140,0.7)", style: { filter: "drop-shadow(0 0 6px rgba(255,220,140,1))", animation: "bkLamp 1.1s ease-in-out infinite" } }) : null,
+            nxt ? h("text", { x: x + 15, y: y + 15.5, textAnchor: "middle", fontSize: 10, fill: "#fff8d0", style: { animation: "bkLamp 1.1s ease-in-out infinite" } }, "🪄") : null,
             lit ? h("text", { x: x + 15, y: y + 15, textAnchor: "middle", fontSize: 9, fill: "#fff8d0" }, "✦") : null); })) :
       barJust ? h("g", { style: { pointerEvents: "none" } },
         Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0);
