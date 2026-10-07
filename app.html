@@ -27224,6 +27224,78 @@ function BakerFacade(_refBF) {
     var id2 = setInterval(function () { setTick(function (t) { return t + 1; }); }, 900);
     return function () { clearInterval(id); clearInterval(id2); };
   }, []);
+  // 顶部卡片：三种样式（预览用 ?card=news 报纸 / board 车站翻牌 / telegram 电报）
+  var CARD = (function () { try { var q = (location.search || "").match(/[?&]card=(\w+)/); if (q) return q[1]; } catch (_) {} return "news"; })();
+  var WEEK = ["日", "一", "二", "三", "四", "五", "六"];
+  var dateCn = (now.getMonth() + 1) + " 月 " + now.getDate() + " 日 · 星期" + WEEK[now.getDay()];
+  var hm = (now.getHours() < 10 ? "0" : "") + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+  var greetNow = greets[msg % greets.length];
+  var SERIF = "Georgia,'Times New Roman','Songti SC','STSong',serif";
+  var MONO = "'Courier New',Courier,'PingFang SC',monospace";
+  var topCard;
+  if (CARD === "board") {
+    // 车站翻牌：问候一个字一个字翻下来
+    var chars = greetNow.split("");
+    topCard = h("div", { style: { position: "relative", marginTop: 16, background: "#17191e", borderRadius: 14, padding: "12px 12px 11px", boxShadow: "0 12px 28px rgba(0,0,0,0.35), inset 0 0 0 1.5px #2b2f37", color: "#f5f1e6" } },
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8, paddingBottom: 9, borderBottom: "1px solid #2b2f37" } },
+        h("div", { style: { width: 22, height: 22, borderRadius: "50%", border: "3.5px solid #c8322f", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" } }, h("div", { style: { position: "absolute", left: -5, right: -5, height: 5, background: "#1f3f8f" } })),
+        h("div", { style: { fontFamily: "Helvetica,Arial,sans-serif", fontWeight: 800, fontSize: "0.72rem", letterSpacing: 2 } }, "DEPARTURES"),
+        h("div", { style: { fontSize: "0.62rem", color: "#9aa0aa", fontWeight: 700 } }, "到站 · 221B"),
+        h("div", { style: { marginLeft: "auto", fontFamily: MONO, fontWeight: 800, fontSize: "0.9rem", color: "#ffc93d", letterSpacing: 1 } }, hm)),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 8, marginTop: 11 } },
+        h("div", { style: { flex: 1, display: "flex", flexWrap: "wrap", gap: 3 } },
+          chars.map(function (c, i) {
+            return h("div", { key: "fl" + msg + "-" + i, style: { position: "relative", minWidth: c === " " ? 8 : 22, height: 30, padding: "0 2px", background: c === " " ? "transparent" : "linear-gradient(180deg,#24272e 0 49%,#0e0f12 49% 51%,#1d2026 51%)", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'PingFang SC',Helvetica,sans-serif", fontWeight: 900, fontSize: "1.02rem", color: "#ffc93d", transformOrigin: "50% 0", animation: "bfFlip .45s cubic-bezier(.3,1.4,.6,1) " + (i * 0.06) + "s both" } }, c === " " ? "" : c);
+          })),
+        h("div", { style: { flexShrink: 0, textAlign: "right" } },
+          h("div", { style: { fontSize: "0.58rem", fontWeight: 900, color: "#3fbf6a", letterSpacing: 1 } }, "ON TIME"),
+          h("div", { style: { fontSize: "0.6rem", fontWeight: 800, color: "#3fbf6a" } }, "准点"))),
+      h("div", { style: { marginTop: 10, display: "flex", gap: 8, alignItems: "flex-start" } },
+        h("div", { style: { flexShrink: 0, marginTop: 1, padding: "1px 6px", borderRadius: 4, background: "#ffc93d", color: "#17191e", fontSize: "0.56rem", fontWeight: 900 } }, "广播"),
+        h("div", { style: { fontSize: "0.78rem", fontWeight: 700, lineHeight: 1.6, color: "#e8e4da" } }, subLine)),
+      h("div", { style: { marginTop: 9, paddingTop: 8, borderTop: "1px solid #2b2f37", display: "flex", alignItems: "center", gap: 6, fontSize: "0.62rem", fontWeight: 800, color: "#9aa0aa" } },
+        h("span", { style: { color: "#ffc93d" } }, "PLATFORM 9¾"), "· Nana 号 · 伦敦 0° → 家 113°E · 已到站"));
+  } else if (CARD === "telegram") {
+    // 维多利亚电报：每句都以 STOP 结尾
+    var stop = function (t) { return t.replace(/[。！!.]+$/, "") + " STOP"; };
+    topCard = h("div", { style: { position: "relative", marginTop: 16, background: "linear-gradient(180deg,#f8efd8,#f1e4c4)", borderRadius: 6, padding: "0 0 12px", boxShadow: "0 12px 26px rgba(0,0,0,0.25)", color: "#2b2620", transform: "rotate(-0.8deg)", overflow: "hidden" } },
+      h("div", { style: { background: "#b8323a", color: "#fbf3e2", padding: "7px 14px", display: "flex", alignItems: "center", gap: 8 } },
+        h("div", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "0.8rem", letterSpacing: 2 } }, "POST OFFICE TELEGRAM"),
+        h("div", { style: { fontSize: "0.62rem", fontWeight: 800, opacity: 0.9 } }, "电报"),
+        h("div", { style: { marginLeft: "auto", fontFamily: MONO, fontSize: "0.62rem", fontWeight: 700 } }, "No. 221B")),
+      h("div", { style: { display: "flex", gap: 14, padding: "8px 14px 6px", borderBottom: "1px solid rgba(43,38,32,0.18)", fontFamily: MONO, fontSize: "0.62rem", fontWeight: 700, color: "#6b5f4c" } },
+        h("span", null, "TO: NANA"), h("span", null, "FROM: 221B"), h("span", null, "TIME: " + hm)),
+      h("div", { style: { padding: "10px 14px 0", fontFamily: MONO } },
+        h("div", { style: { fontSize: "1.12rem", fontWeight: 900, letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, stop(greetNow)),
+        h("div", { style: { marginTop: 6, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: "#4a4034", paddingRight: 64 } }, stop(subLine))),
+      h("div", { style: { position: "absolute", right: 14, bottom: 22, width: 58, height: 58, borderRadius: "50%", border: "2px solid rgba(184,50,58,0.75)", boxShadow: "inset 0 0 0 4px rgba(248,239,216,1), inset 0 0 0 5.5px rgba(184,50,58,0.55)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "rgba(184,50,58,0.85)", transform: "rotate(-14deg)", fontFamily: SERIF } },
+        h("div", { style: { fontSize: "0.46rem", fontWeight: 900, letterSpacing: 1 } }, "DELIVERED"),
+        h("div", { style: { fontSize: "0.72rem", fontWeight: 900 } }, "已送达"),
+        h("div", { style: { fontSize: "0.42rem", fontWeight: 800 } }, (now.getMonth() + 1) + "·" + now.getDate())),
+      h("div", { style: { margin: "10px 14px 0", fontFamily: MONO, fontSize: "0.6rem", fontWeight: 700, color: "#8a7c66" } }, "经由 伦敦 0° → 家 113°E · Nana 号已靠岸"));
+  } else {
+    // 报纸：今日头条是问候，导语是那句俏皮话，底下一条「号外」滚动
+    topCard = h("div", { style: { position: "relative", marginTop: 16, background: "linear-gradient(180deg,#fbf6ea,#f3ebd9)", borderRadius: 4, padding: "11px 14px 0", boxShadow: "0 12px 26px rgba(0,0,0,0.22)", color: "#1d1b18", overflow: "hidden" } },
+      h("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "0.56rem", fontWeight: 800, color: "#5a5248", letterSpacing: 0.5 } },
+        h("span", null, "VOL. 221B · " + dateCn), h("span", null, "伦敦限定版 · 免费")),
+      h("div", { style: { borderTop: "1.5px solid #1d1b18", borderBottom: "0.5px solid #1d1b18", height: 2, marginTop: 5 } }),
+      h("div", { style: { textAlign: "center", fontFamily: SERIF, fontWeight: 900, fontStyle: "italic", fontSize: "1.55rem", letterSpacing: "0.01em", lineHeight: 1.15, margin: "4px 0 2px" } }, "The Nana Times"),
+      h("div", { style: { borderTop: "0.5px solid #1d1b18", borderBottom: "1.5px solid #1d1b18", height: 2 } }),
+      h("div", { style: { display: "flex", gap: 12, alignItems: "stretch", marginTop: 10 } },
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { fontSize: "0.56rem", fontWeight: 900, color: "#b8323a", letterSpacing: 1 } }, "今日头条"),
+          h("div", { style: { marginTop: 2, fontFamily: SERIF, fontWeight: 900, fontSize: "1.3rem", lineHeight: 1.25, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
+          h("div", { style: { marginTop: 6, fontSize: "0.78rem", fontWeight: 600, lineHeight: 1.65, color: "#3d3830", textAlign: "justify" } },
+            h("span", { style: { float: "left", fontFamily: SERIF, fontWeight: 900, fontSize: "1.9rem", lineHeight: 0.9, margin: "3px 5px 0 0", color: "#23443a" } }, subLine.charAt(0)), subLine.slice(1))),
+        // 右边一栏「本报记者」：帕丁顿
+        h("div", { style: { flexShrink: 0, width: 66, borderLeft: "0.5px solid rgba(29,27,24,0.4)", paddingLeft: 9, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 } },
+          h("div", { style: { width: 54, height: 54, background: "#e9e1cf", border: "1px solid rgba(29,27,24,0.35)", display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
+            h("svg", { viewBox: "-12 -18 24 30", width: 48, height: 60, style: { filter: "grayscale(0.35) sepia(0.25)" } }, nanaPadBear(h, null))),
+          h("div", { style: { fontSize: "0.5rem", fontWeight: 800, color: "#5a5248", textAlign: "center", lineHeight: 1.35 } }, "本报记者", h("br"), "帕丁顿"))),
+      h("div", { style: { margin: "10px -14px 0", background: "#1d1b18", color: "#fbf6ea", display: "flex", alignItems: "center", overflow: "hidden", height: 24 } },
+        h("div", { style: { flexShrink: 0, height: "100%", display: "flex", alignItems: "center", padding: "0 8px", background: "#b8323a", fontSize: "0.62rem", fontWeight: 900, letterSpacing: 1, zIndex: 1 } }, "号外"),
+        h("div", { style: { whiteSpace: "nowrap", fontSize: "0.66rem", fontWeight: 700, animation: "bfTicker 16s linear infinite", paddingLeft: "100%" } }, "港口快讯：Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E · 本报记者帕丁顿现场报道 · 果酱已备好")));
+  }
   var goIn = function () {
     if (doorOpen) return;
     setDoorOpen(true);
@@ -27737,6 +27809,8 @@ function BakerFacade(_refBF) {
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfFlip{0%{transform:rotateX(90deg);opacity:.2}100%{transform:none;opacity:1}}" +
+      "@keyframes bfTicker{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
       "@keyframes bfBoat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}" +
       "@keyframes bfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
@@ -27751,28 +27825,7 @@ function BakerFacade(_refBF) {
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
-      // 一张明信片：问候和港口写在一起
-      h("div", { style: { position: "relative", marginTop: 18, background: pc.bg, borderRadius: 18, padding: "16px 14px 12px 16px", boxShadow: "0 10px 26px rgba(0,0,0,0.22), inset 0 0 0 1.5px rgba(" + pc.ac + ",0.25)", color: pc.ink, transition: "background 1s", transform: "rotate(-1.2deg)" } },
-        h("div", { style: { position: "absolute", inset: 6, border: "1.5px dashed rgba(" + pc.ac + ",0.35)", borderRadius: 13, pointerEvents: "none" } }),
-        // 两条和纸胶带
-        h("div", { style: { position: "absolute", left: 18, top: -9, width: 64, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(" + pc.ac + ",0.35) 6px 12px)", transform: "rotate(-7deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
-        h("div", { style: { position: "absolute", right: 70, bottom: -9, width: 58, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(143,209,224,0.55) 6px 12px)", transform: "rotate(6deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
-        // 猫从卡片顶上探出来
-        h("div", { style: { position: "absolute", right: 74, top: -21, fontSize: 24, lineHeight: 1, transform: "scaleX(-1) rotate(-8deg)", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.25))" } }, "🐈"),
-        // 邮戳
-        h("div", { style: { position: "absolute", right: 46, top: 30, width: 44, height: 44, borderRadius: "50%", border: "1.5px solid rgba(" + pc.ac + ",0.55)", boxShadow: "inset 0 0 0 3px transparent, inset 0 0 0 4.5px rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.42rem", fontWeight: 900, letterSpacing: 1, color: "rgba(" + pc.ac + ",0.85)", fontFamily: "Georgia,serif", transform: "rotate(-14deg)", textAlign: "center", lineHeight: 1.3, pointerEvents: "none" } }, "HOME", h("br"), "09·26"),
-        // 右上角一枚邮票：家
-        h("div", { style: { position: "absolute", right: 14, top: 12, width: 40, height: 46, background: "#fff", boxShadow: "0 0 0 3px #fff, 0 0 0 4px rgba(" + pc.ac + ",0.35)", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: "rotate(6deg)" } },
-          h("div", { style: { fontSize: 20, lineHeight: 1 } }, isNight ? "🌙" : "🏡"),
-          h("div", { style: { fontSize: "0.4rem", fontWeight: 900, letterSpacing: 1, color: "rgb(" + pc.ac + ")", marginTop: 3, fontFamily: "Georgia,serif" } }, "113°E")),
-        h("div", { style: { paddingRight: 56 } },
-          h("div", { style: { minHeight: 30, fontSize: "1.28rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", color: "#2b3446" } }, greets[msg % greets.length]),
-          h("div", { style: { marginTop: 6, paddingRight: 62, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: pc.sub } }, subLine)),
-        // 底下一行：港口
-        h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", gap: 8 } },
-          h("div", { style: { flexShrink: 0, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f3dc9a,#c9a24a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, boxShadow: "0 2px 5px rgba(0,0,0,0.25)" } }, "\u2693"),
-          h("div", { style: { flex: 1, minWidth: 0, fontSize: "0.68rem", fontWeight: 800, color: pc.sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "港口 · Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E"),
-          h("div", { style: { flexShrink: 0, fontSize: 18, lineHeight: 1, animation: "bfBoat 2.6s ease-in-out infinite" } }, "\u26F5"))),
+      topCard,
       h("div", { style: { height: 4 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 2, padding: "0 2px" } },
