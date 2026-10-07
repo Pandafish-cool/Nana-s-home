@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-304";
+var NANA_VER = "v2026.8.2-305";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -24664,6 +24664,223 @@ function FridgeWall() {
       h("button", { onClick: function () { setPicking(true); setOpen(null); }, style: { marginTop: 12, width: "100%", border: "none", background: "#5a4a36", color: "#fff", borderRadius: 14, padding: "12px", fontWeight: 900, fontSize: "0.92rem", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 4px 10px rgba(60,40,20,0.2)" } }, "＋ 贴一枚")) : null,
     err ? h("div", { style: { marginTop: 8, textAlign: "center", fontSize: "0.7rem", color: "#b06a62" } }, err) : null);
 }
+
+// ── 🍸 9¾ 魔药酒馆：晚上 6 点后 221B 隔壁出现。挑三样材料用魔杖搅三下调一杯魔药。
+// 每晚（早上 6 点换日）限量 3 杯；到量后酒馆会"引诱"再来一杯——那是陷阱，第 4 杯起每杯抽一张惩罚卡。
+// 存 shared_pack：mbn-<作者>-<夜> = 这晚喝了几杯；mbp-<时间戳> = 惩罚卡；mbg-<时间戳> = 派猫头鹰送的魔药。
+var MB_SCENE = "<svg viewBox=\"0 0 430 350\" style=\"display:block;width:100%;height:auto\">\n<defs>\n <linearGradient id=\"mb_sky\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#140c33\"/><stop offset=\"1\" stop-color=\"#2e1f63\"/></linearGradient>\n <linearGradient id=\"mb_aur\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\"><stop offset=\"0\" stop-color=\"#7ff0c8\" stop-opacity=\"0\"/><stop offset=\".4\" stop-color=\"#7ff0c8\" stop-opacity=\".35\"/><stop offset=\".7\" stop-color=\"#c9a0ff\" stop-opacity=\".4\"/><stop offset=\"1\" stop-color=\"#ff9fd0\" stop-opacity=\"0\"/></linearGradient>\n <radialGradient id=\"mb_fire\" cx=\"50%\" cy=\"100%\" r=\"80%\"><stop offset=\"0\" stop-color=\"#ffe6ff\"/><stop offset=\".45\" stop-color=\"#d07aff\"/><stop offset=\"1\" stop-color=\"#5a2ab8\" stop-opacity=\"0\"/></radialGradient>\n <radialGradient id=\"mb_brew\" cx=\"50%\" cy=\"40%\" r=\"60%\"><stop offset=\"0\" stop-color=\"#ffe0f6\"/><stop offset=\".5\" stop-color=\"#e08aff\"/><stop offset=\"1\" stop-color=\"#7a4ae0\"/></radialGradient>\n <radialGradient id=\"mb_haloP\"><stop offset=\"0\" stop-color=\"rgba(220,170,255,.6)\"/><stop offset=\"1\" stop-color=\"rgba(220,170,255,0)\"/></radialGradient>\n <radialGradient id=\"mb_haloG\"><stop offset=\"0\" stop-color=\"rgba(255,220,140,.55)\"/><stop offset=\"1\" stop-color=\"rgba(255,220,140,0)\"/></radialGradient>\n <radialGradient id=\"mb_ball\" cx=\"40%\" cy=\"35%\" r=\"70%\"><stop offset=\"0\" stop-color=\"#ffffff\"/><stop offset=\".35\" stop-color=\"#d9c2ff\"/><stop offset=\"1\" stop-color=\"#6a4ac8\"/></radialGradient>\n <pattern id=\"mb_stone\" width=\"40\" height=\"22\" patternUnits=\"userSpaceOnUse\"><rect width=\"40\" height=\"22\" fill=\"#2a2150\"/><path d=\"M0 0 H40 M0 11 H40 M20 0 V11 M0 11 V22 M40 11 V22\" stroke=\"#1d1640\" stroke-width=\"2\"/></pattern>\n</defs>\n<!-- 魔法星空天花板 -->\n<rect width=\"430\" height=\"120\" fill=\"url(#mb_sky)\"/>\n<path d=\"M-20 70 Q100 30 220 60 T460 40\" stroke=\"url(#mb_aur)\" stroke-width=\"26\" fill=\"none\" opacity=\".9\"/>\n<path d=\"M-20 40 Q120 10 240 34 T460 20\" stroke=\"url(#mb_aur)\" stroke-width=\"12\" fill=\"none\" opacity=\".6\"/>\n<g fill=\"#fff\">\n <circle cx=\"30\" cy=\"20\" r=\"1.2\"/><circle cx=\"70\" cy=\"44\" r=\"1.6\"/><circle cx=\"120\" cy=\"16\" r=\"1\"/><circle cx=\"160\" cy=\"50\" r=\"1.4\"/><circle cx=\"210\" cy=\"22\" r=\"1.8\"/><circle cx=\"260\" cy=\"40\" r=\"1.1\"/><circle cx=\"300\" cy=\"14\" r=\"1.5\"/><circle cx=\"350\" cy=\"36\" r=\"1.2\"/><circle cx=\"400\" cy=\"18\" r=\"1.7\"/><circle cx=\"96\" cy=\"88\" r=\"1\"/><circle cx=\"330\" cy=\"86\" r=\"1.2\"/><circle cx=\"180\" cy=\"92\" r=\"1\"/></g>\n<path d=\"M240 26 l2 5 l5 .6 l-3.8 3.4 l1.1 5 l-4.3 -2.6 l-4.3 2.6 l1.1 -5 l-3.8 -3.4 l5 -.6Z\" fill=\"#ffe38a\"/>\n<!-- 墙 -->\n<rect y=\"120\" width=\"430\" height=\"230\" fill=\"url(#mb_stone)\"/>\n<rect y=\"112\" width=\"430\" height=\"12\" fill=\"#3a2a5a\"/><path d=\"M0 124 H430\" stroke=\"#e9c46a\" stroke-width=\"2\"/>\n<rect x=\"40\" y=\"112\" width=\"12\" height=\"200\" fill=\"#3a2a5a\"/><rect x=\"378\" y=\"112\" width=\"12\" height=\"200\" fill=\"#3a2a5a\"/><path d=\"M8 124 h16 v34 l-8 -6 l-8 6Z\" fill=\"#9a2a1e\"/><path d=\"M8 132 h16\" stroke=\"#e9b23a\" stroke-width=\"2\"/><path d=\"M26 124 h16 v34 l-8 -6 l-8 6Z\" fill=\"#1f5a3a\"/><path d=\"M26 132 h16\" stroke=\"#c9ced3\" stroke-width=\"2\"/><path d=\"M394 124 h16 v34 l-8 -6 l-8 6Z\" fill=\"#1f3a7a\"/><path d=\"M394 132 h16\" stroke=\"#c9a46a\" stroke-width=\"2\"/><path d=\"M412 124 h16 v34 l-8 -6 l-8 6Z\" fill=\"#d9a92a\"/><path d=\"M412 132 h16\" stroke=\"#2a2a2a\" stroke-width=\"2\"/>\n<!-- 弯月圆窗 -->\n<circle cx=\"96\" cy=\"176\" r=\"30\" fill=\"#1a1240\" stroke=\"#e9c46a\" stroke-width=\"3\"/><path d=\"M96 146 V206 M66 176 H126\" stroke=\"#e9c46a\" stroke-width=\"1.6\"/>\n<path d=\"M108 158 a14 14 0 1 0 6 24 a10 10 0 1 1 -6 -24Z\" fill=\"#fff1b8\"/><circle cx=\"80\" cy=\"164\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"86\" cy=\"192\" r=\"1\" fill=\"#fff\"/>\n<!-- 壁炉：紫色魔法火 -->\n<rect x=\"150\" y=\"170\" width=\"130\" height=\"110\" fill=\"#3a2f63\"/><rect x=\"140\" y=\"162\" width=\"150\" height=\"14\" fill=\"#4a3d7a\"/><path d=\"M140 176 H290\" stroke=\"#e9c46a\" stroke-width=\"1.6\"/>\n<path d=\"M168 280 V210 Q215 180 262 210 V280Z\" fill=\"#0d0820\"/>\n<ellipse cx=\"215\" cy=\"265\" rx=\"42\" ry=\"32\" fill=\"url(#mb_fire)\"/><path d=\"M200 278 q4 -26 15 -38 q10 14 14 38Z\" fill=\"#e8a8ff\"/><path d=\"M206 278 q4 -14 9 -20 q6 8 8 20Z\" fill=\"#fff0ff\"/>\n<!-- 坩埚：粉紫漩涡 -->\n<ellipse cx=\"215\" cy=\"292\" rx=\"58\" ry=\"12\" fill=\"#07040f\"/>\n<path d=\"M162 291 Q160 343 215 347 Q270 343 268 291Z\" fill=\"#161126\"/><ellipse cx=\"215\" cy=\"291\" rx=\"54\" ry=\"11\" fill=\"url(#mb_brew)\"/>\n<path d=\"M190 291 q12 -8 26 -2 q14 6 24 -2\" stroke=\"#fff\" stroke-width=\"2\" fill=\"none\" opacity=\".7\"/>\n<path d=\"M156 297 h10 M264 297 h10\" stroke=\"#161126\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n<path d=\"M200 278 q-12 -24 6 -42 q14 -16 0 -34 q-8 -12 4 -24 M228 276 q14 -20 -2 -38 q-10 -14 6 -30\" stroke=\"#f0c8ff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\" opacity=\".5\"/>\n<g fill=\"#fff3c4\"><path d=\"M188 230 l1.4 3 l3 .4 l-2.3 2 l.7 3 l-2.8 -1.6 l-2.8 1.6 l.7 -3 l-2.3 -2 l3 -.4Z\"/><path d=\"M244 214 l1.2 2.6 l2.6 .3 l-2 1.8 l.6 2.6 l-2.4 -1.4 l-2.4 1.4 l.6 -2.6 l-2 -1.8 l2.6 -.3Z\"/><circle cx=\"230\" cy=\"190\" r=\"1.6\"/><circle cx=\"196\" cy=\"200\" r=\"1.4\"/><circle cx=\"212\" cy=\"170\" r=\"1.2\"/></g>\n<circle cx=\"196\" cy=\"288\" r=\"4\" fill=\"#fff\" opacity=\".85\"/><circle cx=\"228\" cy=\"284\" r=\"3\" fill=\"#fff\" opacity=\".85\"/>\n<!-- 魔杖 -->\n<path d=\"M236 296 L288 242\" stroke=\"#5a3a24\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"290\" cy=\"240\" r=\"4.5\" fill=\"#ffe38a\"/>\n<path d=\"M292 234 l2 -6 M298 238 l6 -2 M294 244 l5 3\" stroke=\"#ffe38a\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<!-- 发光药架 -->\n<rect x=\"140\" y=\"132\" width=\"150\" height=\"5\" fill=\"#5a4380\"/>\n<g style=\"filter:drop-shadow(0 0 5px #c9a0ff)\"><rect x=\"150\" y=\"112\" width=\"11\" height=\"20\" rx=\"3\" fill=\"#8ff5d0\"/><rect x=\"168\" y=\"116\" width=\"11\" height=\"16\" rx=\"3\" fill=\"#c9a0ff\"/><rect x=\"186\" y=\"110\" width=\"11\" height=\"22\" rx=\"3\" fill=\"#ff9fd0\"/><rect x=\"232\" y=\"114\" width=\"11\" height=\"18\" rx=\"3\" fill=\"#ffd36a\"/><rect x=\"250\" y=\"110\" width=\"11\" height=\"22\" rx=\"3\" fill=\"#9ec5ff\"/><rect x=\"268\" y=\"116\" width=\"11\" height=\"16\" rx=\"3\" fill=\"#e9b8ff\"/></g>\n<!-- 水晶球 -->\n<rect x=\"204\" y=\"128\" width=\"22\" height=\"6\" rx=\"2\" fill=\"#e9c46a\"/><circle cx=\"215\" cy=\"118\" r=\"12\" fill=\"url(#mb_ball)\" style=\"filter:drop-shadow(0 0 8px #c9a0ff)\"/>\n<!-- 架子上一顶会说话的旧尖帽子 -->\n<g transform=\"translate(150 132)\"><path d=\"M-14 0 Q-10 -6 -6 -14 Q-2 -30 6 -34 Q4 -24 8 -16 Q12 -6 16 0Z\" fill=\"#6b4a2e\"/><path d=\"M-18 0 Q0 -6 20 0 Q0 4 -18 0Z\" fill=\"#5a3a22\"/><path d=\"M-4 -12 q4 3 8 0 M-2 -18 q2 2 4 0\" stroke=\"#3a2414\" stroke-width=\"1.4\" fill=\"none\"/></g>\n<!-- 墙上一把飞天扫帚 -->\n<g transform=\"rotate(-24 380 110)\"><path d=\"M330 110 H400\" stroke=\"#7a4a24\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M398 104 L420 98 L424 110 L420 122 L398 116Z\" fill=\"#c99a52\"/><path d=\"M402 106 L420 102 M402 110 H422 M402 114 L420 118\" stroke=\"#8a6a2a\" stroke-width=\"1\"/></g>\n<!-- 带翅膀的金色小球 -->\n<g transform=\"translate(270 96)\"><path d=\"M-4 0 Q-18 -10 -22 -2 Q-16 2 -4 2Z M4 0 Q18 -10 22 -2 Q16 2 4 2Z\" fill=\"#fff8e0\" opacity=\".9\"/><circle cx=\"0\" cy=\"0\" r=\"5\" fill=\"#f2c14a\" style=\"filter:drop-shadow(0 0 6px #ffd36a)\"/><path d=\"M-3 -2 q3 2 6 0\" stroke=\"#b88a1a\" stroke-width=\"1\" fill=\"none\"/></g>\n<!-- 猫头鹰 + 9¾ + 黑板 -->\n<path d=\"M330 150 h40\" stroke=\"#5a4380\" stroke-width=\"4\"/>\n<g transform=\"translate(350 132)\"><ellipse cx=\"0\" cy=\"0\" rx=\"11\" ry=\"14\" fill=\"#fbfbff\"/><ellipse cx=\"0\" cy=\"4\" rx=\"6.5\" ry=\"8.5\" fill=\"#ffffff\"/><path d=\"M-6 2 l2 1 M3 6 l2 1 M-3 9 l2 1\" stroke=\"#9aa0b0\" stroke-width=\"1.2\"/><circle cx=\"-5\" cy=\"-5\" r=\"4.2\" fill=\"#fff\"/><circle cx=\"5\" cy=\"-5\" r=\"4.2\" fill=\"#fff\"/><circle cx=\"-5\" cy=\"-5\" r=\"2.2\" fill=\"#e8b23a\"/><circle cx=\"5\" cy=\"-5\" r=\"2.2\" fill=\"#e8b23a\"/><circle cx=\"-5\" cy=\"-5\" r=\"1\" fill=\"#1a1a1a\"/><circle cx=\"5\" cy=\"-5\" r=\"1\" fill=\"#1a1a1a\"/><path d=\"M-2 -1 L0 3 L2 -1Z\" fill=\"#e2a24a\"/><path d=\"M-9 -12 l2 -6 l3 4 M9 -12 l-2 -6 l-3 4\" fill=\"#fbfbff\"/></g>\n<rect x=\"318\" y=\"152\" width=\"56\" height=\"28\" rx=\"4\" fill=\"#2a1e55\" stroke=\"#e9c46a\" stroke-width=\"2\"/><text x=\"346\" y=\"173\" text-anchor=\"middle\" font-family=\"Georgia,serif\" font-weight=\"bold\" font-size=\"18\" fill=\"#ffe38a\">9¾</text>\n<rect x=\"314\" y=\"184\" width=\"64\" height=\"50\" rx=\"3\" fill=\"#141a2e\" stroke=\"#5a4380\" stroke-width=\"4\"/><text x=\"346\" y=\"199\" text-anchor=\"middle\" font-family=\"Caveat\" font-size=\"14\" fill=\"#f3e6ff\">Tonight</text><text x=\"346\" y=\"213\" text-anchor=\"middle\" font-size=\"9\" fill=\"#d9c8ff\">接骨木花金汤力</text><text x=\"346\" y=\"226\" text-anchor=\"middle\" font-size=\"9\" fill=\"#d9c8ff\">橘子酱黄油啤</text>\n<!-- 飘浮蜡烛（紫金光） -->\n<g><circle cx=\"60\" cy=\"226\" r=\"20\" fill=\"url(#mb_haloP)\"/><rect x=\"56\" y=\"224\" width=\"8\" height=\"20\" rx=\"2\" fill=\"#fbf3ff\"/><path d=\"M60 212 q-5 7 0 12 q5 -5 0 -12Z\" fill=\"#e8b8ff\"/></g>\n<g><circle cx=\"130\" cy=\"140\" r=\"20\" fill=\"url(#mb_haloG)\"/><rect x=\"126\" y=\"138\" width=\"8\" height=\"18\" rx=\"2\" fill=\"#fbf3dc\"/><path d=\"M130 126 q-5 7 0 12 q5 -5 0 -12Z\" fill=\"#ffcf5a\"/></g>\n<g><circle cx=\"300\" cy=\"140\" r=\"20\" fill=\"url(#mb_haloP)\"/><rect x=\"296\" y=\"138\" width=\"8\" height=\"18\" rx=\"2\" fill=\"#fbf3ff\"/><path d=\"M300 126 q-5 7 0 12 q5 -5 0 -12Z\" fill=\"#e8b8ff\"/></g>\n<g><circle cx=\"404\" cy=\"214\" r=\"20\" fill=\"url(#mb_haloG)\"/><rect x=\"400\" y=\"212\" width=\"8\" height=\"18\" rx=\"2\" fill=\"#fbf3dc\"/><path d=\"M404 200 q-5 7 0 12 q5 -5 0 -12Z\" fill=\"#ffcf5a\"/></g>\n<g><circle cx=\"300\" cy=\"210\" r=\"18\" fill=\"url(#mb_haloG)\"/><rect x=\"296\" y=\"208\" width=\"8\" height=\"18\" rx=\"2\" fill=\"#fbf3dc\"/><path d=\"M300 196 q-5 7 0 12 q5 -5 0 -12Z\" fill=\"#ffcf5a\"/></g>\n<!-- 星尘 -->\n<g fill=\"#fff3c4\" opacity=\".9\"><circle cx=\"150\" cy=\"240\" r=\"1.4\"/><circle cx=\"280\" cy=\"268\" r=\"1.2\"/><circle cx=\"120\" cy=\"268\" r=\"1.6\"/><circle cx=\"360\" cy=\"270\" r=\"1.2\"/><circle cx=\"40\" cy=\"300\" r=\"1\"/><circle cx=\"410\" cy=\"300\" r=\"1.3\"/></g>\n<!-- 吧台上一杯黄油啤酒 -->\n<g transform=\"translate(118 326)\"><rect x=\"0\" y=\"-18\" width=\"16\" height=\"18\" rx=\"3\" fill=\"#ffd36a\" opacity=\".92\" style=\"filter:drop-shadow(0 0 5px #ffd36a)\"/><rect x=\"0\" y=\"-18\" width=\"16\" height=\"5\" fill=\"#fff\" opacity=\".9\"/><path d=\"M16 -14 q6 0 6 5 q0 5 -6 5\" stroke=\"#ffd36a\" stroke-width=\"2.4\" fill=\"none\"/></g>\n<!-- 吧台 -->\n<rect x=\"0\" y=\"330\" width=\"430\" height=\"20\" fill=\"#2a1d4a\"/><rect x=\"0\" y=\"324\" width=\"430\" height=\"10\" fill=\"#3d2b66\"/><path d=\"M0 334 H430\" stroke=\"#e9c46a\" stroke-width=\"2\"/>\n<!-- 小巫师男孩（左）：乱发、圆眼镜、小闪电、红金围巾、魔杖 -->\n<g transform=\"translate(74 326) scale(.9)\">\n <path d=\"M-24 0 Q-26 -26 -18 -38 H18 Q26 -26 24 0Z\" fill=\"#14121c\"/><path d=\"M-18 -38 L0 -14 L18 -38\" fill=\"#2a2636\"/>\n <path d=\"M-14 -40 Q0 -32 14 -40 L14 -34 Q0 -26 -14 -34Z\" fill=\"#a8282a\"/><path d=\"M-10 -38 l3 -2 M-2 -36 l3 -2 M6 -38 l3 -2\" stroke=\"#e9b23a\" stroke-width=\"2.4\"/>\n <path d=\"M6 -34 l6 26 l-6 1 l-4 -24Z\" fill=\"#a8282a\"/><path d=\"M8 -26 l4 0 M9 -18 l4 0\" stroke=\"#e9b23a\" stroke-width=\"2.4\"/>\n <ellipse cx=\"0\" cy=\"-58\" rx=\"17\" ry=\"18\" fill=\"#f2cba6\"/>\n <path d=\"M-18 -60 Q-20 -80 -4 -80 Q2 -86 8 -80 Q20 -82 18 -62 L14 -68 L10 -62 L6 -70 L0 -62 L-6 -70 L-10 -62 L-14 -68Z\" fill=\"#1a1612\"/>\n <path d=\"M-6 -73 l3 4 l-3 1 l3 4\" stroke=\"#e05a3a\" stroke-width=\"1.4\" fill=\"none\"/>\n <circle cx=\"-7\" cy=\"-57\" r=\"5.4\" fill=\"none\" stroke=\"#1a1a1a\" stroke-width=\"1.8\"/><circle cx=\"7\" cy=\"-57\" r=\"5.4\" fill=\"none\" stroke=\"#1a1a1a\" stroke-width=\"1.8\"/><path d=\"M-1.6 -57 h3.2\" stroke=\"#1a1a1a\" stroke-width=\"1.6\"/>\n <circle cx=\"-7\" cy=\"-57\" r=\"1.8\" fill=\"#2a5a3a\"/><circle cx=\"7\" cy=\"-57\" r=\"1.8\" fill=\"#2a5a3a\"/><circle cx=\"-6.4\" cy=\"-57.8\" r=\".6\" fill=\"#fff\"/><circle cx=\"7.6\" cy=\"-57.8\" r=\".6\" fill=\"#fff\"/>\n <path d=\"M-4 -47 q4 3 8 0\" stroke=\"#a0604a\" stroke-width=\"1.4\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"-11\" cy=\"-50\" rx=\"2.6\" ry=\"1.5\" fill=\"#f2a0a0\" opacity=\".5\"/><ellipse cx=\"11\" cy=\"-50\" rx=\"2.6\" ry=\"1.5\" fill=\"#f2a0a0\" opacity=\".5\"/>\n <path d=\"M22 -18 q8 -10 6 -22\" stroke=\"#14121c\" stroke-width=\"8\" stroke-linecap=\"round\" fill=\"none\"/><circle cx=\"28\" cy=\"-40\" r=\"4\" fill=\"#f2cba6\"/>\n <path d=\"M28 -42 L44 -62\" stroke=\"#5a3a24\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><circle cx=\"45\" cy=\"-63\" r=\"2.6\" fill=\"#ffe38a\" style=\"filter:drop-shadow(0 0 5px #ffe38a)\"/>\n <path d=\"M48 -68 l2 -4 M50 -62 l5 -1 M43 -69 l-1 -4\" stroke=\"#ffe38a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n</g>\n<!-- 小女巫（右）：蓬蓬卷发、红金领带、抱着书、面前一杯发光魔药 -->\n<g transform=\"translate(356 326) scale(.9)\">\n <path d=\"M-24 0 Q-26 -26 -18 -38 H18 Q26 -26 24 0Z\" fill=\"#14121c\"/><path d=\"M-10 -38 L0 -22 L10 -38Z\" fill=\"#f4f1ea\"/><path d=\"M-2 -36 h4 l1.6 14 l-3.6 4 l-3.6 -4Z\" fill=\"#a8282a\"/><path d=\"M-1.6 -31 h3.2 M-1.2 -26 h2.4\" stroke=\"#e9b23a\" stroke-width=\"1.4\"/>\n <rect x=\"-28\" y=\"-30\" width=\"24\" height=\"18\" rx=\"2\" fill=\"#7a2a1e\" transform=\"rotate(-10 -16 -21)\"/><rect x=\"-26\" y=\"-28\" width=\"20\" height=\"14\" fill=\"#f3e6c6\" transform=\"rotate(-10 -16 -21)\"/><path d=\"M-22 -24 h12 M-22 -20 h10\" stroke=\"#b8a888\" stroke-width=\"1\" transform=\"rotate(-10 -16 -21)\"/>\n <path d=\"M-26 -64 Q-30 -88 -6 -88 Q0 -94 8 -88 Q30 -88 26 -62 Q32 -48 24 -36 Q22 -50 16 -52 L-16 -52 Q-22 -50 -24 -36 Q-32 -48 -26 -64Z\" fill=\"#8a5a32\"/>\n <circle cx=\"-22\" cy=\"-70\" r=\"6\" fill=\"#9a6838\"/><circle cx=\"22\" cy=\"-70\" r=\"6\" fill=\"#9a6838\"/><circle cx=\"-12\" cy=\"-84\" r=\"6\" fill=\"#9a6838\"/><circle cx=\"12\" cy=\"-84\" r=\"6\" fill=\"#9a6838\"/><circle cx=\"-26\" cy=\"-52\" r=\"5\" fill=\"#9a6838\"/><circle cx=\"26\" cy=\"-52\" r=\"5\" fill=\"#9a6838\"/>\n <ellipse cx=\"0\" cy=\"-60\" rx=\"16\" ry=\"17\" fill=\"#f6d2b2\"/>\n <path d=\"M-15 -66 Q-8 -78 0 -72 Q8 -78 15 -66 Q8 -72 0 -68 Q-8 -72 -15 -66Z\" fill=\"#8a5a32\"/>\n <ellipse cx=\"-6\" cy=\"-60\" rx=\"2.8\" ry=\"3.2\" fill=\"#3a2414\"/><ellipse cx=\"6\" cy=\"-60\" rx=\"2.8\" ry=\"3.2\" fill=\"#3a2414\"/><circle cx=\"-5\" cy=\"-61.2\" r=\"1\" fill=\"#fff\"/><circle cx=\"7\" cy=\"-61.2\" r=\"1\" fill=\"#fff\"/>\n <path d=\"M-3.6 -50 q3.6 3 7.2 0\" stroke=\"#b0604a\" stroke-width=\"1.4\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"-10\" cy=\"-53\" rx=\"2.6\" ry=\"1.5\" fill=\"#f2a0a0\" opacity=\".55\"/><ellipse cx=\"10\" cy=\"-53\" rx=\"2.6\" ry=\"1.5\" fill=\"#f2a0a0\" opacity=\".55\"/>\n <path d=\"M-46 -2 L-32 -2 L-36 -24 L-42 -24Z\" fill=\"#c9a0ff\" opacity=\".9\" style=\"filter:drop-shadow(0 0 6px #c9a0ff)\"/><path d=\"M-44 -24 h10\" stroke=\"#fff\" stroke-width=\"2\"/>\n</g>\n</svg>";
+var MB_LIMIT = 3;
+var MB_INGS = [
+  { k: "moon", n: "月长石粉", s: "今晚好睡", w: "月光", c: "#dfe6ff", e: "今晚睡得沉沉的" },
+  { k: "phoenix", n: "凤凰羽毛", s: "重新燃起来", w: "火凤", c: "#ff9a6a", e: "明天精神满满" },
+  { k: "marm", n: "帕丁顿橘子酱", s: "熊亲自熬的", w: "橘子酱", c: "#ffb347", e: "嘴里甜甜的" },
+  { k: "mandrake", n: "曼德拉草根", s: "别听它叫", w: "曼德拉", c: "#8fd17a", e: "烦恼被吼跑了" },
+  { k: "galaxy", n: "一勺星河", s: "会发光", w: "星河", c: "#c9a0ff", e: "梦里是满天星星" },
+  { k: "bolt", n: "勇气闪电", s: "明天能赢", w: "闪电", c: "#ffe34a", e: "明天谁都赢不过你" },
+  { k: "tonic", n: "汤力气泡", s: "气泡噼啪响", w: "气泡", c: "#d6f4ff", e: "气泡在嘴里放小烟花" },
+  { k: "lime", n: "青柠月牙", s: "酸一下醒醒", w: "青柠", c: "#c8f07a", e: "酸得眼睛眯起来" },
+  { k: "rosemary", n: "迷迭香枝", s: "森林的味道", w: "迷迭香", c: "#9fd8a8", e: "像在森林边散了个步" },
+  { k: "elderdew", n: "接骨木花露", s: "我们的最爱 · 再来一份", w: "花露", c: "#fff3c4", e: "花香跟着呼吸飘出来", fav: 1 },
+  { k: "butterbeer", n: "黄油啤酒泡沫", s: "暖乎乎的", w: "黄油泡沫", c: "#f2cf8a", e: "胃里暖乎乎的" },
+  { k: "unicorn", n: "独角兽眼泪", s: "亮晶晶的", w: "星泪", c: "#f6e6ff", e: "整个人亮晶晶的" }
+];
+var MB_GINS = [
+  { k: "elder", n: "接骨木花金", s: "我们俩的最爱 ♥", w: "接骨木花", c: "#fff1b8", e: "是我们俩都喜欢的味道", fav: 1 },
+  { k: "ldry", n: "伦敦干金", s: "杜松子 · 经典", w: "杜松", c: "#e6f2ff", e: "像走在伦敦雨后的小巷" },
+  { k: "cucumber", n: "黄瓜玫瑰金", s: "清清爽爽", w: "黄瓜玫瑰", c: "#bfeccb", e: "整个人凉丝丝的" },
+  { k: "berry", n: "粉红莓果金", s: "酸酸甜甜", w: "莓果", c: "#ffb0c8", e: "脸颊红扑扑的" },
+  { k: "yuzu", n: "柑橘柚子金", s: "阳光的味道", w: "柚子", c: "#ffd27a", e: "心情一下子亮起来" },
+  { k: "butterfly", n: "蝶豆花变色金", s: "蓝色变粉色", w: "变色", c: "#7a8cff", e: "杯子里从蓝色慢慢变成粉色" }
+];
+var MB_GIN_SUFFIX = ["金汤力", "马天尼", "气泡金", "魔法特调", "金菲士"];
+var MB_PLACES = ["贝克街", "九曲湖", "塔桥下", "帕丁顿站", "伦敦眼上", "221B 壁炉边", "9¾ 站台"];
+var MB_SUFFIX = ["魔药", "特调", "晚安酒", "气泡饮", "秘药"];
+var MB_CARDS = [
+  { k: "water", sp: "Aguamenti!", cn: "清水如泉", t: "魔杖尖冒出一股清泉：喝下两大杯水才能解除，拍给熊猫鱼验货", e: "💧" },
+  { k: "bed", sp: "Nox!", cn: "熄灯咒", t: "全屋的灯被咒灭了：12 点前钻进被窝，猫头鹰在窗外巡逻", e: "🌙" },
+  { k: "breakfast", sp: "Accio 早餐!", cn: "召唤咒", t: "明天的早饭由熊猫鱼挥魔杖召唤，召来什么吃什么", e: "🍳" },
+  { k: "sorry", sp: "Riddikulus!", cn: "滑稽滑稽", t: "罚抄羊皮纸一行：「我错了，但我是全伦敦最可爱的巫师」", e: "📜" },
+  { k: "squat", sp: "Wingardium Leviosa!", cn: "漂浮咒", t: "你飘起来了！原地蹦 10 下才能落回地面", e: "🪶" },
+  { k: "phone", sp: "Petrificus Totalus!", cn: "石化咒", t: "你的魔镜（手机）被石化了，今晚放远一点让它休息", e: "🗿" },
+  { k: "sing", sp: "Sonorus!", cn: "声音洪亮咒", t: "嗓门被放大了：给熊猫鱼唱一句歌，录在安心里", e: "🎵" },
+  { k: "patronus", sp: "Expecto Patronum!", cn: "呼神护卫", t: "召唤守护神：说出今天一件开心的事给熊猫鱼听", e: "🦌" },
+  { k: "silence", sp: "Silencio!", cn: "无声无息", t: "接下来 10 分钟，不许再说「再来一杯」", e: "🤐" },
+  { k: "closed", sp: "Colloportus!", cn: "封门咒", t: "酒馆大门被封住了：明晚锁门一晚，坩埚要放假", e: "🔒" }
+];
+var MB_STIR = ["Lumos!", "Wingardium Leviosa!", "Accio 魔药!", "Engorgio!", "Alohomora!"];
+var MB_TEMPT = ["第四杯免费哦～", "就一小口，猫头鹰不会说的", "隐藏菜单今晚解锁 ✨", "坩埚说它还想再熬一锅", "今晚特供：限定星光魔药"];
+var mbNight = function (t) { var d = new Date((t || Date.now()) - 6 * 3600000); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+var mbHash = function (s) { var x = 7; for (var i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) >>> 0; return x; };
+var mbBrew = function (ginK, keys) {
+  var gin = MB_GINS[0]; for (var g = 0; g < MB_GINS.length; g++) if (MB_GINS[g].k === ginK) gin = MB_GINS[g];
+  var ings = keys.map(function (k) { for (var i = 0; i < MB_INGS.length; i++) if (MB_INGS[i].k === k) return MB_INGS[i]; return MB_INGS[0]; });
+  var hsh = mbHash(ginK + ":" + keys.slice().sort().join("+"));
+  if (gin.k === "elder" && keys.indexOf("elderdew") >= 0 && keys.indexOf("tonic") >= 0)
+    return { name: "「双倍接骨木花金汤力」", parts: "接骨木花金 + 接骨木花露 + 汤力气泡 · 隐藏配方", eff: "喝下去：整个人被接骨木花包住了，气泡一颗一颗往上冒，是我们俩最爱的那一杯。", colors: ["#fff1b8", "#fff3c4", "#d6f4ff"], secret: 1 };
+  if (gin.k === "elder" && keys.indexOf("marm") >= 0 && keys.indexOf("galaxy") >= 0)
+    return { name: "「我们俩的接骨木花之夜」", parts: "接骨木花金 + 帕丁顿橘子酱 + 一勺星河 · 隐藏配方", eff: "喝下去：满天星星，嘴里甜甜的，旁边坐着最喜欢的人。", colors: ["#fff1b8", "#ffd27a", "#c9a0ff"], secret: 1 };
+  var colors = gin.k === "butterfly" ? ["#7a8cff", "#c9a0ff", "#ff9fd0"] : [gin.c, ings[0].c, ings[1].c];
+  return { name: "「" + MB_PLACES[hsh % MB_PLACES.length] + "的" + gin.w + ings[0].w + MB_GIN_SUFFIX[(hsh >> 4) % MB_GIN_SUFFIX.length] + "」",
+    parts: gin.n + " + " + ings.map(function (x) { return x.n; }).join(" + "), eff: "喝下去：" + gin.e + "，" + ings.map(function (x) { return x.e; }).join("，") + "。", colors: colors };
+};
+var mbBottle = function (h, colors, size, water) {
+  var c = water ? ["#e8f4ff", "#d6ecff", "#c4e2ff"] : colors;
+  return h("svg", { viewBox: "0 0 56 70", width: size, height: size * 1.25, style: { display: "block", filter: "drop-shadow(0 0 8px " + (water ? "rgba(160,200,255,.6)" : c[2]) + ")" } },
+    h("defs", null, h("linearGradient", { id: "mbbt" + (water ? "w" : c.join("").replace(/#/g, "")), x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: c[0] }), h("stop", { offset: "55%", stopColor: c[1] }), h("stop", { offset: "100%", stopColor: c[2] }))),
+    h("rect", { x: 20, y: 2, width: 16, height: 8, rx: 2, fill: "#b08a3a" }),
+    h("path", { d: "M22 10 h12 v10 q16 8 16 26 q0 22 -22 22 q-22 0 -22 -22 q0 -18 16 -26Z", fill: "url(#mbbt" + (water ? "w" : c.join("").replace(/#/g, "")) + ")", stroke: "#4a2a7a", strokeWidth: 2 }),
+    h("rect", { x: 12, y: 38, width: 32, height: 12, fill: "#f6ecff", stroke: "#b08a3a" }),
+    h("text", { x: 28, y: 47, textAnchor: "middle", fontSize: 7, fill: "#4a1e7a", fontFamily: "Georgia,serif" }, water ? "H₂O" : "No.9¾"),
+    h("circle", { cx: 20, cy: 30, r: 2, fill: "#fff" }), h("circle", { cx: 34, cy: 26, r: 1.6, fill: "#fff" }));
+};
+function MagicBar() {
+  var h = React.createElement;
+  var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+  var who = function (a) { return a === "nana" ? "Nana" : "熊猫鱼"; };
+  var night = mbNight();
+  var _rows = useState(function () { try { return JSON.parse(localStorage.getItem("nana-mb") || "{}") || {}; } catch (_) { return {}; } }); var rows = _rows[0], setRows = _rows[1];
+  var _sel = useState([]); var sel = _sel[0], setSel = _sel[1];
+  var _gin = useState(""); var gin = _gin[0], setGin = _gin[1];
+  var _res = useState(null); var res = _res[0], setRes = _res[1];
+  var _card = useState(null); var card = _card[0], setCard = _card[1];
+  var _hic = useState(false); var hic = _hic[0], setHic = _hic[1];
+  var _stir = useState(false); var stir = _stir[0], setStir = _stir[1];
+  var _msg = useState(""); var msg = _msg[0], setMsg = _msg[1];
+  var _tp = useState(0); var tp = _tp[0], setTp = _tp[1];
+  var save = function (m) { setRows(m); try { localStorage.setItem("nana-mb", JSON.stringify(m)); } catch (_) {} };
+  var put = function (id, v) { var m = {}; for (var k in rows) m[k] = rows[k]; m[id] = v; save(m); nanaPackPut({ id: id, who: JSON.stringify(v) }, function () {}); return m; };
+  useEffect(function () {
+    var alive = true;
+    var pull = function () { try { NANA_PACK_AT = 0; } catch (_) {} nanaPackCached(function (e, list) {
+      if (!alive || e) return;
+      var m = {}; for (var k in rows) m[k] = rows[k];
+      (list || []).forEach(function (r) { if (r && r.id && /^mb[npg]-/.test(r.id)) { try { m[r.id] = JSON.parse(r.who); } catch (_) {} } });
+      save(m);
+    }); };
+    pull(); var id = setInterval(pull, 45000);
+    var t2 = setInterval(function () { setTp(function (x) { return x + 1; }); }, 3200);
+    return function () { alive = false; clearInterval(id); clearInterval(t2); };
+  }, []);
+  var cnt = (rows["mbn-" + me + "-" + night] || {}).n || 0;
+  // 惩罚卡「酒馆明晚暂停营业」：昨晚抽到 → 今晚关门
+  var yesterday = mbNight(Date.now() - 86400000), closed = false, cards = [], gifts = [];
+  for (var k in rows) {
+    var v = rows[k]; if (!v) continue;
+    if (k.indexOf("mbp-") === 0) { cards.push({ id: k, v: v }); if (v.a === me && v.k === "closed" && v.night === yesterday && v.st !== "pardon") closed = true; }
+    if (k.indexOf("mbg-") === 0 && v.to === me) gifts.push({ id: k, v: v });
+  }
+  cards.sort(function (x, y) { return y.v.at - x.v.at; }); gifts.sort(function (x, y) { return y.v.at - x.v.at; });
+  var tempting = cnt >= MB_LIMIT;
+  var toggle = function (k) { setRes(null); setSel(function (o) { return o.indexOf(k) >= 0 ? o.filter(function (x) { return x !== k; }) : (o.length >= 2 ? o.slice(1).concat([k]) : o.concat([k])); }); };
+  var brew = function () {
+    if (!gin || sel.length < 2 || stir || closed) return;
+    setStir(true); setRes(null);
+    setTimeout(function () {
+      setStir(false);
+      var n = cnt + 1, at = Date.now();
+      put("mbn-" + me + "-" + night, { mb: 1, a: me, night: night, n: n, at: at });
+      if (n > MB_LIMIT) {
+        // 陷阱：打嗝咒，魔药变白开水，抽一张惩罚卡
+        var pool = MB_CARDS.filter(function (c) { return !(c.k === "closed" && n < MB_LIMIT + 2); });
+        var c0 = pool[Math.floor(Math.random() * pool.length)], mate = me === "nana" ? "熊猫鱼" : "Nana";
+        var c = { k: c0.k, sp: c0.sp, cn: c0.cn, e: c0.e, t: c0.t.replace(/熊猫鱼/g, mate) };
+        put("mbp-" + at + "-" + Math.random().toString(36).slice(2, 5), { mbp: 1, a: me, night: night, k: c.k, sp: c.sp, cn: c.cn, t: c.t, e: c.e, n: n, at: at, st: "open" });
+        setHic(true); setTimeout(function () { setHic(false); }, 1800);
+        setRes({ water: true, name: "「清醒魔药 · 其实就是白开水」", parts: "你喝第 " + n + " 杯的时候，猫头鹰把它换掉了", eff: "嗝！今晚到此为止。" });
+        setCard(c);
+      } else {
+        setRes(mbBrew(gin, sel));
+      }
+      setSel([]); setGin("");
+    }, 1400);
+  };
+  var gift = function () {
+    if (!res || res.water) return;
+    var to = me === "nana" ? "panda" : "nana", at = Date.now();
+    put("mbg-" + at, { mbg: 1, from: me, to: to, name: res.name, eff: res.eff, colors: res.colors, at: at });
+    setMsg("🦉 猫头鹰出发了，" + who(to) + "打开酒馆就能收到");
+    setTimeout(function () { setMsg(""); }, 4000);
+  };
+  var mark = function (c, st) { var v2 = {}; for (var k2 in c.v) v2[k2] = c.v[k2]; v2.st = st; v2.by = me; put(c.id, v2); };
+  var gold = "#e9c46a";
+  var scene = h("div", { style: { position: "relative", overflow: "hidden", animation: hic ? "mbHic .18s ease-in-out 8" : "none" } },
+    h("div", { dangerouslySetInnerHTML: { __html: MB_SCENE } }),
+    // 坩埚上的星尘一直飘
+    [0, 1, 2, 3, 4].map(function (i) { return h("div", { key: "mbsp" + i, style: { position: "absolute", left: (44 + i * 3.5) + "%", top: "62%", width: 4, height: 4, borderRadius: "50%", background: ["#fff3c4", "#e8b8ff", "#8ff5d0", "#ff9fd0", "#fff"][i], boxShadow: "0 0 6px currentColor", color: "#e8b8ff", animation: "mbRise " + (2.2 + i * 0.4) + "s ease-out " + (i * 0.5) + "s infinite" } }); }),
+    stir ? h("div", { style: { position: "absolute", left: "50%", top: "70%", transform: "translate(-50%,-50%)", fontSize: 40, animation: "mbStir .45s linear 3" } }, "🪄") : null,
+    stir ? h("div", { style: { position: "absolute", left: 0, right: 0, top: "38%", textAlign: "center", fontFamily: "Georgia,serif", fontStyle: "italic", fontWeight: 900, fontSize: "1.6rem", color: "#ffe38a", textShadow: "0 0 14px #c9a0ff, 0 0 4px #fff" } }, MB_STIR[tp % MB_STIR.length]) : null,
+    tempting && !closed ? h("div", { style: { position: "absolute", right: "6%", top: "16%", maxWidth: 150, background: "#fff7e0", color: "#5a2a7a", borderRadius: 12, padding: "6px 10px", fontSize: "0.72rem", fontWeight: 800, boxShadow: "0 0 14px rgba(255,220,140,.8)", animation: "mbBob 1.6s ease-in-out infinite" } }, "🦉 " + MB_TEMPT[tp % MB_TEMPT.length]) : null,
+    hic ? h("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 56, fontWeight: 900, color: "#fff", textShadow: "0 0 18px #c9a0ff", fontFamily: "'ZCOOL KuaiLe','PingFang SC'" } }, h("div", { style: { textAlign: "center" } }, "嗝！", h("div", { style: { fontFamily: "Georgia,serif", fontStyle: "italic", fontSize: "1.1rem", color: "#ffe38a" } }, "Hiccupus Maxima!"))) : null,
+    closed ? h("div", { style: { position: "absolute", inset: 0, background: "rgba(10,6,24,.72)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#f3e6ff", textAlign: "center" } },
+      h("div", { style: { fontSize: 46 } }, "🔒"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", marginTop: 6, fontFamily: "Georgia,serif" } }, "今晚暂停营业"), h("div", { style: { fontSize: "0.76rem", color: "#c9b8e8", marginTop: 4 } }, "老板娘说：昨晚喝太多，今晚坩埚放假。猫头鹰在门口值班。")) : null);
+  var cardOver = card ? h("div", { onClick: function () { setCard(null); }, style: { position: "fixed", inset: 0, zIndex: 10001, background: "rgba(8,4,20,.78)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } },
+    h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 320, background: "linear-gradient(160deg,#fff6e0,#f3e2ff)", borderRadius: 18, padding: "20px 18px", textAlign: "center", border: "3px solid " + gold, boxShadow: "0 0 40px rgba(201,160,255,.6)", animation: "mbFlip .6s cubic-bezier(.2,.9,.3,1.2) both" } },
+      h("div", { style: { fontSize: "0.7rem", letterSpacing: 4, color: "#9a6a2a", fontWeight: 800, fontFamily: "Georgia,serif" } }, "MINISTRY NOTICE · 魔法部罚单"),
+      h("div", { style: { fontSize: 50, margin: "6px 0 2px" } }, card.e),
+      card.sp ? h("div", { style: { fontFamily: "Georgia,serif", fontStyle: "italic", fontWeight: 900, fontSize: "1.35rem", color: "#9a5a1a", textShadow: "0 0 10px rgba(233,196,106,.6)" } }, card.sp) : null,
+      card.cn ? h("div", { style: { fontSize: "0.72rem", color: "#9a7a4a", fontWeight: 800, letterSpacing: 2, marginBottom: 8 } }, "—— " + card.cn + " ——") : null,
+      h("div", { style: { fontSize: "1rem", fontWeight: 900, color: "#4a1e7a", lineHeight: 1.5 } }, card.t),
+      h("div", { style: { fontSize: "0.74rem", color: "#7a5a9a", marginTop: 10, lineHeight: 1.6 } }, "巫师守则第 3 条：一晚最多三杯魔药。罚单已经由猫头鹰送到" + (me === "nana" ? "熊猫鱼" : "Nana") + "手上，她会来盯着你的。"),
+      h("button", { onClick: function () { setCard(null); }, style: { marginTop: 14, border: "none", borderRadius: 12, padding: "10px 22px", background: "linear-gradient(135deg,#7a4ae0,#c26ae8)", color: "#fff", fontWeight: 900, fontFamily: "inherit", cursor: "pointer" } }, "接受魔法制裁 🪄"))) : null;
+  var jar = function (g) {
+    var on = sel.indexOf(g.k) >= 0;
+    return h("button", { key: g.k, onClick: function () { toggle(g.k); }, disabled: closed, style: { position: "relative", border: "1px solid " + (on ? gold : "rgba(217,180,95,.45)"), borderRadius: "12px 12px 16px 16px", padding: "9px 4px 8px", background: on ? "linear-gradient(180deg,rgba(201,160,255,.32),rgba(127,240,200,.12))" : "rgba(255,255,255,.05)", boxShadow: on ? "0 0 0 1px " + gold + ", 0 0 16px rgba(201,160,255,.7)" : "none", color: "#efe2ff", fontFamily: "inherit", cursor: "pointer", textAlign: "center" } },
+      on ? h("span", { style: { position: "absolute", right: 7, top: 4, color: "#ffe38a" } }, "✦") : null,
+      g.fav ? h("span", { style: { position: "absolute", left: 7, top: 4, color: "#ff9fd0", fontSize: 12 } }, "♥") : null,
+      h("svg", { viewBox: "0 0 30 34", width: 30, height: 34, style: { display: "block", margin: "0 auto 4px", filter: "drop-shadow(0 0 6px " + g.c + ")" } }, h("rect", { x: 9, y: 2, width: 12, height: 6, fill: gold }), h("rect", { x: 5, y: 8, width: 20, height: 24, rx: 6, fill: g.c, stroke: gold })),
+      h("div", { style: { fontSize: "0.74rem", fontWeight: 800 } }, g.n), h("div", { style: { fontSize: "0.6rem", color: "#b9a6dc", marginTop: 2 } }, g.s));
+  };
+  var ginBtn = function (g) {
+    var on = gin === g.k;
+    return h("button", { key: g.k, onClick: function () { setRes(null); setGin(on ? "" : g.k); }, disabled: closed, style: { position: "relative", border: "1px solid " + (on ? gold : "rgba(217,180,95,.45)"), borderRadius: 14, padding: "8px 4px 7px", background: on ? "linear-gradient(180deg,rgba(201,160,255,.32),rgba(127,240,200,.12))" : "rgba(255,255,255,.05)", boxShadow: on ? "0 0 0 1px " + gold + ", 0 0 16px rgba(201,160,255,.7)" : "none", color: "#efe2ff", fontFamily: "inherit", cursor: "pointer", textAlign: "center" } },
+      on ? h("span", { style: { position: "absolute", right: 7, top: 4, color: "#ffe38a" } }, "✦") : null,
+      g.fav ? h("span", { style: { position: "absolute", left: 7, top: 4, color: "#ff9fd0", fontSize: 12 } }, "♥") : null,
+      h("svg", { viewBox: "0 0 24 44", width: 20, height: 38, style: { display: "block", margin: "0 auto 4px", filter: "drop-shadow(0 0 6px " + g.c + ")" } },
+        g.k === "butterfly" ? h("defs", null, h("linearGradient", { id: "mbginbf", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#7a8cff" }), h("stop", { offset: "100%", stopColor: "#ff9fd0" }))) : null,
+        h("rect", { x: 8, y: 1, width: 8, height: 6, rx: 1, fill: gold }), h("path", { d: "M8 7 h8 v6 q6 3 6 10 v18 q0 2 -2 2 h-16 q-2 0 -2 -2 v-18 q0 -7 6 -10Z", fill: g.k === "butterfly" ? "url(#mbginbf)" : g.c, stroke: gold, strokeWidth: 1 }),
+        h("rect", { x: 4, y: 24, width: 16, height: 9, rx: 1, fill: "#fbf3dc", opacity: 0.9 }), h("text", { x: 12, y: 31, textAnchor: "middle", fontSize: 5, fontWeight: "bold", fill: "#4a2a7a", fontFamily: "Georgia,serif" }, "GIN")),
+      h("div", { style: { fontSize: "0.7rem", fontWeight: 800 } }, g.n), h("div", { style: { fontSize: "0.58rem", color: "#b9a6dc", marginTop: 2 } }, g.s));
+  };
+  var cups = h("div", { style: { display: "flex", alignItems: "center", gap: 6, justifyContent: "center", margin: "2px 0 10px" } },
+    [0, 1, 2].map(function (i) { return h("div", { key: "cup" + i, style: { fontSize: 20, opacity: i < Math.min(cnt, 3) ? 1 : 0.28, filter: i < Math.min(cnt, 3) ? "drop-shadow(0 0 6px #c9a0ff)" : "grayscale(1)" } }, "🍸"); }),
+    h("div", { style: { fontSize: "0.7rem", color: tempting ? "#ffb3d0" : "#b9a6dc", fontWeight: 800, marginLeft: 6 } }, tempting ? "今晚的 3 杯已经喝完" + (cnt > 3 ? "（另收到魔法部罚单 " + (cnt - 3) + " 张）" : "") : "今晚还能喝 " + (3 - cnt) + " 杯"));
+  var btnTxt = closed ? "🔒 今晚暂停营业" : stir ? "搅拌中……" : !gin ? "先选一款金酒" : sel.length < 2 ? "再挑两样材料（" + sel.length + "/2）" : tempting ? "🍸 再来一杯？今晚特供，第四杯免费！" : "🪄 用魔杖搅三下";
+  var myOpen = cards.filter(function (c) { return c.v.a === me; }).slice(0, 4), theirs = cards.filter(function (c) { return c.v.a !== me; }).slice(0, 6);
+  var stTxt = function (st) { return st === "done" ? "👀 已盯梢" : st === "pardon" ? "🕊️ 已赦免" : "⏳ 等待盯梢"; };
+  return h("div", { style: { margin: "-12px -14px -8px", background: "#0e0a1f", color: "#f1e6ff", fontFamily: "'PingFang SC',serif" } },
+    h("style", null, "@keyframes mbRise{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-120px) translateX(10px);opacity:0}}@keyframes mbStir{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}@keyframes mbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes mbHic{0%,100%{transform:translate(0,0)}25%{transform:translate(-6px,3px)}75%{transform:translate(6px,-3px)}}@keyframes mbFlip{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}"),
+    scene,
+    gifts.length ? h("div", { style: { margin: "12px 16px 0", padding: "10px 12px", borderRadius: 14, background: "rgba(255,227,138,.1)", border: "1px solid rgba(233,196,106,.5)", display: "flex", gap: 10, alignItems: "center" } },
+      mbBottle(h, gifts[0].v.colors || ["#c9a0ff", "#ff9fd0", "#7a4ae0"], 34), h("div", { style: { fontSize: "0.76rem", lineHeight: 1.5 } }, h("b", { style: { color: "#ffe38a" } }, "🦉 " + who(gifts[0].v.from) + " 派猫头鹰送来一杯"), h("br"), gifts[0].v.name + " " + (gifts[0].v.eff || ""))) : null,
+    h("div", { style: { padding: "14px 16px 18px", background: "radial-gradient(ellipse at 50% 0%,#2a1e55,#170f33 70%)" } },
+      cups,
+      h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.92rem", color: "#f3d8ff" } }, "第一步 · 选一款魔法金酒"),
+      h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc", margin: "3px 0 8px" } }, "Nana 最爱的 Gin 当基底"),
+      h("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 9 } }, MB_GINS.map(ginBtn)),
+      h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.92rem", color: "#f3d8ff", marginTop: 14 } }, "第二步 · 再挑两样魔药材料"),
+      h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc", margin: "3px 0 8px" } }, "倒进坩埚，用魔杖搅三下 · 每晚限量 3 杯"),
+      h("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 9 } }, MB_INGS.map(jar)),
+      h("button", { onClick: brew, disabled: closed || stir || !(gin && sel.length >= 2), style: { marginTop: 14, width: "100%", border: "none", borderRadius: 14, padding: "12px", fontWeight: 900, fontSize: "0.92rem", fontFamily: "Georgia,'PingFang SC',serif", color: "#fff", cursor: (gin && sel.length >= 2) && !closed ? "pointer" : "default",
+        background: closed ? "#3a3350" : tempting ? "linear-gradient(135deg,#e9a23b,#ff6fa8,#c26ae8)" : "linear-gradient(135deg,#7a4ae0,#c26ae8 55%,#ff8fc8)", opacity: !(gin && sel.length >= 2) && !closed ? 0.55 : 1,
+        boxShadow: tempting && (gin && sel.length >= 2) ? "0 0 26px rgba(255,140,190,.85)" : "0 0 18px rgba(194,106,232,.5)", animation: tempting && (gin && sel.length >= 2) ? "mbBob 1.2s ease-in-out infinite" : "none" } }, btnTxt),
+      res ? h("div", { style: { marginTop: 16, display: "flex", gap: 12, alignItems: "center", background: res.water ? "linear-gradient(135deg,#eef6ff,#dfeeff)" : "linear-gradient(135deg,#f6ecff,#ead8ff)", border: "2px solid #b08a3a", borderRadius: 6, padding: 12, color: "#3a2a56" } },
+        mbBottle(h, res.colors || [], 50, res.water),
+        h("div", null, res.secret ? h("div", { style: { display: "inline-block", fontSize: "0.62rem", fontWeight: 900, color: "#fff", background: "linear-gradient(135deg,#ff8fc8,#c26ae8)", borderRadius: 99, padding: "2px 8px", marginBottom: 4 } }, "✨ 解锁隐藏配方") : null, h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.98rem", color: res.water ? "#2a4a7a" : "#4a1e7a" } }, res.name), h("div", { style: { fontSize: "0.72rem", marginTop: 4, lineHeight: 1.6 } }, res.parts, h("br"), res.eff))) : null,
+      res && !res.water ? h("button", { onClick: gift, style: { marginTop: 12, width: "100%", border: "1px dashed rgba(233,196,106,.7)", background: "transparent", borderRadius: 12, padding: "10px", color: "#ffe38a", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" } }, "🦉 派猫头鹰请" + (me === "nana" ? "熊猫鱼" : "Nana") + "也喝一杯") : null,
+      msg ? h("div", { style: { marginTop: 8, textAlign: "center", fontSize: "0.72rem", color: "#ffe38a" } }, msg) : null,
+      // 惩罚卡记录：对方的可以监督 / 放过；自己的看状态
+      theirs.length || myOpen.length ? h("div", { style: { marginTop: 18, borderTop: "1px solid rgba(233,196,106,.3)", paddingTop: 12 } },
+        h("div", { style: { fontFamily: "Georgia,serif", fontWeight: 900, fontSize: "0.86rem", color: "#ffd0ee", marginBottom: 8 } }, "📜 魔法部罚单"),
+        theirs.map(function (c) { return h("div", { key: c.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", marginBottom: 6, borderRadius: 12, background: "rgba(255,255,255,.06)" } },
+          h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, who(c.v.a) + " · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t),
+          c.v.st === "open" ? h("div", { style: { display: "flex", flexDirection: "column", gap: 4 } },
+            h("button", { onClick: function () { mark(c, "done"); }, style: { border: "none", borderRadius: 99, padding: "4px 10px", background: "#7a4ae0", color: "#fff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "已盯梢 👀"),
+            h("button", { onClick: function () { mark(c, "pardon"); }, style: { border: "1px solid rgba(255,255,255,.3)", borderRadius: 99, padding: "4px 10px", background: "transparent", color: "#efe2ff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "施咒赦免 🕊️")) :
+            h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); }),
+        myOpen.map(function (c) { return h("div", { key: c.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", marginBottom: 6, borderRadius: 12, background: "rgba(255,255,255,.04)" } },
+          h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, "我 · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t), h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); })) : null),
+    cardOver);
+}
 function MealCheckIn() {
   var h = React.createElement;
   var today = new Date().toDateString();
@@ -26982,7 +27199,12 @@ function BakerFacade(_refBF) {
     for (var j = 0; j < 8; j++) out.push(h("circle", { key: "l" + j, cx: x + j * w / 7, cy: y + 1, r: 2.4, fill: "#4f8a5a" }));
     return h("g", null, out);
   };
-  var building = h("svg", { viewBox: "7 0 346 420", style: { width: "100%", display: "block", overflow: "visible" } },
+  var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
+    // 先只给熊猫鱼试：Nana 那边暂时看不到酒馆
+    var au = ""; try { au = localStorage.getItem("nana-author") || ""; } catch (_) {}
+    if (au !== "panda") return false;
+    return hr >= 18 || hr < 6; })();
+  var building = h("svg", { viewBox: barOn ? "7 0 422 420" : "7 0 346 420", style: { width: "100%", display: "block", overflow: "visible" } },
     h("defs", null,
       h("linearGradient", { id: "bfWarm", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe9b8" }), h("stop", { offset: "100%", stopColor: "#f0b65e" })),
       h("linearGradient", { id: "bfDay", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d4e0ea" }), h("stop", { offset: "100%", stopColor: "#93a9bc" })),
@@ -27131,12 +27353,76 @@ function BakerFacade(_refBF) {
     // 栏杆：黑铁、金尖
     [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 4; x < seg[1]; x += 9) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
+    // 🍸 9¾ 魔药酒馆：221B 隔壁一栋歪歪扭扭的都铎木架小楼，一层比一层往外探，晚上才亮
+    barOn ? h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-bar")); } catch (_) {} }, style: { cursor: "pointer" } },
+      // 弯月 + 变色光晕
+      h("path", { d: "M398 4 a16 16 0 1 0 14 24 a12 12 0 1 1 -14 -24Z", fill: "#fff1b8", opacity: 0.95, style: { filter: "drop-shadow(0 0 8px rgba(255,240,180,0.9))" } }),
+      h("ellipse", { cx: 376, cy: 200, rx: 72, ry: 176, fill: "url(#hpHaloP)", style: { animation: "hpHue 6s ease-in-out infinite" } }),
+      h("g", { style: { transformOrigin: "376px 353px", animation: "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" } },
+      h("defs", null,
+        h("radialGradient", { id: "hpHaloP" }, h("stop", { offset: "0%", stopColor: "rgba(190,140,255,0.42)" }), h("stop", { offset: "60%", stopColor: "rgba(120,220,200,0.14)" }), h("stop", { offset: "100%", stopColor: "rgba(120,220,200,0)" })),
+        h("linearGradient", { id: "hpGlow", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe7a8" }), h("stop", { offset: "100%", stopColor: "#f0a040" })),
+        h("radialGradient", { id: "hpHalo" }, h("stop", { offset: "0%", stopColor: "rgba(255,190,90,0.38)" }), h("stop", { offset: "100%", stopColor: "rgba(255,190,90,0)" }))),
+      h("ellipse", { cx: 376, cy: 210, rx: 66, ry: 160, fill: "url(#hpHalo)", style: { animation: "bkLamp 3.4s ease-in-out infinite" } }),
+      // 屋顶：又陡又歪的石板顶 + 高高的歪烟囱
+      h("path", { d: "M336 92 L370 26 Q376 18 382 28 L414 92 Z", fill: "#3a3358" }), h("path", { d: "M336 92 L370 26 Q376 18 382 28 L414 92", fill: "none", stroke: "#d9a93c", strokeWidth: 1.6 }),
+      h("path", { d: "M344 80 L404 80 M350 66 L398 66 M356 52 L392 52 M362 40 L386 40", stroke: "#3a414e", strokeWidth: 1.4 }),
+      h("g", { transform: "rotate(-8 396 40)" }, h("rect", { x: 390, y: 14, width: 11, height: 40, fill: "#6b3b2e" }), h("rect", { x: 388, y: 10, width: 15, height: 6, fill: "#4a2a20" })),
+      ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#ffd98a", "#c9a0ff"].map(function (c, i) { return h("circle", { key: "hps" + i, cx: 392, cy: 10, r: 2.2, fill: c, style: { filter: "drop-shadow(0 0 3px " + c + ")", transformOrigin: "392px 10px", animation: "hpSwirl 3.2s linear " + (i * 0.53) + "s infinite" } }); }),
+      // 四层，一层比一层往外探、各歪各的
+      h("g", { key: "hpf4", transform: "rotate(-3 375 150)" },
+        h("rect", { x: 340, y: 88, width: 70, height: 62, fill: "#e8dcc0" }),
+        h("path", { d: "M340 88 H410 V150 H340Z M340 92 H410 M340 146 H410 M344 88 V150 M406 88 V150 M344 92 L354 146 M406 92 L396 146", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 338, y: 147, width: 74, height: 5, fill: "#3a2414" }),
+        h("path", { d: "M375 92 L375 146", stroke: "#4a2e1a", strokeWidth: 2.4 }), h("g", { key: "hpw41" }, h("rect", { x: 352, y: 107, width: 16, height: 22, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M352 107 L368 129 M368 107 L352 129 M356 107 L368 123.5 M364 107 L352 123.5 M352 112.5 L364 129 M368 112.5 L356 129", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("g", { key: "hpw42" }, h("rect", { x: 382, y: 107, width: 16, height: 22, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M382 107 L398 129 M398 107 L382 129 M386 107 L398 123.5 M394 107 L382 123.5 M382 112.5 L394 129 M398 112.5 L386 129", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 }))),
+      h("g", { key: "hpf3", transform: "rotate(2 373 218)" },
+        h("rect", { x: 338, y: 150, width: 70, height: 68, fill: "#e8dcc0" }),
+        h("path", { d: "M338 150 H408 V218 H338Z M338 154 H408 M338 214 H408 M342 150 V218 M404 150 V218 M342 154 L352 214 M404 154 L394 214", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 336, y: 215, width: 74, height: 5, fill: "#3a2414" }),
+        h("g", { key: "hpw31" }, h("rect", { x: 358, y: 167, width: 30, height: 30, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M358 167 L388 197 M388 167 L358 197 M365.5 167 L388 189.5 M380.5 167 L358 189.5 M358 174.5 L380.5 197 M388 174.5 L365.5 197", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("path", { d: "M354 166 V214 M392 166 V214", stroke: "#b8352a", strokeWidth: 5 }), h("path", { d: "M354 166 V214", stroke: "#d9a93c", strokeWidth: 1.4, strokeDasharray: "3 3" }), h("path", { d: "M392 166 V214", stroke: "#d9a93c", strokeWidth: 1.4, strokeDasharray: "3 3" })),
+      h("g", { key: "hpf2", transform: "rotate(-2 373 288)" },
+        h("rect", { x: 342, y: 218, width: 62, height: 70, fill: "#e8dcc0" }),
+        h("path", { d: "M342 218 H404 V288 H342Z M342 222 H404 M342 284 H404 M346 218 V288 M400 218 V288 M346 222 L356 284 M400 222 L390 284", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 340, y: 285, width: 66, height: 5, fill: "#3a2414" }),
+        h("g", { key: "hpw21" }, h("rect", { x: 351, y: 239, width: 18, height: 26, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M351 239 L369 265 M369 239 L351 265 M355.5 239 L369 258.5 M364.5 239 L351 258.5 M351 245.5 L364.5 265 M369 245.5 L355.5 265", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("g", { key: "hpw22" }, h("rect", { x: 379, y: 239, width: 18, height: 26, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M379 239 L397 265 M397 239 L379 265 M383.5 239 L397 258.5 M392.5 239 L379 258.5 M379 245.5 L392.5 265 M397 245.5 L383.5 265", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 }))),
+      // 一楼：石头墙 + 凸出的小橱窗（坩埚和魔药瓶）+ 圆拱木门
+      h("rect", { x: 346, y: 288, width: 56, height: 65, fill: "#5b5246" }),
+      h("path", { d: "M346 300 H402 M346 314 H402 M346 328 H402 M346 342 H402 M360 288 V300 M384 300 V314 M356 314 V328 M392 328 V342", stroke: "#463e34", strokeWidth: 1 }),
+      h("rect", { x: 349, y: 300, width: 20, height: 26, rx: 2, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 2, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }),
+      h("path", { d: "M352 322 q7 -6 14 0 q0 4 -7 4 q-7 0 -7 -4Z", fill: "#2a2420" }), h("ellipse", { cx: 359, cy: 321, rx: 6, ry: 1.6, fill: "#7ff0a0" }),
+      [0, 1, 2].map(function (i) { return h("circle", { key: "hpb" + i, cx: 356 + i * 3, cy: 318, r: 1.2, fill: "#b8ffcc", style: { transformOrigin: (356 + i * 3) + "px 318px", animation: "bkSmoke 2s linear " + (i * 0.6) + "s infinite" } }); }),
+      h("path", { d: "M375 353 V316 Q386 302 397 316 V353 Z", fill: "#5a3420", stroke: "#2a1a10", strokeWidth: 1.6 }),
+      h("path", { d: "M380 316 V353 M386 310 V353 M392 316 V353", stroke: "#4a2a18", strokeWidth: 1 }), h("circle", { cx: 393, cy: 334, r: 1.6, fill: "#d9a93c" }),
+      h("rect", { x: 382, y: 296, width: 8, height: 10, rx: 1.5, fill: "#ffd98a", stroke: "#1a1a1a", strokeWidth: 1, style: { filter: "drop-shadow(0 0 6px rgba(255,210,120,1))", animation: "bkLamp 1.8s ease-in-out infinite" } }),
+      // 门边靠着一把扫帚
+      h("g", { transform: "rotate(14 370 352)" }, h("path", { d: "M370 300 V346", stroke: "#7a4a24", strokeWidth: 2 }), h("path", { d: "M366 340 L370 336 L374 340 L376 354 L364 354 Z", fill: "#c99a52" }), h("path", { d: "M367 344 V353 M370 342 V353 M373 344 V353", stroke: "#8a6a2a", strokeWidth: 0.7 })),
+      // 伸出去的木招牌：9¾ + 坩埚，招牌架上一只猫头鹰
+      h("path", { d: "M406 226 H420", stroke: "#1a1a1a", strokeWidth: 2 }), h("path", { d: "M406 226 L414 234", stroke: "#1a1a1a", strokeWidth: 1.4 }),
+      h("g", { transform: "translate(416 216)" }, h("ellipse", { cx: 0, cy: 0, rx: 5, ry: 6, fill: "#c9a46a" }), h("circle", { cx: -2, cy: -2, r: 1.8, fill: "#fff" }), h("circle", { cx: 2, cy: -2, r: 1.8, fill: "#fff" }), h("circle", { cx: -2, cy: -2, r: 0.9, fill: "#1a1a1a" }), h("circle", { cx: 2, cy: -2, r: 0.9, fill: "#1a1a1a" }), h("path", { d: "M-1 0 L0 1.6 L1 0Z", fill: "#e2a24a" }), h("path", { d: "M-4 -5 L-3 -8 L-1.5 -5.5 M4 -5 L3 -8 L1.5 -5.5", fill: "#c9a46a" })),
+      h("g", { style: { transformOrigin: "414px 227px", animation: "bfSwing 3s ease-in-out infinite" } },
+        h("path", { d: "M410 227 V232 M418 227 V232", stroke: "#1a1a1a", strokeWidth: 1 }),
+        h("rect", { x: 404, y: 232, width: 20, height: 24, rx: 2, fill: "#6b4428", stroke: "#d9a93c", strokeWidth: 1.2 }),
+        h("text", { x: 414, y: 243, textAnchor: "middle", fontSize: 7, fontWeight: "bold", fill: "#f3d27a", fontFamily: "Georgia,serif" }, "9¾"),
+        h("path", { d: "M408 247 h12 q0 6 -6 6 q-6 0 -6 -6Z", fill: "#1a1a1a" }), h("ellipse", { cx: 414, cy: 247, rx: 6, ry: 1.4, fill: "#7ff0a0" })),
+      // 门楣上的小牌子
+      h("rect", { x: 348, y: 279, width: 52, height: 11, rx: 2, fill: "#3a2414", stroke: "#d9a93c", strokeWidth: 1 }),
+      h("text", { x: 374, y: 287.2, textAnchor: "middle", fontSize: 6.2, fontWeight: "bold", fill: "#f3d27a", fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: 0.4 }, "9¾ 魔药酒馆"),
+      // 飘着的小火星
+      [[352, 300], [400, 200], [346, 170], [404, 130], [356, 110]].map(function (p, i) { return h("circle", { key: "hpsp" + i, cx: p[0], cy: p[1], r: 1.4, fill: "#ffd98a", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "bfLed " + (1.4 + i * 0.37) + "s ease-in-out " + (i * 0.3) + "s infinite" } }); }),
+      // 飘浮的蜡烛
+      [[332, 120, 0], [416, 160, 0.8], [330, 236, 1.6], [418, 286, 2.2], [412, 76, 1.1]].map(function (c, i) { return h("g", { key: "hpc" + i, style: { transformOrigin: c[0] + "px " + c[1] + "px", animation: "bfFloat " + (2.6 + i * 0.3) + "s ease-in-out " + c[2] + "s infinite" } },
+        h("rect", { x: c[0] - 2, y: c[1], width: 4, height: 11, rx: 1, fill: "#fbf3dc" }), h("path", { d: "M" + c[0] + " " + (c[1] - 7) + " q-3 4 0 7 q3 -3 0 -7Z", fill: "#ffcf5a", style: { filter: "drop-shadow(0 0 4px rgba(255,200,90,1))", transformOrigin: c[0] + "px " + c[1] + "px", animation: "bkLamp " + (0.9 + i * 0.2) + "s ease-in-out infinite" } })); })),
+      // 打开小屋时：一面砖墙往两边退开，小楼从里面浮现
+      h("g", { style: { pointerEvents: "none" } },
+        Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0);
+          return h("rect", { key: "hpbr" + i, x: x, y: y, width: 30, height: 22, rx: 1.5, fill: "#8a4a3a", stroke: "#5a2e22", strokeWidth: 1.4, style: { transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: "hpBrick" + (c ? "R" : "L") + " 1.6s cubic-bezier(.5,0,.8,.4) " + (0.15 + r * 0.06) + "s both" } }); }),
+        ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); }))) : null,
     // 人行道 + 路
-    h("rect", { x: 0, y: 353, width: 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: 360, height: 3, fill: "#5f6572" }),
+    h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 3, fill: "#5f6572" }),
     // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
-    h("rect", { x: 0, y: 375, width: 360, height: 45, fill: "url(#bfWater)" }),
-    h("rect", { x: 0, y: 380, width: 360, height: 40, fill: "url(#bfWaves)" }),
-    h("rect", { x: 0, y: 375, width: 360, height: 5, fill: "#8a6a48" }), h("rect", { x: 0, y: 380, width: 360, height: 2, fill: "rgba(0,0,0,0.3)" }),
+    h("rect", { x: 0, y: 375, width: barOn ? 430 : 360, height: 45, fill: "url(#bfWater)" }),
+    h("rect", { x: 0, y: 380, width: barOn ? 430 : 360, height: 40, fill: "url(#bfWaves)" }),
+    h("rect", { x: 0, y: 375, width: barOn ? 430 : 360, height: 5, fill: "#8a6a48" }), h("rect", { x: 0, y: 380, width: barOn ? 430 : 360, height: 2, fill: "rgba(0,0,0,0.3)" }),
     [30, 110, 190, 270, 350].map(function (x, i) { return h("rect", { key: "pl" + i, x: x, y: 372, width: 4, height: 12, rx: 1, fill: "#5a4230" }); }),
     // 饭点到了：一辆外卖车开到门口，点它就去选这顿吃什么（这顿贴过冰箱就开走）
     fzTruck ? h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.__fzPick = 1; } catch (_) {} nanaSheet("meal"); }, title: "饭车", style: { cursor: "pointer", animation: "bfTruckIn 1.8s cubic-bezier(.2,.8,.3,1) both" } },
@@ -27195,6 +27481,11 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
+      "@keyframes hpAppear{0%{opacity:0;transform:scaleY(.86) translateY(8px);filter:blur(3px)}55%{opacity:0}100%{opacity:1;transform:none;filter:none}}" +
+      "@keyframes hpBrickL{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-46px) rotate(-18deg)}}@keyframes hpBrickR{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(46px) rotate(18deg)}}" +
+      "@keyframes hpBurst{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(70px) scale(1)}}" +
+      "@keyframes hpSwirl{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}50%{transform:translate(8px,-18px)}100%{opacity:0;transform:translate(-6px,-40px)}}" +
+      "@keyframes hpHue{0%,100%{opacity:.8;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(70deg)}}" +
       "@keyframes bfTruckIn{0%{transform:translateX(-130px)}100%{transform:translateX(0)}}@keyframes bfTruckIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.8px)}}@keyframes bfWave{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(25deg)}}" +
       "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(175px,268px) scale(.8) rotate(0deg)}90%{transform:translate(175px,268px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(175px,262px) scale(.8);opacity:0}100%{transform:translate(175px,262px) scale(.8);opacity:0}}" +
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
@@ -27971,8 +28262,9 @@ function NanasHome() {
   }, []);
   useEffect(function () {
     var on = function (e) { setSheet(e && e.detail ? e.detail : null); };
-    window.addEventListener("nana-sheet", on);
-    return function () { window.removeEventListener("nana-sheet", on); };
+    var onBar = function () { setSheet("bar"); };
+    window.addEventListener("nana-sheet", on); window.addEventListener("nana-bar", onBar);
+    return function () { window.removeEventListener("nana-sheet", on); window.removeEventListener("nana-bar", onBar); };
   }, []);
   var _doorTick = useState(0); var setDoorTick = _doorTick[1];
   useEffect(function () {
@@ -28186,14 +28478,15 @@ function NanasHome() {
     /*#__PURE__*/React.createElement("div", { style: { position: "absolute", left: "50%", bottom: 0, transform: "translateX(-50%)", width: "100%", maxWidth: 600, maxHeight: "86vh", overflowY: "auto", background: "#f3ece0", borderRadius: "22px 22px 0 0", boxShadow: "0 -12px 40px rgba(0,0,0,0.5)", paddingBottom: "calc(16px + env(safe-area-inset-bottom,0px))" } },
       /*#__PURE__*/React.createElement("div", { style: { position: "sticky", top: 0, zIndex: 2, background: "linear-gradient(180deg,#1e2636,#2b3446)", color: "#fdf6e8", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, borderRadius: "22px 22px 0 0" } },
         /*#__PURE__*/React.createElement("div", { style: { color: "#d9b45f", fontSize: "0.56rem", letterSpacing: 3, fontFamily: "Georgia,serif", fontWeight: 800 } }, "221B"),
-        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
+        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "bar" ? "🍸 9¾ 魔药酒馆" : sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
         /*#__PURE__*/React.createElement("button", { onClick: function () { setSheet(null); }, style: { marginLeft: "auto", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "收起 ▾")),
       /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: sheet === "music" ? "block" : "none" } }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: null })),
       sheet === "postcards" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: "grid", gap: 12 } },
         /*#__PURE__*/React.createElement(MeishaMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "meisha", emoji: "\uD83C\uDFD6\uFE0F", name: "\u5927\u6885\u6c99", color: "#1a4a5c", desc: "\u4e0a\u5468\u4e94\u7684\u6d77\u8fb9" }); } }),
         /*#__PURE__*/React.createElement(HKMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" }); } }),
         /*#__PURE__*/React.createElement(DisneyMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" }); } })) : null,
-      sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(FridgeWall, null)) : null)),
+      sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(FridgeWall, null)) : null,
+      sheet === "bar" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MagicBar, null)) : null)),
   nanaBakerOn() && musicOn && sheet !== "music" && !NANA_DOOR && /*#__PURE__*/React.createElement("div", { onClick: function () { setSheet("music"); }, title: musicOn, style: { position: "fixed", right: 14, bottom: "calc(86px + env(safe-area-inset-bottom,0px))", zIndex: 9980, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" } },
     /*#__PURE__*/React.createElement("div", { style: { maxWidth: 140, background: "rgba(30,38,54,0.92)", color: "#fdf6e8", borderRadius: 999, padding: "5px 10px", fontSize: "0.62rem", fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", boxShadow: "0 4px 12px rgba(0,0,0,0.35)" } }, "♪ " + musicOn),
     /*#__PURE__*/React.createElement("div", { style: { width: 46, height: 46, borderRadius: "50%", background: "radial-gradient(circle,#d9b45f 0 17%,#1e2636 18% 100%)", boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.14), 0 6px 16px rgba(0,0,0,0.45)", border: "2px solid #d9b45f", animation: "nanaSpin 2.4s linear infinite", flexShrink: 0 } })),
