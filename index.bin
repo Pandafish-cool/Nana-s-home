@@ -27240,6 +27240,14 @@ function BakerFacade(_refBF) {
   var NK_WALL = (function () { try { var q = (location.search || "").match(/[?&]wall=(\w+)/); return q ? q[1] : "honey"; } catch (_) { return "honey"; } })();
   var wallFill = { honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
   var wallPainted = NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
+  // 门牌样式（预览用 ?plaque= 切换：圆牌 blue 英国蓝 / wine 酒红 / cream 奶油白 / mustard 芥末黄 / green 墨绿；street 伦敦搪瓷路牌）
+  var PLQ = (function () { var k = "street"; try { var q = (location.search || "").match(/[?&]plaque=(\w+)/); if (q) k = q[1]; } catch (_) {}
+    return { blue: { bg: "#1f4f8f", ring: "#f7f3ea", t1: "#ffffff", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#7d9fc8" },
+      wine: { bg: "#7a2430", ring: "#e6c983", t1: "#f4e2b0", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#b07a80" },
+      cream: { bg: "#f7f0e2", ring: "#23443a", t1: "#23443a", t2: "#7a2430", t3: "rgba(35,68,58,0.75)", z: "#8aa598" },
+      mustard: { bg: "#d9a93c", ring: "#fff6dc", t1: "#2b2410", t2: "#2b2410", t3: "rgba(43,36,16,0.7)", z: "#b8923c" },
+      green: { bg: "#23443a", ring: "#d6b46a", t1: "#f4e2b0", t2: "#f7f3ea", t3: "rgba(247,243,234,0.85)", z: "#6b8f80" },
+      street: { street: 1, z: "#8a8f96" } }[k] || null; })() || null;
   var NK_FLAT = (function () { try { return /[?&]roof=flat/.test(location.search || ""); } catch (_) { return false; } })();
   var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
     // 两个人都开放：每晚 6 点半到早上 6 点
@@ -27325,15 +27333,44 @@ function BakerFacade(_refBF) {
     [68, 236].map(function (x) { return h("g", { key: "pd" + x },
       h("polygon", { points: (x - 9) + ",106 " + (x + 28) + ",95 " + (x + 65) + ",106", fill: "#f4efe5", stroke: "#d8cdb6", strokeWidth: 0.8 }),
       h("rect", { x: x - 10, y: 105.6, width: 76, height: 2.6, fill: "#efe8da" }), h("rect", { x: x - 10, y: 108.2, width: 76, height: 0.8, fill: "rgba(0,0,0,0.12)" })); }),
+    // 「伦敦限定居民」恶搞蓝牌：帕丁顿时不时从牌子后面探头，牌子边上飘着打盹的 z；下面挂一块黄铜小牌「Nana 的伦敦 →」
     h("g", { onClick: goLondon, style: { cursor: "pointer" } },
+      h("g", { style: { animation: "bfPeek 7s ease-in-out infinite" } },
+        h("g", { transform: "translate(203.5 106.5) scale(0.82)" },
+          h("circle", { cx: -5.2, cy: -4.2, r: 2.3, fill: "#9a6234" }), h("circle", { cx: 5.2, cy: -4.2, r: 2.3, fill: "#9a6234" }),
+          h("circle", { cx: 0, cy: 0, r: 6.2, fill: "#a86d3a" }),
+          h("ellipse", { cx: 0, cy: 2.4, rx: 3.3, ry: 2.4, fill: "#dcb88c" }), h("ellipse", { cx: 0, cy: 1.4, rx: 1.2, ry: 0.9, fill: "#2b1a10" }),
+          h("circle", { cx: -2.4, cy: -1.2, r: 0.85, fill: "#2b1a10" }), h("circle", { cx: 2.4, cy: -1.2, r: 0.85, fill: "#2b1a10" }),
+          h("path", { d: "M-4.8 -4.6 Q-4.6 -10 0 -10 Q4.6 -10 4.8 -4.6 Z", fill: "#c8322f" }), h("ellipse", { cx: 0, cy: -4.6, rx: 8.4, ry: 2, fill: "#b02a28" }),
+          h("path", { d: "M-4.7 -5.6 Q0 -4.6 4.7 -5.6", fill: "none", stroke: "#8a1e1c", strokeWidth: 0.8 }))),
+      PLQ.street ? // 伦敦搪瓷路牌：白底、黑边、黑字，红色邮区
+      h("g", null,
+        h("rect", { x: 148.8, y: 117.2, width: 64, height: 30, rx: 2, fill: "rgba(0,0,0,0.18)" }),
+        h("rect", { x: 148, y: 116, width: 64, height: 30, rx: 2, fill: "#fbfaf6", stroke: "#1a1a1a", strokeWidth: 1.2 }),
+        h("rect", { x: 150.4, y: 118.4, width: 59.2, height: 25.2, rx: 1.2, fill: "none", stroke: "#1a1a1a", strokeWidth: 0.4 }),
+        h("circle", { cx: 152.4, cy: 131, r: 0.8, fill: "#9aa0a6" }), h("circle", { cx: 207.6, cy: 131, r: 0.8, fill: "#9aa0a6" }),
+        h("circle", { cx: 197.4, cy: 116.2, r: 1.8, fill: "#9a6234" }), h("circle", { cx: 204.6, cy: 116.2, r: 1.8, fill: "#9a6234" }),
+        h("text", { x: 180, y: 123.4, textAnchor: "middle", fontSize: 2.6, fontWeight: "bold", fill: "#1a1a1a", fontFamily: "Helvetica,Arial,sans-serif", letterSpacing: 0.7 }, "CITY OF NANA"),
+        h("text", { x: 175.5, y: 132.4, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#1a1a1a", fontFamily: "Helvetica,Arial,sans-serif", letterSpacing: 0.3 }, "NANA ROAD"),
+        h("text", { x: 203.2, y: 132.4, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#c0392b", fontFamily: "Helvetica,Arial,sans-serif" }, "W1"),
+        h("rect", { x: 154, y: 135, width: 52, height: 0.6, fill: "#c0392b" }),
+        h("text", { x: 180, y: 140.8, textAnchor: "middle", fontSize: 3.3, fontWeight: "bold", fill: "#3a3a3a", fontFamily: "'PingFang SC',sans-serif" }, "伦敦限定居民 · 曾在此打过盹")) : h("g", null,
       h("circle", { cx: 180, cy: 132, r: 24, fill: "rgba(0,0,0,0.18)", transform: "translate(0.8 1.2)" }),
-      h("circle", { cx: 180, cy: 132, r: 24, fill: "#23443a" }),
-      h("circle", { cx: 180, cy: 132, r: 21.6, fill: "none", stroke: "#d6b46a", strokeWidth: 0.9 }),
-      h("text", { x: 180, y: 121.2, textAnchor: "middle", fontSize: 2.9, fill: "#f7f3ea", fontFamily: "Georgia,serif", letterSpacing: 0.5 }, "ENGLISH HOME"),
-      h("rect", { x: 168, y: 122.5, width: 24, height: 0.5, fill: "rgba(247,243,234,0.7)" }),
-      h("text", { x: 180, y: 131.6, textAnchor: "middle", fontSize: 7.6, fontWeight: "bold", fill: "#e6c983", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "NANA"),
-      h("text", { x: 180, y: 138.6, textAnchor: "middle", fontSize: 5.2, fontWeight: "bold", fill: "#f7f3ea", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK),
-      h("text", { x: 180, y: 144.2, textAnchor: "middle", fontSize: 2.6, fill: "rgba(247,243,234,0.85)", fontFamily: "Georgia,serif", letterSpacing: 0.3 }, LD_BOOK_EN)),
+      h("circle", { cx: 180, cy: 132, r: 24, fill: PLQ.bg }),
+      h("circle", { cx: 180, cy: 132, r: 21.6, fill: "none", stroke: PLQ.ring, strokeWidth: 0.9 }),
+      // 两只小爪子扒在牌子边上
+      h("circle", { cx: 194.2, cy: 112.6, r: 1.8, fill: "#9a6234" }), h("circle", { cx: 199.4, cy: 116.8, r: 1.8, fill: "#9a6234" }),
+      h("text", { x: 180, y: 119.8, textAnchor: "middle", fontSize: 2.4, fill: PLQ.t3, fontFamily: "Georgia,serif", letterSpacing: 0.4 }, "LONDON · 42 DAYS"),
+      h("rect", { x: 170, y: 121.6, width: 20, height: 0.45, fill: PLQ.t3 }),
+      h("text", { x: 180, y: 130.4, textAnchor: "middle", fontSize: 8, fontWeight: "bold", fill: PLQ.t1, fontFamily: "Georgia,serif", letterSpacing: 0.8 }, "NANA"),
+      h("text", { x: 180, y: 137, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: PLQ.t2, fontFamily: "'PingFang SC',sans-serif" }, "伦敦限定居民"),
+      h("text", { x: 180, y: 142.4, textAnchor: "middle", fontSize: 3.3, fill: PLQ.t3, fontFamily: "'PingFang SC',sans-serif" }, "曾在此打过盹"),
+      h("text", { x: 180, y: 147.4, textAnchor: "middle", fontSize: 2.4, fill: PLQ.t3, fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "EST. 2026")),
+      [["z", 205, 136, 0, 3.6], ["z", 208, 131, 1.2, 4.4], ["Z", 212, 125, 2.4, 5.4]].map(function (z, i) { return h("text", { key: "zz" + i, x: z[1] + (PLQ.street ? 9 : 0), y: z[2] + (PLQ.street ? -4 : 0), fontSize: z[4], fontWeight: "bold", fill: PLQ.z, fontFamily: "Georgia,serif", style: { animation: "bfZz 3.6s ease-in-out " + z[3] + "s infinite", opacity: 0 } }, z[0]); }),
+      // 黄铜小牌
+      h("line", { x1: 174, y1: PLQ.street ? 146 : 155.6, x2: 176.5, y2: 159, stroke: "#8a6a2a", strokeWidth: 0.5 }), h("line", { x1: 186, y1: PLQ.street ? 146 : 155.6, x2: 183.5, y2: 159, stroke: "#8a6a2a", strokeWidth: 0.5 }),
+      h("rect", { x: 163, y: 159, width: 34, height: 8.4, rx: 1.6, fill: "url(#bfBrass)", stroke: "#8a6a2a", strokeWidth: 0.4 }),
+      h("text", { x: 180, y: 164.7, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#3a2a10", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
     // 楼层线
     h("rect", { x: 24, y: 213, width: 312, height: 8, fill: "#e9e2d2" }), h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
@@ -27647,6 +27684,8 @@ function BakerFacade(_refBF) {
       "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
       "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
+      "@keyframes bfPeek{0%,55%,100%{transform:translate(-1.5px,3.5px)}65%,90%{transform:translate(0,0)}}" +
+      "@keyframes bfZz{0%{opacity:0;transform:translate(0,0)}30%{opacity:.9}100%{opacity:0;transform:translate(4px,-6px)}}" +
       "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-7px);opacity:0}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
