@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-308";
+var NANA_VER = "v2026.8.2-309";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27229,10 +27229,9 @@ function BakerFacade(_refBF) {
     return h("g", null, out);
   };
   var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
-    // 先只给熊猫鱼试：Nana 那边暂时看不到酒馆
-    var au = ""; try { au = localStorage.getItem("nana-author") || ""; } catch (_) {}
-    if (au !== "panda") return false;
-    return hr >= 18 || hr < 6; })();
+    // 两个人都开放：每晚 6 点半到早上 6 点
+    var mi = new Date().getMinutes();
+    return (hr > 18 || (hr === 18 && mi >= 30)) || hr < 6; })();
   var building = h("svg", { viewBox: barOn ? "7 0 422 420" : "7 0 346 420", style: { width: "100%", display: "block", overflow: "visible" } },
     h("defs", null,
       h("linearGradient", { id: "bfWarm", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe9b8" }), h("stop", { offset: "100%", stopColor: "#f0b65e" })),
