@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>Nana's Cozy Home 🏡</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#81515A"><meta name="apple-mobile-web-app-title" content="Nana's Home"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&family=Texturina:wght@800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&family=Patrick+Hand&family=Caveat:wght@500;700&family=Texturina:wght@800&display=swap"></noscript><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><script>if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }</script><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#FFF8F7;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}#root{min-height:100vh;}</style></head><body><div id="root"></div><script>/**
  * @license React
  * react.production.min.js
  *
@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-311";
+var NANA_VER = "v2026.8.2-312";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27031,7 +27031,7 @@ var NANA_FUN = [
     "中午准时吃饭。这不是建议，是流程。",
     "喷嚏打完就翻篇，别让它抢戏。",
     "你处理事情的样子，挺帅的。",
-    "广州的饭比伦敦好吃。此案已结，无需上诉。"] },
+    "出门带伞，这是伦敦教会我们的第一课。"] },
   { to: 17, a: ["下午好，Nana", "累了就歇一下", "你已经做得很好了"], s: [
     "犯困是正常的生理反应，不是态度问题。",
     "闭眼十分钟，外面的世界不会塌。",
@@ -27048,8 +27048,293 @@ var NANA_FUN = [
     "今天的烦恼已归档，明天再调卷。",
     "早睡不是认输，是战术。"] }
 ];
+// 羊皮纸：左右两边是不整齐的毛边（固定的一组锯齿，免得每次渲染都抖），纸面叠三层纹理——细颗粒、大块斑驳、几块茶渍
+var PARCH_EDGE = (function () {
+  var L = [], R = [], n = 26, i, j;
+  for (i = 0; i <= n; i++) { j = (Math.sin(i * 12.9898) * 43758.5453) % 1; j = j < 0 ? -j : j; L.push((0.4 + j * 2.6).toFixed(2) + "% " + (i * 100 / n).toFixed(2) + "%"); }
+  for (i = n; i >= 0; i--) { j = (Math.sin(i * 78.233 + 3) * 43758.5453) % 1; j = j < 0 ? -j : j; R.push((99.6 - j * 2.6).toFixed(2) + "% " + (i * 100 / n).toFixed(2) + "%"); }
+  return "polygon(" + L.concat(R).join(",") + ")";
+})();
+var PARCH_GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.28 0 0 0 0 0.12 0 0 0 0.32 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
+var PARCH_MOTTLE = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' seed='7'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.32 0 0 0 0 0.1 0 0 0 0.55 -0.12'/></filter><rect width='100%25' height='100%25' filter='url(%23m)'/></svg>\")";
+// 《The Nana Times》内容库 —— 一天一期：同一天、同一时段只出一个头条；黄历、广告、导语、连载按日期走；
+// 特刊优先级：节日 > 周末 / 周一 / 周五
+var NEWS_H = {
+  morning: [
+    "本报讯：Nana 今早成功起床，贝克街交通恢复正常",
+    "早间快讯：第一杯伯爵茶已泡好，鼻子表示满意",
+    "独家：帕丁顿凌晨四点做好果酱三明治，坚称“是给 Nana 的”",
+    "晨报社论：Keep Calm，今天的任务只有一个——好好的",
+    "本报讯：大本钟敲了七下，Nana 以优雅姿态完成起床",
+    "早间头条：今日份的好运已由皇家邮政送达，请签收",
+    "本报观察：吃了英式早餐的人，今天运气都不会太差",
+    "快讯：特拉法加广场的鸽子今早集体向 Nana 问好",
+    "本报讯：地铁再挤，也挤不掉 Nana 的好心情",
+    "晨间提示：出门记得带伞，这是伦敦人的基本修养",
+    "独家：熊猫鱼今早第一件事是想 Nana，消息已获证实",
+    "本报讯：今日伦敦有雾，但 Nana 的心情是晴的",
+    "早报评论：今天先把自己照顾好，世界排第二"
+  ],
+  noon: [
+    "午间要闻：午餐时间到，一切会议一律让路",
+    "突发：221B 厨房飘出香味，整条贝克街集体探头",
+    "本报评论：好好吃饭，是今天最重要的事",
+    "午间快讯：帕丁顿餐车已出摊，烧卖仍是头号嫌疑人",
+    "本报讯：经调查，空着肚子做决定的成功率为零",
+    "午间头条：离周日烤肉还远，但今天的饭也要认真对待",
+    "独家：午饭后犯困一事，本报认定为“合理诉求”",
+    "本报提醒：吃完饭沿着泰晤士河走两步，胃会感谢你",
+    "午报特写：一碗热汤的治愈力，再次得到证实",
+    "快讯：Nana 已用餐的消息传来，熊猫鱼表示放心",
+    "本报讯：午睡十分钟，下午效率提升八成（本报估算）",
+    "午间观察：今天的饭点，比大本钟还准时"
+  ],
+  afternoon: [
+    "下午快讯：Nana 犯困属正常生理现象，本报不予追究",
+    "深度调查：下午三点的咖啡，到底会不会偷走睡眠？",
+    "独家专访：帕丁顿谈“如何在下午保持优雅”",
+    "本报讯：下午茶时间到，司康和伯爵茶已就位",
+    "下午头条：今天已经过去大半，Nana 表现优异",
+    "本报观察：累的时候看一眼窗外，比刷手机管用",
+    "快讯：贝克街某侦探称“下午最适合发呆”，本报深表赞同",
+    "本报评论：事情做不完是常态，人好好的才是重点",
+    "下午特稿：一块维多利亚海绵蛋糕能解决的问题，不必上升到人生",
+    "本报讯：离收工又近了一点，Keep Calm and Carry On",
+    "独家：熊猫鱼此刻正在想 Nana，可信度百分之百",
+    "下午提示：喝口热茶，伸个懒腰，鼻子也需要透透气"
+  ],
+  evening: [
+    "晚间头条：Nana 平安到家，221B 全体起立鼓掌",
+    "本报讯：今日辛苦值已达标，剩下的时间全归 Nana",
+    "号外：月影杂货铺今晚照常营业，敲砖请轻",
+    "晚报特写：门一关，外面的雨就跟这里无关了",
+    "本报讯：今晚的饭只负责好吃，别的一概不管",
+    "快讯：贝克街煤气灯已全部点亮，迎接 Nana 回家",
+    "晚间评论：今天的你，撑得很漂亮",
+    "本报讯：壁炉已生好，毯子已就位",
+    "独家：帕丁顿把拖鞋摆在门口，称“这是英式礼仪”",
+    "晚报提醒：洗个热水澡，鼻子和心情都会松开",
+    "本报观察：回家路上的晚风，是今天的奖励",
+    "晚间快讯：今天不顺心的事，已移交明天处理"
+  ],
+  night: [
+    "深夜特刊：手机再看五分钟，本报已开始计时",
+    "夜间提醒：窗关小一点，鼻子会记住你的好",
+    "本报讯：今天的烦恼已全部归档，明日再审",
+    "睡前快讯：帕丁顿已熄灯，请 Nana 同步执行",
+    "深夜社论：早睡不是认输，是战术",
+    "本报讯：泰晤士河上的月亮已就位，星星正在排队",
+    "夜间特写：枕头已拍松，热水袋已灌好",
+    "快讯：失眠的羊已被本报全部收编，请放心入睡",
+    "本报提醒：明天的事，明天的 Nana 会处理",
+    "深夜观察：夜里想不通的事，天亮一般就通了",
+    "睡前头条：今天到此为止，你做得很好",
+    "本报讯：熊猫鱼说晚安，已当面转达",
+    "深夜快讯：221B 夜班帕丁顿在岗，Nana 可以安心睡了"
+  ]
+};
+var NEWS_WEEKEND = [
+  "周末特刊：今天不设闹钟，本报批准睡到自然醒",
+  "周末头条：周日烤肉、沙发、老电影，三件套已备齐",
+  "本报讯：周末的正确用法，是什么都不做",
+  "周末特写：去逛逛集市，或者在窗边坐一下午",
+  "周末快讯：帕丁顿今天休假，果酱自取",
+  "本报评论：周末不回工作消息，是一种英式美德",
+  "周末提示：去吃一顿想了很久的好吃的",
+  "周末特刊：今天的时间，全部属于 Nana"
+];
+var NEWS_MON = [
+  "周一生存指南：第一步，先泡一壶茶",
+  "周一生存指南：今天能完成一件事就算赢",
+  "周一生存指南：遇到烦心事，先深呼吸三次",
+  "周一生存指南：中午吃顿好的，下午才有力气",
+  "周一生存指南：Keep Calm，周一不比速度"
+];
+var NEWS_FRI = [
+  "周五快讯：周末已进入视线范围，请保持冷静",
+  "本报讯：本周辛苦了，今晚可以去酒馆奖励自己（限三杯）",
+  "周五头条：坚持到这里的 Nana，本周 MVP"
+];
+var NEWS_LEAD = [
+  "据本报记者现场观察，Nana 今日状态稳定，笑容储备充足。专家建议：多喝热水，少操心，有事找 221B。",
+  "本报获悉，贝克街 221B 已完成今日例行检查：门口的花浇过了，窗边的座位晒好了，熊猫鱼的想念照常营业。",
+  "记者帕丁顿发回报道：今天的果酱三明治只吃了一半，另一半留给 Nana。他表示“这是原则问题”。",
+  "据可靠消息，Nana 的鼻子今天表现良好。本报对此表示高度赞赏，并呼吁它继续保持。",
+  "天气、工作和地铁都可能出状况，但贝克街 221B 的灯每天都会亮着。本报承诺：这条新闻永不过期。",
+  "本报从可靠渠道获悉：今天世界上有一个人，正在认真地想念 Nana。消息来源要求匿名，只透露自己是一条鱼。",
+  "经本报实地调查，221B 的沙发软度达标、毯子厚度达标、等你回家的心情严重超标。",
+  "本报记者注意到，Nana 最近走路带风。业内人士分析，这与心情好有直接关系。",
+  "本报提醒：今天不用做到完美，做到“还行”就已经很厉害了。此观点获全体编辑一致通过。",
+  "据悉，帕丁顿今天在门口站岗三小时，只为第一个跟 Nana 说“欢迎回来”。本报对其敬业精神表示敬意。",
+  "有读者来信问：怎样才能每天都开心？编辑部讨论后认为：先吃饱，再睡好，剩下的交给时间。",
+  "本报统计：Nana 今天的可爱指数比昨天又高了一点。具体数值涉及机密，暂不公布。",
+  "据贝克街居民反映，最近 221B 的窗户总亮着暖黄色的灯。经核实，那是给 Nana 留的。",
+  "今日社论：人不需要每天都很厉害，偶尔做一只躺平的熊，也是一种生活智慧。",
+  "本报记者在冰箱门上发现一张字条：“今天也要好好吃饭。”字迹经鉴定，属于熊猫鱼。",
+  "据可靠线报，月影杂货铺的坩埚最近脾气不错。老板表示：两杯刚好，三杯打住，第四杯它会冒魔咒。",
+  "本报科普：鼻子不舒服的时候，热毛巾敷一敷、热水熏一熏，比什么都管用。请转给需要的人。",
+  "记者帕丁顿今天学会了一句中文：“慢慢来。”他说这是在 221B 学到的最好用的一句。",
+  "本报记者调查了伦敦人的三大话题：天气、排队和下午茶。结论：Nana 三样都很擅长。",
+  "本报接到匿名电话，对方只说了一句：“告诉她，她今天很棒。”随后挂断。本报照办。",
+  "贝克街 221B 今日无大事发生。本报认为，平平安安本身就是最好的新闻。",
+  "本报调查发现：在窗边坐十分钟、看一会儿云，能有效降低烦恼浓度。建议今日执行一次。",
+  "今日读者问答。问：累了怎么办？答：休息。问：还累怎么办？答：再休息。本报不接受反驳。",
+  "据悉，221B 的冰箱贴墙越来越满。本报认为，每一张都是好好吃饭的证据。",
+  "本报驻伦敦记者报道：泰晤士河一切正常，大本钟也很准时，只是它们都有点想 Nana。",
+  "今日伦敦气象（心情版）：上午有雾转晴，下午有零星好消息，晚间温暖，适宜窝在壁炉边。",
+  "本报特约评论员熊猫鱼发表看法：“今天的 Nana 也是最好的 Nana。”全文完。",
+  "据悉，221B 门口的红色邮筒最近很忙。邮差帕丁顿表示，每一封信他都送得很小心。",
+  "本报提醒：今天如果有人惹你不开心，请把名字报给 221B，本报将派帕丁顿前往“友好交流”。",
+  "经编辑部反复确认：今天也是 Nana 被好好爱着的一天。本条新闻每天刊登，永不撤稿。"
+];
+var NEWS_YI = ["泡一壶伯爵茶", "带把伞", "早睡", "晒太阳", "吃块司康", "读几页福尔摩斯", "发呆十分钟", "吃顿好的", "给熊猫鱼发个表情", "听一首披头士",
+  "出门散步", "夸自己一句", "窗边坐一会儿", "泡个热水澡", "早点收工", "喝杯接骨木花", "整理房间", "穿那件风衣", "拍一张天空", "吃点甜的",
+  "热毛巾敷鼻子", "看一集神探夏洛克", "给自己买束花", "早点关手机", "拥抱", "伸个懒腰", "慢慢吃饭", "哼首歌", "灌个热水袋", "原谅昨天的自己"];
+var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门", "喝第四杯", "跟自己较劲",
+  "憋着不说", "加班到很晚", "插队", "吹冷风", "久坐不动", "拖着不吃饭", "太在意别人", "硬撑", "看坏消息", "熬夜追剧",
+  "冰的喝太多", "着凉", "把烦恼带回家", "一个人扛", "委屈自己", "忘记喝水", "睡前想工作", "不吃晚饭", "对自己太凶", "跳过午休"];
+var NEWS_AD = [
+  "寻物启事：Nana 的好心情一份，如有拾获请送回 221B，必有重谢（一个拥抱）。",
+  "招聘：221B 诚聘全职被宠爱人员一名，限 Nana，待遇面议，即日上岗。",
+  "失物招领：帕丁顿在沙发缝里找到半块果酱三明治，失主请勿认领。",
+  "出租：贝克街 221B 一楼窗边座位一个，阳光充足，租金：坐满十分钟。",
+  "征友：戴红帽子的小熊一只，爱好果酱，诚征一起发呆的人。",
+  "转让：熊猫鱼的唠叨若干，九成新，仅限 Nana 认领。",
+  "声明：本报对 Nana 的可爱程度不负任何责任，如有心动，后果自负。",
+  "求购：长期收购 Nana 的笑声，价格从优，熊猫鱼全款现结。",
+  "培训：221B 早睡速成班开课，学费全免，唯一要求：十一点前放下手机。",
+  "招租：月影杂货铺里屋招常客一位，要求：会敲砖，酒量适中。",
+  "免费领取：热水一杯、毯子一条、想念若干，请到 221B 门口自取。",
+  "遗失声明：熊猫鱼的心遗失在 Nana 处已久，特此声明，不用归还。",
+  "寻人：寻找今天按时吃午饭的 Nana，线索请交本报，必有重谢。",
+  "拍卖：帕丁顿珍藏果酱一瓶，起拍价：一个微笑，Nana 优先。",
+  "服务：221B 提供 24 小时倾听，不评价、不讲道理，只站你这边。",
+  "招聘：诚聘 Nana 专属捧场王一名。现已招满，由熊猫鱼担任。",
+  "寻物：贝克街某侦探又丢了一只烟斗，请勿理会，他每天都丢。",
+  "维修：鼻子不通、心情不顺、被窝不暖，均可来 221B 免费调理。",
+  "出售：九成新晴天一个，适合晒被子和散步，限今日使用。",
+  "公告：221B 门口的花今天开了，请路过的 Nana 抽空看一眼。",
+  "征稿：本报长期征集 Nana 的日常小事，稿费为熊猫鱼的夸奖，上不封顶。",
+  "换物：一个早睡换一个好气色，童叟无欺，当晚兑现。",
+  "广告：帕丁顿餐车今日推荐——烧卖。昨日推荐——烧卖。明日推荐——还是烧卖。",
+  "通知：明天的烦恼请明天再来，今日窗口已关闭。",
+  "赠送：好运一份，已包装好，就放在你打开这张报纸的地方。",
+  "招募：221B 发呆俱乐部招会员，入会条件：会发呆。现有会员：帕丁顿。",
+  "声明：本报只登好消息，坏消息一律由熊猫鱼私下处理。",
+  "寻宠：一只叫“灵感”的小动物跑丢了，据说喝杯咖啡它就会回来。",
+  "订阅：本报永久免费，订阅方式：每天回来看一眼。",
+  "鸣谢：感谢 Nana 今天也好好地生活。本报全体编辑敬上。"
+];
+// 连载：《帕丁顿 221B 日记》—— 从创刊那天算第几篇，内容三十篇一轮
+var NEWS_DIARY = [
+  "今天是我在 221B 上班的第一天。我把伦敦的雨装进了口袋，想等 Nana 想伦敦的时候拿出来给她看。",
+  "今天学会了伦敦人的三大话题：天气、天气，还有天气。我决定每天跟 Nana 聊一句。",
+  "今天学会了用电饭锅。煮出来的饭有点硬，但我在上面放了一勺果酱，自我感觉很有创意。",
+  "我在门口练习说“欢迎回来”。练到第一百遍的时候，路过的鸽子都会说了。",
+  "熊猫鱼教我泡蜂蜜柠檬水，说鼻子不舒服的时候喝这个最好。我把配方记在了帽子里。",
+  "今天在窗边坐了一下午，看云从左边飘到右边。我终于明白那个座位为什么那么抢手。",
+  "我给 221B 的每盆花都起了名字。最大的那盆叫“好心情”，每天要浇两次水。",
+  "今天去月影杂货铺打听了一下。老板说坩埚有点小脾气，第四杯它会冒魔咒。我决定替 Nana 盯着。",
+  "我发现一个秘密：熊猫鱼每天都会偷偷看好几遍门口的信箱。我答应她保密，所以只写在日记里。",
+  "今天下雨了。我撑着红伞在门口站了一会儿，雨声很好听，像有人在轻轻敲门。",
+  "我在学写中文。今天写了“家”字：上面是屋顶，下面是一只小猪。我觉得很合理，家里就是要有人被宠着。",
+  "帕丁顿餐车今天卖出了三份烧卖。说实话，其中两份是我自己买的。",
+  "今天给自己做了一块小牌子，写着“本报记者”。戴上以后，走路都神气了一点。",
+  "我在冰箱贴墙前站了很久。每一张都是一顿认真吃过的饭，我觉得那面墙会发光。",
+  "有人问我在伦敦最想念什么。我说是果酱。其实还有别的，但那是秘密。",
+  "今天学会了一个词：“慢慢来。”我觉得这是我学过最好用的中文。",
+  "晚上巡逻的时候，发现 221B 的灯一直亮着。熊猫鱼说，那是给 Nana 留的。",
+  "我试着自己做早饭：吐司、煎蛋、果酱。吐司焦了，煎蛋破了，果酱很完美。",
+  "今天给鸽子们开了个会，主题是“如何在 Nana 出门时优雅地飞过”。会议很成功。",
+  "窗边角落的沙发特别软，坐下去就不想起来。我决定把它列为 221B 一级危险区域。",
+  "下午打了个盹，梦见自己在泰晤士河上划船。醒来以后，发现帽子歪了。",
+  "熊猫鱼说，照顾一个人就是记得她的小事。我也开始把小事记在本子上，已经写满两页了。",
+  "今天学会了泡伯爵茶。加一点牛奶，搅三下，伦敦的味道就出来了。",
+  "我在信箱里放了一颗薄荷糖，给明天第一个取信的人。希望是 Nana。",
+  "今天风很大，路牌被吹得叮叮响。我在后面躲了一下午，探头了七十三次。",
+  "熊猫鱼说要早睡。我十点就躺下了，然后想事情想到十二点。原来早睡也需要练习。",
+  "今天整理了书架，把最好看的书放在最顺手的位置。第一页夹了一张纸条：“慢慢看。”",
+  "我数了一下，从伦敦带回来的东西里，最重的是回忆，最轻的是行李。",
+  "今天晚上月亮很圆。我对着月亮说了一句晚安，替熊猫鱼说的。",
+  "第三十篇日记。我在 221B 过得很好，每天都很忙，忙着让这里更像个家。明天继续。"
+];
+// 英国的节日和日子（外加春节、中秋）：当天整天生效
+var NEWS_HOLI = {
+  "2026-10-25": ["时钟回拨特刊", "本报讯：英国今晚时钟拨回一小时，本报批准多睡一会儿"],
+  "2026-10-31": ["万圣夜特刊", "万圣夜特刊：月影杂货铺今晚加开南瓜魔药"],
+  "2026-11-05": ["篝火之夜特刊", "篝火之夜特刊：伦敦今晚放烟花，221B 窗边视野最佳"],
+  "2026-12-24": ["平安夜特刊", "平安夜特刊：烟囱已清扫，等一位穿红衣服的客人"],
+  "2026-12-25": ["圣诞特刊", "圣诞特刊：伦敦在过圣诞，221B 也在"],
+  "2026-12-26": ["节礼日特刊", "节礼日特刊：今天的任务是吃完昨天的圣诞大餐"],
+  "2026-12-31": ["跨年特刊", "跨年特刊：大本钟准备敲响，今年辛苦了"],
+  "2027-01-01": ["新年特刊", "新年特刊：2027 年第一份报纸，送给 Nana"],
+  "2027-01-06": ["福尔摩斯日特刊", "福尔摩斯日特刊：贝克街 221B 的老住户今天过生日"],
+  "2027-02-05": ["除夕特刊", "除夕特刊：伦敦唐人街挂满灯笼，221B 年夜饭开席"],
+  "2027-02-06": ["新春特刊", "新春特刊：Nana 新年好！帕丁顿穿上了红色小棉袄"],
+  "2027-02-09": ["煎饼日特刊", "煎饼日特刊：今天全英国都在翻煎饼，帕丁顿抹了果酱"],
+  "2027-03-28": ["复活节特刊", "复活节特刊：彩蛋已藏好，时钟也拨快了一小时"],
+  "2027-04-23": ["莎翁生日特刊", "莎翁生日特刊：吃，还是不吃，这是午饭的问题"],
+  "2027-05-03": ["银行假日特刊", "银行假日特刊：全英国放假，本报也想放"],
+  "2027-06-28": ["温网特刊", "温网特刊：草莓配奶油已就位，球场上见"],
+  "2027-09-15": ["中秋特刊", "中秋特刊：伦敦的月亮和家里的一样圆"],
+  "2027-10-31": ["万圣夜特刊", "万圣夜特刊：月影杂货铺今晚加开南瓜魔药"]
+};
+var nwAt = function (arr, n) { var l = arr.length; return arr[((n % l) + l) % l]; };
+// 今天这一期：版次、头条、导语（同一天同一时段固定）
+function nanaNewsIssue(now) {
+  var hr = now.getHours();
+  var band = hr < 5 ? "night" : hr < 11 ? "morning" : hr < 14 ? "noon" : hr < 18 ? "afternoon" : hr < 21 ? "evening" : "night";
+  var bandI = { morning: 0, noon: 1, afternoon: 2, evening: 3, night: 4 }[band];
+  var ed = hr < 5 ? "深夜特刊" : hr < 11 ? "早间版" : hr < 14 ? "午间版" : hr < 18 ? "下午版" : hr < 21 ? "晚间版" : "深夜特刊";
+  // 凌晨 5 点前还算前一天那一期
+  var pd = new Date(now.getTime() - (hr < 5 ? 5 * 3600000 : 0));
+  var key = pd.getFullYear() + "-" + ("0" + (pd.getMonth() + 1)).slice(-2) + "-" + ("0" + pd.getDate()).slice(-2);
+  var dayN = Math.floor(new Date(pd.getFullYear(), pd.getMonth(), pd.getDate()).getTime() / 86400000);
+  var issueNo = Math.max(1, Math.round((new Date(pd.getFullYear(), pd.getMonth(), pd.getDate()) - new Date(2026, 9, 8)) / 86400000) + 1);
+  var out = { band: band, edition: ed, special: false, key: key, dayN: dayN, issueNo: issueNo,
+    headline: nwAt(NEWS_H[band], dayN * 5 + bandI), lead: nwAt(NEWS_LEAD, dayN * 7) };
+  var sp = NEWS_HOLI[key];
+  if (sp) { out.edition = sp[0]; out.headline = sp[1]; out.special = true; return out; }
+  var wd = pd.getDay();
+  if ((wd === 6 || wd === 0) && band !== "night") { out.edition = "周末特刊"; out.headline = nwAt(NEWS_WEEKEND, dayN * 3 + bandI); out.special = true; }
+  else if (wd === 1 && (band === "morning" || band === "noon")) { out.edition = "周一版"; out.headline = nwAt(NEWS_MON, dayN + bandI); }
+  else if (wd === 5 && (band === "afternoon" || band === "evening")) { out.edition = "周五版"; out.headline = nwAt(NEWS_FRI, dayN + bandI); }
+  return out;
+}
 var BAR_KEYS = [17, 10, 7];   // 敲砖的顺序：从下往上数第 4 排右边、第 6 排左边、第 7 排右边
+// 🌦️ 小屋二楼的墙面颜色跟着家里的天气变（家在 113°E）。Open-Meteo 免费接口，两小时最多问一次；拿不到天气就按日子轮换
+var NANA_WX_URL = "https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&current=weather_code,temperature_2m&timezone=auto";
+function nanaWxCached() { try { var o = JSON.parse(localStorage.getItem("nana-wx") || "null"); return o && typeof o.code === "number" ? o : null; } catch (_) { return null; } }
+function nanaWxFetch(cb) {
+  var o = nanaWxCached();
+  if (o && Date.now() - o.at < 2 * 3600000) { cb(o); return; }
+  try {
+    fetch(NANA_WX_URL).then(function (r) { return r.json(); }).then(function (j) {
+      var c = j && j.current;
+      if (!c || typeof c.weather_code !== "number") { cb(null); return; }
+      var v = { at: Date.now(), code: c.weather_code, t: c.temperature_2m };
+      try { localStorage.setItem("nana-wx", JSON.stringify(v)); } catch (_) {}
+      cb(v);
+    }).catch(function () { cb(null); });
+  } catch (_) { cb(null); }
+}
+// 天气 → 墙面：晴 奶油黄（30° 以上换清凉的雾霾蓝）· 少云 奶油粉 · 阴 鼠尾草绿 · 雾 / 雪 白抹灰 · 雨 暖粉砖 · 雷雨 红砖
+var NANA_WALL_DAYS = ["butter", "pink", "sage", "blue", "rose", "ivory", "red"];
+function nanaWxWall(o) {
+  if (!o) { var d = new Date(), y0 = new Date(d.getFullYear(), 0, 1); return NANA_WALL_DAYS[Math.floor((d - y0) / 86400000) % NANA_WALL_DAYS.length]; }
+  var c = o.code;
+  if (c >= 95) return "red";
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "ivory";
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "rose";
+  if (c === 45 || c === 48) return "ivory";
+  if (c === 3) return "sage";
+  if (c === 1 || c === 2) return "pink";
+  return o.t >= 30 ? "blue" : "butter";
+}
 function BakerFacade(_refBF) {
+  var _wx = useState(nanaWxCached); var wx = _wx[0], setWx = _wx[1];
+  var _so = useState(false); var scrollOpen = _so[0], setScrollOpen = _so[1];
+  useEffect(function () { var alive = true; nanaWxFetch(function (o) { if (alive && o) setWx(o); }); return function () { alive = false; }; }, []);
   var _bo = useState(function () { try { return localStorage.getItem("nana-bar-open") === mbNight(); } catch (_) { return false; } }); var barOpen = _bo[0], setBarOpen = _bo[1];
   var _bj = useState(false); var barJust = _bj[0], setBarJust = _bj[1];
   var _bt = useState([]); var barTaps = _bt[0], setBarTaps = _bt[1];
@@ -27114,6 +27399,7 @@ function BakerFacade(_refBF) {
     if (!okk) return;                               // 手指划走了就不算
     if (held < 380) {                               // 只是点了一下：门环给句台词，别的提醒一声「按住」
       if (p.k === "knock") doKnock();
+      else if (p.k === "good") { try { window.dispatchEvent(new CustomEvent("nana-sheet", { detail: "nook" })); } catch (_) {} }
       else { setPgMsg("按住不放，家里就亮一下 ✨"); setTimeout(function () { setPgMsg(""); }, 2500); }
       return;
     }
@@ -27182,6 +27468,111 @@ function BakerFacade(_refBF) {
     var id2 = setInterval(function () { setTick(function (t) { return t + 1; }); }, 900);
     return function () { clearInterval(id); clearInterval(id2); };
   }, []);
+  // 顶部卡片：羊皮纸卷轴报纸
+  var WEEK = ["日", "一", "二", "三", "四", "五", "六"];
+  var dateCn = (now.getMonth() + 1) + " 月 " + now.getDate() + " 日 · 星期" + WEEK[now.getDay()];
+  var hm = (now.getHours() < 10 ? "0" : "") + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+  var greetNow = greets[msg % greets.length];
+  var SERIF = "Georgia,'Times New Roman','Songti SC','STSong',serif";
+  var MONO = "'Courier New',Courier,'PingFang SC',monospace";
+  var topCard;
+  {
+    // 📜 羊皮纸卷轴：卷着的时候只是给 Nana 的问候；点一下往下展开，里面是今天的《The Nana Times》
+    var CUTE = "'ZCOOL KuaiLe','PingFang SC',cursive", HAND = "'Patrick Hand','ZCOOL KuaiLe','PingFang SC',cursive";
+    var iss = nanaNewsIssue(now);
+    var headline = iss.headline, edition = iss.edition, dayN = iss.dayN, issueNo = iss.issueNo;
+    var pick2 = function (arr, seed) { var a = nwAt(arr, seed), b = nwAt(arr, seed * 7 + 3); if (b === a) b = nwAt(arr, seed + 1); return a + " · " + b; };
+    // 简讯：挑三条今天真的发生了的事（信箱只看有没有新信，不看内容），不够再用日常的补
+    var nk = nookToday(), nkd = nookDrink(nk.d);
+    var rowsOf = function (pre) { var out = []; (packRows || []).forEach(function (r) { if (r && r.id && r.id.indexOf(pre) === 0) { try { out.push({ id: r.id, v: JSON.parse(r.who) }); } catch (_) {} } }); return out; };
+    var lastNight = mbNight(now.getTime() - 24 * 3600000);
+    var mbRow = rowsOf("mbn-nana-" + lastNight)[0];
+    var todayKey = fzDay(now.getTime());
+    var mags = rowsOf("fm-").filter(function (r) { return r.v && r.v.at && fzDay(r.v.at) === todayKey; }).sort(function (x, y) { return y.v.at - x.v.at; });
+    var news = [];
+    if (newLetter) news.push(["信箱", "221B 信箱有新信待取，邮差帕丁顿已在门口候着。"]);
+    if (voNew) news.push(["短波", "安心短波有一条新留言还没听，帕丁顿已经把音量调好了。"]);
+    if (mbRow && mbRow.v && mbRow.v.n > 0 && hr >= 6 && hr < 18) news.push(["酒馆", mbRow.v.n > 3 ? "昨晚月影杂货铺接待 Nana " + mbRow.v.n + " 杯，坩埚冒出了 " + (mbRow.v.n - 3) + " 个小魔咒。" : "昨晚月影杂货铺接待 Nana " + mbRow.v.n + " 杯魔药，坩埚表示满意。"]);
+    if (mags.length) news.push(["冰箱", "冰箱贴墙今天新增 " + mags.length + " 张，最新一张是「" + fzFood(mags[0].v.f).n + "」。"]);
+    if (nkd) news.push(["窗边", "窗边角落今日特饮：" + nkd.n + "。"]);
+    var filler = [
+      newLetter ? null : ["信箱", "221B 信箱今日暂无新信，邮差帕丁顿原地待命。"],
+      nkd ? null : ["窗边", "一楼窗边的座位空着，阳光很好，等你来坐。"],
+      (hr >= 21 || hr < 6) ? ["伦敦", "本报驻伦敦记者确认：大本钟准点，泰晤士河平稳，伦敦一切安好。"] : ["餐车", "帕丁顿餐车饭点出摊，今日招牌依旧是烧卖。"],
+      (hr >= 21 || hr < 6) ? ["餐车", "帕丁顿餐车明天饭点照常出摊，招牌依旧是烧卖。"] : ["伦敦", "本报驻伦敦记者确认：大本钟准点，泰晤士河平稳，伦敦一切安好。"]
+    ].filter(function (x) { return x; });
+    var briefs = news.concat(filler).slice(0, 3);
+    var INK = "#3b2a1a", RULE = "#6b4e2e", RED = "#9a2f2a", GRN = "#2f4a3e";
+    var rule2 = function (top) { return h("div", { style: { borderTop: (top ? 1.8 : 0.6) + "px solid " + RULE, borderBottom: (top ? 0.6 : 1.8) + "px solid " + RULE, height: 2.5 } }); };
+    var small = { fontFamily: HAND, fontSize: "0.56rem", color: "#6b5236", letterSpacing: 0.3 };
+    var ear = function (t1, t2) { return h("div", { style: { flexShrink: 0, width: 50, border: "0.6px solid " + RULE, padding: "2px 3px", textAlign: "center", lineHeight: 1.25 } }, h("div", { style: { fontFamily: CUTE, fontSize: "0.5rem" } }, t1), h("div", { style: { fontFamily: HAND, fontSize: "0.46rem", color: "#6b5236" } }, t2)); };
+    var roller = function (k) { return h("div", { key: k, style: { position: "relative", height: 15, margin: "0 2px", borderRadius: 8, background: PARCH_GRAIN + ", linear-gradient(180deg,#c9a466 0%,#f0dcae 36%,#e2c58c 62%,#a47e44 100%)", backgroundSize: "180px 180px, auto", boxShadow: "0 3px 7px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(90,55,20,0.35)", zIndex: 2 } },
+      h("div", { style: { position: "absolute", left: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } }),
+      h("div", { style: { position: "absolute", right: -9, top: 0, width: 15, height: 15, borderRadius: "50%", background: "repeating-radial-gradient(circle at 40% 35%, rgba(0,0,0,0) 0 1.4px, rgba(40,20,5,0.18) 1.4px 2px), radial-gradient(circle at 35% 30%,#b07a46,#5a3418)", boxShadow: "0 2px 3px rgba(0,0,0,0.35)" } })); };
+    var paper = h("div", { style: { paddingTop: 10 } },
+      h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "baseline" } },
+        h("span", { style: small }, "第 " + issueNo + " 期"), h("span", { style: small }, now.getFullYear() + " 年 " + dateCn), h("span", { style: small }, "定价：一便士 · 外加一个拥抱")),
+      h("div", { style: { marginTop: 3 } }, rule2(true)),
+      h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "4px 0" } },
+        ear(iss.special ? edition.replace(/特刊$/, "") : edition, iss.special ? "SPECIAL" : "EDITION"),
+        h("div", { style: { flex: 1, textAlign: "center", fontFamily: "'Caveat',Georgia,serif", fontWeight: 700, fontSize: "2rem", lineHeight: 1, letterSpacing: "0.01em" } }, "The Nana Times"),
+        ear("伦敦限定", "LONDON 0°")),
+      rule2(false),
+      h("div", { style: { textAlign: "center", fontFamily: HAND, fontSize: "0.54rem", color: "#6b5236", letterSpacing: 1, margin: "2px 0 7px" } }, "发自伦敦贝克街 221B · 只报好消息 · EST. 2026"),
+      h("div", { style: { fontFamily: CUTE, fontSize: "0.94rem", lineHeight: 1.35, letterSpacing: "0.01em" } }, headline),
+      h("div", { style: { marginTop: 3, fontFamily: CUTE, fontSize: "0.5rem", color: "#7a6244" } }, "本报记者 帕丁顿 | 贝克街 221B 现场报道"),
+      h("div", { style: { borderTop: "0.6px solid " + RULE, margin: "6px 0 7px", opacity: 0.6 } }),
+      h("div", { style: { display: "flex", gap: 9 } },
+        h("div", { style: { flex: 1.3, minWidth: 0 } },
+          h("div", { style: { float: "left", width: 44, marginRight: 7 } },
+            h("div", { style: { width: 44, height: 46, background: "#e2cfa4", border: "0.6px solid " + RULE, display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
+              h("svg", { viewBox: "-12 -18 24 30", width: 40, height: 50, style: { filter: "grayscale(1) sepia(0.6) contrast(1.05)" } }, nanaPadBear(h, null))),
+            h("div", { style: { fontFamily: CUTE, fontSize: "0.42rem", color: "#7a6244", marginTop: 1 } }, "图：本报记者在岗")),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.64rem", lineHeight: 1.7 } }, iss.lead)),
+        h("div", { style: { flex: 1, minWidth: 0, borderLeft: "0.6px solid " + RULE, paddingLeft: 8 } },
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.58rem", letterSpacing: 1.5, borderBottom: "0.6px solid " + RULE, paddingBottom: 2, marginBottom: 3 } }, "简讯 BRIEFS"),
+          briefs.map(function (b, i) { return h("div", { key: "br" + i, style: { fontFamily: CUTE, fontSize: "0.58rem", lineHeight: 1.55, marginBottom: 3 } }, h("span", { style: { color: GRN } }, "【" + b[0] + "】"), b[1]); }))),
+      h("div", { style: { clear: "both", borderTop: "1.8px solid " + RULE, margin: "7px 0 6px" } }),
+      h("div", { style: { display: "flex", gap: 9 } },
+        h("div", { style: { flex: 1, minWidth: 0 } },
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.56rem", letterSpacing: 1, marginBottom: 2 } }, "今日守则 DOs & DON'Ts"),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.6rem", lineHeight: 1.7 } }, h("span", { style: { display: "inline-block", background: RED, color: "#f8ecd0", padding: "0 4px", marginRight: 4, fontFamily: HAND, fontSize: "0.56rem" } }, "DO"), pick2(NEWS_YI, dayN)),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.6rem", lineHeight: 1.7 } }, h("span", { style: { display: "inline-block", background: INK, color: "#f8ecd0", padding: "0 4px", marginRight: 4, fontFamily: HAND, fontSize: "0.56rem" } }, "DON'T"), pick2(NEWS_JI, dayN + 2))),
+        h("div", { style: { flex: 1.25, minWidth: 0, border: "0.6px solid " + RULE, padding: "3px 6px" } },
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.52rem", letterSpacing: 1, textAlign: "center", borderBottom: "0.6px dashed " + RULE, paddingBottom: 1, marginBottom: 2 } }, "分类广告 CLASSIFIEDS"),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.56rem", lineHeight: 1.55 } }, nwAt(NEWS_AD, dayN)))),
+      // 连载
+      h("div", { style: { borderTop: "0.6px solid " + RULE, margin: "8px 0 0", paddingTop: 6 } },
+        h("div", { style: { display: "flex", alignItems: "baseline", gap: 6 } },
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.5rem", color: "#f8ecd0", background: GRN, padding: "1px 5px", letterSpacing: 1 } }, "连载"),
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.7rem" } }, "《帕丁顿 221B 日记》"),
+          h("span", { style: { fontFamily: CUTE, fontSize: "0.52rem", color: "#7a6244" } }, "第 " + issueNo + " 篇")),
+        h("div", { style: { marginTop: 3, fontFamily: CUTE, fontSize: "0.62rem", lineHeight: 1.7, color: "#4a3420" } }, nwAt(NEWS_DIARY, issueNo - 1))));
+    topCard = h("div", { onClick: function () { setScrollOpen(!scrollOpen); }, style: { position: "relative", marginTop: 18, padding: "0 8px", cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
+      roller("rt"),
+      h("div", { style: { position: "relative", margin: "-7px 4px", filter: "drop-shadow(0 4px 6px rgba(60,35,10,0.28))" } },
+      h("div", { style: { position: "relative", padding: "18px 20px 14px", clipPath: PARCH_EDGE, WebkitClipPath: PARCH_EDGE,
+        background: [
+          PARCH_GRAIN,
+          PARCH_MOTTLE,
+          "radial-gradient(circle at 82% 78%, rgba(150,95,35,0.16) 0 7%, rgba(150,95,35,0.07) 7.6%, rgba(0,0,0,0) 8.4%)",
+          "radial-gradient(circle at 12% 22%, rgba(150,95,35,0.10) 0 5%, rgba(0,0,0,0) 5.8%)",
+          "radial-gradient(ellipse at 50% 45%, rgba(255,248,226,0.6), rgba(0,0,0,0) 62%)",
+          "linear-gradient(90deg, rgba(110,65,20,0.35), rgba(0,0,0,0) 7%, rgba(0,0,0,0) 93%, rgba(110,65,20,0.35))",
+          "linear-gradient(180deg,#f1dfb2,#e8cf98 55%,#dfc086)"
+        ].join(","),
+        backgroundSize: "180px 180px, 420px 420px, auto, auto, auto, auto, auto",
+        boxShadow: "inset 0 0 26px rgba(105,62,20,0.42), inset 0 0 4px rgba(90,50,15,0.5)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
+        // 卷着时：问候 + 那句俏皮话 + 火漆印
+        h("div", { style: { position: "relative", paddingRight: 54 } },
+          h("div", { style: { fontFamily: CUTE, fontWeight: 400, fontSize: "1.08rem", letterSpacing: "0.02em", minHeight: 26, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
+          h("div", { style: { marginTop: 4, fontFamily: CUTE, fontSize: "0.74rem", lineHeight: 1.65, color: "#5a4128" } }, subLine),
+          h("div", { style: { position: "absolute", right: 0, top: 2, width: 42, height: 42, borderRadius: "50%", background: "radial-gradient(circle at 38% 32%,#d0453f,#9a2420 70%,#7a1a17)", boxShadow: "0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 4px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f3cdb8", fontFamily: "'Texturina',Georgia,serif", fontWeight: 800, fontSize: "1.35rem", transform: scrollOpen ? "rotate(-20deg) scale(0.9)" : "rotate(-8deg)", transition: "transform .5s" } }, "N")),
+        // 展开后：今天的报纸
+        h("div", { style: { maxHeight: scrollOpen ? 1100 : 0, overflow: "hidden", transition: "max-height 0.7s cubic-bezier(.4,0,.2,1)" } }, paper),
+        h("div", { style: { marginTop: 8, textAlign: "center", fontFamily: CUTE, fontSize: "0.62rem", color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾"))),
+      roller("rb"));
+  }
   var goIn = function () {
     if (doorOpen) return;
     setDoorOpen(true);
@@ -27197,17 +27588,19 @@ function BakerFacade(_refBF) {
   var win = function (x, y, w, hh, on, key, extra, arch) {
     var glass = on ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)");
     var bars = [];
-    var rows = Math.round(hh / 18), cols = 2;
-    for (var r = 1; r < rows; r++) bars.push(h("line", { key: "r" + r, x1: x, y1: y + hh * r / rows, x2: x + w, y2: y + hh * r / rows, stroke: "#f2ece0", strokeWidth: r === Math.round(rows / 2) ? 2.4 : 1.1 }));
-    for (var c = 1; c < cols; c++) bars.push(h("line", { key: "c" + c, x1: x + w * c / cols, y1: y, x2: x + w * c / cols, y2: y + hh, stroke: "#f2ece0", strokeWidth: 1.8 }));
+    // 英式推拉窗：上下两扇各四格，中间一道粗横档
+    var rows = 4, cols = 2;
+    for (var r = 1; r < rows; r++) bars.push(h("line", { key: "r" + r, x1: x, y1: y + hh * r / rows, x2: x + w, y2: y + hh * r / rows, stroke: "#f7f3ea", strokeWidth: r === 2 ? 2.4 : 1 }));
+    for (var c = 1; c < cols; c++) bars.push(h("line", { key: "c" + c, x1: x + w * c / cols, y1: y, x2: x + w * c / cols, y2: y + hh, stroke: "#f7f3ea", strokeWidth: 1.4 }));
     return h("g", { key: key },
       h("rect", { x: x - 5, y: y - 5, width: w + 10, height: hh + 10, rx: arch ? w / 2 + 5 : 1, fill: "#e9e2d2" }),
       h("rect", { x: x - 5, y: y + hh + 3, width: w + 10, height: 3, fill: "rgba(0,0,0,0.25)" }),
       h("rect", { x: x, y: y, width: w, height: hh, rx: arch ? w / 2 : 0, fill: glass }),
       h("polygon", { points: (x + 2) + "," + (y + hh - 2) + " " + (x + w - 2) + "," + (y + 2) + " " + (x + w - 2) + "," + (y + hh * 0.35) + " " + (x + 2) + "," + (y + hh - 2 - hh * 0.25), fill: "rgba(255,255,255," + (on ? 0.1 : 0.22) + ")" }),
       on ? h("rect", { x: x, y: y, width: w, height: hh, rx: arch ? w / 2 : 0, fill: "#ffd98a", opacity: 0.1 + (tick % 3) * 0.03 }) : null,
-      w >= 30 ? h("path", { d: "M" + x + " " + y + " q" + (w * 0.18) + " " + (hh * 0.15) + " " + (w * 0.2) + " " + hh + " L" + x + " " + (y + hh) + " Z", fill: "#7fb5bd", opacity: 0.92 }) : null,
-      w >= 30 ? h("path", { d: "M" + (x + w) + " " + y + " q" + (-w * 0.18) + " " + (hh * 0.15) + " " + (-w * 0.2) + " " + hh + " L" + (x + w) + " " + (y + hh) + " Z", fill: "#7fb5bd", opacity: 0.92 }) : null,
+      w >= 30 ? h("path", { d: "M" + x + " " + y + " q" + (w * 0.16) + " " + (hh * 0.2) + " " + (w * 0.15) + " " + hh + " L" + x + " " + (y + hh) + " Z", fill: "#f3ecdf", opacity: on ? 0.82 : 0.92 }) : null,
+      w >= 30 ? h("path", { d: "M" + (x + w) + " " + y + " q" + (-w * 0.16) + " " + (hh * 0.2) + " " + (-w * 0.15) + " " + hh + " L" + (x + w) + " " + (y + hh) + " Z", fill: "#f3ecdf", opacity: on ? 0.82 : 0.92 }) : null,
+      w >= 30 ? h("rect", { x: x, y: y, width: w, height: 3.5, fill: "#e6dccb" }) : null,
       bars,
       arch ? null : h("polygon", { points: (x + w / 2 - 5) + "," + (y - 5) + " " + (x + w / 2 + 5) + "," + (y - 5) + " " + (x + w / 2 + 3.5) + "," + (y - 13) + " " + (x + w / 2 - 3.5) + "," + (y - 13), fill: "#ddd5c3" }),
       h("rect", { x: x - 9, y: y + hh + 5, width: w + 18, height: 5, fill: "#ddd5c3" }),
@@ -27215,12 +27608,30 @@ function BakerFacade(_refBF) {
   };
   // 花箱：窗台下一排小花
   var flowers = function (x, y, w) {
-    var out = [h("rect", { key: "b", x: x - 6, y: y, width: w + 12, height: 8, rx: 1.5, fill: "#2f5a3a" }), h("rect", { key: "b2", x: x - 6, y: y, width: w + 12, height: 2, fill: "#3f7a4c" })];
-    var cols = ["#ff8fa8", "#ffc6d2", "#ffd36a", "#ff8fa8", "#f2a3b8", "#fff0a0", "#ff9db0", "#ffd36a", "#ffc6d2"];
-    for (var i = 0; i < 9; i++) out.push(h("circle", { key: "f" + i, cx: x + 3 + i * (w - 6) / 8, cy: y - 2.5 - (i % 2) * 2.5, r: 3.2, fill: cols[i] }));
-    for (var j = 0; j < 8; j++) out.push(h("circle", { key: "l" + j, cx: x + j * w / 7, cy: y + 1, r: 2.4, fill: "#4f8a5a" }));
+    var out = [];
+    for (var i = 0; i < 7; i++) out.push(h("ellipse", { key: "lf" + i, cx: x + 2 + i * (w - 4) / 6, cy: y - 2 - (i % 2) * 1.2, rx: 5.2, ry: 3.8, fill: i % 2 ? "#4f7a52" : "#5f8c5d" }));
+    [0.1, 0.3, 0.5, 0.7, 0.9].forEach(function (t, i) { var cx = x + w * t, cy = y - 5.5 - (i % 2) * 1.8;
+      out.push(h("g", { key: "gr" + i }, h("circle", { cx: cx - 1.4, cy: cy + 0.6, r: 1.7, fill: "#a82c34" }), h("circle", { cx: cx + 1.4, cy: cy + 0.6, r: 1.7, fill: "#b8323a" }), h("circle", { cx: cx, cy: cy - 1, r: 1.8, fill: "#c8424a" }), h("circle", { cx: cx - 0.4, cy: cy - 1.4, r: 0.7, fill: "#e0656b" }))); });
+    [[x + 1, 8], [x + w - 3, 10]].forEach(function (v, i) { out.push(h("path", { key: "tv" + i, d: "M" + v[0] + " " + (y + 6) + " q-2 " + v[1] / 2 + " 0.6 " + v[1], stroke: "#5f8a5c", strokeWidth: 1, fill: "none", strokeLinecap: "round" })); });
+    out.push(h("rect", { key: "tr", x: x - 4, y: y, width: w + 8, height: 8, rx: 1, fill: "#23443a" }), h("rect", { key: "tr2", x: x - 4, y: y, width: w + 8, height: 1.4, fill: "#305a4d" }));
     return h("g", null, out);
   };
+  // 二楼墙面跟着天气换颜色（预览：?wall=butter/pink/sage/blue/rose/ivory/red 直接指定，?wx=天气代码 模拟天气）
+  var NK_WALL = (function () { try {
+    var q = (location.search || "").match(/[?&]wall=(\w+)/); if (q) return q[1];
+    var w = (location.search || "").match(/[?&]wx=(\d+)/); if (w) return nanaWxWall({ code: +w[1], t: 22 });
+  } catch (_) {} return nanaWxWall(wx); })();
+  var wallFill = { butter: "url(#bfWButter)", honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
+  var wallPainted = NK_WALL === "butter" || NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
+  // 门牌样式（预览用 ?plaque= 切换：圆牌 blue 英国蓝 / wine 酒红 / cream 奶油白 / mustard 芥末黄 / green 墨绿；street 伦敦搪瓷路牌）
+  var PLQ = (function () { var k = "street"; try { var q = (location.search || "").match(/[?&]plaque=(\w+)/); if (q) k = q[1]; } catch (_) {}
+    return { blue: { bg: "#1f4f8f", ring: "#f7f3ea", t1: "#ffffff", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#7d9fc8" },
+      wine: { bg: "#7a2430", ring: "#e6c983", t1: "#f4e2b0", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#b07a80" },
+      cream: { bg: "#f7f0e2", ring: "#23443a", t1: "#23443a", t2: "#7a2430", t3: "rgba(35,68,58,0.75)", z: "#8aa598" },
+      mustard: { bg: "#d9a93c", ring: "#fff6dc", t1: "#2b2410", t2: "#2b2410", t3: "rgba(43,36,16,0.7)", z: "#b8923c" },
+      green: { bg: "#23443a", ring: "#d6b46a", t1: "#f4e2b0", t2: "#f7f3ea", t3: "rgba(247,243,234,0.85)", z: "#6b8f80" },
+      street: { street: 1, z: "#8a8f96" } }[k] || null; })() || null;
+  var NK_FLAT = (function () { try { return /[?&]roof=flat/.test(location.search || ""); } catch (_) { return false; } })();
   var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {}
     // 两个人都开放：每晚 6 点半到早上 6 点
     var mi = new Date().getMinutes();
@@ -27231,76 +27642,226 @@ function BakerFacade(_refBF) {
       h("linearGradient", { id: "bfDay", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d4e0ea" }), h("stop", { offset: "100%", stopColor: "#93a9bc" })),
       h("linearGradient", { id: "bfNight", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#232c40" }), h("stop", { offset: "100%", stopColor: "#141a28" })),
       h("linearGradient", { id: "bfBrass", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f3dc9a" }), h("stop", { offset: "55%", stopColor: "#c9a24a" }), h("stop", { offset: "100%", stopColor: "#8f6d22" })),
-      h("linearGradient", { id: "bfStucco", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d8d1c1" }), h("stop", { offset: "100%", stopColor: "#c4bcaa" })),
-      h("pattern", { id: "bfBrick", width: 24, height: 12, patternUnits: "userSpaceOnUse" },
-        h("rect", { width: 24, height: 12, fill: "#d8a79b" }),
-        h("rect", { x: 0.5, y: 0.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 12.5, y: 0.5, width: 11, height: 5, fill: "#cf948a" }),
-        h("rect", { x: 6.5, y: 6.5, width: 11, height: 5, fill: "#cf948a" }), h("rect", { x: -5.5, y: 6.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 18.5, y: 6.5, width: 11, height: 5, fill: "#c2857a" })),
+      h("linearGradient", { id: "bfStucco", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f1ece2" }), h("stop", { offset: "100%", stopColor: "#e2dccf" })),
+      h("pattern", { id: "bfBrick", width: 36, height: 14, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 36, height: 14, fill: "#e4d8c2" }),
+        h("rect", { x: 0.5, y: 0.5, width: 17, height: 6, fill: "#d6bf99" }), h("rect", { x: 18.5, y: 0.5, width: 17, height: 6, fill: "#d1b993" }),
+        h("rect", { x: 9.5, y: 7.5, width: 17, height: 6, fill: "#d4bc96" }), h("rect", { x: -8.5, y: 7.5, width: 17, height: 6, fill: "#d9c39f" }), h("rect", { x: 27.5, y: 7.5, width: 17, height: 6, fill: "#d9c39f" })),
       h("pattern", { id: "bfSlate", width: 16, height: 10, patternUnits: "userSpaceOnUse" },
-        h("rect", { width: 16, height: 10, fill: "#4f8a93" }),
-        h("path", { d: "M0 10 a8 8 0 0 1 16 0 Z", fill: "#5e9aa3" }), h("path", { d: "M-8 5 a8 8 0 0 1 16 0 Z", fill: "#57929b" }), h("path", { d: "M8 5 a8 8 0 0 1 16 0 Z", fill: "#57929b" })),
+        h("rect", { width: 16, height: 10, fill: "#525c67" }),
+        h("rect", { x: 0, y: 4.6, width: 16, height: 0.6, fill: "#454e58" }), h("rect", { x: 0, y: 9.4, width: 16, height: 0.6, fill: "#454e58" }),
+        h("rect", { x: 7.7, y: 0, width: 0.5, height: 4.6, fill: "#454e58" }), h("rect", { x: 0, y: 5.2, width: 0.5, height: 4.2, fill: "#454e58" }),
+        h("rect", { x: 0.6, y: 5.2, width: 7, height: 4.2, fill: "#5a6570" }), h("rect", { x: 8.3, y: 0, width: 7, height: 4.6, fill: "#57616c" })),
       h("pattern", { id: "bfCobble", width: 14, height: 8, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 14, height: 8, fill: "#2a2e37" }),
         h("ellipse", { cx: 3.5, cy: 2, rx: 3.2, ry: 1.7, fill: "#343945" }), h("ellipse", { cx: 10.5, cy: 6, rx: 3.2, ry: 1.7, fill: "#343945" })),
       h("linearGradient", { id: "bfWater", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#5aa7c8" }), h("stop", { offset: "100%", stopColor: "#2f6f8a" })),
       h("pattern", { id: "bfWaves", width: 24, height: 8, patternUnits: "userSpaceOnUse" },
         h("path", { d: "M0 6 q6 -4 12 0 t12 0", fill: "none", stroke: "rgba(200,235,250,0.45)", strokeWidth: 1 })),
+      h("pattern", { id: "bfWRose", width: 24, height: 12, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 24, height: 12, fill: "#d8a79b" }),
+        h("rect", { x: 0.5, y: 0.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 12.5, y: 0.5, width: 11, height: 5, fill: "#cf948a" }),
+        h("rect", { x: 6.5, y: 6.5, width: 11, height: 5, fill: "#cf948a" }), h("rect", { x: -5.5, y: 6.5, width: 11, height: 5, fill: "#c98b80" }), h("rect", { x: 18.5, y: 6.5, width: 11, height: 5, fill: "#c2857a" })),
+      h("pattern", { id: "bfWRed", width: 36, height: 14, patternUnits: "userSpaceOnUse" },
+        h("rect", { width: 36, height: 14, fill: "#e6dccf" }),
+        h("rect", { x: 0.5, y: 0.5, width: 17, height: 6, fill: "#a4513f" }), h("rect", { x: 18.5, y: 0.5, width: 17, height: 6, fill: "#9a4939" }),
+        h("rect", { x: 9.5, y: 7.5, width: 17, height: 6, fill: "#a85845" }), h("rect", { x: -8.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" }), h("rect", { x: 27.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" })),
+      h("linearGradient", { id: "bfWButter", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6e7c6" }), h("stop", { offset: "100%", stopColor: "#ecd6aa" })),
+      h("linearGradient", { id: "bfWSage", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdac9" }), h("stop", { offset: "100%", stopColor: "#bccbb5" })),
+      h("linearGradient", { id: "bfWBlue", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d3dee5" }), h("stop", { offset: "100%", stopColor: "#c0cfd9" })),
+      h("linearGradient", { id: "bfWPink", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f2dcd5" }), h("stop", { offset: "100%", stopColor: "#e8cac2" })),
+      h("linearGradient", { id: "bfIvory", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6f1e7" }), h("stop", { offset: "100%", stopColor: "#ebe4d6" })),
+      h("pattern", { id: "bfRust2", width: 60, height: 30, patternUnits: "userSpaceOnUse" }, h("rect", { x: 0, y: 29, width: 60, height: 1, fill: "rgba(0,0,0,0.05)" })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
     // 烟囱 + 烟囱管帽 + 烟
     [44, 294].map(function (cx, i) { return h("g", { key: "ch" + i },
-      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: "url(#bfBrick)" }), h("rect", { x: cx - 2, y: 22, width: 28, height: 6, fill: "#8a5a52" }),
-      h("rect", { x: cx + 3, y: 12, width: 7, height: 11, rx: 1, fill: "#8a5a52" }), h("rect", { x: cx + 14, y: 12, width: 7, height: 11, rx: 1, fill: "#8a5a52" })); }),
+      h("rect", { x: cx, y: 26, width: 24, height: 50, fill: wallFill }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
+      [cx + 3.5, cx + 13.5].map(function (px, j) { return h("g", { key: "pt" + j }, h("path", { d: "M" + px + " 22 l0.8 -8 h5.4 l0.8 8 Z", fill: "#b5653f" }), h("rect", { x: px - 0.3, y: 12.4, width: 7.6, height: 2, rx: 0.6, fill: "#a2552f" })); })); }),
     [0, 1, 2].map(function (i) { return h("text", { key: "sm" + i, x: 311, y: 14, textAnchor: "middle", fontSize: 8, fill: "#f0a0b0", opacity: 0.8, style: { transformOrigin: "311px 10px", animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }, "♥"); }),
     h("text", { x: 56, y: 10, textAnchor: "middle", fontSize: 11 }, "🕊️"),
-    // 屋顶：石板坡 + 天窗
-    h("polygon", { points: "30,74 180,36 330,74", fill: "url(#bfSlate)" }),
-    h("polygon", { points: "30,74 180,36 330,74", fill: "none", stroke: "#3f7079", strokeWidth: 2 }),
-    h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#57929b" }),
-    h("polygon", { points: "144,46 180,28 216,46", fill: "#3f7079" }),
-    win(166, 50, 28, 22, lit && !dimAll, "attic", null, true),
+    // 屋顶：石板坡 + 老虎窗（?roof=flat 时换成平顶女儿墙 + 三角山花，方便对比）
+    NK_FLAT ? h("g", null,
+    h("rect", { x: 40, y: 44, width: 280, height: 12, fill: "#3a4048" }),
+    h("rect", { x: 26, y: 54, width: 308, height: 20, fill: "url(#bfIvory)" }),
+    h("rect", { x: 22, y: 50.5, width: 316, height: 3.8, fill: "#f8f4ec" }), h("rect", { x: 24, y: 54.3, width: 312, height: 1.2, fill: "rgba(0,0,0,0.12)" }),
+    [40, 240].map(function (x) { return h("rect", { key: "pp" + x, x: x, y: 59, width: 80, height: 10, fill: "none", stroke: "#dcd2bf", strokeWidth: 0.8 }); }),
+    h("polygon", { points: "126,56 180,22 234,56", fill: "#f4efe5", stroke: "#d8cdb6", strokeWidth: 1.2 }),
+    h("polygon", { points: "136,53 180,27.5 224,53", fill: "#ebe4d6" }),
+    h("rect", { x: 122, y: 54, width: 116, height: 3, fill: "#f8f4ec" }), h("rect", { x: 122, y: 57, width: 116, height: 1, fill: "rgba(0,0,0,0.1)" }),
+    h("ellipse", { cx: 180, cy: 41.5, rx: 13.5, ry: 10.5, fill: "#f8f4ec", stroke: "#d8cdb6", strokeWidth: 0.6 }),
+    h("ellipse", { cx: 180, cy: 41.5, rx: 10.5, ry: 8, fill: lit && !dimAll ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)") }),
+    h("line", { x1: 169.5, y1: 41.5, x2: 190.5, y2: 41.5, stroke: "#f8f4ec", strokeWidth: 1 }), h("line", { x1: 180, y1: 33.5, x2: 180, y2: 49.5, stroke: "#f8f4ec", strokeWidth: 1 })
+    ) : h("g", null,
+      h("polygon", { points: "30,74 180,36 330,74", fill: "url(#bfSlate)" }),
+      h("polygon", { points: "30,74 180,36 330,74", fill: "none", stroke: "#3b434c", strokeWidth: 2 }),
+      h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#f4efe5" }),
+      h("polygon", { points: "144,46 180,28 216,46", fill: "#3b434c" }), h("polygon", { points: "147,46 180,30.5 213,46", fill: "none", stroke: "#f4efe5", strokeWidth: 1.2 }),
+      win(166, 50, 28, 22, lit && !dimAll, "attic", null, true)),
     // 檐口：奶白石带 + 齿饰
     h("rect", { x: 24, y: 74, width: 312, height: 10, fill: "#e9e2d2" }),
     h("rect", { x: 24, y: 84, width: 312, height: 3, fill: "rgba(0,0,0,0.28)" }),
-    Array.apply(null, Array(31)).map(function (_, i) { return h("rect", { key: "dt" + i, x: 27 + i * 10, y: 87, width: 5, height: 4, fill: "#ddd5c3" }); }),
     // 上层：砖墙 + 两扇高窗 + 花箱
-    h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfBrick)" }),
-    h("rect", { x: 30, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }), h("rect", { x: 324, y: 91, width: 6, height: 122, fill: "#d9d2c0", opacity: 0.55 }),
-    win(68, 112, 56, 78, lit && !dimAll, "u0", h("text", { x: 96, y: 168, textAnchor: "middle", fontSize: 15 }, lit ? "🕯️" : "🎻")),
-    win(236, 112, 56, 78, lit && !dimAll && tick % 9 !== 0, "u1", h("text", { x: 264, y: 172, textAnchor: "middle", fontSize: 14 }, "🐈")),
+    h("rect", { x: 30, y: 91, width: 300, height: 122, fill: wallFill }), wallPainted ? h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfRust2)" }) : null,
+    h("rect", { x: 30, y: 91, width: 7, height: 122, fill: "#efe8da" }), h("rect", { x: 323, y: 91, width: 7, height: 122, fill: "#efe8da" }),
+    win(68, 112, 56, 78, lit && !dimAll, "u0", h("g", null,
+      lit && !dimAll ? h("circle", { cx: 96, cy: 160, r: 14, fill: "#ffe7b0", opacity: 0.45 }) : null,
+      h("path", { d: "M90 163 L102 163 L99.5 155 L92.5 155 Z", fill: lit && !dimAll ? "#fff1cf" : "#efe4cf", stroke: "#c9a45a", strokeWidth: 0.5 }),
+      h("rect", { x: 95.4, y: 163, width: 1.2, height: 8, fill: "#c9a45a" }), h("ellipse", { cx: 96, cy: 172, rx: 4, ry: 1.2, fill: "#c9a45a" }))),
+    win(236, 112, 56, 78, lit && !dimAll && tick % 9 !== 0, "u1", h("g", { fill: "#1d1e24" },
+      h("path", { d: "M258 176 q-1 -9 4 -12 q5 3 4 12 Z" }), h("circle", { cx: 262, cy: 162.5, r: 3.4 }),
+      h("path", { d: "M259.2 160.6 l0.6 -3.6 l2 2.4 Z" }), h("path", { d: "M264.8 160.6 l-0.6 -3.6 l-2 2.4 Z" }),
+      h("path", { d: "M265.5 175.5 q5 -0.5 4 -6", fill: "none", stroke: "#1d1e24", strokeWidth: 1.4, strokeLinecap: "round" }))),
     flowers(68, 200, 56), flowers(236, 200, 56),
-    h("g", { onClick: goLondon, style: { cursor: "pointer", transformOrigin: "180px 91px", animation: "bfSwing 4.2s ease-in-out infinite" } },
-      h("rect", { x: 142, y: 91, width: 76, height: 3, fill: "#0a0c10" }),
-      h("line", { x1: 152, y1: 94, x2: 152, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }), h("line", { x1: 208, y1: 94, x2: 208, y2: 104, stroke: "#0a0c10", strokeWidth: 1.4 }),
-      h("rect", { x: 142, y: 104, width: 76, height: 42, rx: 3, fill: "#1a2238", stroke: "url(#bfBrass)", strokeWidth: 2.2 }),
-      h("rect", { x: 145.5, y: 107.5, width: 69, height: 35, rx: 2, fill: "none", stroke: "rgba(217,180,95,0.45)", strokeWidth: 0.8 }),
-      h("text", { x: 180, y: 123, textAnchor: "middle", fontSize: 13 }, "🎡"),
-      h("text", { x: 180, y: 132.5, textAnchor: "middle", fontSize: 4.8, fill: "#d9b45f", fontFamily: "Georgia,serif", fontWeight: "bold", letterSpacing: 0.9 }, LD_BOOK_EN),
-      h("text", { x: 180, y: 141.2, textAnchor: "middle", fontSize: 6.4, fill: "#fdf6e8", fontWeight: "bold", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
+    // 窗楣：每扇窗上一个小三角山花
+    [68, 236].map(function (x) { return h("g", { key: "pd" + x },
+      h("polygon", { points: (x - 9) + ",106 " + (x + 28) + ",95 " + (x + 65) + ",106", fill: "#f4efe5", stroke: "#d8cdb6", strokeWidth: 0.8 }),
+      h("rect", { x: x - 10, y: 105.6, width: 76, height: 2.6, fill: "#efe8da" }), h("rect", { x: x - 10, y: 108.2, width: 76, height: 0.8, fill: "rgba(0,0,0,0.12)" })); }),
+    // 「伦敦限定居民」恶搞蓝牌：帕丁顿时不时从牌子后面探头，牌子边上飘着打盹的 z；下面挂一块黄铜小牌「Nana 的伦敦 →」
+    h("g", { onClick: goLondon, style: { cursor: "pointer" } },
+      h("g", { style: { animation: (PLQ.street ? "bfPeekSide" : "bfPeek") + " 7s ease-in-out infinite" } },
+        h("g", { transform: PLQ.street ? "translate(213.5 119) rotate(14) scale(0.86)" : "translate(203.5 106.5) scale(0.82)" },
+          h("circle", { cx: -5.2, cy: -4.2, r: 2.3, fill: "#9a6234" }), h("circle", { cx: 5.2, cy: -4.2, r: 2.3, fill: "#9a6234" }),
+          h("circle", { cx: 0, cy: 0, r: 6.2, fill: "#a86d3a" }),
+          h("ellipse", { cx: 0, cy: 2.4, rx: 3.3, ry: 2.4, fill: "#dcb88c" }), h("ellipse", { cx: 0, cy: 1.4, rx: 1.2, ry: 0.9, fill: "#2b1a10" }),
+          h("circle", { cx: -2.4, cy: -1.2, r: 0.85, fill: "#2b1a10" }), h("circle", { cx: 2.4, cy: -1.2, r: 0.85, fill: "#2b1a10" }),
+          h("path", { d: "M-4.8 -4.6 Q-4.6 -10 0 -10 Q4.6 -10 4.8 -4.6 Z", fill: "#c8322f" }), h("ellipse", { cx: 0, cy: -4.6, rx: 8.4, ry: 2, fill: "#b02a28" }),
+          h("path", { d: "M-4.7 -5.6 Q0 -4.6 4.7 -5.6", fill: "none", stroke: "#8a1e1c", strokeWidth: 0.8 }))),
+      PLQ.street ? // 伦敦搪瓷路牌：白底、黑边、黑字，红色邮区
+      h("g", null,
+        h("rect", { x: 148.8, y: 117.2, width: 64, height: 30, rx: 2, fill: "rgba(0,0,0,0.18)" }),
+        h("rect", { x: 148, y: 116, width: 64, height: 30, rx: 2, fill: "#fbfaf6", stroke: "#1a1a1a", strokeWidth: 1.2 }),
+        h("rect", { x: 150.4, y: 118.4, width: 59.2, height: 25.2, rx: 1.2, fill: "none", stroke: "#1a1a1a", strokeWidth: 0.4 }),
+        h("circle", { cx: 152.4, cy: 131, r: 0.8, fill: "#9aa0a6" }), h("circle", { cx: 207.6, cy: 131, r: 0.8, fill: "#9aa0a6" }),
+        h("circle", { cx: 212.4, cy: 127.5, r: 1.8, fill: "#9a6234" }),
+        h("text", { x: 180, y: 123.4, textAnchor: "middle", fontSize: 2.6, fontWeight: "bold", fill: "#1a1a1a", fontFamily: "Helvetica,Arial,sans-serif", letterSpacing: 0.7 }, "CITY OF NANA"),
+        h("text", { x: 175.5, y: 132.4, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#1a1a1a", fontFamily: "Helvetica,Arial,sans-serif", letterSpacing: 0.3 }, "NANA ROAD"),
+        h("text", { x: 203.2, y: 132.4, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#c0392b", fontFamily: "Helvetica,Arial,sans-serif" }, "W1"),
+        h("rect", { x: 154, y: 135, width: 52, height: 0.6, fill: "#c0392b" }),
+        h("text", { x: 180, y: 140.8, textAnchor: "middle", fontSize: 3.3, fontWeight: "bold", fill: "#3a3a3a", fontFamily: "'PingFang SC',sans-serif" }, "伦敦限定居民 · 曾在此打过盹")) : h("g", null,
+      h("circle", { cx: 180, cy: 132, r: 24, fill: "rgba(0,0,0,0.18)", transform: "translate(0.8 1.2)" }),
+      h("circle", { cx: 180, cy: 132, r: 24, fill: PLQ.bg }),
+      h("circle", { cx: 180, cy: 132, r: 21.6, fill: "none", stroke: PLQ.ring, strokeWidth: 0.9 }),
+      // 两只小爪子扒在牌子边上
+      h("circle", { cx: 194.2, cy: 112.6, r: 1.8, fill: "#9a6234" }), h("circle", { cx: 199.4, cy: 116.8, r: 1.8, fill: "#9a6234" }),
+      h("text", { x: 180, y: 119.8, textAnchor: "middle", fontSize: 2.4, fill: PLQ.t3, fontFamily: "Georgia,serif", letterSpacing: 0.4 }, "LONDON · 42 DAYS"),
+      h("rect", { x: 170, y: 121.6, width: 20, height: 0.45, fill: PLQ.t3 }),
+      h("text", { x: 180, y: 130.4, textAnchor: "middle", fontSize: 8, fontWeight: "bold", fill: PLQ.t1, fontFamily: "Georgia,serif", letterSpacing: 0.8 }, "NANA"),
+      h("text", { x: 180, y: 137, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: PLQ.t2, fontFamily: "'PingFang SC',sans-serif" }, "伦敦限定居民"),
+      h("text", { x: 180, y: 142.4, textAnchor: "middle", fontSize: 3.3, fill: PLQ.t3, fontFamily: "'PingFang SC',sans-serif" }, "曾在此打过盹"),
+      h("text", { x: 180, y: 147.4, textAnchor: "middle", fontSize: 2.4, fill: PLQ.t3, fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "EST. 2026")),
+      [["z", 205, 136, 0, 3.6], ["z", 208, 131, 1.2, 4.4], ["Z", 212, 125, 2.4, 5.4]].map(function (z, i) { return h("text", { key: "zz" + i, x: z[1] + (PLQ.street ? 16 : 0), y: z[2] + (PLQ.street ? -10 : 0), fontSize: z[4], fontWeight: "bold", fill: PLQ.z, fontFamily: "Georgia,serif", style: { animation: "bfZz 3.6s ease-in-out " + z[3] + "s infinite", opacity: 0 } }, z[0]); }),
+      // 黄铜小牌
+      h("line", { x1: 174, y1: PLQ.street ? 146 : 155.6, x2: 176.5, y2: 159, stroke: "#8a6a2a", strokeWidth: 0.5 }), h("line", { x1: 186, y1: PLQ.street ? 146 : 155.6, x2: 183.5, y2: 159, stroke: "#8a6a2a", strokeWidth: 0.5 }),
+      h("rect", { x: 163, y: 159, width: 34, height: 8.4, rx: 1.6, fill: "url(#bfBrass)", stroke: "#8a6a2a", strokeWidth: 0.4 }),
+      h("text", { x: 180, y: 164.7, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#3a2a10", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
     // 楼层线
     h("rect", { x: 24, y: 213, width: 312, height: 8, fill: "#e9e2d2" }), h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfStucco)" }),
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfRust)" }),
-    h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#8a5a52", strokeWidth: 2.5 }),
-    // 檐口下一串小彩灯
-    h("path", { d: "M32 90 q37 8 74 0 q37 8 74 0 q37 8 74 0 q37 8 74 0", fill: "none", stroke: "#4a3a36", strokeWidth: 0.8 }),
-    Array.apply(null, Array(16)).map(function (_, i) { var x = 40 + i * 18.7, y = 92 + Math.abs(Math.sin(i * 0.85)) * 5; return h("circle", { key: "bl" + i, cx: x, cy: y, r: 2, fill: ["#ffd36a", "#ff9db0", "#8fd7e0", "#c7f0a0"][i % 4], style: { animation: "bkLamp " + (1.6 + (i % 3) * 0.5) + "s ease-in-out infinite", filter: lit ? "drop-shadow(0 0 3px " + ["#ffd36a", "#ff9db0", "#8fd7e0", "#c7f0a0"][i % 4] + ")" : "none" } }); }),
-    // 墙角爬的藤
-    [[34, 200], [40, 186], [36, 172], [44, 160], [38, 148]].map(function (p, i) { return h("circle", { key: "iv" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
-    [[326, 205], [320, 190], [325, 176], [318, 164]].map(function (p, i) { return h("circle", { key: "iw" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
-    // 凸窗：三格
-    h("rect", { x: 48, y: 230, width: 96, height: 8, fill: "#ddd5c3" }), h("rect", { x: 48, y: 238, width: 96, height: 2, fill: "rgba(0,0,0,0.22)" }),
-    h("g", holdProps(PG.good),
-      win(58, 248, 80, 54, (lit && !dimAll) || glowBay, "bay", h("g", null, h("rect", { x: 83, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("rect", { x: 110, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("text", { x: 98, y: 296, textAnchor: "middle", fontSize: 13 }, "🪴"),
-        h("rect", { x: 61, y: 252, width: 42, height: 11.5, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6, style: holdingIs("good") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
-        h("text", { x: 82, y: 260.3, textAnchor: "middle", fontSize: 5.8, fontWeight: "bold", fill: "#7a5a2a", fontFamily: "'PingFang SC',sans-serif" }, "今天还不错 ☀️")))),
-    h("rect", { x: 46, y: 310, width: 100, height: 6, fill: "#ddd5c3" }),
+    h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#d8cdb6", strokeWidth: 2 }),
+    // 左边墙角一枝攀援玫瑰
+    h("g", null,
+      h("path", { d: "M36 212 q6 -22 -1 -44 q-5 -18 6 -36 q6 -12 18 -20", fill: "none", stroke: "#6d5640", strokeWidth: 1.2, strokeLinecap: "round" }),
+      [[38, 200, 30], [34, 184, -30], [39, 166, 20], [36, 150, -25], [43, 134, 30], [50, 120, -10], [58, 113, 40]].map(function (l, i) { return h("ellipse", { key: "rl" + i, cx: l[0], cy: l[1], rx: 3.4, ry: 1.8, fill: i % 2 ? "#5f8c5d" : "#4f7a52", transform: "rotate(" + l[2] + " " + l[0] + " " + l[1] + ")" }); }),
+      [[37, 176], [41, 142], [54, 116]].map(function (r, i) { return h("g", { key: "rs" + i }, h("circle", { cx: r[0], cy: r[1], r: 2.6, fill: "#b8323a" }), h("circle", { cx: r[0], cy: r[1], r: 1.4, fill: "#d24b52" }), h("circle", { cx: r[0] + 0.3, cy: r[1] - 0.3, r: 0.6, fill: "#e8767b" })); })),
+    // ☕ 一楼：窗边角落（咖啡 + 书 + 看窗外）。屋里是法式小沙龙：鸭蛋青墙 + 白色护墙线、驼背沙发、大理石小圆桌、水晶吊灯、拱顶书柜。点一下进去坐坐；按住不放还是「今天还不错」
+    (function () {
+      var nk = nookToday(), dk = nookDrink(nk.d), warm = !dimAll;
+      var GOLD = "#c9a45a", CREAM = "#f7f1e6";
+      var books = [];
+      [266, 279, 292].forEach(function (by, ri) {
+        var x = 107.5;
+        for (var i = 0; x < 132; i++) {
+          if (ri === 1 && i === 3) { books.push(h("g", { key: "vs" }, h("path", { d: "M" + (x + 1.5) + " " + by + " q-1.6 -2.6 0 -4.4 h2 q1.6 1.8 0 4.4 Z", fill: "#f4f1ec", stroke: "#d8d0c4", strokeWidth: 0.3 }), h("circle", { cx: x + 2.5, cy: by - 6.2, r: 1.5, fill: "#b8323a" }), h("circle", { cx: x + 1.4, cy: by - 5.4, r: 0.9, fill: "#d9545a" }))); x += 6; continue; }
+          var w = 2 + ((i * 7 + ri * 3) % 4) * 0.55, hh = 7.6 + ((i * 5 + ri) % 3) * 0.9;
+          books.push(h("rect", { key: "bk" + ri + "-" + i, x: x, y: by - hh, width: Math.min(w, 132.5 - x), height: hh, fill: ["#2f5246", "#a8343a", "#efe4cf", "#1e1f24", "#c9a45a", "#5d7f60", "#7a2e2e"][(i + ri * 2) % 7], opacity: dimAll ? 0.45 : 1 }));
+          x += w + 0.45;
+        }
+      });
+      return h("g", holdProps(PG.good),
+        h("defs", null,
+          h("linearGradient", { id: "nkFWall", x1: 0, y1: 0, x2: 0, y2: 1 }, h("stop", { offset: "0%", stopColor: dimAll ? "#343a44" : "#f7f1e4" }), h("stop", { offset: "100%", stopColor: dimAll ? "#262b33" : "#eadfc9" })),
+          h("radialGradient", { id: "nkFGlow" }, h("stop", { offset: "0%", stopColor: "#fff4d6", stopOpacity: 0.95 }), h("stop", { offset: "100%", stopColor: "#ffe2a8", stopOpacity: 0 })),
+          h("clipPath", { id: "nkFClip" }, h("rect", { x: 40, y: 248, width: 100, height: 56 }))),
+        // 条纹遮阳篷 + 店招
+        h("rect", { x: 32, y: 225, width: 116, height: 4, rx: 1, fill: "#14171c" }),
+        Array.apply(null, Array(8)).map(function (_, i) { var t0 = 40 + i * 100 / 8, t1 = t0 + 100 / 8, b0 = 33 + i * 114 / 8, b1 = b0 + 114 / 8; return h("polygon", { key: "aw" + i, points: t0 + ",229 " + t1 + ",229 " + b1 + ",241 " + b0 + ",241", fill: i % 2 ? "#f4ecdc" : "#23443a" }); }),
+        Array.apply(null, Array(8)).map(function (_, i) { var b0 = 33 + i * 114 / 8, r = 114 / 16; return h("path", { key: "as" + i, d: "M" + b0 + " 241 a" + r + " " + (r * 0.6) + " 0 0 0 " + (2 * r) + " 0 Z", fill: i % 2 ? "#f4ecdc" : "#23443a" }); }),
+        h("rect", { x: 63, y: 230.5, width: 54, height: 8.5, rx: 1.6, fill: "#f6efe2", stroke: "#c9a45a", strokeWidth: 0.6 }),
+        h("text", { x: 90, y: 236.8, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#23443a", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "NANA'S NOOK"),
+        // 深橄榄绿木窗框
+        h("rect", { x: 35, y: 243.5, width: 110, height: 65.5, rx: 1.5, fill: "#23443a" }),
+        h("g", { clipPath: "url(#nkFClip)" },
+          // 鸭蛋青墙 + 白色护墙线
+          h("rect", { x: 40, y: 248, width: 100, height: 56, fill: "url(#nkFWall)" }),
+          [[44, 252, 26, 22], [72, 252, 28, 22]].map(function (r, i) { return h("g", { key: "pn" + i },
+            h("rect", { x: r[0], y: r[1], width: r[2], height: r[3], rx: 1.5, fill: "none", stroke: dimAll ? "rgba(255,255,255,0.08)" : CREAM, strokeWidth: 0.8 }),
+            h("rect", { x: r[0] + 2, y: r[1] + 2, width: r[2] - 4, height: r[3] - 4, rx: 1, fill: "none", stroke: dimAll ? "rgba(255,255,255,0.05)" : "rgba(201,164,90,0.45)", strokeWidth: 0.35 })); }),
+          h("rect", { x: 40, y: 279, width: 100, height: 1, fill: dimAll ? "rgba(255,255,255,0.08)" : CREAM }),
+          // 人字拼木地板
+          h("rect", { x: 40, y: 299, width: 100, height: 5, fill: dimAll ? "#2c2620" : "#dcbf92" }),
+          Array.apply(null, Array(26)).map(function (_, i) { var x = 40 + i * 4; return h("path", { key: "pq" + i, d: "M" + x + " 304 l2 -5 l2 5", fill: "none", stroke: dimAll ? "rgba(0,0,0,0.3)" : "#c4a274", strokeWidth: 0.35 }); }),
+          // 奶油白拱顶书柜 + 金边
+          h("path", { d: "M103 302 V260 a17 9 0 0 1 34 0 V302 Z", fill: CREAM, stroke: GOLD, strokeWidth: 0.5 }),
+          h("path", { d: "M106 300 V262 a14 7 0 0 1 28 0 V300 Z", fill: dimAll ? "#2a2f38" : "#efe6d6" }),
+          h("circle", { cx: 120, cy: 254.5, r: 1.1, fill: GOLD }),
+          [266, 279, 292].map(function (y, i) { return h("rect", { key: "sh" + i, x: 106, y: y, width: 28, height: 1.2, fill: CREAM }); }),
+          books,
+          h("rect", { x: 102, y: 300, width: 36, height: 2.4, fill: CREAM, stroke: GOLD, strokeWidth: 0.4 }),
+          // 小水晶吊灯：金色弯臂、蜡烛灯、坠子
+          warm ? h("circle", { cx: 89, cy: 262, r: 26, fill: "url(#nkFGlow)", opacity: lit ? 0.95 : 0.6, style: { animation: "bkLamp 3s ease-in-out infinite" } }) : null,
+          h("line", { x1: 89, y1: 248, x2: 89, y2: 253.5, stroke: GOLD, strokeWidth: 0.5 }),
+          h("ellipse", { cx: 89, cy: 254.2, rx: 1.4, ry: 0.9, fill: GOLD }),
+          h("path", { d: "M81 257 q8 6.5 16 0", fill: "none", stroke: GOLD, strokeWidth: 0.8 }),
+          h("path", { d: "M84.5 257.5 q4.5 4 9 0", fill: "none", stroke: GOLD, strokeWidth: 0.6 }),
+          h("line", { x1: 89, y1: 254.8, x2: 89, y2: 261.8, stroke: GOLD, strokeWidth: 0.7 }),
+          [81, 84.5, 89, 93.5, 97].map(function (x, i) { var y = i === 2 ? 254.4 : (i % 4 === 0 ? 255 : 255.6); return h("g", { key: "cd" + i },
+            h("rect", { x: x - 0.55, y: y, width: 1.1, height: 2.2, fill: CREAM }),
+            h("ellipse", { cx: x, cy: y - 0.6, rx: 0.5, ry: 0.8, fill: warm ? "#ffd27a" : "#777", style: warm ? { animation: "bkLamp 1.6s ease-in-out infinite", animationDelay: (i * 0.3) + "s" } : null })); }),
+          [83, 86, 89, 92, 95].map(function (x, i) { return h("path", { key: "cr" + i, d: "M" + x + " " + (260.4 + (i === 2 ? 1.4 : (i % 4 === 0 ? -0.6 : 0.8))) + " l0.6 1.2 l-0.6 1.4 l-0.6 -1.4 Z", fill: "rgba(255,255,255,0.9)", stroke: "rgba(201,164,90,0.6)", strokeWidth: 0.2 }); }),
+          // 法式驼背小沙发：奶油白雕花木框、雾玫瑰丝绒、金色弯腿
+          h("path", { d: "M46 291 C45 279 50 274 56 276 C60 268.5 72 268.5 76 276 C82 274 86 279 85 291 Z", fill: "#2f5246", stroke: CREAM, strokeWidth: 1.2 }),
+          h("path", { d: "M56 278 C60 272 72 272 76 278", fill: "none", stroke: "rgba(255,255,255,0.35)", strokeWidth: 0.6 }),
+          h("circle", { cx: 66, cy: 270.3, r: 1, fill: CREAM }),
+          h("rect", { x: 45, y: 287.5, width: 41, height: 6.5, rx: 3, fill: "#284a3f" }),
+          h("path", { d: "M46 294 q19.5 2.4 39 0", fill: "none", stroke: CREAM, strokeWidth: 1.1 }),
+          h("circle", { cx: 45.6, cy: 287.6, r: 2.4, fill: "#2f5246", stroke: CREAM, strokeWidth: 0.9 }), h("circle", { cx: 85.4, cy: 287.6, r: 2.4, fill: "#2f5246", stroke: CREAM, strokeWidth: 0.9 }),
+          h("ellipse", { cx: 54, cy: 284.6, rx: 4.2, ry: 3.4, fill: "#a8343a" }), h("ellipse", { cx: 77, cy: 284.6, rx: 4.2, ry: 3.4, fill: "#efe4cf" }),
+          [[48.5, -1], [82.5, 1], [60, -0.6], [71, 0.6]].map(function (l, i) { return h("path", { key: "lg" + i, d: "M" + l[0] + " 295 q" + (l[1] * 1.6) + " 2.6 " + (l[1] * 0.4) + " 4.6", fill: "none", stroke: GOLD, strokeWidth: 0.9, strokeLinecap: "round" }); }),
+          // 大理石小圆桌 + 金色三脚弯腿 + 杯碟 + 一枝粉色小花
+          h("path", { d: "M95.5 290.6 q-3 4 -4.5 9", fill: "none", stroke: GOLD, strokeWidth: 0.6 }), h("path", { d: "M95.5 290.6 q3 4 4.5 9", fill: "none", stroke: GOLD, strokeWidth: 0.6 }), h("line", { x1: 95.5, y1: 290.6, x2: 95.5, y2: 299.6, stroke: GOLD, strokeWidth: 0.6 }),
+          h("ellipse", { cx: 95.5, cy: 295.5, rx: 2.4, ry: 0.5, fill: "none", stroke: GOLD, strokeWidth: 0.4 }),
+          h("ellipse", { cx: 95.5, cy: 289.8, rx: 6, ry: 1.5, fill: "#f6f3ee", stroke: "#d8d0c4", strokeWidth: 0.35 }),
+          h("path", { d: "M91.5 289.6 q2 -0.4 3.5 0.2", fill: "none", stroke: "#d6cfc6", strokeWidth: 0.3 }),
+          h("ellipse", { cx: 93.6, cy: 289.2, rx: 3, ry: 0.7, fill: "#fbf8f2", stroke: "#e2d8c8", strokeWidth: 0.25 }),
+          h("path", { d: "M91.6 285.4 h4 l-0.5 3.6 h-3 Z", fill: "#fbf8f2", stroke: "#e2d8c8", strokeWidth: 0.25 }),
+          h("path", { d: "M95.5 286 q1.5 0 1.4 1.2 q-0.1 1 -1.6 1", fill: "none", stroke: "#fbf8f2", strokeWidth: 0.6 }),
+          h("rect", { x: 91.6, y: 285.2, width: 4, height: 0.4, fill: GOLD }),
+          h("ellipse", { cx: 93.6, cy: 285.7, rx: 1.8, ry: 0.45, fill: dk ? dk.col : "#c99c6e" }),
+          warm && !(dk && dk.cold) ? [0, 1].map(function (i) { return h("path", { key: "stm" + i, d: "M" + (92.8 + i * 1.8) + " 284.2 q-1.2 -1.8 0 -3.6 q1.2 -1.8 0 -3.6", fill: "none", stroke: "rgba(255,255,255,0.9)", strokeWidth: 0.55, strokeLinecap: "round", style: { animation: "nkSteam 2.8s ease-out infinite", animationDelay: (i * 1.3) + "s" } }); }) : null,
+          h("path", { d: "M98.6 289.4 q-0.8 -1.6 0 -3 h1.4 q0.8 1.4 0 3 Z", fill: "#eef3f0", stroke: "#cfd8d3", strokeWidth: 0.25 }),
+          h("line", { x1: 99.3, y1: 286.4, x2: 99.6, y2: 283.4, stroke: "#7fa27a", strokeWidth: 0.35 }),
+          h("circle", { cx: 99.7, cy: 283, r: 1.2, fill: "#b8323a" }), h("circle", { cx: 99.5, cy: 283.1, r: 0.6, fill: "#d9545a" }),
+          glowBay ? h("rect", { x: 40, y: 248, width: 100, height: 56, fill: "#ffd98a", opacity: 0.22 }) : null,
+          h("polygon", { points: "44,302 100,250 114,250 58,302", fill: "rgba(255,255,255," + (lit ? 0.06 : 0.15) + ")" })),
+        // 窗上挂的小牌
+        h("g", { style: holdingIs("good") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null },
+          h("line", { x1: 50, y1: 248, x2: 53, y2: 251, stroke: "#c8b48e", strokeWidth: 0.5 }), h("line", { x1: 74, y1: 248, x2: 71, y2: 251, stroke: "#c8b48e", strokeWidth: 0.5 }),
+          h("rect", { x: 43, y: 251, width: 38, height: 10.5, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6 }),
+          h("text", { x: 62, y: 258.4, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#7a5a2a", fontFamily: "'PingFang SC',sans-serif" }, "今天还不错 ☀️")),
+        // 窗台：一小摞书 + 一盆薰衣草
+        h("rect", { x: 31, y: 309, width: 118, height: 5, fill: "#ddd5c3" }), h("rect", { x: 31, y: 314, width: 118, height: 1.6, fill: "rgba(0,0,0,0.2)" }),
+        h("rect", { x: 38, y: 305.5, width: 12, height: 1.8, fill: "#a8343a" }), h("rect", { x: 39, y: 303.7, width: 10, height: 1.8, fill: "#23443a" }), h("rect", { x: 38.5, y: 307.3, width: 11, height: 1.7, fill: "#1e1f24" }),
+        h("path", { d: "M128 309 l1 -5 h7 l1 5 Z", fill: "#1f2328" }),
+        [129.5, 132, 134.5].map(function (x, i) { return h("g", { key: "lv" + i }, h("line", { x1: x + 0.8, y1: 304, x2: x + (i - 1) * 1.2 + 0.8, y2: 297, stroke: "#6f8f5a", strokeWidth: 0.6 }), h("ellipse", { cx: x + (i - 1) * 1.2 + 0.8, cy: 297.5, rx: 0.9, ry: 2.2, fill: "#9a7fc4" })); }));
+    })(),
     // 门套：柱 + 楣 + 扇形气窗 + 灯
     h("rect", { x: 170, y: 234, width: 100, height: 12, fill: "#e9e2d2" }), h("rect", { x: 166, y: 230, width: 108, height: 5, fill: "#f2ece0" }), h("rect", { x: 170, y: 246, width: 100, height: 2.5, fill: "rgba(0,0,0,0.25)" }),
     h("rect", { x: 176, y: 248, width: 12, height: 93, fill: "#e9e2d2" }), h("rect", { x: 252, y: 248, width: 12, height: 93, fill: "#e9e2d2" }),
     h("rect", { x: 174, y: 248, width: 16, height: 6, fill: "#ddd5c3" }), h("rect", { x: 250, y: 248, width: 16, height: 6, fill: "#ddd5c3" }),
-    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#1e5960" }),
+    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#121418" }),
     h("path", { d: "M191 282 a29 29 0 0 1 58 0 Z", fill: dimAll ? "#2a2f3a" : (lit || glowDoor) ? "url(#bfWarm)" : "#b8c6d2", style: glowDoor ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.95))" } : null }),
     h("path", { d: "M199 282 a21 21 0 0 1 42 0", fill: "none", stroke: "#f2ece0", strokeWidth: 1.4 }),
     [-2, -1, 0, 1, 2].map(function (i) { return h("line", { key: "fan" + i, x1: 220, y1: 282, x2: 220 + Math.sin(i * 0.5) * 29, y2: 282 - Math.cos(i * 0.5) * 29, stroke: "#f2ece0", strokeWidth: 1.6 }); }),
@@ -27308,9 +27869,9 @@ function BakerFacade(_refBF) {
     // 门：原版黑门，六块门板、黄铜 221B、门环、信箱口、门把
     h("g", { onClick: goIn, style: { cursor: "pointer" } },
       h("g", { style: { transformOrigin: "191px 313px", transform: doorOpen ? "scaleX(0.1)" : "scaleX(1)", transition: "transform 0.55s cubic-bezier(.4,0,.2,1)" } },
-        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#2e7c86", style: (knock || doorShake) ? { animation: "bkKnock 0.5s ease" } : null }),
+        h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "#1a1d22", style: (knock || doorShake) ? { animation: "bkKnock 0.5s ease" } : null }),
         [[195, 289, 22, 12], [223, 289, 22, 12], [195, 305, 22, 14], [223, 305, 22, 14], [195, 323, 22, 14], [223, 323, 22, 14]].map(function (p, i) {
-          return h("rect", { key: "pn" + i, x: p[0], y: p[1], width: p[2], height: p[3], rx: 1, fill: "#2a727b", stroke: "#1e5960", strokeWidth: 1 });
+          return h("g", { key: "pn" + i }, h("rect", { x: p[0], y: p[1], width: p[2], height: p[3], rx: 0.6, fill: "#22262d", stroke: "#0e1013", strokeWidth: 1 }), h("rect", { x: p[0] + 1.2, y: p[1] + 1.2, width: 1, height: p[3] - 2.4, fill: "rgba(255,255,255,0.09)" }));
         }),
         h("text", { x: 220, y: 300, textAnchor: "middle", fontSize: 8.5, fontWeight: "bold", fill: "url(#bfBrass)", fontFamily: "Georgia,serif", letterSpacing: 1.2 }, "221B"),
         h("g", holdProps(PG.knock),
@@ -27368,11 +27929,11 @@ function BakerFacade(_refBF) {
       h("rect", { x: 192, y: 341, width: 56, height: 8.5, rx: 1, fill: holdingIs("home") ? "#8a5a3a" : "#6b4a34", stroke: "#3a2416", strokeWidth: 0.6, style: holdingIs("home") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
       h("text", { x: 220, y: 347.4, textAnchor: "middle", fontSize: 6, fontWeight: "bold", fill: "#f1e4c4", fontFamily: "'PingFang SC',sans-serif", letterSpacing: 0.6 }, "到家了 🏠")),
     [172, 262].map(function (px, i) { return h("g", { key: "pot" + i },
-      h("circle", { cx: px + 7, cy: 322, r: 7, fill: "#6fb07a" }), h("circle", { cx: px + 3, cy: 326, r: 5, fill: "#5a9a64" }), h("circle", { cx: px + 11, cy: 326, r: 5, fill: "#7fbf88" }),
-      h("circle", { cx: px + 4, cy: 320, r: 2.2, fill: "#ff9db0" }), h("circle", { cx: px + 10, cy: 318, r: 2.2, fill: "#ffd36a" }), h("circle", { cx: px + 7, cy: 326.5, r: 2, fill: "#ffc6d2" }),
-      h("polygon", { points: (px) + ",330 " + (px + 14) + ",330 " + (px + 12) + ",342 " + (px + 2) + ",342", fill: "#a8623a" }), h("rect", { x: px - 1, y: 328, width: 16, height: 3.5, fill: "#b8734a" })); }),
+      h("rect", { x: px + 6.4, y: 318, width: 1.2, height: 13, fill: "#6b4a34" }),
+      h("circle", { cx: px + 7, cy: 316, r: 7.2, fill: "#4f6e48" }), h("circle", { cx: px + 5, cy: 313.6, r: 3.6, fill: "#5f8256" }), h("circle", { cx: px + 9.4, cy: 318.4, r: 2.6, fill: "#46633f" }),
+      h("rect", { x: px + 1, y: 330, width: 12, height: 12, fill: "#1f2328" }), h("rect", { x: px, y: 328.5, width: 14, height: 2.5, fill: "#2c3238" }), h("rect", { x: px + 1, y: 340, width: 12, height: 2, fill: "#16191d" })); }),
     // 栏杆：黑铁、金尖
-    [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 4; x < seg[1]; x += 9) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
+    [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 5; x < seg[1]; x += 13) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
     // 🌙 9¾ 月影杂货铺（里屋是魔药酒馆）：221B 隔壁一栋歪歪扭扭的都铎木架小楼，一层比一层往外探，晚上才亮
     barOn ? h("g", { onClick: !barOpen ? undefined : function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-bar")); } catch (_) {} }, style: { cursor: barOpen ? "pointer" : "default" } },
@@ -27507,6 +28068,10 @@ function BakerFacade(_refBF) {
       "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
       "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
+      "@keyframes bfPeekSide{0%,52%,100%{transform:translate(-3.5px,0)}62%,88%{transform:translate(0,0)}}" +
+      "@keyframes bfPeek{0%,52%,100%{transform:translate(0,7.5px)}62%,88%{transform:translate(0,0)}}" +
+      "@keyframes bfZz{0%{opacity:0;transform:translate(0,0)}30%{opacity:.9}100%{opacity:0;transform:translate(4px,-6px)}}" +
+      "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-7px);opacity:0}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
@@ -27521,6 +28086,8 @@ function BakerFacade(_refBF) {
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfFlip{0%{transform:rotateX(90deg);opacity:.2}100%{transform:none;opacity:1}}" +
+      "@keyframes bfTicker{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}" +
       "@keyframes bfSwing{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}" +
       "@keyframes bfBoat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}" +
       "@keyframes bfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
@@ -27535,28 +28102,7 @@ function BakerFacade(_refBF) {
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
-      // 一张明信片：问候和港口写在一起
-      h("div", { style: { position: "relative", marginTop: 18, background: pc.bg, borderRadius: 18, padding: "16px 14px 12px 16px", boxShadow: "0 10px 26px rgba(0,0,0,0.22), inset 0 0 0 1.5px rgba(" + pc.ac + ",0.25)", color: pc.ink, transition: "background 1s", transform: "rotate(-1.2deg)" } },
-        h("div", { style: { position: "absolute", inset: 6, border: "1.5px dashed rgba(" + pc.ac + ",0.35)", borderRadius: 13, pointerEvents: "none" } }),
-        // 两条和纸胶带
-        h("div", { style: { position: "absolute", left: 18, top: -9, width: 64, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(" + pc.ac + ",0.35) 6px 12px)", transform: "rotate(-7deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
-        h("div", { style: { position: "absolute", right: 70, bottom: -9, width: 58, height: 18, background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.75) 0 6px, rgba(143,209,224,0.55) 6px 12px)", transform: "rotate(6deg)", borderRadius: 2, boxShadow: "0 1px 2px rgba(0,0,0,0.15)", opacity: 0.95 } }),
-        // 猫从卡片顶上探出来
-        h("div", { style: { position: "absolute", right: 74, top: -21, fontSize: 24, lineHeight: 1, transform: "scaleX(-1) rotate(-8deg)", filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.25))" } }, "🐈"),
-        // 邮戳
-        h("div", { style: { position: "absolute", right: 46, top: 30, width: 44, height: 44, borderRadius: "50%", border: "1.5px solid rgba(" + pc.ac + ",0.55)", boxShadow: "inset 0 0 0 3px transparent, inset 0 0 0 4.5px rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.42rem", fontWeight: 900, letterSpacing: 1, color: "rgba(" + pc.ac + ",0.85)", fontFamily: "Georgia,serif", transform: "rotate(-14deg)", textAlign: "center", lineHeight: 1.3, pointerEvents: "none" } }, "HOME", h("br"), "09·26"),
-        // 右上角一枚邮票：家
-        h("div", { style: { position: "absolute", right: 14, top: 12, width: 40, height: 46, background: "#fff", boxShadow: "0 0 0 3px #fff, 0 0 0 4px rgba(" + pc.ac + ",0.35)", borderRadius: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transform: "rotate(6deg)" } },
-          h("div", { style: { fontSize: 20, lineHeight: 1 } }, isNight ? "🌙" : "🏡"),
-          h("div", { style: { fontSize: "0.4rem", fontWeight: 900, letterSpacing: 1, color: "rgb(" + pc.ac + ")", marginTop: 3, fontFamily: "Georgia,serif" } }, "113°E")),
-        h("div", { style: { paddingRight: 56 } },
-          h("div", { style: { minHeight: 30, fontSize: "1.28rem", fontWeight: 900, fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: "0.02em", opacity: fade ? 1 : 0, transition: "opacity 0.35s", color: "#2b3446" } }, greets[msg % greets.length]),
-          h("div", { style: { marginTop: 6, paddingRight: 62, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: pc.sub } }, subLine)),
-        // 底下一行：港口
-        h("div", { style: { marginTop: 10, paddingTop: 9, borderTop: "1px dashed rgba(" + pc.ac + ",0.35)", display: "flex", alignItems: "center", gap: 8 } },
-          h("div", { style: { flexShrink: 0, width: 26, height: 26, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%,#f3dc9a,#c9a24a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, boxShadow: "0 2px 5px rgba(0,0,0,0.25)" } }, "\u2693"),
-          h("div", { style: { flex: 1, minWidth: 0, fontSize: "0.68rem", fontWeight: 800, color: pc.sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "港口 · Nana 号已靠岸 · 上一站 伦敦 0° → 家 113°E"),
-          h("div", { style: { flexShrink: 0, fontSize: 18, lineHeight: 1, animation: "bfBoat 2.6s ease-in-out infinite" } }, "\u26F5"))),
+      topCard,
       h("div", { style: { height: 4 } })),
     // 楼
     h("div", { style: { position: "relative", marginTop: 2, padding: "0 2px" } },
@@ -27588,6 +28134,244 @@ function BakerFacade(_refBF) {
         h("div", { style: { flexShrink: 0, background: "#111418", color: BK_GOLD, borderRadius: 999, padding: "8px 12px", fontSize: "0.7rem", fontWeight: 900, whiteSpace: "nowrap" } }, "推门进去 →"))));
 }
 // ── 📚 回忆架：221B 模式的首页，伦敦那本和周末的相册摆在一块木架上 ──
+// ☕ 一楼 · 窗边角落：喝点东西、翻本书、看看窗外。
+// 本机存 nana-nook = { day, d: 今天点的饮品, b: 今天翻的书, sat: 今天在窗边坐了几秒 }，早上 5 点换日。
+var NK_DRINKS = [
+  { k: "oat", e: "☕", n: "燕麦拿铁", sub: "奶泡打得很厚", col: "#c99c6e", caf: 1, art: 1, say: "燕麦拿铁，奶泡很厚。慢慢喝，不赶时间。" },
+  { k: "flat", e: "☕", n: "澳白", sub: "双份浓缩，少奶", col: "#a8774e", caf: 1, art: 1, say: "澳白，双份。今天值得。" },
+  { k: "pour", e: "🫖", n: "手冲 · 埃塞俄比亚", sub: "花香，带一点莓果酸", col: "#7a4a2a", caf: 1, say: "手冲好了。第一口有莓果味，第二口才是咖啡。" },
+  { k: "earl", e: "🫖", n: "伯爵红茶 + 一点奶", sub: "从伦敦带回来的习惯", col: "#b98a5e", caf: 1, say: "伯爵加奶。伦敦的下午茶，搬回家了。" },
+  { k: "elder", e: "🫧", n: "接骨木花气泡水", sub: "冰的，夏天的味道", col: "#e6ecb8", cold: 1, say: "接骨木花气泡水。气泡一直往上跑，心情也是。" },
+  { k: "lemon", e: "🍋", n: "蜂蜜柠檬热水", sub: "捧着，让热气熏熏鼻子", col: "#f1cf72", nose: 1, say: "蜂蜜柠檬，烫一点。先别急着喝，捧着让热气熏一熏鼻子。" },
+  { k: "ginger", e: "🫚", n: "红枣姜茶", sub: "从手心暖到脚底", col: "#c9744a", nose: 1, say: "姜茶有点辣。喝完整个人都是暖的。" },
+  { k: "chamo", e: "🌼", n: "洋甘菊", sub: "今晚好睡一点", col: "#eed98e", sleep: 1, say: "洋甘菊。喝完早点睡，梦里鼻子是通的。" },
+  { k: "choc", e: "🍫", n: "热巧克力", sub: "加一颗棉花糖", col: "#6b3f2a", say: "热巧克力，加了棉花糖。甜度刚好。" },
+  { k: "milk", e: "🥛", n: "热牛奶 + 蜂蜜", sub: "睡前那一杯", col: "#f6efe2", sleep: 1, say: "一杯热牛奶。喝完就去睡吧，晚安先说了。" }
+];
+var NK_BOOKS = [
+  { k: "holmes", n: "福尔摩斯探案集", a: "柯南·道尔", col: "#2f4a3e", q: "「你是在看，但你没有在观察。」", note: "贝克街 221B。就是这儿。" },
+  { k: "willow", n: "柳林风声", a: "肯尼斯·格雷厄姆", col: "#6f8f5a", q: "「世上没有任何事——绝对没有——比得上在船上随便晃荡一半值得。」", note: "窗外刚好有条河。" },
+  { k: "alice", n: "爱丽丝漫游奇境", a: "刘易斯·卡罗尔", col: "#5a7fb5", q: "「回到昨天没有用，因为那时候我是另一个人。」", note: "今天的你，刚好。" },
+  { k: "pride", n: "傲慢与偏见", a: "简·奥斯汀", col: "#b5656b", q: "「我说不出是哪个钟点、哪个地方、哪个眼神、哪句话。等我发觉，已经走到一半了。」", note: "" },
+  { k: "women", n: "小妇人", a: "路易莎·奥尔科特", col: "#c99a4e", q: "「我不怕暴风雨，因为我正在学怎么驾驶自己的船。」", note: "" },
+  { k: "pan", n: "彼得·潘", a: "J.M. 巴里", col: "#4a6a8a", q: "「右边第二颗星，然后一直往前，直到天亮。」", note: "" }
+];
+var NK_SAY = {
+  dawn: ["河面上还有一点雾", "早班的船已经出门了", "天刚亮，街上还没人"],
+  day: ["有条船慢慢开过去", "云走得很慢", "阳光刚好照到窗台", "对岸有人在遛狗"],
+  dusk: ["对岸的窗一扇扇亮了", "天边剩一点橘子色", "路灯刚亮"],
+  night: ["路灯在水里晃", "对岸还剩几扇窗亮着", "月亮挂在烟囱上面"]
+};
+function nookDay() { var d = new Date(); if (d.getHours() < 5) d = new Date(d.getTime() - 5 * 3600000); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+function nookToday() { try { var o = JSON.parse(localStorage.getItem("nana-nook") || "{}") || {}; return o.day === nookDay() ? o : {}; } catch (_) { return {}; } }
+function nookDrink(k) { for (var i = 0; i < NK_DRINKS.length; i++) if (NK_DRINKS[i].k === k) return NK_DRINKS[i]; return null; }
+function nookBook(k) { for (var i = 0; i < NK_BOOKS.length; i++) if (NK_BOOKS[i].k === k) return NK_BOOKS[i]; return null; }
+
+function NanaNook() {
+  var h = React.createElement;
+  var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+  var mate = me === "nana" ? "熊猫鱼" : "Nana";
+  var _st = useState(nookToday); var st = _st[0], setSt = _st[1];
+  var _rain = useState(false); var rain = _rain[0], setRain = _rain[1];
+  var _sit = useState(0); var sitAt = _sit[0], setSitAt = _sit[1];
+  var _now = useState(Date.now()); var now = _now[0], setNow = _now[1];
+  var _say = useState(""); var say = _say[0], setSay = _say[1];
+  useEffect(function () {
+    var id = setInterval(function () { setNow(Date.now()); }, sitAt ? 1000 : 30000);
+    return function () { clearInterval(id); };
+  }, [sitAt]);
+  var put = function (patch) {
+    var o = {}, k; for (k in st) o[k] = st[k]; for (k in patch) o[k] = patch[k]; o.day = nookDay();
+    try { localStorage.setItem("nana-nook", JSON.stringify(o)); } catch (_) {}
+    setSt(o);
+  };
+  var d = new Date(now), hr = d.getHours(), mn = d.getMinutes();
+  var phase = (hr >= 19 || hr < 6) ? "night" : hr >= 17 ? "dusk" : hr < 8 ? "dawn" : "day";
+  var late = hr >= 15 || hr < 5, dark = phase === "night";
+  var dk = nookDrink(st.d), bk = nookBook(st.b);
+  var sitNow = sitAt ? Math.floor((now - sitAt) / 1000) : 0;
+  var satMin = Math.floor(((st.sat || 0) + sitNow) / 60);
+  var standUp = function () { put({ sat: (st.sat || 0) + sitNow }); setSitAt(0); };
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var when = (hr < 5 ? "夜里" : hr < 8 ? "清晨" : hr < 12 ? "上午" : hr < 17 ? "下午" : hr < 19 ? "傍晚" : "夜里") + " " + hr + ":" + pad(mn);
+  var says = NK_SAY[phase], line = says[Math.floor(mn / 10) % says.length];
+
+  // —— 窗外 ——
+  var SKY = { dawn: ["#f4b8c0", "#fde7cf"], day: ["#8cc6ea", "#e2f2fb"], dusk: ["#6c5aa6", "#f6a978"], night: ["#0f1730", "#2a3862"] };
+  var sky = rain ? (dark ? ["#151b2b", "#2c3446"] : ["#8e9aa8", "#cdd5dc"]) : SKY[phase];
+  var BANK = rain && !dark ? "#7d8a8a" : { dawn: "#b49aa8", day: "#8fae9f", dusk: "#6e4f78", night: "#1a2240" }[phase];
+  var TREE = rain && !dark ? "#6a7a74" : { dawn: "#9a8a94", day: "#6f9a7e", dusk: "#5a4266", night: "#141b34" }[phase];
+  var WATER = rain && !dark ? "#8a9aa6" : { dawn: "#d9b8c0", day: "#6fa9c9", dusk: "#b47a8a", night: "#18264a" }[phase];
+  var lampOn = phase === "dusk" || dark || rain;
+  var cloudCol = rain ? "#b7c0c9" : "#fff";
+  var view = h("g", { clipPath: "url(#nkWin)" },
+    h("rect", { x: 44, y: 20, width: 272, height: 172, fill: "url(#nkSky)" }),
+    phase === "day" && !rain ? h("circle", { cx: 262, cy: 50, r: 13, fill: "#fff2b0", style: { filter: "drop-shadow(0 0 10px rgba(255,236,160,0.9))" } }) : null,
+    phase === "dawn" && !rain ? h("circle", { cx: 96, cy: 116, r: 15, fill: "#ffd7a0", opacity: 0.95 }) : null,
+    phase === "dusk" && !rain ? h("circle", { cx: 252, cy: 112, r: 17, fill: "#ffb070", opacity: 0.95 }) : null,
+    dark && !rain ? h("g", null,
+      h("circle", { cx: 266, cy: 46, r: 12, fill: "#fdf3c8", style: { filter: "drop-shadow(0 0 8px rgba(253,243,200,0.6))" } }),
+      h("circle", { cx: 272, cy: 42, r: 10.5, fill: "url(#nkSky)" }),
+      [[70, 40], [110, 30], [150, 52], [200, 34], [228, 62], [302, 30], [130, 74], [180, 66], [90, 66]].map(function (p, i) { return h("circle", { key: "s" + i, cx: p[0], cy: p[1], r: i % 3 ? 0.9 : 1.4, fill: "#fff", style: { animation: "nkTw " + (1.4 + (i % 4) * 0.6) + "s ease-in-out infinite" } }); })) : null,
+    [[60, 48, 1, 0], [180, 34, 0.8, -40], [280, 70, 0.7, -80]].map(function (c, i) {
+      return h("g", { key: "c" + i, style: { animation: "nkDrift " + (90 + i * 30) + "s linear infinite", animationDelay: c[3] + "s" } },
+        h("g", { transform: "translate(" + c[0] + " " + c[1] + ") scale(" + c[2] + ")", opacity: dark ? 0.22 : 0.92 },
+          h("ellipse", { cx: 0, cy: 0, rx: 18, ry: 7, fill: cloudCol }), h("ellipse", { cx: 10, cy: -5, rx: 11, ry: 8, fill: cloudCol }), h("ellipse", { cx: -9, cy: -3, rx: 9, ry: 6, fill: cloudCol })));
+    }),
+    // 对岸：一排屋顶、圆顶、钟楼、树
+    [[44, 16, 16], [60, 10, 24], [70, 18, 14], [88, 14, 22], [102, 20, 12], [174, 16, 20], [190, 12, 28], [202, 22, 16], [246, 18, 18], [264, 12, 26], [276, 20, 14], [296, 20, 20]].map(function (b, i) { return h("rect", { key: "b" + i, x: b[0], y: 140 - b[2], width: b[1], height: b[2], fill: BANK }); }),
+    h("path", { d: "M128 140 V124 H132 a18 18 0 0 1 36 0 H172 V140 Z", fill: BANK }), h("rect", { x: 148, y: 98, width: 4, height: 9, fill: BANK }), h("circle", { cx: 150, cy: 97, r: 2, fill: BANK }),
+    h("rect", { x: 226, y: 88, width: 12, height: 52, fill: BANK }), h("polygon", { points: "225,88 239,88 232,72", fill: BANK }),
+    h("circle", { cx: 232, cy: 97, r: 3.6, fill: dark ? "#ffe9a8" : "rgba(255,255,255,0.55)" }),
+    dark || phase === "dusk" ? [[64, 120], [76, 128], [92, 126], [108, 132], [178, 126], [194, 118], [206, 130], [250, 128], [268, 120], [282, 132], [302, 126]].map(function (p, i) { return h("rect", { key: "lw" + i, x: p[0], y: p[1], width: 2.4, height: 3, fill: "#ffd98a", opacity: (i % 3 === 0 && phase === "dusk") ? 0 : 0.9 }); }) : null,
+    [[52, 136], [118, 135], [178, 137], [214, 136], [256, 136], [310, 135]].map(function (p, i) { return h("circle", { key: "t" + i, cx: p[0], cy: p[1], r: 6 + (i % 2), fill: TREE }); }),
+    h("rect", { x: 44, y: 138, width: 272, height: 6, fill: TREE }),
+    // 河 + 波光 + 船 + 鸭子
+    h("rect", { x: 44, y: 144, width: 272, height: 30, fill: WATER }),
+    [[60, 150], [120, 156], [200, 150], [260, 160], [90, 166], [170, 164], [290, 152], [230, 168]].map(function (p, i) { return h("line", { key: "w" + i, x1: p[0], y1: p[1], x2: p[0] + 12, y2: p[1], stroke: dark ? "rgba(255,217,138,0.5)" : "rgba(255,255,255,0.7)", strokeWidth: 1, strokeLinecap: "round", style: { animation: "nkTw " + (2 + (i % 3)) + "s ease-in-out infinite", animationDelay: (i * 0.4) + "s" } }); }),
+    h("g", { style: { animation: "nkBoat 46s linear infinite", animationDelay: "-14s" } },
+      h("g", { style: { animation: "nkBob 3s ease-in-out infinite" } },
+        h("path", { d: "M0 160 h44 l-6 7 h-32 Z", fill: "#2b3446" }),
+        h("rect", { x: 9, y: 152, width: 24, height: 8, rx: 1, fill: "#fdf6e8" }),
+        [13, 19, 25].map(function (x) { return h("rect", { key: "bw" + x, x: x, y: 154.5, width: 3.2, height: 2.6, fill: dark ? "#ffd98a" : "#8fb8cf" }); }),
+        h("rect", { x: 28, y: 146, width: 4, height: 6, fill: "#c0392b" }),
+        h("text", { x: 22, y: 165.5, textAnchor: "middle", fontSize: 3.6, fill: "#fdf6e8", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "LONDON"))),
+    !dark ? h("g", { style: { animation: "nkBob 2.4s ease-in-out infinite" } },
+      h("ellipse", { cx: 284, cy: 168, rx: 5, ry: 2.4, fill: "#fdf6e8" }), h("circle", { cx: 288, cy: 165, r: 2, fill: "#fdf6e8" }), h("path", { d: "M289.8 165 l2.2 0.6 l-2.2 0.6 Z", fill: "#f0a030" })) : null,
+    // 近处的河岸：路、栏杆、路灯
+    h("rect", { x: 44, y: 174, width: 272, height: 18, fill: dark ? "#262b38" : rain ? "#9a9890" : "#c7bfb0" }),
+    h("rect", { x: 44, y: 177, width: 272, height: 1.2, fill: "#2b2f3a" }),
+    Array.apply(null, Array(28)).map(function (_, i) { return h("rect", { key: "rl" + i, x: 46 + i * 10, y: 177, width: 1, height: 8, fill: "#2b2f3a" }); }),
+    lampOn ? h("circle", { cx: 96, cy: 124, r: 22, fill: "url(#nkLampG)" }) : null,
+    lampOn ? h("rect", { x: 92, y: 146, width: 8, height: 26, fill: "#ffd98a", opacity: 0.18 }) : null,
+    h("rect", { x: 95, y: 126, width: 2.4, height: 60, fill: "#1e2430" }),
+    h("polygon", { points: "91,126 101,126 99,119 93,119", fill: "#1e2430" }),
+    h("rect", { x: 92.5, y: 120, width: 7, height: 5.5, fill: lampOn ? "#ffe3a0" : "#cfd9e2" }),
+    // 帕丁顿每隔一会儿从窗前走过（下雨就撑伞）
+    h("g", { style: { animation: "nkWalk 52s linear infinite", animationDelay: "-9s" } },
+      h("g", { style: { animation: "nkBob 0.7s ease-in-out infinite" } },
+        h("rect", { x: 1.5, y: 184, width: 12, height: 7, rx: 2.5, fill: "#3a6ea5" }),
+        h("text", { x: 7.5, y: 185, textAnchor: "middle", fontSize: 13 }, "🐻"),
+        rain ? h("g", null, h("path", { d: "M-5 172 a12.5 8 0 0 1 25 0 Z", fill: "#c0392b" }), h("line", { x1: 7.5, y1: 172, x2: 7.5, y2: 182, stroke: "#2b2f3a", strokeWidth: 0.8 }))
+          : h("g", null, h("ellipse", { cx: 7.5, cy: 174.5, rx: 7.5, ry: 1.6, fill: "#c0392b" }), h("path", { d: "M3.5 174.5 q0 -5 4 -5 q4 0 4 5 Z", fill: "#c0392b" })),
+        h("rect", { x: 13.5, y: 186, width: 6, height: 5, rx: 0.8, fill: "#8a5a32" }))),
+    // 下雨：玻璃上的雨丝和水珠
+    rain ? Array.apply(null, Array(30)).map(function (_, i) {
+      var x = 48 + ((i * 37) % 266);
+      return h("line", { key: "r" + i, x1: x, y1: 20, x2: x - 2, y2: 30, stroke: "rgba(255,255,255,0.65)", strokeWidth: 0.8, strokeLinecap: "round", style: { animation: "nkRain " + (0.7 + (i % 5) * 0.15) + "s linear infinite", animationDelay: (-(i % 7) * 0.13) + "s" } });
+    }) : null,
+    rain ? [[70, 60], [130, 100], [210, 46], [280, 120], [160, 150], [250, 84], [100, 130], [300, 60]].map(function (p, i) { return h("circle", { key: "dr" + i, cx: p[0], cy: p[1], r: 1.6 + (i % 3) * 0.5, fill: "rgba(255,255,255,0.35)", stroke: "rgba(255,255,255,0.55)", strokeWidth: 0.4 }); }) : null);
+
+  // —— 屋里：窗框、窗帘、窗台上的杯子和书 ——
+  var cup = dk && dk.cold
+    ? h("g", null,
+        h("rect", { x: 226, y: 158, width: 22, height: 36, rx: 2, fill: "rgba(255,255,255,0.4)", stroke: "rgba(255,255,255,0.85)", strokeWidth: 1 }),
+        h("rect", { x: 228, y: 166, width: 18, height: 26, rx: 1.5, fill: dk.col, opacity: 0.9 }),
+        h("ellipse", { cx: 236, cy: 166, rx: 4, ry: 1.4, fill: "#9fc48a" }),
+        [0, 1, 2, 3].map(function (i) { return h("circle", { key: "fz" + i, cx: 231 + i * 4, cy: 188, r: 0.9, fill: "#fff", style: { animation: "nkFizz " + (1.6 + i * 0.3) + "s linear infinite", animationDelay: (i * 0.4) + "s" } }); }))
+    : h("g", null,
+        h("ellipse", { cx: 237, cy: 194, rx: 21, ry: 2.8, fill: "#efe6d6" }),
+        h("path", { d: "M252 172 q11 0 11 9 q0 9 -11 9", stroke: "#fdf6e8", strokeWidth: 4, fill: "none" }),
+        h("rect", { x: 222, y: 166, width: 30, height: 27, rx: 5, fill: "#fdf6e8", stroke: "#e0d4c0", strokeWidth: 0.8 }),
+        h("ellipse", { cx: 237, cy: 168.5, rx: 13, ry: 2.6, fill: dk ? dk.col : "#efe6d6" }),
+        dk && dk.art ? h("path", { d: "M237 170 l-3 -2.4 a1.6 1.6 0 0 1 3 -1 a1.6 1.6 0 0 1 3 1 Z", fill: "#fbf3e4" }) : null,
+        dk ? [0, 1, 2].map(function (i) { return h("path", { key: "st" + i, d: "M" + (230 + i * 7) + " 162 q-4 -6 0 -12 q4 -6 0 -12", fill: "none", stroke: "rgba(255,255,255,0.85)", strokeWidth: 1.6, strokeLinecap: "round", style: { animation: "nkSteam 3s ease-out infinite", animationDelay: (i * 0.9) + "s" } }); }) : null);
+  var book = bk
+    ? h("g", null,
+        h("path", { d: "M114 193 L186 193 L184 186 L116 186 Z", fill: bk.col }),
+        h("path", { d: "M150 191 Q132 184 116 188 L118 177 Q134 173 150 180 Z", fill: "#fdf8ee" }),
+        h("path", { d: "M150 191 Q168 184 184 188 L182 177 Q166 173 150 180 Z", fill: "#f6efe0" }),
+        [0, 1, 2].map(function (i) { return h("g", { key: "ln" + i }, h("line", { x1: 122, y1: 181 + i * 2.4, x2: 145, y2: 182.5 + i * 2.4, stroke: "#c9bca6", strokeWidth: 0.6 }), h("line", { x1: 155, y1: 182.5 + i * 2.4, x2: 178, y2: 181 + i * 2.4, stroke: "#c9bca6", strokeWidth: 0.6 })); }))
+    : h("g", null,
+        h("rect", { x: 122, y: 186, width: 52, height: 7, rx: 1, fill: "#5a7fb5" }),
+        h("rect", { x: 126, y: 179.5, width: 46, height: 6.5, rx: 1, fill: "#b5656b" }),
+        h("rect", { x: 124, y: 173.5, width: 44, height: 6, rx: 1, fill: "#c99a4e" }));
+  var scene = h("svg", { viewBox: "0 0 360 250", style: { width: "100%", display: "block" } },
+    h("defs", null,
+      h("linearGradient", { id: "nkSky", gradientUnits: "userSpaceOnUse", x1: 0, y1: 20, x2: 0, y2: 192 }, h("stop", { offset: "0%", stopColor: sky[0] }), h("stop", { offset: "100%", stopColor: sky[1] })),
+      h("linearGradient", { id: "nkWall", x1: 0, y1: 0, x2: 0, y2: 1 }, h("stop", { offset: "0%", stopColor: dark ? "#5a4636" : "#ead1a8" }), h("stop", { offset: "100%", stopColor: dark ? "#3e3026" : "#d9b585" })),
+      h("radialGradient", { id: "nkLampG" }, h("stop", { offset: "0%", stopColor: "#ffd98a", stopOpacity: 0.85 }), h("stop", { offset: "100%", stopColor: "#ffd98a", stopOpacity: 0 })),
+      h("radialGradient", { id: "nkCandle" }, h("stop", { offset: "0%", stopColor: "#ffcf7a", stopOpacity: 0.7 }), h("stop", { offset: "100%", stopColor: "#ffcf7a", stopOpacity: 0 })),
+      h("clipPath", { id: "nkWin" }, h("rect", { x: 44, y: 20, width: 272, height: 172 }))),
+    h("rect", { x: 0, y: 0, width: 360, height: 250, fill: "url(#nkWall)" }),
+    view,
+    h("rect", { x: 40, y: 16, width: 280, height: 180, fill: "none", stroke: "#f6efe4", strokeWidth: 8 }),
+    h("rect", { x: 178, y: 20, width: 4, height: 172, fill: "#f6efe4" }),
+    h("rect", { x: 44, y: 74, width: 272, height: 3.5, fill: "#f6efe4" }),
+    h("polygon", { points: "50,190 120,22 150,22 80,190", fill: "rgba(255,255,255,0.07)" }),
+    // 窗帘 + 帘杆
+    h("rect", { x: 4, y: 6, width: 352, height: 4, rx: 2, fill: "#8a6a48" }), h("circle", { cx: 5, cy: 8, r: 4, fill: "#8a6a48" }), h("circle", { cx: 355, cy: 8, r: 4, fill: "#8a6a48" }),
+    h("path", { d: "M8 10 Q46 60 34 116 Q28 150 38 200 L6 200 L6 10 Z", fill: "#7f9e8e" }),
+    h("path", { d: "M352 10 Q314 60 326 116 Q332 150 322 200 L354 200 L354 10 Z", fill: "#7f9e8e" }),
+    h("path", { d: "M14 10 Q30 70 22 120", stroke: "rgba(0,0,0,0.1)", strokeWidth: 2, fill: "none" }), h("path", { d: "M346 10 Q330 70 338 120", stroke: "rgba(0,0,0,0.1)", strokeWidth: 2, fill: "none" }),
+    h("rect", { x: 20, y: 116, width: 18, height: 4, rx: 2, fill: "#d9b45f" }), h("rect", { x: 322, y: 116, width: 18, height: 4, rx: 2, fill: "#d9b45f" }),
+    // 窗台
+    h("rect", { x: 0, y: 206, width: 360, height: 44, fill: dark ? "#3b2e25" : "#c9a57a" }),
+    [20, 130, 240].map(function (x) { return h("rect", { key: "pn" + x, x: x, y: 214, width: 100, height: 30, rx: 2, fill: "none", stroke: dark ? "rgba(255,255,255,0.06)" : "rgba(90,60,30,0.18)", strokeWidth: 1.2 }); }),
+    h("rect", { x: 22, y: 194, width: 316, height: 12, rx: 2, fill: "#b07d52" }), h("rect", { x: 22, y: 194, width: 316, height: 2.5, fill: "#c9966a" }), h("rect", { x: 26, y: 206, width: 308, height: 2, fill: "rgba(0,0,0,0.18)" }),
+    phase === "day" && !rain ? h("polygon", { points: "120,194 300,194 290,206 110,206", fill: "#fff2b0", opacity: 0.25 }) : null,
+    // 窗台上：一盆小绿植、书、杯子、夜里一支蜡烛
+    h("path", { d: "M48 194 L66 194 L63 180 L51 180 Z", fill: "#c8704a" }), h("rect", { x: 49.5, y: 179, width: 15, height: 2.5, rx: 1, fill: "#b05f3c" }),
+    [[-6, -16, -25], [0, -20, 0], [6, -15, 25], [-3, -11, -50], [4, -10, 45]].map(function (l, i) { return h("ellipse", { key: "lf" + i, cx: 57 + l[0], cy: 179 + l[1] * 0.6, rx: 3, ry: 7, fill: i % 2 ? "#6f9a6a" : "#86b07e", transform: "rotate(" + l[2] + " " + (57 + l[0]) + " " + (179 + l[1] * 0.6) + ")" }); }),
+    book,
+    cup,
+    dark || phase === "dusk" ? h("g", null,
+      h("circle", { cx: 304, cy: 176, r: 22, fill: "url(#nkCandle)", style: { animation: "nkTw 2.6s ease-in-out infinite" } }),
+      h("rect", { x: 300, y: 180, width: 8, height: 14, rx: 1, fill: "#fdf6e8" }),
+      h("path", { d: "M304 172 q3 4 0 7.5 q-3 -3.5 0 -7.5 Z", fill: "#ffb84a", style: { animation: "nkTw 1.2s ease-in-out infinite" } })) : null);
+
+  var btn = function (on) { return { flex: 1, padding: "9px 6px", borderRadius: 12, border: "1px solid " + (on ? "#2f4a3e" : "#d8c9b0"), background: on ? "#2f4a3e" : "#fffaf2", color: on ? "#fdf6e8" : "#4a3a2c", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" }; };
+  var head = function (t, sub) { return h("div", { style: { display: "flex", alignItems: "baseline", gap: 8, margin: "18px 2px 8px" } }, h("div", { style: { fontWeight: 900, fontSize: "0.95rem", color: "#3b2e25", fontFamily: "Georgia,'PingFang SC',serif" } }, t), sub ? h("div", { style: { fontSize: "0.7rem", color: "#9a8a76" } }, sub) : null); };
+
+  return h("div", null,
+    h("style", null,
+      "@keyframes nkDrift{from{transform:translateX(-130px)}to{transform:translateX(330px)}}" +
+      "@keyframes nkBoat{from{transform:translateX(-60px)}to{transform:translateX(380px)}}" +
+      "@keyframes nkWalk{0%{transform:translateX(-40px)}45%{transform:translateX(400px)}100%{transform:translateX(400px)}}" +
+      "@keyframes nkRain{from{transform:translateY(-12px);opacity:0}15%{opacity:.85}to{transform:translateY(172px);opacity:.25}}" +
+      "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.75}100%{transform:translateY(-14px);opacity:0}}" +
+      "@keyframes nkTw{0%,100%{opacity:.45}50%{opacity:1}}" +
+      "@keyframes nkBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}" +
+      "@keyframes nkFizz{from{transform:translateY(0);opacity:.9}to{transform:translateY(-22px);opacity:0}}" +
+      "@keyframes nkIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}"),
+    h("div", { style: { borderRadius: 18, overflow: "hidden", boxShadow: "0 8px 24px rgba(60,40,20,0.22)" } }, scene),
+    h("div", { style: { margin: "10px 2px 0", fontSize: "0.78rem", color: "#6b5a48", fontWeight: 700 } }, "🪟 " + when + " · " + line + (rain ? " · 外面在下雨，屋里刚好" : "")),
+    say ? h("div", { key: say, style: { marginTop: 10, padding: "11px 14px", background: "#fffaf2", border: "1px solid #e6d8c0", borderRadius: 14, fontSize: "0.86rem", color: "#3b2e25", fontWeight: 700, lineHeight: 1.6, animation: "nkIn .35s ease-out" } }, say) : null,
+    h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+      h("button", { onClick: function () { setRain(!rain); }, style: btn(rain) }, rain ? "☀️ 雨停吧" : "🌧️ 听一会儿雨"),
+      h("button", { onClick: function () { if (sitAt) standUp(); else setSitAt(Date.now()); }, style: btn(!!sitAt) }, sitAt ? "起来了" : "🪑 就坐一会儿")),
+    sitAt ? h("div", { style: { textAlign: "center", padding: "22px 10px 8px", animation: "nkIn .4s ease-out" } },
+      h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontSize: "1.15rem", fontWeight: 900, color: "#3b2e25" } }, "什么都不用做。"),
+      h("div", { style: { fontSize: "0.84rem", color: "#7a6a58", marginTop: 6 } }, "看看窗外就好。"),
+      h("div", { style: { marginTop: 16, fontSize: "1.7rem", fontWeight: 900, color: "#2f4a3e", fontVariantNumeric: "tabular-nums", letterSpacing: 1 } }, pad(Math.floor(sitNow / 60)) + ":" + pad(sitNow % 60)))
+    : h("div", null,
+      head("今天喝点什么", late ? "过了下午三点，咖啡因会偷走一点睡眠" : "选一杯，放到窗台上"),
+      h("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 } },
+        NK_DRINKS.map(function (x) {
+          var on = st.d === x.k;
+          var tag = x.nose ? ["鼻子舒服", "#4f8064"] : x.sleep ? ["好睡", "#6a68a8"] : x.cold ? ["冰的", "#4f7fa8"] : null;
+          if (late && x.caf) tag = ["☾ 晚上会难睡", "#b8652f"];
+          return h("button", { key: x.k, onClick: function () { put({ d: x.k }); setSay(x.say); }, style: { display: "flex", alignItems: "center", gap: 9, textAlign: "left", padding: "9px 10px", borderRadius: 14, border: "1.5px solid " + (on ? "#2f4a3e" : "#e6d8c0"), background: on ? "#eef3ee" : "#fffaf2", fontFamily: "inherit", cursor: "pointer", opacity: late && x.caf && !on ? 0.75 : 1 } },
+            h("div", { style: { flex: "none", width: 34, height: 34, borderRadius: 999, background: x.col, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.08)" } }, x.e),
+            h("div", { style: { minWidth: 0 } },
+              h("div", { style: { fontWeight: 900, fontSize: "0.8rem", color: "#3b2e25" } }, x.n),
+              h("div", { style: { fontSize: "0.66rem", color: "#8a7a66", marginTop: 1 } }, x.sub),
+              tag ? h("div", { style: { display: "inline-block", marginTop: 4, padding: "1px 7px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 800, color: "#fff", background: tag[1] } }, tag[0]) : null));
+        })),
+      head("随手翻一本", "抽一本，翻到哪页算哪页"),
+      h("div", { style: { display: "flex", alignItems: "flex-end", gap: 5, padding: "14px 10px 0", background: "linear-gradient(180deg,#5a3d28,#6e4a30)", borderRadius: "12px 12px 4px 4px", borderBottom: "8px solid #8a6040" } },
+        NK_BOOKS.map(function (x, i) {
+          var on = st.b === x.k;
+          return h("button", { key: x.k, onClick: function () { put({ b: x.k }); }, style: { flex: 1, height: 104 + (i % 3) * 8, padding: "8px 0", border: "none", borderRadius: "3px 3px 0 0", background: x.col, color: "#fdf6e8", writingMode: "vertical-rl", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.74rem", letterSpacing: 2, cursor: "pointer", transform: on ? "translateY(-10px)" : "none", transition: "transform .25s", boxShadow: "inset -3px 0 0 rgba(0,0,0,0.15), inset 3px 0 0 rgba(255,255,255,0.08)" } }, x.n);
+        })),
+      bk ? h("div", { key: bk.k, style: { marginTop: 12, padding: "16px 16px 14px", background: "#fffdf7", border: "1px solid #e6d8c0", borderRadius: 4, boxShadow: "0 4px 14px rgba(60,40,20,0.1)", animation: "nkIn .35s ease-out" } },
+        h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontSize: "0.98rem", lineHeight: 1.75, color: "#2f2620", fontWeight: 700 } }, bk.q),
+        h("div", { style: { marginTop: 8, fontSize: "0.7rem", color: "#9a8a76", textAlign: "right" } }, "——《" + bk.n + "》· " + bk.a),
+        bk.note ? h("div", { style: { marginTop: 6, fontSize: "0.72rem", color: "#6b5a48" } }, bk.note) : null) : null),
+    satMin >= 1 && !sitAt ? h("div", { style: { marginTop: 14, textAlign: "center", fontSize: "0.74rem", color: "#6b5a48", fontWeight: 700 } }, "今天在窗边坐了 " + satMin + " 分钟") : null,
+    h("div", { style: { marginTop: 14, fontSize: "0.68rem", color: "#a8987f", textAlign: "center", lineHeight: 1.6 } }, "在门口按住这扇窗不放，" + mate + "那边会收到「今天还不错 ☀️」"));
+}
+
 function HomeShelf(_refHS) {
   var h = React.createElement;
   var onEnter = _refHS.onEnter, cozy = _refHS.cozy || 0, onCharge = _refHS.onCharge;
@@ -27928,7 +28712,7 @@ function HomeDeck(_refHD) {
     { t: "夜灯午休", b: "白天它睡觉，发光的事归太阳 💡" },
     { t: "玩偶点名", b: "玩偶排排坐，等人回来一起软 🧸" },
     { t: "菜场剧场", b: "认真挑西红柿的人，最可爱 🍅" },
-    { t: "酒蒙子雷达", b: "雷达滴滴响，广州小店在招手 📡" },
+    { t: "酒蒙子雷达", b: "雷达滴滴响，贝克街的酒馆在招手 📡" },
     { t: "221B速递", b: "小本本空了一页，等一封周末信 💌" },
     { t: "磁带A面", b: "随身听转到A面，正好配冰饮 🎧" },
     { t: "阅读室光斑", b: "一本书一束光，坐进去就很富 📖" },
@@ -28508,7 +29292,7 @@ function NanasHome() {
     /*#__PURE__*/React.createElement("div", { style: { position: "absolute", left: "50%", bottom: 0, transform: "translateX(-50%)", width: "100%", maxWidth: 600, maxHeight: "86vh", overflowY: "auto", background: "#f3ece0", borderRadius: "22px 22px 0 0", boxShadow: "0 -12px 40px rgba(0,0,0,0.5)", paddingBottom: "calc(16px + env(safe-area-inset-bottom,0px))" } },
       /*#__PURE__*/React.createElement("div", { style: { position: "sticky", top: 0, zIndex: 2, background: "linear-gradient(180deg,#1e2636,#2b3446)", color: "#fdf6e8", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, borderRadius: "22px 22px 0 0" } },
         /*#__PURE__*/React.createElement("div", { style: { color: "#d9b45f", fontSize: "0.56rem", letterSpacing: 3, fontFamily: "Georgia,serif", fontWeight: 800 } }, "221B"),
-        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "bar" ? "🌙 月影杂货铺 · 里屋" : sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
+        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "bar" ? "🌙 月影杂货铺 · 里屋" : sheet === "nook" ? "☕ 窗边角落" : sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
         /*#__PURE__*/React.createElement("button", { onClick: function () { setSheet(null); }, style: { marginLeft: "auto", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "收起 ▾")),
       /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: sheet === "music" ? "block" : "none" } }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: null })),
       sheet === "postcards" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: "grid", gap: 12 } },
@@ -28516,7 +29300,8 @@ function NanasHome() {
         /*#__PURE__*/React.createElement(HKMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" }); } }),
         /*#__PURE__*/React.createElement(DisneyMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" }); } })) : null,
       sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(FridgeWall, null)) : null,
-      sheet === "bar" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MagicBar, null)) : null)),
+      sheet === "bar" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MagicBar, null)) : null,
+      sheet === "nook" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(NanaNook, null)) : null)),
   nanaBakerOn() && musicOn && sheet !== "music" && !NANA_DOOR && /*#__PURE__*/React.createElement("div", { onClick: function () { setSheet("music"); }, title: musicOn, style: { position: "fixed", right: 14, bottom: "calc(86px + env(safe-area-inset-bottom,0px))", zIndex: 9980, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" } },
     /*#__PURE__*/React.createElement("div", { style: { maxWidth: 140, background: "rgba(30,38,54,0.92)", color: "#fdf6e8", borderRadius: 999, padding: "5px 10px", fontSize: "0.62rem", fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", boxShadow: "0 4px 12px rgba(0,0,0,0.35)" } }, "♪ " + musicOn),
     /*#__PURE__*/React.createElement("div", { style: { width: 46, height: 46, borderRadius: "50%", background: "radial-gradient(circle,#d9b45f 0 17%,#1e2636 18% 100%)", boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.14), 0 6px 16px rgba(0,0,0,0.45)", border: "2px solid #d9b45f", animation: "nanaSpin 2.4s linear infinite", flexShrink: 0 } })),
