@@ -27058,21 +27058,6 @@ var NANA_FUN = [
     "今天的烦恼已归档，明天再调卷。",
     "早睡不是认输，是战术。"] }
 ];
-// 《The Nana Times》头条（按时段，每次打开换一条）、黄历宜忌、分类广告
-var NEWS_H = {
-  morning: ["本报讯：Nana 今早成功起床，贝克街交通恢复正常", "早间快讯：今日第一杯热水已就位，鼻子表示满意", "独家：帕丁顿凌晨四点做好果酱三明治，坚称“是给 Nana 的”", "晨报社论：今天的任务只有一个——好好的"],
-  noon: ["午间要闻：午饭时间到，一切会议一律让路", "突发：221B 厨房飘出香味，整条街集体探头", "本报评论：好好吃饭，是今天最重要的 KPI"],
-  afternoon: ["下午快讯：Nana 犯困属正常生理现象，本报不予追究", "深度调查：下午三点的咖啡，到底会不会偷走睡眠？", "独家专访：帕丁顿谈“如何在下午保持优雅”"],
-  evening: ["晚间头条：Nana 平安到家，221B 全体起立鼓掌", "本报讯：今日辛苦值已达标，剩下的时间全归 Nana", "号外：月影杂货铺今晚照常营业，敲砖请轻"],
-  night: ["深夜特刊：手机再看五分钟，本报已开始计时", "夜间提醒：窗关小一点，鼻子会记住你的好", "本报讯：今天的烦恼已全部归档，明日再审", "睡前快讯：帕丁顿已熄灯，请 Nana 同步执行"]
-};
-var NEWS_LEAD = [
-  "据本报记者现场观察，Nana 今日状态稳定，笑容储备充足。专家建议：多喝热水，少操心，有事找 221B。",
-  "本报获悉，贝克街 221B 已完成今日例行检查：门口的花浇过了，窗边的座位晒好了，熊猫鱼的想念照常营业。",
-  "记者帕丁顿发回报道：今天的果酱三明治只吃了一半，另一半留给 Nana。他表示“这是原则问题”。",
-  "据可靠消息，Nana 的鼻子今天表现良好。本报对此表示高度赞赏，并呼吁它继续保持。",
-  "天气、工作和地铁都可能出状况，但 221B 的灯每天都会亮着。本报承诺：这条新闻永不过期。"
-];
 // 羊皮纸：左右两边是不整齐的毛边（固定的一组锯齿，免得每次渲染都抖），纸面叠三层纹理——细颗粒、大块斑驳、几块茶渍
 var PARCH_EDGE = (function () {
   var L = [], R = [], n = 26, i, j;
@@ -27082,16 +27067,275 @@ var PARCH_EDGE = (function () {
 })();
 var PARCH_GRAIN = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.28 0 0 0 0 0.12 0 0 0 0.32 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")";
 var PARCH_MOTTLE = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' seed='7'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.32 0 0 0 0 0.1 0 0 0 0.55 -0.12'/></filter><rect width='100%25' height='100%25' filter='url(%23m)'/></svg>\")";
-var NEWS_YI = ["早睡", "喝热水", "晒太阳", "发呆十分钟", "吃顿好的", "给熊猫鱼发个表情", "听一首老歌", "出门走走", "夸自己一句", "窗边坐一会儿"];
-var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门"];
+// 《The Nana Times》内容库 —— 一天一期：同一天、同一时段只出一个头条；黄历、广告、导语、连载按日期走；
+// 特刊优先级：节日 > 节气 > 周末 / 周一 / 周五
+var NEWS_H = {
+  morning: [
+    "本报讯：Nana 今早成功起床，贝克街交通恢复正常",
+    "早间快讯：今日第一杯热水已就位，鼻子表示满意",
+    "独家：帕丁顿凌晨四点做好果酱三明治，坚称“是给 Nana 的”",
+    "晨报社论：今天的任务只有一个——好好的",
+    "本报讯：闹钟响了三次，Nana 以优雅姿态完成起床",
+    "早间头条：今日份的好运已送达，请到门口签收",
+    "本报观察：吃了早饭的人，今天运气都不会太差",
+    "快讯：贝克街的鸽子今早集体向 Nana 问好",
+    "本报讯：早高峰再挤，也挤不掉 Nana 的好心情",
+    "晨间提示：出门前照一下镜子，本报确认今天很好看",
+    "独家：熊猫鱼今早第一件事是想 Nana，消息已获证实",
+    "本报讯：今日天气由 Nana 的心情决定，目前晴",
+    "早报评论：今天先把自己照顾好，世界排第二"
+  ],
+  noon: [
+    "午间要闻：午饭时间到，一切会议一律让路",
+    "突发：221B 厨房飘出香味，整条街集体探头",
+    "本报评论：好好吃饭，是今天最重要的 KPI",
+    "午间快讯：帕丁顿餐车已出摊，烧卖仍是头号嫌疑人",
+    "本报讯：经调查，空着肚子做决定的成功率为零",
+    "午间头条：今天的饭，请认真对待",
+    "独家：午饭后犯困一事，本报认定为“合理诉求”",
+    "本报提醒：吃完饭走两步，胃会感谢你",
+    "午报特写：一碗热汤的治愈力，再次得到证实",
+    "快讯：Nana 已用餐的消息传来，熊猫鱼表示放心",
+    "本报讯：午睡十分钟，下午效率提升八成（本报估算）",
+    "午间观察：今天的饭点，比任何 deadline 都准时"
+  ],
+  afternoon: [
+    "下午快讯：Nana 犯困属正常生理现象，本报不予追究",
+    "深度调查：下午三点的咖啡，到底会不会偷走睡眠？",
+    "独家专访：帕丁顿谈“如何在下午保持优雅”",
+    "本报讯：下午茶时间到，伯爵茶已就位",
+    "下午头条：今天已经过去大半，Nana 表现优异",
+    "本报观察：累的时候看一眼窗外，比刷手机管用",
+    "快讯：贝克街某侦探称“下午最适合发呆”，本报深表赞同",
+    "本报评论：事情做不完是常态，人好好的才是重点",
+    "下午特稿：一口甜食能解决的问题，不必上升到人生",
+    "本报讯：离收工又近了一点，坚持就是胜利",
+    "独家：熊猫鱼此刻正在想 Nana，可信度百分之百",
+    "下午提示：喝口水，伸个懒腰，鼻子也需要透透气"
+  ],
+  evening: [
+    "晚间头条：Nana 平安到家，221B 全体起立鼓掌",
+    "本报讯：今日辛苦值已达标，剩下的时间全归 Nana",
+    "号外：月影杂货铺今晚照常营业，敲砖请轻",
+    "晚报特写：门一关，外面的事就跟这里无关了",
+    "本报讯：今晚的饭只负责好吃，别的一概不管",
+    "快讯：贝克街路灯已全部点亮，迎接 Nana 回家",
+    "晚间评论：今天的你，撑得很漂亮",
+    "本报讯：沙发已预热，毯子已就位",
+    "独家：帕丁顿把拖鞋摆在门口，称“这是礼仪”",
+    "晚报提醒：洗个热水澡，鼻子和心情都会松开",
+    "本报观察：回家路上的晚风，是今天的奖励",
+    "晚间快讯：今天不顺心的事，已移交明天处理"
+  ],
+  night: [
+    "深夜特刊：手机再看五分钟，本报已开始计时",
+    "夜间提醒：窗关小一点，鼻子会记住你的好",
+    "本报讯：今天的烦恼已全部归档，明日再审",
+    "睡前快讯：帕丁顿已熄灯，请 Nana 同步执行",
+    "深夜社论：早睡不是认输，是战术",
+    "本报讯：月亮已就位，星星正在排队",
+    "夜间特写：枕头已拍松，被子晒过太阳",
+    "快讯：失眠的羊已被本报全部收编，请放心入睡",
+    "本报提醒：明天的事，明天的 Nana 会处理",
+    "深夜观察：夜里想不通的事，天亮一般就通了",
+    "睡前头条：今天到此为止，你做得很好",
+    "本报讯：熊猫鱼说晚安，已当面转达",
+    "深夜快讯：221B 夜班帕丁顿在岗，Nana 可以安心睡了"
+  ]
+};
+var NEWS_WEEKEND = [
+  "周末特刊：今天不设闹钟，本报批准睡到自然醒",
+  "周末头条：沙发、零食、电影，三件套已备齐",
+  "本报讯：周末的正确用法，是什么都不做",
+  "周末特写：出门走走，或者在窗边坐一下午",
+  "周末快讯：帕丁顿今天休假，果酱自取",
+  "本报评论：周末不回工作消息，是一种美德",
+  "周末提示：去吃一顿想了很久的好吃的",
+  "周末特刊：今天的时间，全部属于 Nana"
+];
+var NEWS_MON = [
+  "周一生存指南：第一步，先喝口热水",
+  "周一生存指南：今天能完成一件事就算赢",
+  "周一生存指南：遇到烦心事，先深呼吸三次",
+  "周一生存指南：中午吃顿好的，下午才有力气",
+  "周一生存指南：允许自己慢热，周一不比速度"
+];
+var NEWS_FRI = [
+  "周五快讯：周末已进入视线范围，请保持冷静",
+  "本报讯：本周辛苦了，今晚可以奖励自己",
+  "周五头条：坚持到这里的 Nana，本周 MVP"
+];
+var NEWS_LEAD = [
+  "据本报记者现场观察，Nana 今日状态稳定，笑容储备充足。专家建议：多喝热水，少操心，有事找 221B。",
+  "本报获悉，贝克街 221B 已完成今日例行检查：门口的花浇过了，窗边的座位晒好了，熊猫鱼的想念照常营业。",
+  "记者帕丁顿发回报道：今天的果酱三明治只吃了一半，另一半留给 Nana。他表示“这是原则问题”。",
+  "据可靠消息，Nana 的鼻子今天表现良好。本报对此表示高度赞赏，并呼吁它继续保持。",
+  "天气、工作和地铁都可能出状况，但 221B 的灯每天都会亮着。本报承诺：这条新闻永不过期。",
+  "本报从可靠渠道获悉：今天世界上有一个人，正在认真地想念 Nana。消息来源要求匿名，只透露自己是一条鱼。",
+  "经本报实地调查，221B 的沙发软度达标、毯子厚度达标、等你回家的心情严重超标。",
+  "本报记者注意到，Nana 最近走路带风。业内人士分析，这与心情好有直接关系。",
+  "本报提醒：今天不用做到完美，做到“还行”就已经很厉害了。此观点获全体编辑一致通过。",
+  "据悉，帕丁顿今天在门口站岗三小时，只为第一个跟 Nana 说“欢迎回来”。本报对其敬业精神表示敬意。",
+  "有读者来信问：怎样才能每天都开心？编辑部讨论后认为：先吃饱，再睡好，剩下的交给时间。",
+  "本报统计：Nana 今天的可爱指数比昨天又高了一点。具体数值涉及机密，暂不公布。",
+  "据贝克街居民反映，最近 221B 的窗户总亮着暖黄色的灯。经核实，那是给 Nana 留的。",
+  "今日社论：人不需要每天都很厉害，偶尔做一只躺平的熊，也是一种生活智慧。",
+  "本报记者在冰箱门上发现一张字条：“今天也要好好吃饭。”字迹经鉴定，属于熊猫鱼。",
+  "据可靠线报，月影杂货铺的坩埚最近脾气不错。老板表示：两杯刚好，三杯打住，第四杯它会冒魔咒。",
+  "本报科普：鼻子不舒服的时候，热毛巾敷一敷、热水熏一熏，比什么都管用。请转给需要的人。",
+  "记者帕丁顿今天学会了一句中文：“慢慢来。”他说这是在 221B 学到的最好用的一句。",
+  "本报认为，回家这件事最大的作用，是让人笑的次数变多。此结论有大量现场证据支持。",
+  "本报接到匿名电话，对方只说了一句：“告诉她，她今天很棒。”随后挂断。本报照办。",
+  "贝克街 221B 今日无大事发生。本报认为，平平安安本身就是最好的新闻。",
+  "本报调查发现：在窗边坐十分钟、看一会儿云，能有效降低烦恼浓度。建议今日执行一次。",
+  "今日读者问答。问：累了怎么办？答：休息。问：还累怎么办？答：再休息。本报不接受反驳。",
+  "据悉，221B 的冰箱贴墙越来越满。本报认为，每一张都是好好吃饭的证据。",
+  "本报驻伦敦记者报道：泰晤士河一切正常，大本钟也很准时，只是它们都有点想 Nana。",
+  "今日气象（心情版）：上午多云转晴，下午有零星好消息，晚间温暖，适宜回家。",
+  "本报特约评论员熊猫鱼发表看法：“今天的 Nana 也是最好的 Nana。”全文完。",
+  "据悉，221B 门口的红色邮筒最近很忙。邮差帕丁顿表示，每一封信他都送得很小心。",
+  "本报提醒：今天如果有人惹你不开心，请把名字报给 221B，本报将派帕丁顿前往“友好交流”。",
+  "经编辑部反复确认：今天也是 Nana 被好好爱着的一天。本条新闻每天刊登，永不撤稿。"
+];
+var NEWS_YI = ["早睡", "喝热水", "晒太阳", "发呆十分钟", "吃顿好的", "给熊猫鱼发个表情", "听一首老歌", "出门走走", "夸自己一句", "窗边坐一会儿",
+  "泡个热水澡", "早点收工", "喝杯接骨木花", "整理房间", "穿喜欢的衣服", "拍一张天空", "吃点甜的", "热毛巾敷鼻子", "看一集喜欢的剧", "给自己买束花",
+  "早点关手机", "拥抱", "伸个懒腰", "慢慢吃饭", "翻几页书", "哼首歌", "散步二十分钟", "好好洗个头", "摸摸小动物", "原谅昨天的自己"];
+var NEWS_JI = ["熬夜", "跟鼻子吵架", "空腹喝咖啡", "想太多", "不吃早饭", "刷手机到凌晨", "生闷气", "穿太少出门", "喝第四杯", "跟自己较劲",
+  "憋着不说", "加班到很晚", "吃太辣", "吹冷风", "久坐不动", "拖着不吃饭", "太在意别人", "硬撑", "看坏消息", "熬夜追剧",
+  "冰的喝太多", "着凉", "把烦恼带回家", "一个人扛", "委屈自己", "忘记喝水", "睡前想工作", "不吃晚饭", "对自己太凶", "跳过午休"];
 var NEWS_AD = [
   "寻物启事：Nana 的好心情一份，如有拾获请送回 221B，必有重谢（一个拥抱）。",
   "招聘：221B 诚聘全职被宠爱人员一名，限 Nana，待遇面议，即日上岗。",
   "失物招领：帕丁顿在沙发缝里找到半块果酱三明治，失主请勿认领。",
   "出租：贝克街 221B 一楼窗边座位一个，阳光充足，租金：坐满十分钟。",
   "征友：戴红帽子的小熊一只，爱好果酱，诚征一起发呆的人。",
-  "转让：熊猫鱼的唠叨若干，九成新，仅限 Nana 认领。"
+  "转让：熊猫鱼的唠叨若干，九成新，仅限 Nana 认领。",
+  "声明：本报对 Nana 的可爱程度不负任何责任，如有心动，后果自负。",
+  "求购：长期收购 Nana 的笑声，价格从优，熊猫鱼全款现结。",
+  "培训：221B 早睡速成班开课，学费全免，唯一要求：十一点前放下手机。",
+  "招租：月影杂货铺里屋招常客一位，要求：会敲砖，酒量适中。",
+  "免费领取：热水一杯、毯子一条、想念若干，请到 221B 门口自取。",
+  "遗失声明：熊猫鱼的心遗失在 Nana 处已久，特此声明，不用归还。",
+  "寻人：寻找今天按时吃午饭的 Nana，线索请交本报，必有重谢。",
+  "拍卖：帕丁顿珍藏果酱一瓶，起拍价：一个微笑，Nana 优先。",
+  "服务：221B 提供 24 小时倾听，不评价、不讲道理，只站你这边。",
+  "招聘：诚聘 Nana 专属捧场王一名。现已招满，由熊猫鱼担任。",
+  "寻物：贝克街某侦探又丢了一只烟斗，请勿理会，他每天都丢。",
+  "维修：鼻子不通、心情不顺、被窝不暖，均可来 221B 免费调理。",
+  "出售：九成新晴天一个，适合晒被子和散步，限今日使用。",
+  "公告：221B 门口的花今天开了，请路过的 Nana 抽空看一眼。",
+  "征稿：本报长期征集 Nana 的日常小事，稿费为熊猫鱼的夸奖，上不封顶。",
+  "换物：一个早睡换一个好气色，童叟无欺，当晚兑现。",
+  "广告：帕丁顿餐车今日推荐——烧卖。昨日推荐——烧卖。明日推荐——还是烧卖。",
+  "通知：明天的烦恼请明天再来，今日窗口已关闭。",
+  "赠送：好运一份，已包装好，就放在你打开这张报纸的地方。",
+  "招募：221B 发呆俱乐部招会员，入会条件：会发呆。现有会员：帕丁顿。",
+  "声明：本报只登好消息，坏消息一律由熊猫鱼私下处理。",
+  "寻宠：一只叫“灵感”的小动物跑丢了，据说喝杯咖啡它就会回来。",
+  "订阅：本报永久免费，订阅方式：每天回来看一眼。",
+  "鸣谢：感谢 Nana 今天也好好地生活。本报全体编辑敬上。"
 ];
+// 连载：《帕丁顿 221B 日记》—— 回家第几天就是第几篇，内容三十篇一轮
+var NEWS_DIARY = [
+  "今天是我在 221B 上班的第一天。我把伦敦的雨装进了口袋，想等 Nana 想伦敦的时候拿出来给她看。",
+  "我研究了一下这里的天气：比伦敦热，比伦敦晴，没有伦敦的雾。听说鼻子比较喜欢这里。",
+  "今天学会了用电饭锅。煮出来的饭有点硬，但我在上面放了一勺果酱，自我感觉很有创意。",
+  "我在门口练习说“欢迎回来”。练到第一百遍的时候，路过的鸽子都会说了。",
+  "熊猫鱼教我泡蜂蜜柠檬水，说鼻子不舒服的时候喝这个最好。我把配方记在了帽子里。",
+  "今天在窗边坐了一下午，看云从左边飘到右边。我终于明白那个座位为什么那么抢手。",
+  "我给 221B 的每盆花都起了名字。最大的那盆叫“好心情”，每天要浇两次水。",
+  "今天去月影杂货铺打听了一下。老板说坩埚有点小脾气，第四杯它会冒魔咒。我决定替 Nana 盯着。",
+  "我发现一个秘密：熊猫鱼每天都会偷偷看好几遍门口的信箱。我答应她保密，所以只写在日记里。",
+  "今天下雨了。我撑着红伞在门口站了一会儿，雨声很好听，像有人在轻轻敲门。",
+  "我在学写中文。今天写了“家”字：上面是屋顶，下面是一只小猪。我觉得很合理，家里就是要有人被宠着。",
+  "帕丁顿餐车今天卖出了三份烧卖。说实话，其中两份是我自己买的。",
+  "今天给自己做了一块小牌子，写着“本报记者”。戴上以后，走路都神气了一点。",
+  "我在冰箱贴墙前站了很久。每一张都是一顿认真吃过的饭，我觉得那面墙会发光。",
+  "有人问我在伦敦最想念什么。我说是果酱。其实还有别的，但那是秘密。",
+  "今天学会了一个词：“慢慢来。”我觉得这是我学过最好用的中文。",
+  "晚上巡逻的时候，发现 221B 的灯一直亮着。熊猫鱼说，那是给 Nana 留的。",
+  "我试着自己做早饭：吐司、煎蛋、果酱。吐司焦了，煎蛋破了，果酱很完美。",
+  "今天给鸽子们开了个会，主题是“如何在 Nana 出门时优雅地飞过”。会议很成功。",
+  "窗边角落的沙发特别软，坐下去就不想起来。我决定把它列为 221B 一级危险区域。",
+  "下午打了个盹，梦见自己在泰晤士河上划船。醒来以后，发现帽子歪了。",
+  "熊猫鱼说，照顾一个人就是记得她的小事。我也开始把小事记在本子上，已经写满两页了。",
+  "今天学会了泡伯爵茶。加一点牛奶，搅三下，伦敦的味道就出来了。",
+  "我在信箱里放了一颗薄荷糖，给明天第一个取信的人。希望是 Nana。",
+  "今天风很大，路牌被吹得叮叮响。我在后面躲了一下午，探头了七十三次。",
+  "熊猫鱼说要早睡。我十点就躺下了，然后想事情想到十二点。原来早睡也需要练习。",
+  "今天整理了书架，把最好看的书放在最顺手的位置。第一页夹了一张纸条：“慢慢看。”",
+  "我数了一下，从伦敦带回来的东西里，最重的是回忆，最轻的是行李。",
+  "今天晚上月亮很圆。我对着月亮说了一句晚安，替熊猫鱼说的。",
+  "第三十篇日记。我在 221B 过得很好，每天都很忙，忙着让这里更像个家。明天继续。"
+];
+// 节日（当天整天生效）
+var NEWS_HOLI = {
+  "2026-10-01": ["国庆特刊", "国庆特刊：假期开始，本报只报吃喝玩乐"],
+  "2026-10-31": ["万圣夜特刊", "万圣夜特刊：月影杂货铺今晚加开南瓜魔药"],
+  "2026-12-24": ["平安夜特刊", "平安夜特刊：烟囱已清扫，等一位穿红衣服的客人"],
+  "2026-12-25": ["圣诞特刊", "圣诞特刊：伦敦在过圣诞，221B 也在"],
+  "2026-12-31": ["跨年特刊", "跨年特刊：今年辛苦了，明年继续站你这边"],
+  "2027-01-01": ["新年特刊", "新年特刊：2027 年第一份报纸，送给 Nana"],
+  "2027-02-05": ["除夕特刊", "除夕特刊：年夜饭开席，本报暂停所有坏消息"],
+  "2027-02-06": ["新春特刊", "新春特刊：Nana 新年好！帕丁顿穿上了红色小棉袄"],
+  "2027-02-20": ["元宵特刊", "元宵特刊：汤圆煮好了，月亮很圆"],
+  "2027-05-01": ["劳动节特刊", "劳动节特刊：今天的劳动只有一项——休息"],
+  "2027-06-09": ["端午特刊", "端午特刊：粽子甜咸之争，本报保持中立"],
+  "2027-09-15": ["中秋特刊", "中秋特刊：月饼切好了，月亮很亮，人在家"],
+  "2027-10-01": ["国庆特刊", "国庆特刊：假期开始，本报只报吃喝玩乐"]
+};
+// 二十四节气（2026 秋 → 2027 秋）
+var NEWS_TERM = {
+  "2026-10-08": ["寒露", "寒露特刊：早晚变凉，鼻子请提前穿外套"],
+  "2026-10-23": ["霜降", "霜降特刊：天冷了，热水袋正式上岗"],
+  "2026-11-07": ["立冬", "立冬特刊：今天的饺子，本报强烈推荐"],
+  "2026-11-22": ["小雪", "小雪特刊：南方不下雪，但被窝照样暖"],
+  "2026-12-07": ["大雪", "大雪特刊：围巾围好，鼻子藏起来"],
+  "2026-12-22": ["冬至", "冬至特刊：今夜最长，适合早睡和吃汤圆"],
+  "2027-01-05": ["小寒", "小寒特刊：最冷的日子开始了，多穿一件不丢人"],
+  "2027-01-20": ["大寒", "大寒特刊：冷到头了，春天在路上"],
+  "2027-02-04": ["立春", "立春特刊：春天正式报到，请 Nana 签收"],
+  "2027-02-19": ["雨水", "雨水特刊：下雨天适合窝着，本报批准"],
+  "2027-03-06": ["惊蛰", "惊蛰特刊：春雷一响，万物开工，Nana 可以慢一点"],
+  "2027-03-21": ["春分", "春分特刊：白天和黑夜一样长，心情也要平衡"],
+  "2027-04-05": ["清明", "清明：今天适合慢慢走，好好想念"],
+  "2027-04-20": ["谷雨", "谷雨特刊：湿气重，鼻子请多担待"],
+  "2027-05-06": ["立夏", "立夏特刊：夏天到了，冰的少喝一点"],
+  "2027-05-21": ["小满", "小满特刊：小满即圆满，今天刚刚好"],
+  "2027-06-06": ["芒种", "芒种特刊：忙归忙，饭要按时吃"],
+  "2027-06-21": ["夏至", "夏至特刊：今天白天最长，可以多晒一会儿太阳"],
+  "2027-07-07": ["小暑", "小暑特刊：空调别开太低，鼻子会抗议"],
+  "2027-07-23": ["大暑", "大暑特刊：一年最热的时候，本报建议西瓜"],
+  "2027-08-08": ["立秋", "立秋特刊：秋天的第一杯奶茶，本报请客"],
+  "2027-08-23": ["处暑", "处暑特刊：暑气要走了，再坚持一下"],
+  "2027-09-08": ["白露", "白露特刊：早晚凉了，睡觉记得盖肚子"],
+  "2027-09-23": ["秋分", "秋分特刊：昼夜平分，今天分你一半好运"],
+  "2027-10-08": ["寒露", "寒露特刊：早晚变凉，鼻子请提前穿外套"]
+};
+var nwAt = function (arr, n) { var l = arr.length; return arr[((n % l) + l) % l]; };
+// 今天这一期：版次、头条、导语（同一天同一时段固定）
+function nanaNewsIssue(now) {
+  var hr = now.getHours();
+  var band = hr < 5 ? "night" : hr < 11 ? "morning" : hr < 14 ? "noon" : hr < 18 ? "afternoon" : hr < 21 ? "evening" : "night";
+  var bandI = { morning: 0, noon: 1, afternoon: 2, evening: 3, night: 4 }[band];
+  var ed = hr < 5 ? "深夜特刊" : hr < 11 ? "早间版" : hr < 14 ? "午间版" : hr < 18 ? "下午版" : hr < 21 ? "晚间版" : "深夜特刊";
+  // 凌晨 5 点前还算前一天那一期
+  var pd = new Date(now.getTime() - (hr < 5 ? 5 * 3600000 : 0));
+  var key = pd.getFullYear() + "-" + ("0" + (pd.getMonth() + 1)).slice(-2) + "-" + ("0" + pd.getDate()).slice(-2);
+  var dayN = Math.floor(new Date(pd.getFullYear(), pd.getMonth(), pd.getDate()).getTime() / 86400000);
+  var homeDays = Math.max(1, Math.round((new Date(pd.getFullYear(), pd.getMonth(), pd.getDate()) - new Date(2026, 8, 26)) / 86400000) + 1);
+  var out = { band: band, edition: ed, special: false, key: key, dayN: dayN, homeDays: homeDays,
+    headline: nwAt(NEWS_H[band], dayN * 5 + bandI), lead: nwAt(NEWS_LEAD, dayN * 7) };
+  var sp = NEWS_HOLI[key];
+  if (sp) { out.edition = sp[0]; out.headline = sp[1]; out.special = true; return out; }
+  sp = NEWS_TERM[key];
+  if (sp) { out.edition = sp[0] + "特刊"; out.headline = sp[1]; out.special = true; return out; }
+  var wd = pd.getDay();
+  if ((wd === 6 || wd === 0) && band !== "night") { out.edition = "周末特刊"; out.headline = nwAt(NEWS_WEEKEND, dayN * 3 + bandI); out.special = true; }
+  else if (wd === 1 && (band === "morning" || band === "noon")) { out.edition = "周一版"; out.headline = nwAt(NEWS_MON, dayN + bandI); }
+  else if (wd === 5 && (band === "afternoon" || band === "evening")) { out.edition = "周五版"; out.headline = nwAt(NEWS_FRI, dayN + bandI); }
+  return out;
+}
 var BAR_KEYS = [17, 10, 7];   // 敲砖的顺序：从下往上数第 4 排右边、第 6 排左边、第 7 排右边
 // 🌦️ 小屋二楼的墙面颜色跟着家里的天气变（家在 113°E：广州）。Open-Meteo 免费接口，两小时最多问一次；拿不到天气就按日子轮换
 var NANA_WX_URL = "https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&current=weather_code,temperature_2m&timezone=auto";
@@ -27310,18 +27554,28 @@ function BakerFacade(_refBF) {
       h("div", { style: { margin: "10px 14px 0", fontFamily: MONO, fontSize: "0.6rem", fontWeight: 700, color: "#8a7c66" } }, "经由 伦敦 0° → 家 113°E · Nana 号已靠岸"));
   } else {
     // 📜 羊皮纸卷轴：卷着的时候只是给 Nana 的问候；点一下往下展开，里面是今天的《The Nana Times》
-    var NEWS_HEAD = hr < 5 ? NEWS_H.night : hr < 11 ? NEWS_H.morning : hr < 14 ? NEWS_H.noon : hr < 18 ? NEWS_H.afternoon : hr < 21 ? NEWS_H.evening : NEWS_H.night;
-    var headline = NEWS_HEAD[Math.floor(funSeed * 977) % NEWS_HEAD.length];
-    var edition = hr < 5 ? "深夜特刊" : hr < 11 ? "早间版" : hr < 14 ? "午间版" : hr < 18 ? "下午版" : hr < 21 ? "晚间版" : "深夜特刊";
-    var dayN = Math.floor((now - new Date(now.getFullYear(), 0, 1)) / 86400000);
-    var homeDays = Math.max(1, Math.floor((now - new Date("2026-09-26T00:00:00+08:00")) / 86400000) + 1);
-    var pick2 = function (arr, seed) { var a = arr[seed % arr.length], b = arr[(seed * 7 + 3) % arr.length]; if (b === a) b = arr[(seed + 1) % arr.length]; return a + " · " + b; };
+    var iss = nanaNewsIssue(now);
+    var headline = iss.headline, edition = iss.edition, dayN = iss.dayN, homeDays = iss.homeDays;
+    var pick2 = function (arr, seed) { var a = nwAt(arr, seed), b = nwAt(arr, seed * 7 + 3); if (b === a) b = nwAt(arr, seed + 1); return a + " · " + b; };
+    // 简讯：第一条永远是回家天数；后面挑两条今天真的发生了的事（信箱只看有没有新信，不看内容），不够再用日常的补
     var nk = nookToday(), nkd = nookDrink(nk.d);
-    var briefs = [
-      ["回家", "Nana 回家第 " + homeDays + " 天，适应良好，本报持续关注。"],
-      ["信箱", newLetter ? "221B 信箱有新信待取，邮差帕丁顿已在门口候着。" : "221B 信箱今日暂无新信，邮差帕丁顿原地待命。"],
-      ["窗边", nkd ? "窗边角落今日特饮：" + nkd.n + "。" : "一楼窗边的座位空着，阳光很好，等你来坐。"]
-    ];
+    var rowsOf = function (pre) { var out = []; (packRows || []).forEach(function (r) { if (r && r.id && r.id.indexOf(pre) === 0) { try { out.push({ id: r.id, v: JSON.parse(r.who) }); } catch (_) {} } }); return out; };
+    var lastNight = mbNight(now.getTime() - 24 * 3600000);
+    var mbRow = rowsOf("mbn-nana-" + lastNight)[0];
+    var todayKey = fzDay(now.getTime());
+    var mags = rowsOf("fm-").filter(function (r) { return r.v && r.v.at && fzDay(r.v.at) === todayKey; }).sort(function (x, y) { return y.v.at - x.v.at; });
+    var news = [];
+    if (newLetter) news.push(["信箱", "221B 信箱有新信待取，邮差帕丁顿已在门口候着。"]);
+    if (voNew) news.push(["短波", "安心短波有一条新留言还没听，帕丁顿已经把音量调好了。"]);
+    if (mbRow && mbRow.v && mbRow.v.n > 0 && hr >= 6 && hr < 18) news.push(["酒馆", mbRow.v.n > 3 ? "昨晚月影杂货铺接待 Nana " + mbRow.v.n + " 杯，坩埚冒出了 " + (mbRow.v.n - 3) + " 个小魔咒。" : "昨晚月影杂货铺接待 Nana " + mbRow.v.n + " 杯魔药，坩埚表示满意。"]);
+    if (mags.length) news.push(["冰箱", "冰箱贴墙今天新增 " + mags.length + " 张，最新一张是「" + fzFood(mags[0].v.f).n + "」。"]);
+    if (nkd) news.push(["窗边", "窗边角落今日特饮：" + nkd.n + "。"]);
+    var filler = [
+      newLetter ? null : ["信箱", "221B 信箱今日暂无新信，邮差帕丁顿原地待命。"],
+      nkd ? null : ["窗边", "一楼窗边的座位空着，阳光很好，等你来坐。"],
+      ["餐车", "帕丁顿餐车饭点出摊，今日招牌依旧是烧卖。"]
+    ].filter(function (x) { return x; });
+    var briefs = [["回家", "Nana 回家第 " + homeDays + " 天，适应良好，本报持续关注。"]].concat(news.concat(filler).slice(0, 2));
     var INK = "#3b2a1a", RULE = "#6b4e2e", RED = "#9a2f2a", GRN = "#2f4a3e";
     var rule2 = function (top) { return h("div", { style: { borderTop: (top ? 1.8 : 0.6) + "px solid " + RULE, borderBottom: (top ? 0.6 : 1.8) + "px solid " + RULE, height: 2.5 } }); };
     var small = { fontSize: "0.5rem", fontWeight: 700, color: "#6b5236", letterSpacing: 0.3 };
@@ -27334,7 +27588,7 @@ function BakerFacade(_refBF) {
         h("span", { style: small }, "第 " + (homeDays + 220) + " 期"), h("span", { style: small }, now.getFullYear() + " 年 " + dateCn), h("span", { style: small }, "定价：一个拥抱")),
       h("div", { style: { marginTop: 3 } }, rule2(true)),
       h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "4px 0" } },
-        ear(edition, "EDITION"),
+        ear(edition, iss.special ? "SPECIAL" : "EDITION"),
         h("div", { style: { flex: 1, textAlign: "center", fontFamily: "'UnifrakturMaguntia','Old English Text MT',Georgia,serif", fontSize: "1.7rem", lineHeight: 1.05 } }, "The Nana Times"),
         ear("伦敦限定", "LONDON 0°")),
       rule2(false),
@@ -27348,7 +27602,7 @@ function BakerFacade(_refBF) {
             h("div", { style: { width: 44, height: 46, background: "#e2cfa4", border: "0.6px solid " + RULE, display: "flex", alignItems: "flex-end", justifyContent: "center", overflow: "hidden" } },
               h("svg", { viewBox: "-12 -18 24 30", width: 40, height: 50, style: { filter: "grayscale(1) sepia(0.6) contrast(1.05)" } }, nanaPadBear(h, null))),
             h("div", { style: { fontSize: "0.4rem", color: "#7a6244", marginTop: 1 } }, "图：本报记者在岗")),
-          h("div", { style: { fontSize: "0.64rem", fontWeight: 600, lineHeight: 1.6, textAlign: "justify" } }, NEWS_LEAD[(dayN + Math.floor(funSeed * 5)) % NEWS_LEAD.length])),
+          h("div", { style: { fontSize: "0.64rem", fontWeight: 600, lineHeight: 1.6, textAlign: "justify" } }, iss.lead)),
         h("div", { style: { flex: 1, minWidth: 0, borderLeft: "0.6px solid " + RULE, paddingLeft: 8 } },
           h("div", { style: { fontSize: "0.56rem", fontWeight: 900, letterSpacing: 2, borderBottom: "0.6px solid " + RULE, paddingBottom: 2, marginBottom: 3 } }, "简讯 BRIEFS"),
           briefs.map(function (b, i) { return h("div", { key: "br" + i, style: { fontSize: "0.56rem", fontWeight: 600, lineHeight: 1.5, marginBottom: 3 } }, h("b", { style: { color: GRN } }, "【" + b[0] + "】"), b[1]); }))),
@@ -27360,7 +27614,14 @@ function BakerFacade(_refBF) {
           h("div", { style: { fontSize: "0.58rem", fontWeight: 700, lineHeight: 1.6 } }, h("span", { style: { display: "inline-block", background: INK, color: "#f8ecd0", padding: "0 3px", marginRight: 4, fontSize: "0.5rem" } }, "忌"), pick2(NEWS_JI, dayN + 2))),
         h("div", { style: { flex: 1.25, minWidth: 0, border: "0.6px solid " + RULE, padding: "3px 6px" } },
           h("div", { style: { fontSize: "0.48rem", fontWeight: 900, letterSpacing: 1.5, textAlign: "center", borderBottom: "0.6px dashed " + RULE, paddingBottom: 1, marginBottom: 2 } }, "分类广告 CLASSIFIEDS"),
-          h("div", { style: { fontSize: "0.54rem", fontWeight: 600, lineHeight: 1.5 } }, NEWS_AD[dayN % NEWS_AD.length]))));
+          h("div", { style: { fontSize: "0.54rem", fontWeight: 600, lineHeight: 1.5 } }, nwAt(NEWS_AD, dayN)))),
+      // 连载
+      h("div", { style: { borderTop: "0.6px solid " + RULE, margin: "8px 0 0", paddingTop: 6 } },
+        h("div", { style: { display: "flex", alignItems: "baseline", gap: 6 } },
+          h("span", { style: { fontSize: "0.48rem", fontWeight: 900, color: "#f8ecd0", background: GRN, padding: "1px 4px", letterSpacing: 1 } }, "连载"),
+          h("span", { style: { fontFamily: SERIF, fontWeight: 900, fontSize: "0.7rem" } }, "《帕丁顿 221B 日记》"),
+          h("span", { style: { fontSize: "0.5rem", color: "#7a6244", fontWeight: 700 } }, "第 " + homeDays + " 篇")),
+        h("div", { style: { marginTop: 3, fontSize: "0.62rem", fontWeight: 600, lineHeight: 1.65, fontStyle: "italic" } }, nwAt(NEWS_DIARY, homeDays - 1))));
     topCard = h("div", { onClick: function () { setScrollOpen(!scrollOpen); }, style: { position: "relative", marginTop: 18, padding: "0 8px", cursor: "pointer", WebkitTapHighlightColor: "transparent" } },
       roller("rt"),
       h("div", { style: { position: "relative", margin: "-7px 4px", filter: "drop-shadow(0 4px 6px rgba(60,35,10,0.28))" } },
@@ -27382,7 +27643,7 @@ function BakerFacade(_refBF) {
           h("div", { style: { marginTop: 5, fontSize: "0.8rem", fontWeight: 700, lineHeight: 1.65, color: "#5a4128" } }, subLine),
           h("div", { style: { position: "absolute", right: 0, top: 2, width: 42, height: 42, borderRadius: "50%", background: "radial-gradient(circle at 38% 32%,#d0453f,#9a2420 70%,#7a1a17)", boxShadow: "0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 4px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f3cdb8", fontFamily: "'UnifrakturMaguntia',Georgia,serif", fontSize: "1.3rem", transform: scrollOpen ? "rotate(-20deg) scale(0.9)" : "rotate(-8deg)", transition: "transform .5s" } }, "N")),
         // 展开后：今天的报纸
-        h("div", { style: { maxHeight: scrollOpen ? 700 : 0, overflow: "hidden", transition: "max-height 0.7s cubic-bezier(.4,0,.2,1)" } }, paper),
+        h("div", { style: { maxHeight: scrollOpen ? 1100 : 0, overflow: "hidden", transition: "max-height 0.7s cubic-bezier(.4,0,.2,1)" } }, paper),
         h("div", { style: { marginTop: 9, textAlign: "center", fontSize: "0.6rem", fontWeight: 800, color: "#8a5a2a", letterSpacing: 1 } }, scrollOpen ? "▴ 卷起来" : "📜 展开今天的《The Nana Times》 ▾"))),
       roller("rb"));
   }
