@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-311";
+var NANA_VER = "v2026.8.2-312";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27124,6 +27124,7 @@ function BakerFacade(_refBF) {
     if (!okk) return;                               // 手指划走了就不算
     if (held < 380) {                               // 只是点了一下：门环给句台词，别的提醒一声「按住」
       if (p.k === "knock") doKnock();
+      else if (p.k === "good") { try { window.dispatchEvent(new CustomEvent("nana-sheet", { detail: "nook" })); } catch (_) {} }
       else { setPgMsg("按住不放，家里就亮一下 ✨"); setTimeout(function () { setPgMsg(""); }, 2500); }
       return;
     }
@@ -27299,13 +27300,69 @@ function BakerFacade(_refBF) {
     // 墙角爬的藤
     [[34, 200], [40, 186], [36, 172], [44, 160], [38, 148]].map(function (p, i) { return h("circle", { key: "iv" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
     [[326, 205], [320, 190], [325, 176], [318, 164]].map(function (p, i) { return h("circle", { key: "iw" + i, cx: p[0], cy: p[1], r: 5 - i * 0.5, fill: i % 2 ? "#7fb37a" : "#93c48c", opacity: 0.95 }); }),
-    // 凸窗：三格
-    h("rect", { x: 48, y: 230, width: 96, height: 8, fill: "#ddd5c3" }), h("rect", { x: 48, y: 238, width: 96, height: 2, fill: "rgba(0,0,0,0.22)" }),
-    h("g", holdProps(PG.good),
-      win(58, 248, 80, 54, (lit && !dimAll) || glowBay, "bay", h("g", null, h("rect", { x: 83, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("rect", { x: 110, y: 248, width: 3, height: 54, fill: "#e9e2d2" }), h("text", { x: 98, y: 296, textAnchor: "middle", fontSize: 13 }, "🪴"),
-        h("rect", { x: 61, y: 252, width: 42, height: 11.5, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6, style: holdingIs("good") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null }),
-        h("text", { x: 82, y: 260.3, textAnchor: "middle", fontSize: 5.8, fontWeight: "bold", fill: "#7a5a2a", fontFamily: "'PingFang SC',sans-serif" }, "今天还不错 ☀️")))),
-    h("rect", { x: 46, y: 310, width: 100, height: 6, fill: "#ddd5c3" }),
+    // ☕ 一楼：窗边角落（咖啡 + 书 + 看窗外）。点一下进去坐坐；按住不放还是「今天还不错」
+    (function () {
+      var nk = nookToday(), dk = nookDrink(nk.d), warm = !dimAll;
+      var books = [];
+      [263, 276, 289].forEach(function (by, ri) {
+        var x = 106;
+        for (var i = 0; x < 133; i++) { var w = 2.2 + ((i * 7 + ri * 3) % 4) * 0.6, hh = 8 + ((i * 5 + ri) % 3); books.push(h("rect", { key: "bk" + ri + "-" + i, x: x, y: by - hh, width: Math.min(w, 134 - x), height: hh, fill: ["#b5656b", "#2f4a3e", "#c99a4e", "#5a7fb5", "#8a5a8a", "#6f8f5a", "#e0c08a"][(i + ri * 2) % 7], opacity: dimAll ? 0.45 : 1 })); x += w + 0.5; }
+      });
+      return h("g", holdProps(PG.good),
+        h("defs", null,
+          h("linearGradient", { id: "nkFWall", x1: 0, y1: 0, x2: 0, y2: 1 }, h("stop", { offset: "0%", stopColor: dimAll ? "#363a46" : "#fbe3b4" }), h("stop", { offset: "100%", stopColor: dimAll ? "#262a33" : "#e6b47a" })),
+          h("radialGradient", { id: "nkFGlow" }, h("stop", { offset: "0%", stopColor: "#fff1c4", stopOpacity: 0.95 }), h("stop", { offset: "100%", stopColor: "#ffd98a", stopOpacity: 0 })),
+          h("clipPath", { id: "nkFClip" }, h("rect", { x: 40, y: 248, width: 100, height: 56 }))),
+        // 条纹遮阳篷 + 店招
+        h("rect", { x: 32, y: 225, width: 116, height: 4, rx: 1, fill: "#2f4a3e" }),
+        Array.apply(null, Array(12)).map(function (_, i) { var t0 = 40 + i * 100 / 12, t1 = t0 + 100 / 12, b0 = 33 + i * 114 / 12, b1 = b0 + 114 / 12; return h("polygon", { key: "aw" + i, points: t0 + ",229 " + t1 + ",229 " + b1 + ",241 " + b0 + ",241", fill: i % 2 ? "#fdf6e8" : "#6f9a86" }); }),
+        Array.apply(null, Array(12)).map(function (_, i) { var b0 = 33 + i * 114 / 12, r = 114 / 24; return h("path", { key: "as" + i, d: "M" + b0 + " 241 a" + r + " " + (r * 0.8) + " 0 0 0 " + (2 * r) + " 0 Z", fill: i % 2 ? "#fdf6e8" : "#6f9a86" }); }),
+        h("rect", { x: 63, y: 230.5, width: 54, height: 8.5, rx: 1.6, fill: "#2f4a3e", stroke: "#d9b45f", strokeWidth: 0.6 }),
+        h("text", { x: 90, y: 236.8, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#e9cf8a", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "NANA'S NOOK"),
+        // 深橄榄绿木窗框
+        h("rect", { x: 35, y: 243.5, width: 110, height: 65.5, rx: 1.5, fill: "#2f4a3e" }),
+        h("g", { clipPath: "url(#nkFClip)" },
+          h("rect", { x: 40, y: 248, width: 100, height: 56, fill: "url(#nkFWall)" }),
+          h("rect", { x: 40, y: 298, width: 100, height: 6, fill: dimAll ? "#2a2420" : "#a8744a" }),
+          // 书架
+          h("rect", { x: 103, y: 250, width: 34, height: 52, fill: "#6e4a30" }),
+          h("rect", { x: 105, y: 252, width: 30, height: 46, fill: dimAll ? "#2b2622" : "#4a3222" }),
+          [263, 276, 289].map(function (y, i) { return h("rect", { key: "sh" + i, x: 105, y: y, width: 30, height: 1.6, fill: "#8a6040" }); }),
+          books,
+          // 吊灯 + 一团暖光
+          warm ? h("circle", { cx: 91, cy: 268, r: 24, fill: "url(#nkFGlow)", opacity: lit ? 0.95 : 0.6, style: { animation: "bkLamp 3s ease-in-out infinite" } }) : null,
+          h("line", { x1: 91, y1: 248, x2: 91, y2: 256, stroke: "#2b2622", strokeWidth: 0.7 }),
+          h("path", { d: "M84 262 L98 262 L94.5 255.5 L87.5 255.5 Z", fill: "#2f4a3e" }),
+          h("ellipse", { cx: 91, cy: 262.4, rx: 5, ry: 1, fill: warm ? "#fff1c4" : "#555" }),
+          // 扶手椅 + 靠垫 + 扶手上摊开的书
+          h("rect", { x: 49, y: 272, width: 28, height: 22, rx: 7, fill: "#b8615a" }),
+          h("rect", { x: 46, y: 282, width: 7, height: 16, rx: 3, fill: "#a5544e" }),
+          h("rect", { x: 73, y: 282, width: 7, height: 16, rx: 3, fill: "#a5544e" }),
+          h("rect", { x: 51, y: 287, width: 24, height: 8, rx: 2.5, fill: "#c46f66" }),
+          h("rect", { x: 56, y: 278, width: 12, height: 8, rx: 2.5, fill: "#f1d49a", transform: "rotate(-8 62 282)" }),
+          h("rect", { x: 48, y: 297, width: 2, height: 3.5, fill: "#5a3a26" }), h("rect", { x: 76, y: 297, width: 2, height: 3.5, fill: "#5a3a26" }),
+          h("path", { d: "M73.5 281.8 l3.4 -1.3 l3.4 1.3 l0 0.9 l-3.4 -1 l-3.4 1 Z", fill: "#fdf8ee" }),
+          // 小圆桌 + 杯子（今天点了什么，杯里就是什么颜色）+ 热气
+          h("ellipse", { cx: 91, cy: 289.5, rx: 7, ry: 1.8, fill: "#6b4a33" }),
+          h("rect", { x: 90.2, y: 290, width: 1.6, height: 9, fill: "#6b4a33" }),
+          h("ellipse", { cx: 91, cy: 299, rx: 4, ry: 1, fill: "#6b4a33" }),
+          h("rect", { x: 87.5, y: 283.5, width: 6, height: 6, rx: 1, fill: "#fdf6e8" }),
+          h("path", { d: "M93.5 284.8 q2.6 0 2.6 2 q0 2 -2.6 2", fill: "none", stroke: "#fdf6e8", strokeWidth: 0.9 }),
+          h("ellipse", { cx: 90.5, cy: 283.9, rx: 2.8, ry: 0.7, fill: dk ? dk.col : "#c99c6e" }),
+          warm && !(dk && dk.cold) ? [0, 1].map(function (i) { return h("path", { key: "stm" + i, d: "M" + (89.5 + i * 2.2) + " 282 q-1.4 -2 0 -4 q1.4 -2 0 -4", fill: "none", stroke: "rgba(255,255,255,0.9)", strokeWidth: 0.7, strokeLinecap: "round", style: { animation: "nkSteam 2.6s ease-out infinite", animationDelay: (i * 1.2) + "s" } }); }) : null,
+          glowBay ? h("rect", { x: 40, y: 248, width: 100, height: 56, fill: "#ffd98a", opacity: 0.22 }) : null,
+          h("polygon", { points: "44,302 100,250 114,250 58,302", fill: "rgba(255,255,255," + (lit ? 0.06 : 0.15) + ")" })),
+        // 窗上挂的小牌
+        h("g", { style: holdingIs("good") ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null },
+          h("line", { x1: 50, y1: 248, x2: 53, y2: 251, stroke: "#c8b48e", strokeWidth: 0.5 }), h("line", { x1: 74, y1: 248, x2: 71, y2: 251, stroke: "#c8b48e", strokeWidth: 0.5 }),
+          h("rect", { x: 43, y: 251, width: 38, height: 10.5, rx: 1.2, fill: "#fdf6e8", stroke: "#c8b48e", strokeWidth: 0.6 }),
+          h("text", { x: 62, y: 258.4, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#7a5a2a", fontFamily: "'PingFang SC',sans-serif" }, "今天还不错 ☀️")),
+        // 窗台：一小摞书 + 一盆薰衣草
+        h("rect", { x: 31, y: 309, width: 118, height: 5, fill: "#ddd5c3" }), h("rect", { x: 31, y: 314, width: 118, height: 1.6, fill: "rgba(0,0,0,0.2)" }),
+        h("rect", { x: 38, y: 305.5, width: 12, height: 1.8, fill: "#b5656b" }), h("rect", { x: 39, y: 303.7, width: 10, height: 1.8, fill: "#5a7fb5" }), h("rect", { x: 38.5, y: 307.3, width: 11, height: 1.7, fill: "#c99a4e" }),
+        h("path", { d: "M128 309 l1 -5 h7 l1 5 Z", fill: "#c8704a" }),
+        [129.5, 132, 134.5].map(function (x, i) { return h("g", { key: "lv" + i }, h("line", { x1: x + 0.8, y1: 304, x2: x + (i - 1) * 1.2 + 0.8, y2: 297, stroke: "#6f8f5a", strokeWidth: 0.6 }), h("ellipse", { cx: x + (i - 1) * 1.2 + 0.8, cy: 297.5, rx: 0.9, ry: 2.2, fill: "#9a7fc4" })); }));
+    })(),
     // 门套：柱 + 楣 + 扇形气窗 + 灯
     h("rect", { x: 170, y: 234, width: 100, height: 12, fill: "#e9e2d2" }), h("rect", { x: 166, y: 230, width: 108, height: 5, fill: "#f2ece0" }), h("rect", { x: 170, y: 246, width: 100, height: 2.5, fill: "rgba(0,0,0,0.25)" }),
     h("rect", { x: 176, y: 248, width: 12, height: 93, fill: "#e9e2d2" }), h("rect", { x: 252, y: 248, width: 12, height: 93, fill: "#e9e2d2" }),
@@ -27517,6 +27574,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
       "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
+      "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-7px);opacity:0}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
@@ -27598,6 +27656,244 @@ function BakerFacade(_refBF) {
         h("div", { style: { flexShrink: 0, background: "#111418", color: BK_GOLD, borderRadius: 999, padding: "8px 12px", fontSize: "0.7rem", fontWeight: 900, whiteSpace: "nowrap" } }, "推门进去 →"))));
 }
 // ── 📚 回忆架：221B 模式的首页，伦敦那本和周末的相册摆在一块木架上 ──
+// ☕ 一楼 · 窗边角落：喝点东西、翻本书、看看窗外。
+// 本机存 nana-nook = { day, d: 今天点的饮品, b: 今天翻的书, sat: 今天在窗边坐了几秒 }，早上 5 点换日。
+var NK_DRINKS = [
+  { k: "oat", e: "☕", n: "燕麦拿铁", sub: "奶泡打得很厚", col: "#c99c6e", caf: 1, art: 1, say: "燕麦拿铁，奶泡很厚。慢慢喝，不赶时间。" },
+  { k: "flat", e: "☕", n: "澳白", sub: "双份浓缩，少奶", col: "#a8774e", caf: 1, art: 1, say: "澳白，双份。今天值得。" },
+  { k: "pour", e: "🫖", n: "手冲 · 埃塞俄比亚", sub: "花香，带一点莓果酸", col: "#7a4a2a", caf: 1, say: "手冲好了。第一口有莓果味，第二口才是咖啡。" },
+  { k: "earl", e: "🫖", n: "伯爵红茶 + 一点奶", sub: "从伦敦带回来的习惯", col: "#b98a5e", caf: 1, say: "伯爵加奶。伦敦的下午茶，搬回家了。" },
+  { k: "elder", e: "🫧", n: "接骨木花气泡水", sub: "冰的，夏天的味道", col: "#e6ecb8", cold: 1, say: "接骨木花气泡水。气泡一直往上跑，心情也是。" },
+  { k: "lemon", e: "🍋", n: "蜂蜜柠檬热水", sub: "捧着，让热气熏熏鼻子", col: "#f1cf72", nose: 1, say: "蜂蜜柠檬，烫一点。先别急着喝，捧着让热气熏一熏鼻子。" },
+  { k: "ginger", e: "🫚", n: "红枣姜茶", sub: "从手心暖到脚底", col: "#c9744a", nose: 1, say: "姜茶有点辣。喝完整个人都是暖的。" },
+  { k: "chamo", e: "🌼", n: "洋甘菊", sub: "今晚好睡一点", col: "#eed98e", sleep: 1, say: "洋甘菊。喝完早点睡，梦里鼻子是通的。" },
+  { k: "choc", e: "🍫", n: "热巧克力", sub: "加一颗棉花糖", col: "#6b3f2a", say: "热巧克力，加了棉花糖。甜度刚好。" },
+  { k: "milk", e: "🥛", n: "热牛奶 + 蜂蜜", sub: "睡前那一杯", col: "#f6efe2", sleep: 1, say: "一杯热牛奶。喝完就去睡吧，晚安先说了。" }
+];
+var NK_BOOKS = [
+  { k: "holmes", n: "福尔摩斯探案集", a: "柯南·道尔", col: "#2f4a3e", q: "「你是在看，但你没有在观察。」", note: "贝克街 221B。就是这儿。" },
+  { k: "willow", n: "柳林风声", a: "肯尼斯·格雷厄姆", col: "#6f8f5a", q: "「世上没有任何事——绝对没有——比得上在船上随便晃荡一半值得。」", note: "窗外刚好有条河。" },
+  { k: "alice", n: "爱丽丝漫游奇境", a: "刘易斯·卡罗尔", col: "#5a7fb5", q: "「回到昨天没有用，因为那时候我是另一个人。」", note: "今天的你，刚好。" },
+  { k: "pride", n: "傲慢与偏见", a: "简·奥斯汀", col: "#b5656b", q: "「我说不出是哪个钟点、哪个地方、哪个眼神、哪句话。等我发觉，已经走到一半了。」", note: "" },
+  { k: "women", n: "小妇人", a: "路易莎·奥尔科特", col: "#c99a4e", q: "「我不怕暴风雨，因为我正在学怎么驾驶自己的船。」", note: "" },
+  { k: "pan", n: "彼得·潘", a: "J.M. 巴里", col: "#4a6a8a", q: "「右边第二颗星，然后一直往前，直到天亮。」", note: "" }
+];
+var NK_SAY = {
+  dawn: ["河面上还有一点雾", "早班的船已经出门了", "天刚亮，街上还没人"],
+  day: ["有条船慢慢开过去", "云走得很慢", "阳光刚好照到窗台", "对岸有人在遛狗"],
+  dusk: ["对岸的窗一扇扇亮了", "天边剩一点橘子色", "路灯刚亮"],
+  night: ["路灯在水里晃", "对岸还剩几扇窗亮着", "月亮挂在烟囱上面"]
+};
+function nookDay() { var d = new Date(); if (d.getHours() < 5) d = new Date(d.getTime() - 5 * 3600000); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+function nookToday() { try { var o = JSON.parse(localStorage.getItem("nana-nook") || "{}") || {}; return o.day === nookDay() ? o : {}; } catch (_) { return {}; } }
+function nookDrink(k) { for (var i = 0; i < NK_DRINKS.length; i++) if (NK_DRINKS[i].k === k) return NK_DRINKS[i]; return null; }
+function nookBook(k) { for (var i = 0; i < NK_BOOKS.length; i++) if (NK_BOOKS[i].k === k) return NK_BOOKS[i]; return null; }
+
+function NanaNook() {
+  var h = React.createElement;
+  var me = ""; try { me = localStorage.getItem("nana-author") || ""; } catch (_) {}
+  var mate = me === "nana" ? "熊猫鱼" : "Nana";
+  var _st = useState(nookToday); var st = _st[0], setSt = _st[1];
+  var _rain = useState(false); var rain = _rain[0], setRain = _rain[1];
+  var _sit = useState(0); var sitAt = _sit[0], setSitAt = _sit[1];
+  var _now = useState(Date.now()); var now = _now[0], setNow = _now[1];
+  var _say = useState(""); var say = _say[0], setSay = _say[1];
+  useEffect(function () {
+    var id = setInterval(function () { setNow(Date.now()); }, sitAt ? 1000 : 30000);
+    return function () { clearInterval(id); };
+  }, [sitAt]);
+  var put = function (patch) {
+    var o = {}, k; for (k in st) o[k] = st[k]; for (k in patch) o[k] = patch[k]; o.day = nookDay();
+    try { localStorage.setItem("nana-nook", JSON.stringify(o)); } catch (_) {}
+    setSt(o);
+  };
+  var d = new Date(now), hr = d.getHours(), mn = d.getMinutes();
+  var phase = (hr >= 19 || hr < 6) ? "night" : hr >= 17 ? "dusk" : hr < 8 ? "dawn" : "day";
+  var late = hr >= 15 || hr < 5, dark = phase === "night";
+  var dk = nookDrink(st.d), bk = nookBook(st.b);
+  var sitNow = sitAt ? Math.floor((now - sitAt) / 1000) : 0;
+  var satMin = Math.floor(((st.sat || 0) + sitNow) / 60);
+  var standUp = function () { put({ sat: (st.sat || 0) + sitNow }); setSitAt(0); };
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var when = (hr < 5 ? "夜里" : hr < 8 ? "清晨" : hr < 12 ? "上午" : hr < 17 ? "下午" : hr < 19 ? "傍晚" : "夜里") + " " + hr + ":" + pad(mn);
+  var says = NK_SAY[phase], line = says[Math.floor(mn / 10) % says.length];
+
+  // —— 窗外 ——
+  var SKY = { dawn: ["#f4b8c0", "#fde7cf"], day: ["#8cc6ea", "#e2f2fb"], dusk: ["#6c5aa6", "#f6a978"], night: ["#0f1730", "#2a3862"] };
+  var sky = rain ? (dark ? ["#151b2b", "#2c3446"] : ["#8e9aa8", "#cdd5dc"]) : SKY[phase];
+  var BANK = rain && !dark ? "#7d8a8a" : { dawn: "#b49aa8", day: "#8fae9f", dusk: "#6e4f78", night: "#1a2240" }[phase];
+  var TREE = rain && !dark ? "#6a7a74" : { dawn: "#9a8a94", day: "#6f9a7e", dusk: "#5a4266", night: "#141b34" }[phase];
+  var WATER = rain && !dark ? "#8a9aa6" : { dawn: "#d9b8c0", day: "#6fa9c9", dusk: "#b47a8a", night: "#18264a" }[phase];
+  var lampOn = phase === "dusk" || dark || rain;
+  var cloudCol = rain ? "#b7c0c9" : "#fff";
+  var view = h("g", { clipPath: "url(#nkWin)" },
+    h("rect", { x: 44, y: 20, width: 272, height: 172, fill: "url(#nkSky)" }),
+    phase === "day" && !rain ? h("circle", { cx: 262, cy: 50, r: 13, fill: "#fff2b0", style: { filter: "drop-shadow(0 0 10px rgba(255,236,160,0.9))" } }) : null,
+    phase === "dawn" && !rain ? h("circle", { cx: 96, cy: 116, r: 15, fill: "#ffd7a0", opacity: 0.95 }) : null,
+    phase === "dusk" && !rain ? h("circle", { cx: 252, cy: 112, r: 17, fill: "#ffb070", opacity: 0.95 }) : null,
+    dark && !rain ? h("g", null,
+      h("circle", { cx: 266, cy: 46, r: 12, fill: "#fdf3c8", style: { filter: "drop-shadow(0 0 8px rgba(253,243,200,0.6))" } }),
+      h("circle", { cx: 272, cy: 42, r: 10.5, fill: "url(#nkSky)" }),
+      [[70, 40], [110, 30], [150, 52], [200, 34], [228, 62], [302, 30], [130, 74], [180, 66], [90, 66]].map(function (p, i) { return h("circle", { key: "s" + i, cx: p[0], cy: p[1], r: i % 3 ? 0.9 : 1.4, fill: "#fff", style: { animation: "nkTw " + (1.4 + (i % 4) * 0.6) + "s ease-in-out infinite" } }); })) : null,
+    [[60, 48, 1, 0], [180, 34, 0.8, -40], [280, 70, 0.7, -80]].map(function (c, i) {
+      return h("g", { key: "c" + i, style: { animation: "nkDrift " + (90 + i * 30) + "s linear infinite", animationDelay: c[3] + "s" } },
+        h("g", { transform: "translate(" + c[0] + " " + c[1] + ") scale(" + c[2] + ")", opacity: dark ? 0.22 : 0.92 },
+          h("ellipse", { cx: 0, cy: 0, rx: 18, ry: 7, fill: cloudCol }), h("ellipse", { cx: 10, cy: -5, rx: 11, ry: 8, fill: cloudCol }), h("ellipse", { cx: -9, cy: -3, rx: 9, ry: 6, fill: cloudCol })));
+    }),
+    // 对岸：一排屋顶、圆顶、钟楼、树
+    [[44, 16, 16], [60, 10, 24], [70, 18, 14], [88, 14, 22], [102, 20, 12], [174, 16, 20], [190, 12, 28], [202, 22, 16], [246, 18, 18], [264, 12, 26], [276, 20, 14], [296, 20, 20]].map(function (b, i) { return h("rect", { key: "b" + i, x: b[0], y: 140 - b[2], width: b[1], height: b[2], fill: BANK }); }),
+    h("path", { d: "M128 140 V124 H132 a18 18 0 0 1 36 0 H172 V140 Z", fill: BANK }), h("rect", { x: 148, y: 98, width: 4, height: 9, fill: BANK }), h("circle", { cx: 150, cy: 97, r: 2, fill: BANK }),
+    h("rect", { x: 226, y: 88, width: 12, height: 52, fill: BANK }), h("polygon", { points: "225,88 239,88 232,72", fill: BANK }),
+    h("circle", { cx: 232, cy: 97, r: 3.6, fill: dark ? "#ffe9a8" : "rgba(255,255,255,0.55)" }),
+    dark || phase === "dusk" ? [[64, 120], [76, 128], [92, 126], [108, 132], [178, 126], [194, 118], [206, 130], [250, 128], [268, 120], [282, 132], [302, 126]].map(function (p, i) { return h("rect", { key: "lw" + i, x: p[0], y: p[1], width: 2.4, height: 3, fill: "#ffd98a", opacity: (i % 3 === 0 && phase === "dusk") ? 0 : 0.9 }); }) : null,
+    [[52, 136], [118, 135], [178, 137], [214, 136], [256, 136], [310, 135]].map(function (p, i) { return h("circle", { key: "t" + i, cx: p[0], cy: p[1], r: 6 + (i % 2), fill: TREE }); }),
+    h("rect", { x: 44, y: 138, width: 272, height: 6, fill: TREE }),
+    // 河 + 波光 + 船 + 鸭子
+    h("rect", { x: 44, y: 144, width: 272, height: 30, fill: WATER }),
+    [[60, 150], [120, 156], [200, 150], [260, 160], [90, 166], [170, 164], [290, 152], [230, 168]].map(function (p, i) { return h("line", { key: "w" + i, x1: p[0], y1: p[1], x2: p[0] + 12, y2: p[1], stroke: dark ? "rgba(255,217,138,0.5)" : "rgba(255,255,255,0.7)", strokeWidth: 1, strokeLinecap: "round", style: { animation: "nkTw " + (2 + (i % 3)) + "s ease-in-out infinite", animationDelay: (i * 0.4) + "s" } }); }),
+    h("g", { style: { animation: "nkBoat 46s linear infinite", animationDelay: "-14s" } },
+      h("g", { style: { animation: "nkBob 3s ease-in-out infinite" } },
+        h("path", { d: "M0 160 h44 l-6 7 h-32 Z", fill: "#2b3446" }),
+        h("rect", { x: 9, y: 152, width: 24, height: 8, rx: 1, fill: "#fdf6e8" }),
+        [13, 19, 25].map(function (x) { return h("rect", { key: "bw" + x, x: x, y: 154.5, width: 3.2, height: 2.6, fill: dark ? "#ffd98a" : "#8fb8cf" }); }),
+        h("rect", { x: 28, y: 146, width: 4, height: 6, fill: "#c0392b" }),
+        h("text", { x: 22, y: 165.5, textAnchor: "middle", fontSize: 3.6, fill: "#fdf6e8", fontFamily: "Georgia,serif", letterSpacing: 0.6 }, "LONDON"))),
+    !dark ? h("g", { style: { animation: "nkBob 2.4s ease-in-out infinite" } },
+      h("ellipse", { cx: 284, cy: 168, rx: 5, ry: 2.4, fill: "#fdf6e8" }), h("circle", { cx: 288, cy: 165, r: 2, fill: "#fdf6e8" }), h("path", { d: "M289.8 165 l2.2 0.6 l-2.2 0.6 Z", fill: "#f0a030" })) : null,
+    // 近处的河岸：路、栏杆、路灯
+    h("rect", { x: 44, y: 174, width: 272, height: 18, fill: dark ? "#262b38" : rain ? "#9a9890" : "#c7bfb0" }),
+    h("rect", { x: 44, y: 177, width: 272, height: 1.2, fill: "#2b2f3a" }),
+    Array.apply(null, Array(28)).map(function (_, i) { return h("rect", { key: "rl" + i, x: 46 + i * 10, y: 177, width: 1, height: 8, fill: "#2b2f3a" }); }),
+    lampOn ? h("circle", { cx: 96, cy: 124, r: 22, fill: "url(#nkLampG)" }) : null,
+    lampOn ? h("rect", { x: 92, y: 146, width: 8, height: 26, fill: "#ffd98a", opacity: 0.18 }) : null,
+    h("rect", { x: 95, y: 126, width: 2.4, height: 60, fill: "#1e2430" }),
+    h("polygon", { points: "91,126 101,126 99,119 93,119", fill: "#1e2430" }),
+    h("rect", { x: 92.5, y: 120, width: 7, height: 5.5, fill: lampOn ? "#ffe3a0" : "#cfd9e2" }),
+    // 帕丁顿每隔一会儿从窗前走过（下雨就撑伞）
+    h("g", { style: { animation: "nkWalk 52s linear infinite", animationDelay: "-9s" } },
+      h("g", { style: { animation: "nkBob 0.7s ease-in-out infinite" } },
+        h("rect", { x: 1.5, y: 184, width: 12, height: 7, rx: 2.5, fill: "#3a6ea5" }),
+        h("text", { x: 7.5, y: 185, textAnchor: "middle", fontSize: 13 }, "🐻"),
+        rain ? h("g", null, h("path", { d: "M-5 172 a12.5 8 0 0 1 25 0 Z", fill: "#c0392b" }), h("line", { x1: 7.5, y1: 172, x2: 7.5, y2: 182, stroke: "#2b2f3a", strokeWidth: 0.8 }))
+          : h("g", null, h("ellipse", { cx: 7.5, cy: 174.5, rx: 7.5, ry: 1.6, fill: "#c0392b" }), h("path", { d: "M3.5 174.5 q0 -5 4 -5 q4 0 4 5 Z", fill: "#c0392b" })),
+        h("rect", { x: 13.5, y: 186, width: 6, height: 5, rx: 0.8, fill: "#8a5a32" }))),
+    // 下雨：玻璃上的雨丝和水珠
+    rain ? Array.apply(null, Array(30)).map(function (_, i) {
+      var x = 48 + ((i * 37) % 266);
+      return h("line", { key: "r" + i, x1: x, y1: 20, x2: x - 2, y2: 30, stroke: "rgba(255,255,255,0.65)", strokeWidth: 0.8, strokeLinecap: "round", style: { animation: "nkRain " + (0.7 + (i % 5) * 0.15) + "s linear infinite", animationDelay: (-(i % 7) * 0.13) + "s" } });
+    }) : null,
+    rain ? [[70, 60], [130, 100], [210, 46], [280, 120], [160, 150], [250, 84], [100, 130], [300, 60]].map(function (p, i) { return h("circle", { key: "dr" + i, cx: p[0], cy: p[1], r: 1.6 + (i % 3) * 0.5, fill: "rgba(255,255,255,0.35)", stroke: "rgba(255,255,255,0.55)", strokeWidth: 0.4 }); }) : null);
+
+  // —— 屋里：窗框、窗帘、窗台上的杯子和书 ——
+  var cup = dk && dk.cold
+    ? h("g", null,
+        h("rect", { x: 226, y: 158, width: 22, height: 36, rx: 2, fill: "rgba(255,255,255,0.4)", stroke: "rgba(255,255,255,0.85)", strokeWidth: 1 }),
+        h("rect", { x: 228, y: 166, width: 18, height: 26, rx: 1.5, fill: dk.col, opacity: 0.9 }),
+        h("ellipse", { cx: 236, cy: 166, rx: 4, ry: 1.4, fill: "#9fc48a" }),
+        [0, 1, 2, 3].map(function (i) { return h("circle", { key: "fz" + i, cx: 231 + i * 4, cy: 188, r: 0.9, fill: "#fff", style: { animation: "nkFizz " + (1.6 + i * 0.3) + "s linear infinite", animationDelay: (i * 0.4) + "s" } }); }))
+    : h("g", null,
+        h("ellipse", { cx: 237, cy: 194, rx: 21, ry: 2.8, fill: "#efe6d6" }),
+        h("path", { d: "M252 172 q11 0 11 9 q0 9 -11 9", stroke: "#fdf6e8", strokeWidth: 4, fill: "none" }),
+        h("rect", { x: 222, y: 166, width: 30, height: 27, rx: 5, fill: "#fdf6e8", stroke: "#e0d4c0", strokeWidth: 0.8 }),
+        h("ellipse", { cx: 237, cy: 168.5, rx: 13, ry: 2.6, fill: dk ? dk.col : "#efe6d6" }),
+        dk && dk.art ? h("path", { d: "M237 170 l-3 -2.4 a1.6 1.6 0 0 1 3 -1 a1.6 1.6 0 0 1 3 1 Z", fill: "#fbf3e4" }) : null,
+        dk ? [0, 1, 2].map(function (i) { return h("path", { key: "st" + i, d: "M" + (230 + i * 7) + " 162 q-4 -6 0 -12 q4 -6 0 -12", fill: "none", stroke: "rgba(255,255,255,0.85)", strokeWidth: 1.6, strokeLinecap: "round", style: { animation: "nkSteam 3s ease-out infinite", animationDelay: (i * 0.9) + "s" } }); }) : null);
+  var book = bk
+    ? h("g", null,
+        h("path", { d: "M114 193 L186 193 L184 186 L116 186 Z", fill: bk.col }),
+        h("path", { d: "M150 191 Q132 184 116 188 L118 177 Q134 173 150 180 Z", fill: "#fdf8ee" }),
+        h("path", { d: "M150 191 Q168 184 184 188 L182 177 Q166 173 150 180 Z", fill: "#f6efe0" }),
+        [0, 1, 2].map(function (i) { return h("g", { key: "ln" + i }, h("line", { x1: 122, y1: 181 + i * 2.4, x2: 145, y2: 182.5 + i * 2.4, stroke: "#c9bca6", strokeWidth: 0.6 }), h("line", { x1: 155, y1: 182.5 + i * 2.4, x2: 178, y2: 181 + i * 2.4, stroke: "#c9bca6", strokeWidth: 0.6 })); }))
+    : h("g", null,
+        h("rect", { x: 122, y: 186, width: 52, height: 7, rx: 1, fill: "#5a7fb5" }),
+        h("rect", { x: 126, y: 179.5, width: 46, height: 6.5, rx: 1, fill: "#b5656b" }),
+        h("rect", { x: 124, y: 173.5, width: 44, height: 6, rx: 1, fill: "#c99a4e" }));
+  var scene = h("svg", { viewBox: "0 0 360 250", style: { width: "100%", display: "block" } },
+    h("defs", null,
+      h("linearGradient", { id: "nkSky", gradientUnits: "userSpaceOnUse", x1: 0, y1: 20, x2: 0, y2: 192 }, h("stop", { offset: "0%", stopColor: sky[0] }), h("stop", { offset: "100%", stopColor: sky[1] })),
+      h("linearGradient", { id: "nkWall", x1: 0, y1: 0, x2: 0, y2: 1 }, h("stop", { offset: "0%", stopColor: dark ? "#5a4636" : "#ead1a8" }), h("stop", { offset: "100%", stopColor: dark ? "#3e3026" : "#d9b585" })),
+      h("radialGradient", { id: "nkLampG" }, h("stop", { offset: "0%", stopColor: "#ffd98a", stopOpacity: 0.85 }), h("stop", { offset: "100%", stopColor: "#ffd98a", stopOpacity: 0 })),
+      h("radialGradient", { id: "nkCandle" }, h("stop", { offset: "0%", stopColor: "#ffcf7a", stopOpacity: 0.7 }), h("stop", { offset: "100%", stopColor: "#ffcf7a", stopOpacity: 0 })),
+      h("clipPath", { id: "nkWin" }, h("rect", { x: 44, y: 20, width: 272, height: 172 }))),
+    h("rect", { x: 0, y: 0, width: 360, height: 250, fill: "url(#nkWall)" }),
+    view,
+    h("rect", { x: 40, y: 16, width: 280, height: 180, fill: "none", stroke: "#f6efe4", strokeWidth: 8 }),
+    h("rect", { x: 178, y: 20, width: 4, height: 172, fill: "#f6efe4" }),
+    h("rect", { x: 44, y: 74, width: 272, height: 3.5, fill: "#f6efe4" }),
+    h("polygon", { points: "50,190 120,22 150,22 80,190", fill: "rgba(255,255,255,0.07)" }),
+    // 窗帘 + 帘杆
+    h("rect", { x: 4, y: 6, width: 352, height: 4, rx: 2, fill: "#8a6a48" }), h("circle", { cx: 5, cy: 8, r: 4, fill: "#8a6a48" }), h("circle", { cx: 355, cy: 8, r: 4, fill: "#8a6a48" }),
+    h("path", { d: "M8 10 Q46 60 34 116 Q28 150 38 200 L6 200 L6 10 Z", fill: "#7f9e8e" }),
+    h("path", { d: "M352 10 Q314 60 326 116 Q332 150 322 200 L354 200 L354 10 Z", fill: "#7f9e8e" }),
+    h("path", { d: "M14 10 Q30 70 22 120", stroke: "rgba(0,0,0,0.1)", strokeWidth: 2, fill: "none" }), h("path", { d: "M346 10 Q330 70 338 120", stroke: "rgba(0,0,0,0.1)", strokeWidth: 2, fill: "none" }),
+    h("rect", { x: 20, y: 116, width: 18, height: 4, rx: 2, fill: "#d9b45f" }), h("rect", { x: 322, y: 116, width: 18, height: 4, rx: 2, fill: "#d9b45f" }),
+    // 窗台
+    h("rect", { x: 0, y: 206, width: 360, height: 44, fill: dark ? "#3b2e25" : "#c9a57a" }),
+    [20, 130, 240].map(function (x) { return h("rect", { key: "pn" + x, x: x, y: 214, width: 100, height: 30, rx: 2, fill: "none", stroke: dark ? "rgba(255,255,255,0.06)" : "rgba(90,60,30,0.18)", strokeWidth: 1.2 }); }),
+    h("rect", { x: 22, y: 194, width: 316, height: 12, rx: 2, fill: "#b07d52" }), h("rect", { x: 22, y: 194, width: 316, height: 2.5, fill: "#c9966a" }), h("rect", { x: 26, y: 206, width: 308, height: 2, fill: "rgba(0,0,0,0.18)" }),
+    phase === "day" && !rain ? h("polygon", { points: "120,194 300,194 290,206 110,206", fill: "#fff2b0", opacity: 0.25 }) : null,
+    // 窗台上：一盆小绿植、书、杯子、夜里一支蜡烛
+    h("path", { d: "M48 194 L66 194 L63 180 L51 180 Z", fill: "#c8704a" }), h("rect", { x: 49.5, y: 179, width: 15, height: 2.5, rx: 1, fill: "#b05f3c" }),
+    [[-6, -16, -25], [0, -20, 0], [6, -15, 25], [-3, -11, -50], [4, -10, 45]].map(function (l, i) { return h("ellipse", { key: "lf" + i, cx: 57 + l[0], cy: 179 + l[1] * 0.6, rx: 3, ry: 7, fill: i % 2 ? "#6f9a6a" : "#86b07e", transform: "rotate(" + l[2] + " " + (57 + l[0]) + " " + (179 + l[1] * 0.6) + ")" }); }),
+    book,
+    cup,
+    dark || phase === "dusk" ? h("g", null,
+      h("circle", { cx: 304, cy: 176, r: 22, fill: "url(#nkCandle)", style: { animation: "nkTw 2.6s ease-in-out infinite" } }),
+      h("rect", { x: 300, y: 180, width: 8, height: 14, rx: 1, fill: "#fdf6e8" }),
+      h("path", { d: "M304 172 q3 4 0 7.5 q-3 -3.5 0 -7.5 Z", fill: "#ffb84a", style: { animation: "nkTw 1.2s ease-in-out infinite" } })) : null);
+
+  var btn = function (on) { return { flex: 1, padding: "9px 6px", borderRadius: 12, border: "1px solid " + (on ? "#2f4a3e" : "#d8c9b0"), background: on ? "#2f4a3e" : "#fffaf2", color: on ? "#fdf6e8" : "#4a3a2c", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer" }; };
+  var head = function (t, sub) { return h("div", { style: { display: "flex", alignItems: "baseline", gap: 8, margin: "18px 2px 8px" } }, h("div", { style: { fontWeight: 900, fontSize: "0.95rem", color: "#3b2e25", fontFamily: "Georgia,'PingFang SC',serif" } }, t), sub ? h("div", { style: { fontSize: "0.7rem", color: "#9a8a76" } }, sub) : null); };
+
+  return h("div", null,
+    h("style", null,
+      "@keyframes nkDrift{from{transform:translateX(-130px)}to{transform:translateX(330px)}}" +
+      "@keyframes nkBoat{from{transform:translateX(-60px)}to{transform:translateX(380px)}}" +
+      "@keyframes nkWalk{0%{transform:translateX(-40px)}45%{transform:translateX(400px)}100%{transform:translateX(400px)}}" +
+      "@keyframes nkRain{from{transform:translateY(-12px);opacity:0}15%{opacity:.85}to{transform:translateY(172px);opacity:.25}}" +
+      "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.75}100%{transform:translateY(-14px);opacity:0}}" +
+      "@keyframes nkTw{0%,100%{opacity:.45}50%{opacity:1}}" +
+      "@keyframes nkBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}" +
+      "@keyframes nkFizz{from{transform:translateY(0);opacity:.9}to{transform:translateY(-22px);opacity:0}}" +
+      "@keyframes nkIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}"),
+    h("div", { style: { borderRadius: 18, overflow: "hidden", boxShadow: "0 8px 24px rgba(60,40,20,0.22)" } }, scene),
+    h("div", { style: { margin: "10px 2px 0", fontSize: "0.78rem", color: "#6b5a48", fontWeight: 700 } }, "🪟 " + when + " · " + line + (rain ? " · 外面在下雨，屋里刚好" : "")),
+    say ? h("div", { key: say, style: { marginTop: 10, padding: "11px 14px", background: "#fffaf2", border: "1px solid #e6d8c0", borderRadius: 14, fontSize: "0.86rem", color: "#3b2e25", fontWeight: 700, lineHeight: 1.6, animation: "nkIn .35s ease-out" } }, say) : null,
+    h("div", { style: { display: "flex", gap: 8, marginTop: 12 } },
+      h("button", { onClick: function () { setRain(!rain); }, style: btn(rain) }, rain ? "☀️ 雨停吧" : "🌧️ 听一会儿雨"),
+      h("button", { onClick: function () { if (sitAt) standUp(); else setSitAt(Date.now()); }, style: btn(!!sitAt) }, sitAt ? "起来了" : "🪑 就坐一会儿")),
+    sitAt ? h("div", { style: { textAlign: "center", padding: "22px 10px 8px", animation: "nkIn .4s ease-out" } },
+      h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontSize: "1.15rem", fontWeight: 900, color: "#3b2e25" } }, "什么都不用做。"),
+      h("div", { style: { fontSize: "0.84rem", color: "#7a6a58", marginTop: 6 } }, "看看窗外就好。"),
+      h("div", { style: { marginTop: 16, fontSize: "1.7rem", fontWeight: 900, color: "#2f4a3e", fontVariantNumeric: "tabular-nums", letterSpacing: 1 } }, pad(Math.floor(sitNow / 60)) + ":" + pad(sitNow % 60)))
+    : h("div", null,
+      head("今天喝点什么", late ? "过了下午三点，咖啡因会偷走一点睡眠" : "选一杯，放到窗台上"),
+      h("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 } },
+        NK_DRINKS.map(function (x) {
+          var on = st.d === x.k;
+          var tag = x.nose ? ["鼻子舒服", "#4f8064"] : x.sleep ? ["好睡", "#6a68a8"] : x.cold ? ["冰的", "#4f7fa8"] : null;
+          if (late && x.caf) tag = ["☾ 晚上会难睡", "#b8652f"];
+          return h("button", { key: x.k, onClick: function () { put({ d: x.k }); setSay(x.say); }, style: { display: "flex", alignItems: "center", gap: 9, textAlign: "left", padding: "9px 10px", borderRadius: 14, border: "1.5px solid " + (on ? "#2f4a3e" : "#e6d8c0"), background: on ? "#eef3ee" : "#fffaf2", fontFamily: "inherit", cursor: "pointer", opacity: late && x.caf && !on ? 0.75 : 1 } },
+            h("div", { style: { flex: "none", width: 34, height: 34, borderRadius: 999, background: x.col, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.08)" } }, x.e),
+            h("div", { style: { minWidth: 0 } },
+              h("div", { style: { fontWeight: 900, fontSize: "0.8rem", color: "#3b2e25" } }, x.n),
+              h("div", { style: { fontSize: "0.66rem", color: "#8a7a66", marginTop: 1 } }, x.sub),
+              tag ? h("div", { style: { display: "inline-block", marginTop: 4, padding: "1px 7px", borderRadius: 999, fontSize: "0.6rem", fontWeight: 800, color: "#fff", background: tag[1] } }, tag[0]) : null));
+        })),
+      head("随手翻一本", "抽一本，翻到哪页算哪页"),
+      h("div", { style: { display: "flex", alignItems: "flex-end", gap: 5, padding: "14px 10px 0", background: "linear-gradient(180deg,#5a3d28,#6e4a30)", borderRadius: "12px 12px 4px 4px", borderBottom: "8px solid #8a6040" } },
+        NK_BOOKS.map(function (x, i) {
+          var on = st.b === x.k;
+          return h("button", { key: x.k, onClick: function () { put({ b: x.k }); }, style: { flex: 1, height: 104 + (i % 3) * 8, padding: "8px 0", border: "none", borderRadius: "3px 3px 0 0", background: x.col, color: "#fdf6e8", writingMode: "vertical-rl", fontFamily: "Georgia,'PingFang SC',serif", fontWeight: 800, fontSize: "0.74rem", letterSpacing: 2, cursor: "pointer", transform: on ? "translateY(-10px)" : "none", transition: "transform .25s", boxShadow: "inset -3px 0 0 rgba(0,0,0,0.15), inset 3px 0 0 rgba(255,255,255,0.08)" } }, x.n);
+        })),
+      bk ? h("div", { key: bk.k, style: { marginTop: 12, padding: "16px 16px 14px", background: "#fffdf7", border: "1px solid #e6d8c0", borderRadius: 4, boxShadow: "0 4px 14px rgba(60,40,20,0.1)", animation: "nkIn .35s ease-out" } },
+        h("div", { style: { fontFamily: "Georgia,'PingFang SC',serif", fontSize: "0.98rem", lineHeight: 1.75, color: "#2f2620", fontWeight: 700 } }, bk.q),
+        h("div", { style: { marginTop: 8, fontSize: "0.7rem", color: "#9a8a76", textAlign: "right" } }, "——《" + bk.n + "》· " + bk.a),
+        bk.note ? h("div", { style: { marginTop: 6, fontSize: "0.72rem", color: "#6b5a48" } }, bk.note) : null) : null),
+    satMin >= 1 && !sitAt ? h("div", { style: { marginTop: 14, textAlign: "center", fontSize: "0.74rem", color: "#6b5a48", fontWeight: 700 } }, "今天在窗边坐了 " + satMin + " 分钟") : null,
+    h("div", { style: { marginTop: 14, fontSize: "0.68rem", color: "#a8987f", textAlign: "center", lineHeight: 1.6 } }, "在门口按住这扇窗不放，" + mate + "那边会收到「今天还不错 ☀️」"));
+}
+
 function HomeShelf(_refHS) {
   var h = React.createElement;
   var onEnter = _refHS.onEnter, cozy = _refHS.cozy || 0, onCharge = _refHS.onCharge;
@@ -28518,7 +28814,7 @@ function NanasHome() {
     /*#__PURE__*/React.createElement("div", { style: { position: "absolute", left: "50%", bottom: 0, transform: "translateX(-50%)", width: "100%", maxWidth: 600, maxHeight: "86vh", overflowY: "auto", background: "#f3ece0", borderRadius: "22px 22px 0 0", boxShadow: "0 -12px 40px rgba(0,0,0,0.5)", paddingBottom: "calc(16px + env(safe-area-inset-bottom,0px))" } },
       /*#__PURE__*/React.createElement("div", { style: { position: "sticky", top: 0, zIndex: 2, background: "linear-gradient(180deg,#1e2636,#2b3446)", color: "#fdf6e8", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, borderRadius: "22px 22px 0 0" } },
         /*#__PURE__*/React.createElement("div", { style: { color: "#d9b45f", fontSize: "0.56rem", letterSpacing: 3, fontFamily: "Georgia,serif", fontWeight: 800 } }, "221B"),
-        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "bar" ? "🌙 月影杂货铺 · 里屋" : sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
+        /*#__PURE__*/React.createElement("div", { style: { fontWeight: 900, fontSize: "1rem", fontFamily: "Georgia,'PingFang SC',serif" } }, sheet === "bar" ? "🌙 月影杂货铺 · 里屋" : sheet === "nook" ? "☕ 窗边角落" : sheet === "music" ? "📯 留声机" : sheet === "postcards" ? "🏞️ 明信片 · 充电站" : "🧊 冰箱"),
         /*#__PURE__*/React.createElement("button", { onClick: function () { setSheet(null); }, style: { marginLeft: "auto", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(217,180,95,0.4)", color: "#fdf6e8", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.7rem", cursor: "pointer" } }, "收起 ▾")),
       /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: sheet === "music" ? "block" : "none" } }, /*#__PURE__*/React.createElement(NanaMixtapeCard, { room: null })),
       sheet === "postcards" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px", display: "grid", gap: 12 } },
@@ -28526,7 +28822,8 @@ function NanasHome() {
         /*#__PURE__*/React.createElement(HKMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "travel", emoji: "🚢", name: "Hong Kong", color: "#BAEAFF", desc: "昨天的香港回忆" }); } }),
         /*#__PURE__*/React.createElement(DisneyMemoryCard, { onOpen: function () { setSheet(null); enterRoom({ id: "disney", emoji: "🏰", name: "Disney", color: "#5a3a8a", desc: "昨天的迪士尼" }); } })) : null,
       sheet === "meal" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(FridgeWall, null)) : null,
-      sheet === "bar" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MagicBar, null)) : null)),
+      sheet === "bar" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(MagicBar, null)) : null,
+      sheet === "nook" ? /*#__PURE__*/React.createElement("div", { style: { padding: "12px 14px 8px" } }, /*#__PURE__*/React.createElement(NanaNook, null)) : null)),
   nanaBakerOn() && musicOn && sheet !== "music" && !NANA_DOOR && /*#__PURE__*/React.createElement("div", { onClick: function () { setSheet("music"); }, title: musicOn, style: { position: "fixed", right: 14, bottom: "calc(86px + env(safe-area-inset-bottom,0px))", zIndex: 9980, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" } },
     /*#__PURE__*/React.createElement("div", { style: { maxWidth: 140, background: "rgba(30,38,54,0.92)", color: "#fdf6e8", borderRadius: 999, padding: "5px 10px", fontSize: "0.62rem", fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", boxShadow: "0 4px 12px rgba(0,0,0,0.35)" } }, "♪ " + musicOn),
     /*#__PURE__*/React.createElement("div", { style: { width: 46, height: 46, borderRadius: "50%", background: "radial-gradient(circle,#d9b45f 0 17%,#1e2636 18% 100%)", boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.14), 0 6px 16px rgba(0,0,0,0.45)", border: "2px solid #d9b45f", animation: "nanaSpin 2.4s linear infinite", flexShrink: 0 } })),
