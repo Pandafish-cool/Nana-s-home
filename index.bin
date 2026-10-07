@@ -27059,7 +27059,38 @@ var NANA_FUN = [
     "早睡不是认输，是战术。"] }
 ];
 var BAR_KEYS = [17, 10, 7];   // 敲砖的顺序：从下往上数第 4 排右边、第 6 排左边、第 7 排右边
+// 🌦️ 小屋二楼的墙面颜色跟着家里的天气变（家在 113°E：广州）。Open-Meteo 免费接口，两小时最多问一次；拿不到天气就按日子轮换
+var NANA_WX_URL = "https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&current=weather_code,temperature_2m&timezone=auto";
+function nanaWxCached() { try { var o = JSON.parse(localStorage.getItem("nana-wx") || "null"); return o && typeof o.code === "number" ? o : null; } catch (_) { return null; } }
+function nanaWxFetch(cb) {
+  var o = nanaWxCached();
+  if (o && Date.now() - o.at < 2 * 3600000) { cb(o); return; }
+  try {
+    fetch(NANA_WX_URL).then(function (r) { return r.json(); }).then(function (j) {
+      var c = j && j.current;
+      if (!c || typeof c.weather_code !== "number") { cb(null); return; }
+      var v = { at: Date.now(), code: c.weather_code, t: c.temperature_2m };
+      try { localStorage.setItem("nana-wx", JSON.stringify(v)); } catch (_) {}
+      cb(v);
+    }).catch(function () { cb(null); });
+  } catch (_) { cb(null); }
+}
+// 天气 → 墙面：晴 奶油黄（30° 以上换清凉的雾霾蓝）· 少云 奶油粉 · 阴 鼠尾草绿 · 雾 / 雪 白抹灰 · 雨 暖粉砖 · 雷雨 红砖
+var NANA_WALL_DAYS = ["butter", "pink", "sage", "blue", "rose", "ivory", "red"];
+function nanaWxWall(o) {
+  if (!o) { var d = new Date(), y0 = new Date(d.getFullYear(), 0, 1); return NANA_WALL_DAYS[Math.floor((d - y0) / 86400000) % NANA_WALL_DAYS.length]; }
+  var c = o.code;
+  if (c >= 95) return "red";
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "ivory";
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "rose";
+  if (c === 45 || c === 48) return "ivory";
+  if (c === 3) return "sage";
+  if (c === 1 || c === 2) return "pink";
+  return o.t >= 30 ? "blue" : "butter";
+}
 function BakerFacade(_refBF) {
+  var _wx = useState(nanaWxCached); var wx = _wx[0], setWx = _wx[1];
+  useEffect(function () { var alive = true; nanaWxFetch(function (o) { if (alive && o) setWx(o); }); return function () { alive = false; }; }, []);
   var _bo = useState(function () { try { return localStorage.getItem("nana-bar-open") === mbNight(); } catch (_) { return false; } }); var barOpen = _bo[0], setBarOpen = _bo[1];
   var _bj = useState(false); var barJust = _bj[0], setBarJust = _bj[1];
   var _bt = useState([]); var barTaps = _bt[0], setBarTaps = _bt[1];
@@ -27236,10 +27267,13 @@ function BakerFacade(_refBF) {
     out.push(h("rect", { key: "tr", x: x - 4, y: y, width: w + 8, height: 8, rx: 1, fill: "#23443a" }), h("rect", { key: "tr2", x: x - 4, y: y, width: w + 8, height: 1.4, fill: "#305a4d" }));
     return h("g", null, out);
   };
-  // 二楼墙面（预览用 ?wall= 切换：rose 粉砖 / red 红砖 / ivory 白抹灰 / sage 鼠尾草绿 / blue 雾霾蓝 / pink 奶油粉；默认 honey 黄砖）
-  var NK_WALL = (function () { try { var q = (location.search || "").match(/[?&]wall=(\w+)/); return q ? q[1] : "honey"; } catch (_) { return "honey"; } })();
-  var wallFill = { honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
-  var wallPainted = NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
+  // 二楼墙面跟着天气换颜色（预览：?wall=butter/pink/sage/blue/rose/ivory/red 直接指定，?wx=天气代码 模拟天气）
+  var NK_WALL = (function () { try {
+    var q = (location.search || "").match(/[?&]wall=(\w+)/); if (q) return q[1];
+    var w = (location.search || "").match(/[?&]wx=(\d+)/); if (w) return nanaWxWall({ code: +w[1], t: 22 });
+  } catch (_) {} return nanaWxWall(wx); })();
+  var wallFill = { butter: "url(#bfWButter)", honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
+  var wallPainted = NK_WALL === "butter" || NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
   // 门牌样式（预览用 ?plaque= 切换：圆牌 blue 英国蓝 / wine 酒红 / cream 奶油白 / mustard 芥末黄 / green 墨绿；street 伦敦搪瓷路牌）
   var PLQ = (function () { var k = "street"; try { var q = (location.search || "").match(/[?&]plaque=(\w+)/); if (q) k = q[1]; } catch (_) {}
     return { blue: { bg: "#1f4f8f", ring: "#f7f3ea", t1: "#ffffff", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#7d9fc8" },
@@ -27283,6 +27317,7 @@ function BakerFacade(_refBF) {
         h("rect", { width: 36, height: 14, fill: "#e6dccf" }),
         h("rect", { x: 0.5, y: 0.5, width: 17, height: 6, fill: "#a4513f" }), h("rect", { x: 18.5, y: 0.5, width: 17, height: 6, fill: "#9a4939" }),
         h("rect", { x: 9.5, y: 7.5, width: 17, height: 6, fill: "#a85845" }), h("rect", { x: -8.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" }), h("rect", { x: 27.5, y: 7.5, width: 17, height: 6, fill: "#9e4d3c" })),
+      h("linearGradient", { id: "bfWButter", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6e7c6" }), h("stop", { offset: "100%", stopColor: "#ecd6aa" })),
       h("linearGradient", { id: "bfWSage", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdac9" }), h("stop", { offset: "100%", stopColor: "#bccbb5" })),
       h("linearGradient", { id: "bfWBlue", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d3dee5" }), h("stop", { offset: "100%", stopColor: "#c0cfd9" })),
       h("linearGradient", { id: "bfWPink", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f2dcd5" }), h("stop", { offset: "100%", stopColor: "#e8cac2" })),
