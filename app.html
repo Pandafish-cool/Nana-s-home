@@ -26982,7 +26982,7 @@ function BakerFacade(_refBF) {
     for (var j = 0; j < 8; j++) out.push(h("circle", { key: "l" + j, cx: x + j * w / 7, cy: y + 1, r: 2.4, fill: "#4f8a5a" }));
     return h("g", null, out);
   };
-  var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {} return isNight; })();
+  var barOn = (function () { try { var q = (location.search || "").match(/[?&]bar=([01])/); if (q) return q[1] === "1"; } catch (_) {} return hr >= 18 || hr < 6; })();
   var building = h("svg", { viewBox: barOn ? "7 0 422 420" : "7 0 346 420", style: { width: "100%", display: "block", overflow: "visible" } },
     h("defs", null,
       h("linearGradient", { id: "bfWarm", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe9b8" }), h("stop", { offset: "100%", stopColor: "#f0b65e" })),
@@ -27132,56 +27132,70 @@ function BakerFacade(_refBF) {
     // 栏杆：黑铁、金尖
     [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 4; x < seg[1]; x += 9) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
-    // 🍸 魔法酒吧：221B 隔壁一栋又窄又歪的小楼，尖帽子屋顶，晚上才亮
+    // 🍸 9¾ 魔药酒馆：221B 隔壁一栋歪歪扭扭的都铎木架小楼，一层比一层往外探，晚上才亮
     barOn ? h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.dispatchEvent(new Event("nana-bar")); } catch (_) {} }, style: { cursor: "pointer" } },
+      // 弯月 + 变色光晕
+      h("path", { d: "M398 4 a16 16 0 1 0 14 24 a12 12 0 1 1 -14 -24Z", fill: "#fff1b8", opacity: 0.95, style: { filter: "drop-shadow(0 0 8px rgba(255,240,180,0.9))" } }),
+      h("ellipse", { cx: 376, cy: 200, rx: 72, ry: 176, fill: "url(#hpHaloP)", style: { animation: "hpHue 6s ease-in-out infinite" } }),
+      h("g", { style: { transformOrigin: "376px 353px", animation: "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" } },
       h("defs", null,
-        h("linearGradient", { id: "mbBody", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#3b2f6e" }), h("stop", { offset: "100%", stopColor: "#251d47" })),
-        h("radialGradient", { id: "mbGlowG" }, h("stop", { offset: "0%", stopColor: "#b8ffe0" }), h("stop", { offset: "100%", stopColor: "#4fd1a5" })),
-        h("radialGradient", { id: "mbGlowP" }, h("stop", { offset: "0%", stopColor: "#f1d9ff" }), h("stop", { offset: "100%", stopColor: "#a46ae8" })),
-        h("radialGradient", { id: "mbHalo" }, h("stop", { offset: "0%", stopColor: "rgba(200,150,255,0.55)" }), h("stop", { offset: "100%", stopColor: "rgba(200,150,255,0)" }))),
-      h("ellipse", { cx: 376, cy: 200, rx: 70, ry: 170, fill: "url(#mbHalo)", style: { animation: "bkLamp 3.2s ease-in-out infinite" } }),
-      // 楼身：左边贴着 221B，右边微微歪
-      h("path", { d: "M344 353 L344 66 L404 64 L400 353 Z", fill: "url(#mbBody)" }),
-      h("path", { d: "M344 330 L401 330 L400 353 L344 353Z", fill: "#1c1636" }),
-      [110, 206, 290].map(function (y, i) { return h("rect", { key: "mbt" + i, x: 344, y: y, width: 59 - i * 1.2, height: 2.4, fill: "#d9b45f", opacity: 0.85 }); }),
-      // 尖帽子屋顶，尖尖往右弯，顶上一颗星
-      h("path", { d: "M338 68 Q360 60 372 34 Q380 16 392 6 Q388 30 396 46 Q402 58 410 68 Z", fill: "#2e2458" }),
-      h("path", { d: "M338 68 H410", stroke: "#d9b45f", strokeWidth: 2.2 }),
-      h("path", { d: "M392 6 l1.6 3.4 l3.6 .4 l-2.7 2.4 l.8 3.6 l-3.3 -1.9 l-3.3 1.9 l.8 -3.6 l-2.7 -2.4 l3.6 -.4Z", fill: "#ffe38a", style: { transformOrigin: "392px 10px", animation: "bfLed 1.8s ease-in-out infinite" } }),
-      // 歪烟囱 + 彩色魔法烟
-      h("path", { d: "M380 44 L388 26 L396 28 L390 48Z", fill: "#4a3b7c" }),
-      ["#c9a0ff", "#7ff0c8", "#ff9fd0"].map(function (c, i) { return h("circle", { key: "mbs" + i, cx: 392, cy: 22, r: 3.2, fill: c, opacity: 0.8, style: { transformOrigin: "392px 22px", animation: "bkSmoke 3.4s linear " + (i * 1.1) + "s infinite" } }); }),
-      // 屋顶上一只小黑猫
-      h("g", { transform: "translate(350 60)" }, h("ellipse", { cx: 0, cy: 0, rx: 5, ry: 4, fill: "#0b0a14" }), h("circle", { cx: 4, cy: -4, r: 3, fill: "#0b0a14" }), h("path", { d: "M2.4 -6.4 l.6 -2.6 l1.6 2 M5 -6.6 l1.4 -2.4 l.8 2.4", fill: "#0b0a14" }), h("circle", { cx: 5, cy: -4.2, r: .6, fill: "#ffe38a" }), h("path", { d: "M-4 1 q-6 0 -5 -7", stroke: "#0b0a14", strokeWidth: 1.4, fill: "none", style: { transformOrigin: "-4px 1px", animation: "bfSwing 2.4s ease-in-out infinite" } })),
-      // 圆舷窗：发绿光，里面一只小药水瓶
-      h("circle", { cx: 373, cy: 90, r: 12, fill: "url(#mbGlowG)", stroke: "#d9b45f", strokeWidth: 2.2, style: { filter: "drop-shadow(0 0 5px rgba(127,240,200,0.9))" } }),
-      h("path", { d: "M370 82 h6 v4 l3 6 q0 5 -6 5 q-6 0 -6 -5 l3 -6Z", fill: "#2a6b55", opacity: 0.75 }),
-      // 拱形窗：紫光，一排药水瓶
-      h("path", { d: "M356 196 V146 Q373 128 390 146 V196 Z", fill: "url(#mbGlowP)", stroke: "#d9b45f", strokeWidth: 2.2, style: { filter: "drop-shadow(0 0 6px rgba(200,150,255,0.9))" } }),
-      h("path", { d: "M373 132 V196 M356 170 H390", stroke: "#d9b45f", strokeWidth: 1.4 }),
-      [["#ff7eb6", 360, 186], ["#7ff0c8", 366, 184], ["#ffd36a", 377, 186], ["#9ec5ff", 383, 183]].map(function (b, i) { return h("g", { key: "mbb" + i }, h("rect", { x: b[1], y: b[2] - 8, width: 4, height: 9, rx: 1.4, fill: b[0] }), h("rect", { x: b[1] + 1.2, y: b[2] - 11, width: 1.6, height: 3, fill: b[0] })); }),
-      h("path", { d: "M356 194 H390", stroke: "#7a5a2a", strokeWidth: 1.6 }),
-      // 小方窗：一杯冒泡的鸡尾酒
-      h("rect", { x: 359, y: 222, width: 28, height: 40, rx: 3, fill: "#ffd98a", stroke: "#d9b45f", strokeWidth: 2, style: { filter: "drop-shadow(0 0 5px rgba(255,210,120,0.9))" } }),
-      h("path", { d: "M366 232 L380 232 L373 242 Z M373 242 V252 M368 252 H378", stroke: "#7a3a8a", strokeWidth: 1.6, fill: "rgba(200,120,255,0.55)" }),
-      [0, 1, 2].map(function (i) { return h("circle", { key: "mbu" + i, cx: 370 + i * 3, cy: 232, r: 1.3, fill: "#fff", style: { transformOrigin: (370 + i * 3) + "px 232px", animation: "bkSmoke 2.2s linear " + (i * 0.7) + "s infinite" } }); }),
-      // 霓虹招牌
-      h("rect", { x: 349, y: 276, width: 48, height: 12, rx: 6, fill: "#140f28", stroke: "#ff8fd0", strokeWidth: 1.2, style: { filter: "drop-shadow(0 0 4px rgba(255,140,210,0.95))" } }),
-      h("text", { x: 373, y: 284.6, textAnchor: "middle", fontSize: 6.4, fontWeight: "bold", fill: "#ffd0ee", fontFamily: "'PingFang SC',sans-serif", letterSpacing: 0.6, style: { animation: "bfLed 2.6s ease-in-out infinite" } }, "✦ 魔法酒吧 ✦"),
-      // 伸出去的吊牌：坩埚 + 弯月
-      h("path", { d: "M403 120 H418", stroke: "#0a0c10", strokeWidth: 1.6 }),
-      h("g", { style: { transformOrigin: "414px 121px", animation: "bfSwing 3s ease-in-out infinite" } },
-        h("path", { d: "M411 121 V126 M417 121 V126", stroke: "#0a0c10", strokeWidth: 1 }),
-        h("circle", { cx: 414, cy: 136, r: 10, fill: "#1c1636", stroke: "#d9b45f", strokeWidth: 1.4 }),
-        h("path", { d: "M408 134 h12 q0 7 -6 7 q-6 0 -6 -7Z", fill: "#0b0a14" }), h("ellipse", { cx: 414, cy: 134, rx: 6, ry: 1.6, fill: "#7ff0c8" }),
-        h("path", { d: "M417 128 a3.4 3.4 0 1 1 -3 -2.4 a2.6 2.6 0 1 0 3 2.4Z", fill: "#ffe38a" })),
-      // 窄窄的拱门 + 门灯
-      h("path", { d: "M362 353 V316 Q373 302 384 316 V353 Z", fill: "#1f6b66", stroke: "#d9b45f", strokeWidth: 1.6 }),
-      h("path", { d: "M373 306 V353", stroke: "#164e4b", strokeWidth: 1.2 }), h("circle", { cx: 378, cy: 334, r: 1.4, fill: "#ffe38a" }),
-      h("rect", { x: 369, y: 294, width: 8, height: 9, rx: 1.5, fill: "#ffe38a", stroke: "#0a0c10", strokeWidth: 1, style: { filter: "drop-shadow(0 0 6px rgba(255,220,140,1))", animation: "bkLamp 1.8s ease-in-out infinite" } }),
-      h("rect", { x: 358, y: 351, width: 30, height: 3, fill: "#5a5f6a" }),
-      // 门口飘着的小星星
-      [[352, 300], [396, 250], [350, 214], [402, 160], [355, 120]].map(function (p, i) { return h("path", { key: "mbst" + i, d: "M" + p[0] + " " + (p[1] - 3) + " L" + (p[0] + 0.9) + " " + (p[1] - 0.9) + " L" + (p[0] + 3) + " " + p[1] + " L" + (p[0] + 0.9) + " " + (p[1] + 0.9) + " L" + p[0] + " " + (p[1] + 3) + " L" + (p[0] - 0.9) + " " + (p[1] + 0.9) + " L" + (p[0] - 3) + " " + p[1] + " L" + (p[0] - 0.9) + " " + (p[1] - 0.9) + "Z", fill: "#fff3c4", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "bfLed " + (1.4 + i * 0.37) + "s ease-in-out " + (i * 0.3) + "s infinite" } }); })) : null,
+        h("radialGradient", { id: "hpHaloP" }, h("stop", { offset: "0%", stopColor: "rgba(190,140,255,0.42)" }), h("stop", { offset: "60%", stopColor: "rgba(120,220,200,0.14)" }), h("stop", { offset: "100%", stopColor: "rgba(120,220,200,0)" })),
+        h("linearGradient", { id: "hpGlow", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe7a8" }), h("stop", { offset: "100%", stopColor: "#f0a040" })),
+        h("radialGradient", { id: "hpHalo" }, h("stop", { offset: "0%", stopColor: "rgba(255,190,90,0.38)" }), h("stop", { offset: "100%", stopColor: "rgba(255,190,90,0)" }))),
+      h("ellipse", { cx: 376, cy: 210, rx: 66, ry: 160, fill: "url(#hpHalo)", style: { animation: "bkLamp 3.4s ease-in-out infinite" } }),
+      // 屋顶：又陡又歪的石板顶 + 高高的歪烟囱
+      h("path", { d: "M336 92 L370 26 Q376 18 382 28 L414 92 Z", fill: "#3a3358" }), h("path", { d: "M336 92 L370 26 Q376 18 382 28 L414 92", fill: "none", stroke: "#d9a93c", strokeWidth: 1.6 }),
+      h("path", { d: "M344 80 L404 80 M350 66 L398 66 M356 52 L392 52 M362 40 L386 40", stroke: "#3a414e", strokeWidth: 1.4 }),
+      h("g", { transform: "rotate(-8 396 40)" }, h("rect", { x: 390, y: 14, width: 11, height: 40, fill: "#6b3b2e" }), h("rect", { x: 388, y: 10, width: 15, height: 6, fill: "#4a2a20" })),
+      ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#ffd98a", "#c9a0ff"].map(function (c, i) { return h("circle", { key: "hps" + i, cx: 392, cy: 10, r: 2.2, fill: c, style: { filter: "drop-shadow(0 0 3px " + c + ")", transformOrigin: "392px 10px", animation: "hpSwirl 3.2s linear " + (i * 0.53) + "s infinite" } }); }),
+      // 四层，一层比一层往外探、各歪各的
+      h("g", { key: "hpf4", transform: "rotate(-3 375 150)" },
+        h("rect", { x: 340, y: 88, width: 70, height: 62, fill: "#e8dcc0" }),
+        h("path", { d: "M340 88 H410 V150 H340Z M340 92 H410 M340 146 H410 M344 88 V150 M406 88 V150 M344 92 L354 146 M406 92 L396 146", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 338, y: 147, width: 74, height: 5, fill: "#3a2414" }),
+        h("path", { d: "M375 92 L375 146", stroke: "#4a2e1a", strokeWidth: 2.4 }), h("g", { key: "hpw41" }, h("rect", { x: 352, y: 107, width: 16, height: 22, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M352 107 L368 129 M368 107 L352 129 M356 107 L368 123.5 M364 107 L352 123.5 M352 112.5 L364 129 M368 112.5 L356 129", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("g", { key: "hpw42" }, h("rect", { x: 382, y: 107, width: 16, height: 22, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M382 107 L398 129 M398 107 L382 129 M386 107 L398 123.5 M394 107 L382 123.5 M382 112.5 L394 129 M398 112.5 L386 129", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 }))),
+      h("g", { key: "hpf3", transform: "rotate(2 373 218)" },
+        h("rect", { x: 338, y: 150, width: 70, height: 68, fill: "#e8dcc0" }),
+        h("path", { d: "M338 150 H408 V218 H338Z M338 154 H408 M338 214 H408 M342 150 V218 M404 150 V218 M342 154 L352 214 M404 154 L394 214", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 336, y: 215, width: 74, height: 5, fill: "#3a2414" }),
+        h("g", { key: "hpw31" }, h("rect", { x: 358, y: 167, width: 30, height: 30, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M358 167 L388 197 M388 167 L358 197 M365.5 167 L388 189.5 M380.5 167 L358 189.5 M358 174.5 L380.5 197 M388 174.5 L365.5 197", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("path", { d: "M354 166 V214 M392 166 V214", stroke: "#b8352a", strokeWidth: 5 }), h("path", { d: "M354 166 V214", stroke: "#d9a93c", strokeWidth: 1.4, strokeDasharray: "3 3" }), h("path", { d: "M392 166 V214", stroke: "#d9a93c", strokeWidth: 1.4, strokeDasharray: "3 3" })),
+      h("g", { key: "hpf2", transform: "rotate(-2 373 288)" },
+        h("rect", { x: 342, y: 218, width: 62, height: 70, fill: "#e8dcc0" }),
+        h("path", { d: "M342 218 H404 V288 H342Z M342 222 H404 M342 284 H404 M346 218 V288 M400 218 V288 M346 222 L356 284 M400 222 L390 284", stroke: "#4a2e1a", strokeWidth: 3, fill: "none" }),
+        h("rect", { x: 340, y: 285, width: 66, height: 5, fill: "#3a2414" }),
+        h("g", { key: "hpw21" }, h("rect", { x: 351, y: 239, width: 18, height: 26, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M351 239 L369 265 M369 239 L351 265 M355.5 239 L369 258.5 M364.5 239 L351 258.5 M351 245.5 L364.5 265 M369 245.5 L355.5 265", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 })), h("g", { key: "hpw22" }, h("rect", { x: 379, y: 239, width: 18, height: 26, rx: 1.5, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 1.8, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }), h("path", { d: "M379 239 L397 265 M397 239 L379 265 M383.5 239 L397 258.5 M392.5 239 L379 258.5 M379 245.5 L392.5 265 M397 245.5 L383.5 265", stroke: "#5a3a1e", strokeWidth: 0.7, opacity: 0.8 }))),
+      // 一楼：石头墙 + 凸出的小橱窗（坩埚和魔药瓶）+ 圆拱木门
+      h("rect", { x: 346, y: 288, width: 56, height: 65, fill: "#5b5246" }),
+      h("path", { d: "M346 300 H402 M346 314 H402 M346 328 H402 M346 342 H402 M360 288 V300 M384 300 V314 M356 314 V328 M392 328 V342", stroke: "#463e34", strokeWidth: 1 }),
+      h("rect", { x: 349, y: 300, width: 20, height: 26, rx: 2, fill: "url(#hpGlow)", stroke: "#3a2414", strokeWidth: 2, style: { filter: "drop-shadow(0 0 4px rgba(255,190,90,0.9))" } }),
+      h("path", { d: "M352 322 q7 -6 14 0 q0 4 -7 4 q-7 0 -7 -4Z", fill: "#2a2420" }), h("ellipse", { cx: 359, cy: 321, rx: 6, ry: 1.6, fill: "#7ff0a0" }),
+      [0, 1, 2].map(function (i) { return h("circle", { key: "hpb" + i, cx: 356 + i * 3, cy: 318, r: 1.2, fill: "#b8ffcc", style: { transformOrigin: (356 + i * 3) + "px 318px", animation: "bkSmoke 2s linear " + (i * 0.6) + "s infinite" } }); }),
+      h("path", { d: "M375 353 V316 Q386 302 397 316 V353 Z", fill: "#5a3420", stroke: "#2a1a10", strokeWidth: 1.6 }),
+      h("path", { d: "M380 316 V353 M386 310 V353 M392 316 V353", stroke: "#4a2a18", strokeWidth: 1 }), h("circle", { cx: 393, cy: 334, r: 1.6, fill: "#d9a93c" }),
+      h("rect", { x: 382, y: 296, width: 8, height: 10, rx: 1.5, fill: "#ffd98a", stroke: "#1a1a1a", strokeWidth: 1, style: { filter: "drop-shadow(0 0 6px rgba(255,210,120,1))", animation: "bkLamp 1.8s ease-in-out infinite" } }),
+      // 门边靠着一把扫帚
+      h("g", { transform: "rotate(14 370 352)" }, h("path", { d: "M370 300 V346", stroke: "#7a4a24", strokeWidth: 2 }), h("path", { d: "M366 340 L370 336 L374 340 L376 354 L364 354 Z", fill: "#c99a52" }), h("path", { d: "M367 344 V353 M370 342 V353 M373 344 V353", stroke: "#8a6a2a", strokeWidth: 0.7 })),
+      // 伸出去的木招牌：9¾ + 坩埚，招牌架上一只猫头鹰
+      h("path", { d: "M406 226 H420", stroke: "#1a1a1a", strokeWidth: 2 }), h("path", { d: "M406 226 L414 234", stroke: "#1a1a1a", strokeWidth: 1.4 }),
+      h("g", { transform: "translate(416 216)" }, h("ellipse", { cx: 0, cy: 0, rx: 5, ry: 6, fill: "#c9a46a" }), h("circle", { cx: -2, cy: -2, r: 1.8, fill: "#fff" }), h("circle", { cx: 2, cy: -2, r: 1.8, fill: "#fff" }), h("circle", { cx: -2, cy: -2, r: 0.9, fill: "#1a1a1a" }), h("circle", { cx: 2, cy: -2, r: 0.9, fill: "#1a1a1a" }), h("path", { d: "M-1 0 L0 1.6 L1 0Z", fill: "#e2a24a" }), h("path", { d: "M-4 -5 L-3 -8 L-1.5 -5.5 M4 -5 L3 -8 L1.5 -5.5", fill: "#c9a46a" })),
+      h("g", { style: { transformOrigin: "414px 227px", animation: "bfSwing 3s ease-in-out infinite" } },
+        h("path", { d: "M410 227 V232 M418 227 V232", stroke: "#1a1a1a", strokeWidth: 1 }),
+        h("rect", { x: 404, y: 232, width: 20, height: 24, rx: 2, fill: "#6b4428", stroke: "#d9a93c", strokeWidth: 1.2 }),
+        h("text", { x: 414, y: 243, textAnchor: "middle", fontSize: 7, fontWeight: "bold", fill: "#f3d27a", fontFamily: "Georgia,serif" }, "9¾"),
+        h("path", { d: "M408 247 h12 q0 6 -6 6 q-6 0 -6 -6Z", fill: "#1a1a1a" }), h("ellipse", { cx: 414, cy: 247, rx: 6, ry: 1.4, fill: "#7ff0a0" })),
+      // 门楣上的小牌子
+      h("rect", { x: 348, y: 279, width: 52, height: 11, rx: 2, fill: "#3a2414", stroke: "#d9a93c", strokeWidth: 1 }),
+      h("text", { x: 374, y: 287.2, textAnchor: "middle", fontSize: 6.2, fontWeight: "bold", fill: "#f3d27a", fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: 0.4 }, "9¾ 魔药酒馆"),
+      // 飘着的小火星
+      [[352, 300], [400, 200], [346, 170], [404, 130], [356, 110]].map(function (p, i) { return h("circle", { key: "hpsp" + i, cx: p[0], cy: p[1], r: 1.4, fill: "#ffd98a", style: { transformOrigin: p[0] + "px " + p[1] + "px", animation: "bfLed " + (1.4 + i * 0.37) + "s ease-in-out " + (i * 0.3) + "s infinite" } }); }),
+      // 飘浮的蜡烛
+      [[332, 120, 0], [416, 160, 0.8], [330, 236, 1.6], [418, 286, 2.2], [412, 76, 1.1]].map(function (c, i) { return h("g", { key: "hpc" + i, style: { transformOrigin: c[0] + "px " + c[1] + "px", animation: "bfFloat " + (2.6 + i * 0.3) + "s ease-in-out " + c[2] + "s infinite" } },
+        h("rect", { x: c[0] - 2, y: c[1], width: 4, height: 11, rx: 1, fill: "#fbf3dc" }), h("path", { d: "M" + c[0] + " " + (c[1] - 7) + " q-3 4 0 7 q3 -3 0 -7Z", fill: "#ffcf5a", style: { filter: "drop-shadow(0 0 4px rgba(255,200,90,1))", transformOrigin: c[0] + "px " + c[1] + "px", animation: "bkLamp " + (0.9 + i * 0.2) + "s ease-in-out infinite" } })); })),
+      // 打开小屋时：一面砖墙往两边退开，小楼从里面浮现
+      h("g", { style: { pointerEvents: "none" } },
+        Array.apply(null, Array(24)).map(function (_, i) { var r = Math.floor(i / 2), c = i % 2, y = 70 + r * 24, x = 344 + c * 30 + (r % 2 ? -8 : 0);
+          return h("rect", { key: "hpbr" + i, x: x, y: y, width: 30, height: 22, rx: 1.5, fill: "#8a4a3a", stroke: "#5a2e22", strokeWidth: 1.4, style: { transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: "hpBrick" + (c ? "R" : "L") + " 1.6s cubic-bezier(.5,0,.8,.4) " + (0.15 + r * 0.06) + "s both" } }); }),
+        ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); }))) : null,
     // 人行道 + 路
     h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 3, fill: "#5f6572" }),
     // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
@@ -27246,6 +27260,11 @@ function BakerFacade(_refBF) {
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
       "@keyframes bkCat{0%{transform:translateX(0) scaleX(1)}45%{transform:translateX(70px) scaleX(1)}50%{transform:translateX(70px) scaleX(-1)}95%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(0) scaleX(1)}}" +
       "@keyframes mpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}" +
+      "@keyframes hpAppear{0%{opacity:0;transform:scaleY(.86) translateY(8px);filter:blur(3px)}55%{opacity:0}100%{opacity:1;transform:none;filter:none}}" +
+      "@keyframes hpBrickL{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(-46px) rotate(-18deg)}}@keyframes hpBrickR{0%{opacity:1;transform:none}100%{opacity:0;transform:translateX(46px) rotate(18deg)}}" +
+      "@keyframes hpBurst{0%{opacity:0;transform:rotate(var(--a)) translateX(0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateX(70px) scale(1)}}" +
+      "@keyframes hpSwirl{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}50%{transform:translate(8px,-18px)}100%{opacity:0;transform:translate(-6px,-40px)}}" +
+      "@keyframes hpHue{0%,100%{opacity:.8;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(70deg)}}" +
       "@keyframes bfTruckIn{0%{transform:translateX(-130px)}100%{transform:translateX(0)}}@keyframes bfTruckIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.8px)}}@keyframes bfWave{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(25deg)}}" +
       "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(175px,268px) scale(.8) rotate(0deg)}90%{transform:translate(175px,268px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(175px,262px) scale(.8);opacity:0}100%{transform:translate(175px,262px) scale(.8);opacity:0}}" +
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
