@@ -27684,7 +27684,7 @@ function BakerFacade(_refBF) {
       "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
       "@keyframes bkSmoke{0%{transform:translate(0,0) scale(.6);opacity:.55}100%{transform:translate(-14px,-40px) scale(1.6);opacity:0}}" +
       "@keyframes bkLamp{0%,100%{opacity:.85}50%{opacity:1}}" +
-      "@keyframes bfPeek{0%,55%,100%{transform:translate(-1.5px,3.5px)}65%,90%{transform:translate(0,0)}}" +
+      "@keyframes bfPeek{0%,52%,100%{transform:translate(0,7.5px)}62%,88%{transform:translate(0,0)}}" +
       "@keyframes bfZz{0%{opacity:0;transform:translate(0,0)}30%{opacity:.9}100%{opacity:0;transform:translate(4px,-6px)}}" +
       "@keyframes nkSteam{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-7px);opacity:0}}" +
       "@keyframes bkFog{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}" +
