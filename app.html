@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-313";
+var NANA_VER = "v2026.8.2-314";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27931,8 +27931,8 @@ function BakerFacade(_refBF) {
       return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
     // ✉️ 门口人行道上的红色邮筒（英国老式圆柱邮筒，小小一只，挂一块 221B 黄铜牌）：有新信就从投信口露出一截信尾，轻轻晃
     h("g", { "data-k": "postbox", onClick: nanaGo221B, style: { cursor: "pointer" } },
-      h("ellipse", { cx: 159, cy: 360.5, rx: 10.5, ry: 1.9, fill: "rgba(0,0,0,0.3)" }),
-      h("g", { transform: "translate(159 360) scale(0.8) translate(-159 -360)" },
+      h("ellipse", { cx: 159, cy: 360.5, rx: 12, ry: 2, fill: "rgba(0,0,0,0.3)" }),
+      h("g", { transform: "translate(159 360) scale(0.92) translate(-159 -360)" },
         h("rect", { x: 148, y: 355, width: 22, height: 5, rx: 1, fill: "#17191d" }),
         h("rect", { x: 150, y: 324, width: 18, height: 32, fill: "#c0392b" }),
         h("rect", { x: 150, y: 324, width: 4, height: 32, fill: "rgba(255,255,255,0.12)" }), h("rect", { x: 164, y: 324, width: 4, height: 32, fill: "rgba(0,0,0,0.16)" }),
@@ -28095,7 +28095,7 @@ function BakerFacade(_refBF) {
       "@keyframes hpSwirl{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}50%{transform:translate(8px,-18px)}100%{opacity:0;transform:translate(-6px,-40px)}}" +
       "@keyframes hpHue{0%,100%{opacity:.8;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(70deg)}}" +
       "@keyframes bfTruckIn{0%{transform:translateX(-130px)}100%{transform:translateX(0)}}@keyframes bfTruckIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.8px)}}@keyframes bfWave{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(25deg)}}" +
-      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(177px,313px) scale(.8) rotate(0deg)}90%{transform:translate(177px,313px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(177px,307px) scale(.8);opacity:0}100%{transform:translate(177px,307px) scale(.8);opacity:0}}" +
+      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(178px,309px) scale(.8) rotate(0deg)}90%{transform:translate(178px,309px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(178px,303px) scale(.8);opacity:0}100%{transform:translate(178px,303px) scale(.8);opacity:0}}" +
       "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
