@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-321";
+var NANA_VER = "v2026.8.2-322";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27597,8 +27597,23 @@ function BakerFacade(_refBF) {
         boxShadow: "inset 0 0 26px rgba(105,62,20,0.42), inset 0 0 4px rgba(90,50,15,0.5)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
         // 卷轴最上面一行：时间 + 小火苗（原来挂在顶栏的两颗小胶囊）
         h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
-          h("div", { style: { fontFamily: HAND, fontSize: "0.7rem", color: "#5a4128", border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.35)", borderRadius: 999, padding: "1px 10px" } }, time || ""),
-          h("div", { style: { fontFamily: HAND, fontSize: "0.7rem", color: "#5a4128", border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.35)", borderRadius: 999, padding: "1px 10px", marginRight: 2 } }, "🔥 " + cozy + "%")),
+          // 小怀表：表盘上的指针跟着真实时间走，旁边写「下午 3:20」
+          (function () {
+            var H = now.getHours(), M = now.getMinutes();
+            var part = H < 5 ? ["深夜", "🌙"] : H < 8 ? ["清晨", "🌤️"] : H < 11 ? ["上午", "☀️"] : H < 13 ? ["中午", "🍱"] : H < 17 ? ["下午", "🫖"] : H < 19 ? ["傍晚", "🌇"] : ["晚上", "🌙"];
+            var h12 = H % 12 === 0 ? 12 : H % 12;
+            var ha = ((H % 12) + M / 60) * 30, ma = M * 6;
+            var hand = function (ang, len, w, col) { var r = ang * Math.PI / 180; return h("line", { x1: 10, y1: 10, x2: 10 + Math.sin(r) * len, y2: 10 - Math.cos(r) * len, stroke: col, strokeWidth: w, strokeLinecap: "round" }); };
+            return h("div", { style: { display: "flex", alignItems: "center", gap: 5, border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.4)", borderRadius: 999, padding: "1px 10px 1px 3px" } },
+              h("svg", { viewBox: "0 0 20 20", width: 18, height: 18, style: { display: "block" } },
+                h("circle", { cx: 10, cy: 10, r: 9, fill: "#fbf3df", stroke: "#8a5a2a", strokeWidth: 1.4 }),
+                [0, 3, 6, 9].map(function (q) { var r = q * 30 * Math.PI / 180; return h("circle", { key: "tk" + q, cx: 10 + Math.sin(r) * 6.6, cy: 10 - Math.cos(r) * 6.6, r: 0.75, fill: "#8a5a2a" }); }),
+                hand(ha, 4.2, 1.6, "#5a3418"), hand(ma, 6, 1.1, "#9a2f2a"),
+                h("circle", { cx: 10, cy: 10, r: 1.1, fill: "#5a3418" })),
+              h("span", { style: { fontFamily: CUTE, fontSize: "0.72rem", color: "#5a4128", letterSpacing: "0.02em" } }, part[0] + " " + h12 + ":" + (M < 10 ? "0" : "") + M),
+              h("span", { style: { fontSize: "0.7rem" } }, part[1]));
+          })(),
+          h("div", { style: { fontFamily: CUTE, fontSize: "0.72rem", color: "#5a4128", border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.4)", borderRadius: 999, padding: "1px 10px", marginRight: 2 } }, "🔥 " + cozy + "%")),
         // 卷着时：问候 + 那句俏皮话 + 火漆印
         h("div", { style: { position: "relative", paddingRight: 54 } },
           h("div", { style: { fontFamily: CUTE, fontWeight: 400, fontSize: "1.08rem", letterSpacing: "0.02em", minHeight: 26, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
