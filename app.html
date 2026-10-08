@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-323";
+var NANA_VER = "v2026.8.2-324";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -24762,10 +24762,10 @@ function MagicBar() {
   }, []);
   var cnt = (rows["mbn-" + me + "-" + night] || {}).n || 0;
   // 惩罚卡「酒馆明晚暂停营业」：昨晚抽到 → 今晚关门
-  var yesterday = mbNight(Date.now() - 86400000), closed = false, cards = [], gifts = [];
+  var yesterday = mbNight(Date.now() - 86400000), closed = false, closedCard = null, cards = [], gifts = [];
   for (var k in rows) {
     var v = rows[k]; if (!v) continue;
-    if (k.indexOf("mbp-") === 0) { cards.push({ id: k, v: v }); if (v.a === me && v.k === "closed" && v.night === yesterday && v.st !== "pardon") closed = true; }
+    if (k.indexOf("mbp-") === 0) { cards.push({ id: k, v: v }); if (v.a === me && v.k === "closed" && v.night === yesterday && v.st !== "pardon") { closed = true; closedCard = { id: k, v: v }; } }
     if (k.indexOf("mbg-") === 0 && v.to === me) gifts.push({ id: k, v: v });
   }
   cards.sort(function (x, y) { return y.v.at - x.v.at; }); gifts.sort(function (x, y) { return y.v.at - x.v.at; });
@@ -24808,6 +24808,14 @@ function MagicBar() {
     var dt = new Date();
     nanaSharedAdd({ id: "s" + dt.getTime() + Math.floor(Math.random() * 900), author: me, d: dt.getFullYear() + " 年 " + (dt.getMonth() + 1) + " 月 " + dt.getDate() + " 日", t: body, th: "spell", pu: null }, function () {});
   };
+  var nudge = function (c) {
+    var key = "nana-mb-nudge-" + c.id, last = 0;
+    try { last = +(localStorage.getItem(key) || 0); } catch (_) {}
+    if (Date.now() - last < 30 * 60000) { setMsg("🦉 猫头鹰刚飞走，过一会儿再催"); setTimeout(function () { setMsg(""); }, 3000); return; }
+    try { localStorage.setItem(key, String(Date.now())); } catch (_) {}
+    mbMail("🦉 催解咒 · " + (c.v.sp || c.v.cn || "小魔咒") + "\n" + who(me) + (c.v.k === "closed" ? " 还被关在月影杂货铺门外：酒馆门还封着，点「这次免了」就能开门。" : " 还等着解咒，去月影杂货铺看一眼吧。") + "\n▸ 来自：月影杂货铺");
+    setMsg("🦉 猫头鹰带着催促信飞去 221B 了"); setTimeout(function () { setMsg(""); }, 3500);
+  };
   var mark = function (c, st) {
     var v2 = {}; for (var k2 in c.v) v2[k2] = c.v[k2]; v2.st = st; v2.by = me; put(c.id, v2);
     mbMail((st === "done" ? "✨ 小魔咒解除 · " : "🕊️ 这次免了 · ") + (c.v.sp || c.v.cn || "小魔咒") + "\n" + (st === "done" ? who(c.v.a) + " 身上的小魔咒已经解开了。" : "坩埚这次放 " + who(c.v.a) + " 一马。") + "\n▸ 来自：月影杂货铺");
@@ -24844,7 +24852,8 @@ function MagicBar() {
     tempting && !closed ? h("div", { style: { position: "absolute", right: "6%", top: "16%", maxWidth: 150, background: "#fff7e0", color: "#5a2a7a", borderRadius: 12, padding: "6px 10px", fontSize: "0.72rem", fontWeight: 800, boxShadow: "0 0 14px rgba(255,220,140,.8)", animation: "mbBob 1.6s ease-in-out infinite" } }, "🦉 " + MB_TEMPT[tp % MB_TEMPT.length]) : null,
     hic ? h("div", { style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 56, fontWeight: 900, color: "#fff", textShadow: "0 0 18px #c9a0ff", fontFamily: "'ZCOOL KuaiLe','PingFang SC'" } }, h("div", { style: { textAlign: "center" } }, "嗝！", h("div", { style: { fontFamily: "Georgia,serif", fontStyle: "italic", fontSize: "1.1rem", color: "#ffe38a" } }, "Hiccupus Maxima!"))) : null,
     closed ? h("div", { style: { position: "absolute", inset: 0, background: "rgba(10,6,24,.72)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#f3e6ff", textAlign: "center" } },
-      h("div", { style: { fontSize: 46 } }, "🔒"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", marginTop: 6, fontFamily: "Georgia,serif" } }, "今晚暂停营业"), h("div", { style: { fontSize: "0.76rem", color: "#c9b8e8", marginTop: 4 } }, "老板娘说：昨晚喝太多，今晚坩埚放假。猫头鹰在门口值班。")) : null);
+      h("div", { style: { fontSize: 46 } }, "🔒"), h("div", { style: { fontWeight: 900, fontSize: "1.1rem", marginTop: 6, fontFamily: "Georgia,serif" } }, "今晚暂停营业"), h("div", { style: { fontSize: "0.76rem", color: "#c9b8e8", marginTop: 4 } }, "老板娘说：昨晚喝太多，今晚坩埚放假。猫头鹰在门口值班。"),
+      closedCard ? h("button", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); nudge(closedCard); }, style: { marginTop: 12, border: "1px solid rgba(233,196,106,.7)", borderRadius: 999, padding: "7px 16px", background: "rgba(233,196,106,.16)", color: "#ffe9a8", fontSize: "0.76rem", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" } }, "🦉 派猫头鹰催一催") : null) : null);
   var cardOver = card ? h("div", { onClick: function () { setCard(null); }, style: { position: "fixed", inset: 0, zIndex: 10001, background: "rgba(8,4,20,.78)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } },
     h("div", { onClick: function (e) { e.stopPropagation(); }, style: { width: "100%", maxWidth: 320, background: "linear-gradient(160deg,#fff6e0,#f3e2ff)", borderRadius: 18, padding: "20px 18px", textAlign: "center", border: "3px solid " + gold, boxShadow: "0 0 40px rgba(201,160,255,.6)", animation: "mbFlip .6s cubic-bezier(.2,.9,.3,1.2) both" } },
       h("div", { style: { fontSize: "0.7rem", letterSpacing: 4, color: "#9a6a2a", fontWeight: 800, fontFamily: "Georgia,serif" } }, "SPELL CARD · 你中了一个小魔咒"),
@@ -24910,7 +24919,10 @@ function MagicBar() {
             h("button", { onClick: function () { mark(c, "pardon"); }, style: { border: "1px solid rgba(255,255,255,.3)", borderRadius: 99, padding: "4px 10px", background: "transparent", color: "#efe2ff", fontSize: "0.66rem", fontWeight: 800, fontFamily: "inherit" } }, "这次免了 🕊️")) :
             h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); }),
         myOpen.map(function (c) { return h("div", { key: c.id, style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", marginBottom: 6, borderRadius: 12, background: "rgba(255,255,255,.04)" } },
-          h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, "我 · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t), h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st))); })) : null),
+          h("div", { style: { fontSize: 22 } }, c.v.e), h("div", { style: { flex: 1, fontSize: "0.72rem", lineHeight: 1.5 } }, h("b", null, "我 · 第 " + c.v.n + " 杯" + (c.v.sp ? " · " + c.v.sp : "")), h("br"), c.v.t),
+          h("div", { style: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 } },
+            h("div", { style: { fontSize: "0.66rem", color: "#b9a6dc" } }, stTxt(c.v.st)),
+            c.v.st !== "done" && c.v.st !== "pardon" ? h("button", { onClick: function () { nudge(c); }, style: { border: "1px solid rgba(233,196,106,.6)", borderRadius: 99, padding: "3px 9px", background: "rgba(233,196,106,.12)", color: "#ffe9a8", fontSize: "0.64rem", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" } }, "🦉 催一催") : null)); })) : null),
     cardOver);
 }
 function MealCheckIn() {
