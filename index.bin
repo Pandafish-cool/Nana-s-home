@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-322";
+var NANA_VER = "v2026.8.2-323";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8193,7 +8193,7 @@ var nanaSyncReq = function (method, path, body, cb) {
 // 一个月就满了，更早的信就再也取不回来 —— 信本身都在，只是被截掉了。
 // 改成一页一页全捞（新的在前）；两页之间要是有人寄了新信，offset 会错一位，
 // 同一封可能出现两次，按 id 去重。
-var NANA_SHARED_PAGE = 200, NANA_SHARED_MAXPAGE = 20;
+var NANA_SHARED_PAGE = 200, NANA_SHARED_MAXPAGE = 50;
 // 取信只留这一个入口。以前阅读室和伦敦页的邮筒各自调 nanaSharedList，互不知道，
 // 开门就是两遍；阅读室还会被卸载再挂载（邮筒直达那一下），新实例又取一遍。
 // 现在：正在取的时候后来者排队等同一趟结果；一分钟内取过就直接给上次那份；
@@ -8211,13 +8211,16 @@ var nanaSharedFetch = function (force, cb) {
   if (NANA_SHARED_BUSY) return;
   NANA_SHARED_BUSY = 1;
   var base = NANA_SHARED_ROWS || nanaReadNoteCache();
-  var fullAt = 0; try { fullAt = +(localStorage.getItem("nana-shared-full") || 0); } catch (_) {}
+  var fullAt = 0; try { fullAt = +(localStorage.getItem("nana-shared-full") || 0); if (localStorage.getItem("nana-shared-cv") !== "2") fullAt = 0; } catch (_) {}
   var finish = function (err, rows) {
     NANA_SHARED_BUSY = 0;
     if (!err) {
       rows = nanaSortNotes(rows);
       NANA_SHARED_AT = Date.now(); NANA_SHARED_ROWS = rows;
-      try { localStorage.setItem("nana-shared-cache", JSON.stringify(rows.slice(0, 1000))); } catch (_) {}
+      // 本机缓存整份信（以前只存最新 1000 封，信一多，老信就在下次打开时掉出去了）。
+      // 万一手机存不下，退回存最新 1000 封，同时把「上次全量」清掉，下次打开一定重新全捞，老信不会悄悄丢
+      try { localStorage.setItem("nana-shared-cache", JSON.stringify(rows)); }
+      catch (_) { try { localStorage.setItem("nana-shared-cache", JSON.stringify(rows.slice(0, 1000))); localStorage.removeItem("nana-shared-full"); } catch (_) {} }
       try { window.dispatchEvent(new CustomEvent("nana-shared", { detail: rows })); } catch (_) {}
     }
     var q = NANA_SHARED_WAIT; NANA_SHARED_WAIT = [];
@@ -8225,7 +8228,7 @@ var nanaSharedFetch = function (force, cb) {
   };
   if (!base.length || Date.now() - fullAt > 6 * 3600000) {
     return nanaSharedList(function (err, rows) {
-      if (!err) { try { localStorage.setItem("nana-shared-full", String(Date.now())); } catch (_) {} }
+      if (!err) { try { localStorage.setItem("nana-shared-full", String(Date.now())); localStorage.setItem("nana-shared-cv", "2"); } catch (_) {} }
       finish(err, rows);
     });
   }
@@ -9276,7 +9279,7 @@ function ReadingRoomActivity(_refRR) {
   var myAuthor = _au[0], setMyAuthor = _au[1];
   // 秒开优化：先展示上次缓存的信，后台再拉最新（stale-while-revalidate）
   var readSharedCache = function () { try { return JSON.parse(localStorage.getItem("nana-shared-cache") || "[]"); } catch (_) { return []; } };
-  var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 1000))); } catch (_) {} };
+  var saveSharedCache = function (rows) { try { localStorage.setItem("nana-shared-cache", JSON.stringify(rows || [])); } catch (_) { try { localStorage.setItem("nana-shared-cache", JSON.stringify((rows || []).slice(0, 1000))); localStorage.removeItem("nana-shared-full"); } catch (_) {} } };
   var _snn = useState(function () { return NANA_SHARED_ROWS || nanaSortNotes(readSharedCache()); }); var sharedNotes = _snn[0], setSharedNotes = _snn[1];
   var _ssh = useState(80); var sharedShow = _ssh[0], setSharedShow = _ssh[1];   // 先画这么多张，往前翻再加
   var _sll = useState(false); var sharedLoading = _sll[0], setSharedLoading = _sll[1];
