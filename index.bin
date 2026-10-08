@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-320";
+var NANA_VER = "v2026.8.2-321";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27049,36 +27049,36 @@ var nanaGoTools = function () {
 };
 // 首页卡片的话：按钟点分组。大字暖一点、不卖萌；下面那句酷一点、冷幽默。大字轮播 a，下面那句 s 每次打开（或切回来）换一句。
 var NANA_FUN = [
-  { to: 5, a: ["还醒着，Nana？", "天塌了明天再说", "去睡，剩下的明天说"], s: [
-    "凌晨的烦恼一律不算数。",
-    "手机放下，被子盖好，这是命令。",
-    "今天的事已经翻篇，明天再说。",
-    "睡饱了，什么事都好办。"] },
-  { to: 9, a: ["早，Nana", "今天也是你的主场", "出门，去赢"], s: [
-    "早饭吃了再出门，别跟胃过不去。",
-    "今天谁惹你，名字记下，221B 处理。",
-    "你本来就很厉害，正常发挥就行。",
-    "带上好心情出门，别的都不重要。"] },
-  { to: 13, a: ["上午好，Nana", "按你的节奏来", "放手去做"], s: [
-    "你决定了的事，就去做，不用回头看。",
-    "别慌，你比这件事大。",
-    "中午好好吃饭，下午才有力气横着走。",
-    "忙归忙，先喝口水。"] },
-  { to: 17, a: ["下午好，Nana", "稳住，你能行", "累了就歇，没人催你"], s: [
-    "困了就眯十分钟，世界不会因此停转。",
-    "今天的难题，在你面前都不算难。",
-    "有人不讲道理？名字报上来。",
-    "再撑一会儿，晚上有好吃的。"] },
-  { to: 21, a: ["晚上好，Nana", "今晚好好玩", "今晚，全归你"], s: [
-    "外面的事放门口，进屋只管舒服。",
-    "晚饭挑个最想吃的，别凑合。",
-    "今天的你，帅得很稳定。",
-    "想干嘛就干嘛，今晚不设规则。"] },
-  { to: 24, a: ["晚上好，Nana", "早点睡，明天继续帅", "晚安，好梦"], s: [
-    "睡前别想工作，那是明天的事。",
-    "窗关小一点，鼻子会感谢你。",
-    "今天的事都过去了，翻篇。",
-    "闭眼吧，明天又是你的。"] }
+  { to: 5, a: ["还醒着呀，Nana", "月亮还在陪着你", "星星都在，慢慢睡"], s: [
+    "窗外很安静，整座城市都在替你守着夜。",
+    "被子是软的，枕头是凉的，刚刚好。",
+    "闭上眼吧，明早的阳光已经在路上了。",
+    "夜里的风很轻，像在哼一首老歌。"] },
+  { to: 9, a: ["早安，Nana", "今天的阳光是新的", "早晨的空气甜甜的"], s: [
+    "楼下面包店的香味飘上来了，是刚出炉的。",
+    "窗台上的花，比昨天又开了一点。",
+    "泡一杯热的，今天从一口暖开始。",
+    "鸟儿已经在树上聊开了，像在等你起床。"] },
+  { to: 13, a: ["上午好，Nana", "阳光正好", "今天的风很温柔"], s: [
+    "天很蓝，云走得很慢，适合深呼吸一下。",
+    "街角的咖啡香飘过来，这一刻刚刚好。",
+    "有人在晒被子，到处都是阳光的味道。",
+    "今天的一切，都在慢慢变好。"] },
+  { to: 17, a: ["下午好，Nana", "下午茶时间到了", "阳光斜斜地照进来"], s: [
+    "午后的光落在桌上，暖洋洋的。",
+    "来一块小蛋糕吧，甜的东西会让下午变短。",
+    "窗外的树影在晃，像在跟你招手。",
+    "伸个懒腰，外面的天正蓝。"] },
+  { to: 21, a: ["傍晚好，Nana", "晚霞很美", "灯一盏一盏亮起来了"], s: [
+    "天边是橘子色的，今天的晚霞特别好看。",
+    "路灯亮了，回家的路都是暖黄色的。",
+    "晚饭的香味从窗户飘出来，是家的味道。",
+    "今晚记得抬头，看一眼月亮。"] },
+  { to: 24, a: ["晚上好，Nana", "今晚的月色很温柔", "晚安，好梦"], s: [
+    "洗个热水澡，让今天在水汽里慢慢化开。",
+    "台灯的光是暖的，窗外的夜是静的。",
+    "明天会有新的好事，正在路上。",
+    "枕边放一杯温水，梦会甜一点。"] }
 ];
 // 羊皮纸：左右两边是不整齐的毛边（固定的一组锯齿，免得每次渲染都抖），纸面叠三层纹理——细颗粒、大块斑驳、几块茶渍
 var PARCH_EDGE = (function () {
@@ -27595,6 +27595,10 @@ function BakerFacade(_refBF) {
         ].join(","),
         backgroundSize: "180px 180px, 420px 420px, auto, auto, auto, auto, auto",
         boxShadow: "inset 0 0 26px rgba(105,62,20,0.42), inset 0 0 4px rgba(90,50,15,0.5)", color: INK, fontFamily: "'PingFang SC',sans-serif" } },
+        // 卷轴最上面一行：时间 + 小火苗（原来挂在顶栏的两颗小胶囊）
+        h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } },
+          h("div", { style: { fontFamily: HAND, fontSize: "0.7rem", color: "#5a4128", border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.35)", borderRadius: 999, padding: "1px 10px" } }, time || ""),
+          h("div", { style: { fontFamily: HAND, fontSize: "0.7rem", color: "#5a4128", border: "1px solid rgba(107,78,46,0.35)", background: "rgba(255,250,235,0.35)", borderRadius: 999, padding: "1px 10px", marginRight: 2 } }, "🔥 " + cozy + "%")),
         // 卷着时：问候 + 那句俏皮话 + 火漆印
         h("div", { style: { position: "relative", paddingRight: 54 } },
           h("div", { style: { fontFamily: CUTE, fontWeight: 400, fontSize: "1.08rem", letterSpacing: "0.02em", minHeight: 26, opacity: fade ? 1 : 0, transition: "opacity 0.35s" } }, greetNow),
@@ -28137,7 +28141,7 @@ function BakerFacade(_refBF) {
     h("div", { style: { position: "relative", zIndex: 1, padding: "calc(22px + env(safe-area-inset-top,0px)) 18px 0" } },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
-        h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, pill(time || ""), pill("🔥 " + cozy + "%"), h(RewardsWallet, null))),
+        h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, h(RewardsWallet, null))),
       topCard,
       h("div", { style: { height: 4 } })),
     // 楼
