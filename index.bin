@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-325";
+var NANA_VER = "v2026.8.2-326";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27652,6 +27652,47 @@ function BakerFacade(_refBF) {
     setTimeout(function () { setKnock(null); }, 2600);
   };
   var doorShake = pgLit === "knock" || pgHold === "knock";
+  // 帕丁顿送完信怎么等：默认坐在邮筒顶上晃腿吃三明治（?pad=hat 靠着邮筒抬帽 / ?pad=fly 在邮筒边晃，留着预览用）
+  var PADV = (function () { try { var q = (location.search || "").match(/[?&]pad=(\w+)/); if (q) return q[1]; } catch (_) {} return "sit"; })();
+  var padHead = function (hatAnim) {
+    return [
+      h("circle", { key: "e1", cx: -5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }), h("circle", { key: "e2", cx: 5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }),
+      h("circle", { key: "hd", cx: 0, cy: -6, r: 6.2, fill: "#a86d3a" }),
+      h("ellipse", { key: "mz", cx: 0, cy: -3.6, rx: 3.3, ry: 2.4, fill: "#dcb88c" }), h("ellipse", { key: "ns", cx: 0, cy: -4.6, rx: 1.2, ry: 0.9, fill: "#2b1a10" }),
+      h("circle", { key: "y1", cx: -2.4, cy: -7.2, r: 0.85, fill: "#2b1a10" }), h("circle", { key: "y2", cx: 2.4, cy: -7.2, r: 0.85, fill: "#2b1a10" }),
+      h("g", { key: "hat", style: hatAnim ? { transformOrigin: "-6px -11px", animation: hatAnim } : null },
+        h("path", { d: "M-4.8 -10.6 Q-4.6 -16 0 -16 Q4.6 -16 4.8 -10.6 Z", fill: "#c8322f" }),
+        h("ellipse", { cx: 0, cy: -10.6, rx: 8.4, ry: 2, fill: "#b02a28" }),
+        h("path", { d: "M-4.7 -11.6 Q0 -10.6 4.7 -11.6", fill: "none", stroke: "#8a1e1c", strokeWidth: 0.8 }))
+    ];
+  };
+  // ① 坐在邮筒圆顶上：两条小短腿一前一后晃，手里一块果酱三明治，时不时咬一口
+  var padSit = function () {
+    return h("g", { transform: "translate(160 304) scale(0.82)", style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } },
+      h("g", { style: { transformOrigin: "-2.5px 5px", animation: "bfLeg 1.3s ease-in-out infinite" } }, h("rect", { x: -4.6, y: 4, width: 3.6, height: 8, rx: 1.6, fill: "#2d5d9f" }), h("ellipse", { cx: -2.8, cy: 12.4, rx: 2.4, ry: 1.5, fill: "#3a2616" })),
+      h("g", { style: { transformOrigin: "2.5px 5px", animation: "bfLeg 1.3s ease-in-out .65s infinite" } }, h("rect", { x: 1, y: 4, width: 3.6, height: 8, rx: 1.6, fill: "#2d5d9f" }), h("ellipse", { cx: 2.8, cy: 12.4, rx: 2.4, ry: 1.5, fill: "#3a2616" })),
+      h("path", { d: "M-6.5 6 Q-7.5 -1 -5.5 -2 L5.5 -2 Q7.5 -1 6.5 6 Z", fill: "#2d5d9f", stroke: "#1e4478", strokeWidth: 0.6 }),
+      h("rect", { x: -1.8, y: 0.6, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }), h("rect", { x: -1.8, y: 3.4, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }),
+      h("circle", { cx: -6.4, cy: 3.8, r: 1.6, fill: "#9a6234" }),
+      h("g", { style: { transformOrigin: "5px -1px", animation: "bfMunch 3.2s ease-in-out infinite" } },
+        h("path", { d: "M5 -1 Q9 1 8.2 4.6", fill: "none", stroke: "#2d5d9f", strokeWidth: 3, strokeLinecap: "round" }),
+        h("path", { d: "M6.2 3.2 L11.4 2.2 L9.4 7 Z", fill: "#f3d9a4", stroke: "#c9a46a", strokeWidth: 0.4 }), h("path", { d: "M7 3.9 L10.4 3.2", stroke: "#e8862a", strokeWidth: 0.9 }),
+        h("circle", { cx: 8.2, cy: 4.8, r: 1.5, fill: "#9a6234" })),
+      padHead(null),
+      h("text", { x: 9, y: -16, textAnchor: "middle", fontSize: 5.5, fill: "#e0607f", style: { animation: "bfPadHeart2 3.2s ease-out infinite", opacity: 0 } }, "♥"));
+  };
+  // ② 站在邮筒左边的人行道上：身子往邮筒那边歪一点，每隔几秒抬起红帽子点个头
+  var padHat = function () {
+    return h("g", { transform: "translate(137 345) rotate(9) scale(0.86)", style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } },
+      h("ellipse", { cx: -3.2, cy: 12.2, rx: 2.6, ry: 1.4, fill: "#3a2616" }), h("ellipse", { cx: 3.2, cy: 12.2, rx: 2.6, ry: 1.4, fill: "#3a2616" }),
+      h("path", { d: "M-7 11.5 Q-8 3 -5.5 -1 L5.5 -1 Q8 3 7 11.5 Z", fill: "#2d5d9f", stroke: "#1e4478", strokeWidth: 0.6 }),
+      h("rect", { x: -1.8, y: 3, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }), h("rect", { x: -1.8, y: 6.2, width: 3.6, height: 1, rx: 0.5, fill: "#e8d9b5" }),
+      h("path", { d: "M-5.2 1.5 Q-8.6 4.5 -8 8.4", fill: "none", stroke: "#2d5d9f", strokeWidth: 3, strokeLinecap: "round" }), h("circle", { cx: -8, cy: 8.6, r: 1.5, fill: "#9a6234" }),
+      h("g", { style: { transformOrigin: "5px 1px", animation: "bfHatArm 4.5s ease-in-out infinite" } },
+        h("path", { d: "M5.2 1.5 Q8.6 4.5 7.6 8", fill: "none", stroke: "#2d5d9f", strokeWidth: 3, strokeLinecap: "round" }), h("circle", { cx: 7.6, cy: 8.3, r: 1.5, fill: "#9a6234" })),
+      h("g", { style: { transformOrigin: "0px -1px", animation: "bfNod 4.5s ease-in-out infinite" } }, padHead("bfHatTip 4.5s ease-in-out infinite")),
+      h("text", { x: 9, y: -20, textAnchor: "middle", fontSize: 5.5, fill: "#e0607f", style: { animation: "bfPadHeart2 4.5s ease-out 1s infinite", opacity: 0 } }, "♥"));
+  };
   // 一扇窗：奶白石框、拱心石、玻璃有一道斜光、细窗棂、暗红窗帘、窗台
   var win = function (x, y, w, hh, on, key, extra, arch) {
     var glass = on ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)");
@@ -27954,9 +27995,13 @@ function BakerFacade(_refBF) {
       h("rect", { x: 265, y: 246, width: 12, height: 14, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#cfd9e2", stroke: "#141821", strokeWidth: 1.2, style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 7px rgba(255,220,140,0.95))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
       h("polygon", { points: "264,260 278,260 271,265", fill: "#141821" })),
     // 有新信：帕丁顿从右边烟囱冒出来，3.6 秒飘到门口，把信投进邮筒，然后留在邮筒边轻轻晃着等
-    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfPadGo 3.6s ease-in-out forwards, bfPadWait 2.4s ease-in-out 3.6s infinite", opacity: 0 } },
+    newLetter && PADV === "fly" ? h("g", { style: { pointerEvents: "none", animation: "bfPadGo 3.6s ease-in-out forwards, bfPadWait 2.4s ease-in-out 3.6s infinite", opacity: 0 } },
       h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } }, nanaPadBear(h, "bfPadPost 4.5s ease-in-out forwards")),
       h("text", { x: 2, y: -18, textAnchor: "middle", fontSize: 6, fill: "#e0607f", style: { animation: "bfPadHeart 5.2s ease-out forwards", opacity: 0 } }, "♥")) : null,
+    // 另外两种等法：先照样从烟囱飞下来投信，投完这只飞行的帕丁顿淡出，换成「坐在邮筒顶上晃腿吃果酱三明治」或「靠着邮筒抬帽致意」
+    newLetter && PADV !== "fly" ? h("g", { style: { pointerEvents: "none" } },
+      h("g", { style: { animation: "bfPadGo 3.6s ease-in-out forwards, bfPadHide .25s linear 4.3s forwards", opacity: 0 } },
+        h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } }, nanaPadBear(h, "bfPadPost 4.5s ease-in-out forwards")))) : null,
     // 🔔 安心：门边墙上伸出一根黑铁支架，挂着一只铜铃；有没听的留言，铃就自己摇、冒电波和音符
     h("g", { "data-k": "carebell", onClick: nanaGoCare, transform: "translate(12 0) translate(281 274) scale(0.7) translate(-281 -274)", style: { cursor: "pointer" } },
       h("rect", { x: 298, y: 270, width: 4, height: 9, rx: 1, fill: "#141821" }),
@@ -28078,6 +28123,8 @@ function BakerFacade(_refBF) {
         ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); })) : null) : null,
     // 人行道 + 路
     h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 3, fill: "#5f6572" }),
+    // 送完信等着的帕丁顿（画在栏杆、邮筒、人行道后面，才不会被挡住）
+    newLetter && PADV !== "fly" ? h("g", { style: { pointerEvents: "none", opacity: 0, animation: "bfPadShow .35s ease-out 4.3s forwards" } }, PADV === "sit" ? padSit() : padHat()) : null,
     // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
     h("rect", { x: 0, y: 375, width: barOn ? 430 : 360, height: 45, fill: "url(#bfWater)" }),
     h("rect", { x: 0, y: 380, width: barOn ? 430 : 360, height: 40, fill: "url(#bfWaves)" }),
@@ -28156,6 +28203,13 @@ function BakerFacade(_refBF) {
       "@keyframes bfPadPost{0%,80%{transform:translate(0,0) scale(1);opacity:1}90%{transform:translate(-4px,4px) scale(.85);opacity:1}96%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,84%{transform:translateY(0);opacity:0}88%{opacity:1}100%{transform:translateY(-8px);opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfPadHide{to{opacity:0}}@keyframes bfPadShow{to{opacity:1}}" +
+      "@keyframes bfLeg{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(18deg)}}" +
+      "@keyframes bfMunch{0%,55%,100%{transform:rotate(0)}68%,80%{transform:rotate(-62deg)}}" +
+      "@keyframes bfHatTip{0%,55%,100%{transform:translate(0,0) rotate(0)}66%,82%{transform:translate(2px,-5px) rotate(-24deg)}}" +
+      "@keyframes bfHatArm{0%,55%,100%{transform:rotate(0)}66%,82%{transform:rotate(-150deg)}}" +
+      "@keyframes bfNod{0%,60%,100%{transform:rotate(0)}70%,78%{transform:rotate(7deg)}}" +
+      "@keyframes bfPadHeart2{0%,62%{transform:translateY(0);opacity:0}70%{opacity:1}100%{transform:translateY(-7px);opacity:0}}" +
       "@keyframes bfBellRing{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}35%{transform:rotate(-12deg)}55%{transform:rotate(8deg)}75%{transform:rotate(-5deg)}}" +
       "@keyframes bfBellIdle{0%,90%,100%{transform:rotate(0)}94%{transform:rotate(4deg)}97%{transform:rotate(-3deg)}}" +
       "@keyframes bfTail{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg) translateY(-0.6px)}}" +
