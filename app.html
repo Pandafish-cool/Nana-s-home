@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-325";
+var NANA_VER = "v2026.8.2-326";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -27662,8 +27662,8 @@ function BakerFacade(_refBF) {
     setTimeout(function () { setKnock(null); }, 2600);
   };
   var doorShake = pgLit === "knock" || pgHold === "knock";
-  // 帕丁顿送完信怎么等（预览用 ?pad=sit 坐在邮筒顶上 / ?pad=hat 靠着邮筒抬帽；默认 fly 在邮筒边晃）
-  var PADV = (function () { try { var q = (location.search || "").match(/[?&]pad=(\w+)/); if (q) return q[1]; } catch (_) {} return "fly"; })();
+  // 帕丁顿送完信怎么等：默认坐在邮筒顶上晃腿吃三明治（?pad=hat 靠着邮筒抬帽 / ?pad=fly 在邮筒边晃，留着预览用）
+  var PADV = (function () { try { var q = (location.search || "").match(/[?&]pad=(\w+)/); if (q) return q[1]; } catch (_) {} return "sit"; })();
   var padHead = function (hatAnim) {
     return [
       h("circle", { key: "e1", cx: -5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }), h("circle", { key: "e2", cx: 5.2, cy: -10.2, r: 2.3, fill: "#9a6234" }),
