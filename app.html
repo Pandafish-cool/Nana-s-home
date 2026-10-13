@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-324";
+var NANA_VER = "v2026.8.2-325";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8250,6 +8250,18 @@ var nanaSharedFetch = function (force, cb) {
 };
 // 切回小屋就去看看有没有新信
 try { document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(function () { nanaSharedFetch(false); }, 800); }); } catch (_) {}
+// 开着小屋的时候每 20 秒看一眼：只问最新一封的 id（不取内容，几十个字节），手上没有这封才去取信 → 帕丁顿马上出发。
+// 小屋在后台 / 锁屏时不问。
+var NANA_SHARED_PEEK = 20000;
+try { setInterval(function () {
+  if (document.hidden || NANA_SHARED_BUSY) return;
+  nanaSyncReq("GET", "shared_notes?select=id&order=created_at.desc&limit=1", null, function (err, rows) {
+    if (err || !rows || !rows[0] || !rows[0].id) return;
+    var have = NANA_SHARED_ROWS || nanaReadNoteCache(), id = rows[0].id;
+    for (var i = 0; i < have.length && i < 50; i++) if (have[i] && have[i].id === id) return;
+    nanaSharedFetch(true);
+  });
+}, NANA_SHARED_PEEK); } catch (_) {}
 var nanaSharedList = function (cb) {
   var all = [], seen = {}, page = 0;
   var step = function () {
@@ -27951,10 +27963,10 @@ function BakerFacade(_refBF) {
       h("polygon", { points: "266,242 276,242 278,246 264,246", fill: "#141821" }),
       h("rect", { x: 265, y: 246, width: 12, height: 14, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#cfd9e2", stroke: "#141821", strokeWidth: 1.2, style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 7px rgba(255,220,140,0.95))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
       h("polygon", { points: "264,260 278,260 271,265", fill: "#141821" })),
-    // 有新信：帕丁顿从右边烟囱冒出来，晃晃悠悠飘下来，把信投进门口的邮筒
-    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfPadGo 8s ease-in-out 1s infinite", opacity: 0 } },
-      h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } }, nanaPadBear(h, "bfPadPost 8s ease-in-out 1s infinite")),
-      h("text", { x: 2, y: -18, textAnchor: "middle", fontSize: 6, fill: "#e0607f", style: { animation: "bfPadHeart 8s ease-out 1s infinite", opacity: 0 } }, "♥")) : null,
+    // 有新信：帕丁顿从右边烟囱冒出来，3.6 秒飘到门口，把信投进邮筒，然后留在邮筒边轻轻晃着等
+    newLetter ? h("g", { style: { pointerEvents: "none", animation: "bfPadGo 3.6s ease-in-out forwards, bfPadWait 2.4s ease-in-out 3.6s infinite", opacity: 0 } },
+      h("g", { style: { filter: "drop-shadow(0 1.5px 1.5px rgba(0,0,0,0.3))" } }, nanaPadBear(h, "bfPadPost 4.5s ease-in-out forwards")),
+      h("text", { x: 2, y: -18, textAnchor: "middle", fontSize: 6, fill: "#e0607f", style: { animation: "bfPadHeart 5.2s ease-out forwards", opacity: 0 } }, "♥")) : null,
     // 🔔 安心：门边墙上伸出一根黑铁支架，挂着一只铜铃；有没听的留言，铃就自己摇、冒电波和音符
     h("g", { "data-k": "carebell", onClick: nanaGoCare, transform: "translate(12 0) translate(281 274) scale(0.7) translate(-281 -274)", style: { cursor: "pointer" } },
       h("rect", { x: 298, y: 270, width: 4, height: 9, rx: 1, fill: "#141821" }),
@@ -28149,9 +28161,10 @@ function BakerFacade(_refBF) {
       "@keyframes hpSwirl{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}50%{transform:translate(8px,-18px)}100%{opacity:0;transform:translate(-6px,-40px)}}" +
       "@keyframes hpHue{0%,100%{opacity:.8;filter:hue-rotate(0deg)}50%{opacity:1;filter:hue-rotate(70deg)}}" +
       "@keyframes bfTruckIn{0%{transform:translateX(-130px)}100%{transform:translateX(0)}}@keyframes bfTruckIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.8px)}}@keyframes bfWave{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(25deg)}}" +
-      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}5%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}18%{transform:translate(288px,30px) scale(.9) rotate(9deg)}34%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}50%{transform:translate(216px,164px) scale(.9) rotate(8deg)}64%{transform:translate(186px,228px) scale(.85) rotate(-5deg)}72%{transform:translate(178px,306px) scale(.8) rotate(0deg)}90%{transform:translate(178px,306px) scale(.8) rotate(0deg);opacity:1}96%{transform:translate(178px,300px) scale(.8);opacity:0}100%{transform:translate(178px,300px) scale(.8);opacity:0}}" +
-      "@keyframes bfPadPost{0%,74%{transform:translate(0,0) scale(1);opacity:1}80%{transform:translate(-4px,4px) scale(.85);opacity:1}84%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
-      "@keyframes bfPadHeart{0%,82%{transform:translateY(0);opacity:0}85%{opacity:1}94%{transform:translateY(-8px);opacity:0}100%{opacity:0}}" +
+      "@keyframes bfPadGo{0%{transform:translate(306px,26px) scale(.25) rotate(0deg);opacity:0}7%{transform:translate(306px,4px) scale(.8) rotate(-6deg);opacity:1}25%{transform:translate(288px,30px) scale(.9) rotate(9deg)}47%{transform:translate(252px,96px) scale(.9) rotate(-8deg)}69%{transform:translate(216px,164px) scale(.9) rotate(8deg)}89%{transform:translate(182px,228px) scale(.85) rotate(-5deg)}100%{transform:translate(172px,306px) scale(.8) rotate(0deg);opacity:1}}" +
+      "@keyframes bfPadWait{0%,100%{transform:translate(172px,306px) scale(.8) rotate(0deg);opacity:1}50%{transform:translate(172px,303px) scale(.8) rotate(-4deg);opacity:1}}" +
+      "@keyframes bfPadPost{0%,80%{transform:translate(0,0) scale(1);opacity:1}90%{transform:translate(-4px,4px) scale(.85);opacity:1}96%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
+      "@keyframes bfPadHeart{0%,84%{transform:translateY(0);opacity:0}88%{opacity:1}100%{transform:translateY(-8px);opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
       "@keyframes bfBellRing{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}35%{transform:rotate(-12deg)}55%{transform:rotate(8deg)}75%{transform:rotate(-5deg)}}" +
       "@keyframes bfBellIdle{0%,90%,100%{transform:rotate(0)}94%{transform:rotate(4deg)}97%{transform:rotate(-3deg)}}" +
