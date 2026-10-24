@@ -9133,7 +9133,37 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,95,210,0.6)", tapeB: "rgba(95,243,255,0.55)",
     stripes: ["#ff5fd2", "#140f33", "#5ff3ff", "#140f33"],
     wash1: "rgba(255,95,210,0.2)", wash2: "rgba(95,243,255,0.16)", footE: "🪙",
-    pat: "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px), " + nanaPat("👾", "🕹️", 58, 0.2), rule: "grid" }
+    pat: "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px), " + nanaPat("👾", "🕹️", 58, 0.2), rule: "grid" },
+  // 🎮 像素红白机：奶白机身底 + 深红像素点阵 + 小方格，落款一颗像素小爱心
+  { id: "fc", name: "红白机信笺", e: "🎮", pick: 18, use: "来一局双人游戏", css: "linear-gradient(160deg,#f4ecdc,#c8323a)",
+    out1: "#efe4cc", out2: "#c8323a", p1: "#f6efe0", p2: "#ece2cc",
+    line: "rgba(200,50,58,0.18)", margin: "rgba(200,50,58,0.5)",
+    header: "#b0262e", date: "rgba(60,60,64,0.85)", text: "#2e2e33", foot: "rgba(176,38,46,0.9)",
+    stamp: "🎮", stampBg: "#f6efe0", stampBd: "rgba(200,50,58,0.85)", wm: "👾", wmA: 0.07,
+    tapeA: "rgba(200,50,58,0.55)", tapeB: "rgba(60,60,64,0.35)",
+    stripes: ["#c8323a", "#f6efe0", "#3c3c40", "#f6efe0"],
+    wash1: "rgba(200,50,58,0.1)", wash2: "rgba(236,226,204,0.3)", footE: "❤️",
+    pat: nanaDust("#c8323a", 60, 0.12, 30), rule: "grid" },
+  // 🧸 抓娃娃机：粉色玻璃柜，淡淡铺着小熊小兔，落款是抓上来的那只
+  { id: "claw", name: "娃娃机信笺", e: "🧸", pick: 19, use: "这次一定抓到", css: "linear-gradient(160deg,#ffe3f0,#ffb3d6)",
+    out1: "#ffe9f3", out2: "#ffb3d6", p1: "#fff3f8", p2: "#ffd9ea",
+    line: "rgba(230,90,150,0.26)", margin: "rgba(230,90,150,0.45)",
+    header: "#d6407e", date: "rgba(200,70,130,0.85)", text: "#6a2448", foot: "rgba(214,64,126,0.85)",
+    stamp: "🧸", stampBg: "#fff3f8", stampBd: "rgba(230,90,150,0.8)", wm: "🐰", wmA: 0.09,
+    tapeA: "rgba(255,179,214,0.6)", tapeB: "rgba(170,225,255,0.55)",
+    stripes: ["#e65a96", "#fff3f8", "#8fd3f5", "#fff3f8"],
+    wash1: "rgba(170,225,255,0.3)", wash2: "rgba(255,217,234,0.35)", footE: "🧸",
+    pat: nanaPat("🧸", "🐰", 60, 0.13), rule: "dot" },
+  // 🟩 Game Boy 绿屏：经典四色橄榄绿，深绿字，像素方格，落款一颗像素星
+  { id: "gb", name: "掌机绿屏信笺", e: "👾", pick: 20, use: "PRESS START", css: "linear-gradient(160deg,#c4cf8a,#4f6b2a)",
+    out1: "#b6c47c", out2: "#6f8a3a", p1: "#c9d48e", p2: "#a9b96a",
+    line: "rgba(48,72,24,0.18)", margin: "rgba(48,72,24,0.4)",
+    header: "#1f3a12", date: "rgba(31,58,18,0.85)", text: "#1f3a12", foot: "rgba(31,58,18,0.85)",
+    stamp: "👾", stampBg: "#b6c47c", stampBd: "rgba(31,58,18,0.75)", wm: "⭐", wmA: 0.08,
+    tapeA: "rgba(79,107,42,0.5)", tapeB: "rgba(201,212,142,0.8)",
+    stripes: ["#304818", "#c9d48e", "#6f8a3a", "#c9d48e"],
+    wash1: "rgba(255,255,220,0.18)", wash2: "rgba(79,107,42,0.12)", footE: "⭐",
+    pat: "repeating-linear-gradient(180deg, rgba(31,58,18,0.05) 0 1px, transparent 1px 3px)", rule: "grid" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
