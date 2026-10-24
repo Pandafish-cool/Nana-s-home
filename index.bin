@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-327";
+var NANA_VER = "v2026.8.2-328";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8927,7 +8927,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
     wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
-  { id: "night", name: "星夜信笺", e: "🌌", pick: 12, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
+  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 12, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
     out1: "#b6a9c8", out2: "#9078ac", p1: "#3f396e", p2: "#302b58",
     line: "rgba(121,112,194,0.3)", margin: "rgba(121,112,194,0.45)",
     header: "#b4afdf", date: "rgba(180,175,223,0.85)", text: "#e2e0f0", foot: "rgba(180,175,223,0.8)",
@@ -9123,7 +9123,27 @@ var NANA_LETTER_THEMES = [
     stamp: "🚏", stampBg: "#fff8f6", stampBd: "rgba(215,105,85,0.85)", wm: "🚌", wmA: 0.09,
     tapeA: "rgba(235,120,95,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#c33a28", "#fffbf9", "#2b3a52", "#fffbf9"],
-    wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" , pat: nanaPat("🚌", "🚏", 58, 0.07) , rule: "line" }
+    wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" , pat: nanaPat("🚌", "🚏", 58, 0.07) , rule: "line" },
+  // 🕹️ 电玩城信笺：深紫蓝的街机屏幕底 + 霓虹粉标题 + 霓虹青方格线 + 一层 CRT 扫描线，纸上淡淡铺着 👾🕹️，落款是一枚游戏币
+  { id: "arcade", dark: 1, name: "电玩城信笺", e: "🕹️", pick: 17, use: "一起去电玩城吧", css: "linear-gradient(160deg,#2a1a5e,#ff5fd2)",
+    out1: "#5ff3ff", out2: "#ff5fd2", p1: "#22184f", p2: "#140f33",
+    line: "rgba(95,243,255,0.2)", margin: "rgba(255,95,210,0.5)",
+    header: "#ff6fd8", date: "rgba(95,243,255,0.92)", text: "#eef7ff", foot: "rgba(255,214,90,0.92)",
+    stamp: "🕹️", stampBg: "#2a1a5e", stampBd: "rgba(95,243,255,0.85)", wm: "👾", wmA: 0.14,
+    tapeA: "rgba(255,95,210,0.6)", tapeB: "rgba(95,243,255,0.55)",
+    stripes: ["#ff5fd2", "#140f33", "#5ff3ff", "#140f33"],
+    wash1: "rgba(255,95,210,0.2)", wash2: "rgba(95,243,255,0.16)", footE: "🪙",
+    pat: "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px), " + nanaPat("👾", "🕹️", 58, 0.2), rule: "grid" },
+  // 🍋 晴天柠檬：明亮柠檬黄 + 白色宽条纹，落款一片柠檬（比呼叫信笺的橙黄更亮更冷）
+  { id: "lemon", name: "晴天柠檬信笺", e: "🍋", pick: 18, use: "天气好得冒泡", css: "linear-gradient(160deg,#fffbd0,#fff06a)",
+    out1: "#fff6a8", out2: "#ffe94a", p1: "#fffde6", p2: "#fff6a8",
+    line: "rgba(200,170,0,0.3)", margin: "rgba(200,170,0,0.5)",
+    header: "#9a7c00", date: "rgba(140,115,0,0.88)", text: "#4d4200", foot: "rgba(154,124,0,0.88)",
+    stamp: "🍋", stampBg: "#fffde6", stampBd: "rgba(200,170,0,0.8)", wm: "☀️", wmA: 0.1,
+    tapeA: "rgba(255,233,74,0.7)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#f2cf00", "#fffde6", "#fff06a", "#fffde6"],
+    wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,240,106,0.3)", footE: "🍋",
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
@@ -9664,7 +9684,7 @@ function ReadingRoomActivity(_refRR) {
   var paperStyle = function (t) {
     return {
       background: ruleBg(t) + marginBg(t) + (t.pat ? (t.pat + ", ") : "") + "radial-gradient(circle at 100% 0%, " + t.wash1 + ", transparent 42%), radial-gradient(circle at 0% 100%, " + t.wash2 + ", transparent 40%), linear-gradient(180deg," + t.p1 + "," + t.p2 + ")",
-      borderRadius: 10, border: "1px solid " + (t.id === "night" ? "rgba(150,140,215,0.5)" : "rgba(228,178,158,0.55)"), boxShadow: "0 12px 26px rgba(90,65,80,0.22), inset 0 0 0 1px rgba(255,255,255," + (t.id === "night" ? "0.08" : "0.6") + ")", overflow: "hidden"
+      borderRadius: 10, border: "1px solid " + (t.dark ? "rgba(150,140,215,0.5)" : "rgba(228,178,158,0.55)"), boxShadow: "0 12px 26px rgba(90,65,80,0.22), inset 0 0 0 1px rgba(255,255,255," + (t.dark ? "0.08" : "0.6") + ")", overflow: "hidden"
     };
   };
   // 和纸胶带（主题色斜条纹）
@@ -9814,7 +9834,7 @@ function ReadingRoomActivity(_refRR) {
                     h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
                     h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuPics(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
-                    mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
+                    mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.dark ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
                 (function () {
                   var pus = nanaPuPics(n.pu);
                   if (!pus.length) return null;
@@ -9879,7 +9899,7 @@ function ReadingRoomActivity(_refRR) {
                 h("div", { style: { color: nt.date, fontSize: "0.62rem", fontFamily: HAND, lineHeight: "28px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, "🍂 " + n.d),
                 h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
                   h("button", { onClick: function () { if (sharingId) return; setShareFor(n.id); }, title: "把这张小笺做成图片送出去", style: { border: "none", borderRadius: 999, padding: "6px 12px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.82rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", whiteSpace: "nowrap", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
-                  h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: delId === n.id ? "#d05050" : (nt.id === "night" ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "4px 9px" : "4px 8px" } }, delId === n.id ? "再点一下撕掉" : "✕"))),
+                  h("button", { onClick: function () { delNote(n.id); }, style: { border: "none", background: delId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: delId === n.id ? "#d05050" : (nt.dark ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: delId === n.id ? "0.6rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: delId === n.id ? "4px 9px" : "4px 8px" } }, delId === n.id ? "再点一下撕掉" : "✕"))),
               n.p && h("div", { style: { position: "relative", zIndex: 1, display: "inline-block", background: "#fff", padding: "5px 5px 15px", boxShadow: "0 5px 14px rgba(60,40,50,0.32)", transform: "rotate(" + (i % 2 ? 2.2 : -2.2) + "deg)", borderRadius: 3, margin: "2px 0 6px" } },
                 h(NanaPhoto, { pid: n.p, onClick: function () { setLightbox(n.p); }, style: { width: phSize(n.ps).w, height: phSize(n.ps).h, objectFit: "cover", display: "block", borderRadius: 2, cursor: "pointer" } })),
               n.t ? h("div", { style: { fontFamily: HAND, fontSize: "0.92rem", color: nt.text, lineHeight: "28px", whiteSpace: "pre-wrap", wordBreak: "break-word" } }, n.t) : null,
@@ -9912,10 +9932,10 @@ function ReadingRoomActivity(_refRR) {
         h("div", { style: { display: "flex", flexWrap: "wrap", gap: 10 } },
           NANA_LETTER_THEMES.map(function (t) {
             return h("div", { key: t.id, onClick: function () { doShare(t); }, style: { width: "calc(50% - 5px)", boxSizing: "border-box", cursor: "pointer", borderRadius: 16, overflow: "hidden", border: "1.5px solid rgba(180,140,130,0.3)", background: t.css, boxShadow: "0 4px 12px rgba(140,100,100,0.15)" } },
-              h("div", { style: { height: 6, background: "repeating-linear-gradient(45deg," + t.stripes[0] + " 0 8px," + (t.id === "night" ? "#3a3468" : "#fff") + " 8px 14px," + t.stripes[2] + " 14px 22px," + (t.id === "night" ? "#3a3468" : "#fff") + " 22px 28px)" } }),
+              h("div", { style: { height: 6, background: "repeating-linear-gradient(45deg," + t.stripes[0] + " 0 8px," + (t.dark ? "#3a3468" : "#fff") + " 8px 14px," + t.stripes[2] + " 14px 22px," + (t.dark ? "#3a3468" : "#fff") + " 22px 28px)" } }),
               h("div", { style: { padding: "13px 10px 12px", textAlign: "center" } },
                 h("div", { style: { fontSize: "1.6rem" } }, t.e),
-                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", marginTop: 5, color: t.id === "night" ? "#f0eaff" : t.header } }, t.name)));
+                h("div", { style: { fontWeight: 800, fontSize: "0.82rem", marginTop: 5, color: t.dark ? "#f0eaff" : t.header } }, t.name)));
           })),
         h("button", { onClick: function () { setShareFor(null); }, style: { display: "block", width: "100%", marginTop: 14, border: "none", borderRadius: 13, padding: "12px 8px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.84rem", cursor: "pointer", background: "rgba(170,140,150,0.14)", color: "#8a6a72" } }, "先不发"))),
     lightbox && h(NanaLightbox, String(lightbox).indexOf("http") === 0 ? { src: lightbox, onClose: function () { setLightbox(null); } } : { pid: lightbox, onClose: function () { setLightbox(null); } }));
