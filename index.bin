@@ -9155,48 +9155,8 @@ var NANA_LETTER_THEMES = [
     stripes: ["#eb6946", "#fff3ec", "#ffc4a8", "#fff3ec"],
     wash1: "rgba(255,255,255,0.45)", wash2: "rgba(255,180,150,0.3)", footE: "🧸",
     pat: nanaPat("🧸", "🐰", 60, 0.13), rule: "dot" },
-  // 🕯️ 贝克街深夜：墨蓝藏青底 + 金色细横线 + 星点，落款一盏煤气灯（正蓝，和星夜的紫分开）
-  { id: "ink", dark: 1, name: "贝克街深夜信笺", e: "🕯️", pick: 21, use: "贝克街的灯还亮着", css: "linear-gradient(160deg,#1c2b4a,#0f1a33)",
-    out1: "#2a3d63", out2: "#c9a45a", p1: "#1e2d4d", p2: "#111c36",
-    line: "rgba(201,164,90,0.26)", margin: "rgba(201,164,90,0.55)",
-    header: "#e3c27a", date: "rgba(227,194,122,0.85)", text: "#eef1f8", foot: "rgba(227,194,122,0.85)",
-    stamp: "🕯️", stampBg: "#1e2d4d", stampBd: "rgba(201,164,90,0.85)", wm: "✦", wmA: 0.12,
-    tapeA: "rgba(201,164,90,0.55)", tapeB: "rgba(30,45,77,0.6)",
-    stripes: ["#c9a45a", "#111c36", "#2a3d63", "#111c36"],
-    wash1: "rgba(201,164,90,0.12)", wash2: "rgba(90,120,180,0.14)", footE: "🕯️",
-    pat: nanaDust("#e3c27a", 40, 0.18, 26), rule: "line" },
-  // 🍷 壁炉边：深酒红勃艮第底 + 奶白字 + 淡淡的格纹，落款一杯热红酒
-  { id: "wine", dark: 1, name: "壁炉边信笺", e: "🍷", pick: 22, use: "冬天窝在壁炉边", css: "linear-gradient(160deg,#6e1f2e,#3e0f1a)",
-    out1: "#8a2c3d", out2: "#e8c9a0", p1: "#6a1e2c", p2: "#4a1220",
-    line: "rgba(240,210,170,0.14)", margin: "rgba(240,210,170,0.45)",
-    header: "#f3d8b0", date: "rgba(243,216,176,0.85)", text: "#fbefe4", foot: "rgba(243,216,176,0.85)",
-    stamp: "🍷", stampBg: "#5a1825", stampBd: "rgba(243,216,176,0.8)", wm: "🔥", wmA: 0.08,
-    tapeA: "rgba(243,216,176,0.55)", tapeB: "rgba(110,31,46,0.6)",
-    stripes: ["#e8c9a0", "#4a1220", "#a33a4e", "#4a1220"],
-    wash1: "rgba(255,170,100,0.14)", wash2: "rgba(243,216,176,0.08)", footE: "🍷",
-    pat: "repeating-linear-gradient(90deg, rgba(243,216,176,0.06) 0 2px, transparent 2px 22px), repeating-linear-gradient(0deg, rgba(243,216,176,0.06) 0 2px, transparent 2px 22px)", rule: "none" },
-  // 🌿 温室花房：森林墨绿底 + 淡金线 + 蕨叶底纹（现有绿都偏浅偏灰，这张是深而饱和的绿）
-  { id: "fern", dark: 1, name: "温室花房信笺", e: "🌿", pick: 23, use: "花房里很暖和", css: "linear-gradient(160deg,#1f4a35,#0f2a1d)",
-    out1: "#2c5e44", out2: "#d6c27a", p1: "#1f4a35", p2: "#143826",
-    line: "rgba(214,194,122,0.22)", margin: "rgba(214,194,122,0.5)",
-    header: "#e6d48c", date: "rgba(230,212,140,0.85)", text: "#eef6ef", foot: "rgba(230,212,140,0.85)",
-    stamp: "🌿", stampBg: "#1f4a35", stampBd: "rgba(214,194,122,0.85)", wm: "🌿", wmA: 0.1,
-    tapeA: "rgba(214,194,122,0.5)", tapeB: "rgba(44,94,68,0.6)",
-    stripes: ["#d6c27a", "#143826", "#3f7d5c", "#143826"],
-    wash1: "rgba(150,210,160,0.14)", wash2: "rgba(214,194,122,0.08)", footE: "🌱",
-    pat: nanaPat("🌿", "🍃", 62, 0.1), rule: "line" },
-  // 🎬 默片电影：炭黑底白字，左右两条胶片孔，落款一块场记板
-  { id: "film", dark: 1, name: "默片电影信笺", e: "🎬", pick: 24, use: "今天像一部老电影", css: "linear-gradient(160deg,#2a2a2a,#0e0e0e)",
-    out1: "#3a3a3a", out2: "#f2f2f2", p1: "#232323", p2: "#141414",
-    line: "rgba(255,255,255,0.1)", margin: "rgba(255,255,255,0.35)",
-    header: "#ffffff", date: "rgba(220,220,220,0.8)", text: "#f2f2f2", foot: "rgba(220,220,220,0.8)",
-    stamp: "🎬", stampBg: "#1a1a1a", stampBd: "rgba(255,255,255,0.7)", wm: "🎞️", wmA: 0.08,
-    tapeA: "rgba(255,255,255,0.45)", tapeB: "rgba(40,40,40,0.7)",
-    stripes: ["#f2f2f2", "#0e0e0e", "#7a7a7a", "#0e0e0e"],
-    wash1: "rgba(255,255,255,0.08)", wash2: "rgba(255,255,255,0.04)", footE: "🎬",
-    pat: "radial-gradient(circle at 9px 50%, rgba(255,255,255,0.55) 0 3px, transparent 3.4px) 0 0 / 100% 16px no-repeat, linear-gradient(90deg, rgba(255,255,255,0.0) 0 18px, transparent 18px), repeating-linear-gradient(180deg, transparent 0 5px, rgba(255,255,255,0.5) 5px 11px, transparent 11px 16px) 6px 0 / 7px 100% no-repeat, repeating-linear-gradient(180deg, transparent 0 5px, rgba(255,255,255,0.5) 5px 11px, transparent 11px 16px) calc(100% - 6px) 0 / 7px 100% no-repeat", rule: "none" },
   // 🍋 晴天柠檬：明亮柠檬黄 + 白色宽条纹，落款一片柠檬（比呼叫信笺的橙黄更亮更冷）
-  { id: "lemon", name: "晴天柠檬信笺", e: "🍋", pick: 25, use: "天气好得冒泡", css: "linear-gradient(160deg,#fffbd0,#fff06a)",
+  { id: "lemon", name: "晴天柠檬信笺", e: "🍋", pick: 20, use: "天气好得冒泡", css: "linear-gradient(160deg,#fffbd0,#fff06a)",
     out1: "#fff6a8", out2: "#ffe94a", p1: "#fffde6", p2: "#fff6a8",
     line: "rgba(200,170,0,0.3)", margin: "rgba(200,170,0,0.5)",
     header: "#9a7c00", date: "rgba(140,115,0,0.88)", text: "#4d4200", foot: "rgba(154,124,0,0.88)",
@@ -9204,17 +9164,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,233,74,0.7)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#f2cf00", "#fffde6", "#fff06a", "#fffde6"],
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,240,106,0.3)", footE: "🍋",
-    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
-  // ☂️ 伦敦下雨天：冷雾灰银底 + 斜斜的雨丝，落款一把伞
-  { id: "rain", name: "伦敦雨天信笺", e: "☂️", pick: 26, use: "伦敦又下雨了", css: "linear-gradient(160deg,#eef0f3,#b9c0c9)",
-    out1: "#e1e5ea", out2: "#a9b2bd", p1: "#f2f4f6", p2: "#dde2e8",
-    line: "rgba(90,105,125,0.26)", margin: "rgba(90,105,125,0.45)",
-    header: "#3f4c5e", date: "rgba(63,76,94,0.85)", text: "#2c3542", foot: "rgba(63,76,94,0.85)",
-    stamp: "☂️", stampBg: "#f2f4f6", stampBd: "rgba(90,105,125,0.75)", wm: "💧", wmA: 0.08,
-    tapeA: "rgba(169,178,189,0.6)", tapeB: "rgba(255,255,255,0.85)",
-    stripes: ["#5a697d", "#f2f4f6", "#a9b2bd", "#f2f4f6"],
-    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(150,165,185,0.2)", footE: "☂️",
-    pat: "repeating-linear-gradient(105deg, transparent 0 18px, rgba(90,110,140,0.12) 18px 19px, transparent 19px 34px)", rule: "line" }
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
