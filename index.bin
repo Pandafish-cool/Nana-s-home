@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-326";
+var NANA_VER = "v2026.8.2-327";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8174,19 +8174,42 @@ var nanaAuthorById = function (id) {
   for (var i = 0; i < NANA_AUTHORS.length; i++) { if (NANA_AUTHORS[i].id === id) return NANA_AUTHORS[i]; }
   return NANA_AUTHORS[0];
 };
-var nanaSyncReq = function (method, path, body, cb) {
+// 网络层失败（iPhone 上是「Load failed」，别的浏览器是「Failed to fetch」）：多半是手机拿一条已经断掉的旧连接去发，
+// 信号再好也会碰上，马上重发一般就通了。所以这类失败自动再试两次（0.7 秒、1.8 秒后）。
+// 寄信（POST 带 id）重试之前先问一句「这封到了没有」：第一下其实送到了、只是回执丢了，就直接算寄成功，不会寄出两封。
+var nanaNetErr = function (err) { return !!err && (err.name === "TypeError" || /Load failed|Failed to fetch|NetworkError|network connection was lost|Network request failed/i.test(String(err.message || err))); };
+var nanaSyncReq = function (method, path, body, cb, attempt) {
+  attempt = attempt || 0;
   try {
     var headers = { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "application/json" };
     if (method === "POST") headers["Prefer"] = "return=minimal";
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 12000) : null;
-    var done = function (err, data) { if (timer) { clearTimeout(timer); timer = null; } cb(err, data); };
+    var fin = false;
+    var done = function (err, data) { if (fin) return; fin = true; if (timer) { clearTimeout(timer); timer = null; } cb(err, data); };
+    var retry = function () {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (fin) return; fin = true;
+      var again = function () { nanaSyncReq(method, path, body, cb, attempt + 1); };
+      setTimeout(function () {
+        if (method !== "POST" || !body || !body.id) return again();
+        var tbl = String(path).split("?")[0];
+        nanaSyncReq("GET", tbl + "?select=id&id=eq." + encodeURIComponent(body.id), null, function (e2, rows) {
+          if (!e2 && rows && rows.length) return cb(null);       // 第一下其实到了
+          again();
+        }, 2);
+      }, attempt ? 1800 : 700);
+    };
     fetch(NANA_SYNC.url + "/rest/v1/" + path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined, signal: ctrl ? ctrl.signal : undefined })
       .then(function (res) {
         if (!res.ok) { return res.text().then(function () { done(new Error("HTTP " + res.status)); }, function () { done(new Error("HTTP " + res.status)); }); }
         if (method === "GET") { return res.json().then(function (j) { done(null, j); }, function (e2) { done(e2); }); }
         done(null);
-      })["catch"](function (err) { done(err && err.name === "AbortError" ? new Error("连接超时，稍后点刷新再试") : err); });
+      })["catch"](function (err) {
+        if (fin) return;
+        if (nanaNetErr(err) && attempt < 2) return retry();
+        done(err && err.name === "AbortError" ? new Error("连接超时，稍后点刷新再试") : (nanaNetErr(err) ? new Error("连不上服务器（已自动重试三次）") : err));
+      });
   } catch (err) { cb(err); }
 };
 // 以前只取最新 200 封（limit=200）。呼叫、投喂申请也都写进这张表，
@@ -8303,7 +8326,7 @@ var nanaSharedUpload = function (dataUrl, id, cb) {
       if (utimer) clearTimeout(utimer);
       if (!res.ok) return cb(new Error("HTTP " + res.status));
       cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
-    })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
+    })["catch"](function (err) { if (utimer) clearTimeout(utimer); if (nanaNetErr(err) && (cb.tries || 0) < 2) { cb.tries = (cb.tries || 0) + 1; return setTimeout(function () { nanaSharedUpload(dataUrl, id, cb); }, cb.tries === 1 ? 700 : 1800); } cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
 };
 // ── 🎙 声音：上传到和照片同一个桶，听过一次就存本机，之后离线也能放 ──
@@ -8321,7 +8344,7 @@ var nanaVoUpload = function (blob, id, ext, mime, cb) {
       if (utimer) clearTimeout(utimer);
       if (!res.ok) return cb(new Error("HTTP " + res.status));
       cb(null, NANA_SYNC.url + "/storage/v1/object/public/" + path);
-    })["catch"](function (err) { if (utimer) clearTimeout(utimer); cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
+    })["catch"](function (err) { if (utimer) clearTimeout(utimer); if (nanaNetErr(err) && (cb.tries || 0) < 2) { cb.tries = (cb.tries || 0) + 1; return setTimeout(function () { nanaVoUpload(blob, id, ext, mime, cb); }, cb.tries === 1 ? 700 : 1800); } cb(err && err.name === "AbortError" ? new Error("上传超时") : err); });
   } catch (err) { cb(err); }
 };
 // 拿一段声音：先看本机，没有再下，下完存起来。返回能直接丢进 <audio> 的 dataURL
