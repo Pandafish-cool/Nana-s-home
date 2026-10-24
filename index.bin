@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-330";
+var NANA_VER = "v2026.8.2-331";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8238,6 +8238,7 @@ var nanaSharedFetch = function (force, cb) {
   var finish = function (err, rows) {
     NANA_SHARED_BUSY = 0;
     if (!err) {
+      try { var have = {}; (rows || []).forEach(function (r) { if (r && r.id) have[r.id] = 1; }); nanaLetterOutList().forEach(function (x) { if (x && x.note && x.note.id && !have[x.note.id]) rows = (rows || []).concat([x.note]); }); } catch (_) {}
       rows = nanaSortNotes(rows);
       NANA_SHARED_AT = Date.now(); NANA_SHARED_ROWS = rows;
       // 本机缓存整份信（以前只存最新 1000 封，信一多，老信就在下次打开时掉出去了）。
@@ -8305,6 +8306,42 @@ var nanaSharedList = function (cb) {
   step();
 };
 var nanaSharedAdd = function (note, cb) { nanaSyncReq("POST", "shared_notes", note, cb); };
+// ── 📮 待寄箱：寄信碰上网络断（国内连海外数据库，常常一断就是几秒到几十秒），信不丢，先放进本机待寄箱，
+// 每 20 秒、网恢复、切回小屋时自动再寄；寄成了才从待寄箱里拿掉。同一封用同一个 id，重复寄服务器会回 409，当成已寄到。
+var NANA_LETTER_OUT_KEY = "nana-note-outbox";
+var nanaLetterOutList = function () { try { var a = JSON.parse(localStorage.getItem(NANA_LETTER_OUT_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (_) { return []; } };
+var nanaLetterOutSave = function (a) { try { localStorage.setItem(NANA_LETTER_OUT_KEY, JSON.stringify(a)); } catch (_) {} try { window.dispatchEvent(new Event("nana-outbox")); } catch (_) {} };
+var nanaLetterOutAdd = function (note, vrow) { var a = nanaLetterOutList().filter(function (x) { return x && x.note && x.note.id !== note.id; }); a.push({ note: note, vrow: vrow || null, at: Date.now() }); nanaLetterOutSave(a); };
+var nanaLetterOutIds = function () { var m = {}; nanaLetterOutList().forEach(function (x) { if (x && x.note && x.note.id) m[x.note.id] = 1; }); return m; };
+var nanaIsNetFail = function (err) { return !!err && (nanaNetErr(err) || /连不上服务器|连接超时|等太久/.test(String(err.message || err))); };
+var NANA_LETTER_OUT_BUSY = 0;
+var nanaLetterOutFlush = function () {
+  if (NANA_LETTER_OUT_BUSY) return;
+  var list = nanaLetterOutList(); if (!list.length) return;
+  NANA_LETTER_OUT_BUSY = 1;
+  var i = 0;
+  var next = function () {
+    if (i >= list.length) { NANA_LETTER_OUT_BUSY = 0; return; }
+    var it = list[i++];
+    nanaSyncReq("POST", "shared_notes", it.note, function (err) {
+      if (err && !/HTTP 409/.test(String(err.message || err))) {
+        if (nanaIsNetFail(err)) { NANA_LETTER_OUT_BUSY = 0; return; }   // 还是连不上，这一轮先停，等下一次
+        return next();                                           // 别的错：留着，下一封接着寄
+      }
+      nanaLetterOutSave(nanaLetterOutList().filter(function (x) { return !(x && x.note && x.note.id === it.note.id); }));
+      if (it.vrow) nanaPackAdd(it.vrow, function () {});
+      try { NANA_SHARED_AT = 0; nanaSharedFetch(true); } catch (_) {}
+      next();
+    });
+  };
+  next();
+};
+try {
+  setInterval(function () { if (!document.hidden) nanaLetterOutFlush(); }, 20000);
+  window.addEventListener("online", function () { setTimeout(nanaLetterOutFlush, 800); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(nanaLetterOutFlush, 1500); });
+  setTimeout(nanaLetterOutFlush, 4000);
+} catch (_) {}
 var nanaSharedDel = function (id, cb) { nanaSyncReq("DELETE", "shared_notes?id=eq." + encodeURIComponent(id), null, cb); };
 // 共享照片：压缩图上传到 Supabase Storage（公开桶 notes）
 var nanaSharedUpload = function (dataUrl, id, cb) {
@@ -9576,6 +9613,9 @@ function ReadingRoomActivity(_refRR) {
     };
     next();
   };
+  var _som = useState(""); var sharedOutMsg = _som[0], setSharedOutMsg = _som[1];
+  var _oid = useState(nanaLetterOutIds); var outIds = _oid[0], setOutIds = _oid[1];
+  useEffect(function () { var f = function () { setOutIds(nanaLetterOutIds()); }; window.addEventListener("nana-outbox", f); return function () { window.removeEventListener("nana-outbox", f); }; }, []);
   var postSharedNow = function () {
     var t = (sharedDraft || "").trim(); if ((!t && !sharedDraftPs.length && !shVo) || sharedPosting) return;
     var dt = new Date();
@@ -9585,10 +9625,15 @@ function ReadingRoomActivity(_refRR) {
     setSharedPosting(true);
     nanaSharedAdd(note, function (err) {
       setSharedPosting(false);
-      if (err) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
-      setSharedErr(null);
+      var queued = false;
+      if (err) {
+        if (!nanaIsNetFail(err)) { setSharedErr(String((err && err.message) || err) + " · 没寄出去，再试一次？"); return; }
+        var vq = shVo ? { id: "vo-" + dt.getTime() + Math.floor(Math.random() * 90), who: JSON.stringify({ vo: 1, u: shVo, d: nanaVoSecs(shVo), a: myAuthor, ts: dt.getTime() }) } : null;
+        nanaLetterOutAdd(note, vq); queued = true;
+        setSharedErr(null); setSharedOutMsg("网有点不稳，信先放进待寄箱了 📮 网一通会自动寄出，不用再点"); setTimeout(function () { setSharedOutMsg(""); }, 7000);
+      } else setSharedErr(null);
       setSharedNotes(function (prev) { var next = nanaSortNotes([note].concat(prev.filter(function (x) { return x.id !== note.id; }))); saveSharedCache(next); NANA_SHARED_ROWS = next; return next; });
-      if (shVo) {                                        // 同一段声音也进「短波」那个架子
+      if (shVo && !queued) {                                        // 同一段声音也进「短波」那个架子
         var ts = dt.getTime();
         // 顺手放到「短波」那个架子上。以前这里失败是完全不吭声的，现在至少自己重试两次。
         var vrow = { id: "vo-" + ts + Math.floor(Math.random() * 90), who: JSON.stringify({ vo: 1, u: shVo, d: nanaVoSecs(shVo), a: myAuthor, ts: ts }) };
@@ -9789,6 +9834,7 @@ function ReadingRoomActivity(_refRR) {
                   style: { flexShrink: 0, border: "none", background: "none", color: "rgba(150,120,110,0.85)", fontFamily: "inherit", fontWeight: 800, fontSize: "0.68rem", cursor: "pointer" } }, "重录")) : null)),
           h("button", { onClick: postShared, disabled: (!((sharedDraft || "").trim()) && !sharedDraftPs.length && !shVo) || sharedPosting || sharedUploading || shVoUp || shRec, style: { position: "absolute", right: 10, bottom: -16, border: "none", borderRadius: 999, padding: "10px 20px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.8rem", cursor: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "pointer" : "default", background: ((((sharedDraft || "").trim() || sharedDraftPs.length || shVo) && !sharedPosting && !sharedUploading && !shVoUp && !shRec) ? 1 : 0) ? "linear-gradient(135deg,#f27a9a,#d9537a)" : "rgba(180,150,120,0.3)", color: "#fff", boxShadow: "0 6px 14px rgba(210,90,120,0.35)", zIndex: 2 } }, sharedPosting ? "✉️ 寄往贝克街…" : sharedUploading ? "⏫ 照片还在传…" : "📮 寄往 221B")),
         shNote ? h("div", { style: { marginTop: 26, background: "rgba(31,111,104,0.1)", borderRadius: 12, padding: "10px 12px", color: "#1a5c56", fontSize: "0.7rem", fontWeight: 700, textAlign: "center", lineHeight: 1.55 } }, shNote) : null,
+        sharedOutMsg && h("div", { style: { marginTop: 26, background: "rgba(240,180,60,0.1)", border: "1px solid rgba(220,160,50,0.35)", borderRadius: 12, padding: "10px 12px", color: "#9a6a12", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, sharedOutMsg),
         sharedErr && h("div", { style: { marginTop: 26, background: "rgba(230,100,100,0.08)", border: "1px solid rgba(230,100,100,0.25)", borderRadius: 12, padding: "10px 12px", color: "#c05555", fontSize: "0.7rem", fontWeight: 700, textAlign: "center" } }, (String(sharedErr).indexOf("照片") >= 0 ? "" : "信没送到贝克街 😢 ") + sharedErr),
         h("div", { style: { marginTop: 32 } },
           sharedLoading && !sharedNotes.length ? h("div", { style: { textAlign: "center", color: "rgba(150,120,95,0.55)", fontSize: "0.76rem", padding: "10px 0", fontFamily: HAND } }, "门房正在取信…") : null,
@@ -9814,7 +9860,7 @@ function ReadingRoomActivity(_refRR) {
                       mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.18)" : "rgba(255,255,255,0.65)", color: sharedDelId === n.id ? "#d05050" : "#a8842a", fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下挂断" : "✕") : null)),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, margin: "8px 0 7px" } },
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
-                    h("span", { style: { color: spl ? "rgba(255,243,196,0.9)" : "rgba(170,125,40,0.9)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d)),
+                    h("span", { style: { color: spl ? "rgba(255,243,196,0.9)" : "rgba(170,125,40,0.9)", fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap" } }, n.d + (outIds[n.id] ? " · ⏳ 待寄出" : ""))),
                   h("div", { style: { background: spl ? "linear-gradient(180deg,#f6efff,#e6d8ff)" : "linear-gradient(180deg,#e2f4fb,#c6e7f4)", borderRadius: 10, border: "2px solid #fff", boxShadow: spl ? "inset 0 2px 8px rgba(120,80,200,0.25)" : "inset 0 2px 8px rgba(90,140,170,0.25)", padding: "10px 12px" } },
                     n.t ? h("div", null, String(n.t).split("\n").map(function (ln, li) {
                       var mono = "'Courier New',Courier,monospace";
@@ -9844,7 +9890,7 @@ function ReadingRoomActivity(_refRR) {
                 h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 } },
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, minWidth: 0 } },
                     h("span", { style: { flexShrink: 0, fontSize: "0.6rem", fontWeight: 800, color: a.col, background: a.bg, borderRadius: 999, padding: "3px 9px", whiteSpace: "nowrap" } }, a.e + " " + a.label),
-                    h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d)),
+                    h("span", { style: { color: nt.date, fontSize: "0.6rem", fontFamily: HAND, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, n.d + (outIds[n.id] ? " · ⏳ 待寄出" : ""))),
                   h("div", { style: { display: "flex", alignItems: "center", gap: 6, position: "relative", zIndex: 1, flexShrink: 0 } },
                     h("button", { onClick: function () { if (sharingId) return; setSharingId(n.id); nanaShareNote({ d: n.d, t: n.t, th: n.th, pu: nanaPuPics(n.pu)[0] || null, by: a.e + " " + a.label }, nt, function () { setSharingId(null); }); }, style: { border: "none", borderRadius: 999, padding: "5px 11px", fontFamily: "inherit", fontWeight: 800, fontSize: "0.78rem", cursor: "pointer", background: "linear-gradient(135deg,#ff9db0,#e46a89)", color: "#fff", boxShadow: "0 3px 10px rgba(228,106,137,0.4)", lineHeight: 1, opacity: sharingId === n.id ? 0.55 : 1 } }, sharingId === n.id ? "✉️…" : "💌"),
                     mine ? h("button", { onClick: function () { delShared(n.id); }, style: { border: "none", background: sharedDelId === n.id ? "rgba(230,100,100,0.15)" : "rgba(0,0,0,0.05)", color: sharedDelId === n.id ? "#d05050" : (nt.dark ? "rgba(220,215,245,0.7)" : "rgba(150,120,100,0.65)"), fontFamily: "inherit", fontWeight: 800, fontSize: sharedDelId === n.id ? "0.58rem" : "0.72rem", cursor: "pointer", borderRadius: 999, padding: sharedDelId === n.id ? "4px 9px" : "4px 8px" } }, sharedDelId === n.id ? "再点一下烧掉" : "✕") : null)),
