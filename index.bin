@@ -9144,15 +9144,16 @@ var NANA_LETTER_THEMES = [
     stripes: ["#c8323a", "#f6efe0", "#3c3c40", "#f6efe0"],
     wash1: "rgba(200,50,58,0.1)", wash2: "rgba(236,226,204,0.3)", footE: "❤️",
     pat: nanaDust("#c8323a", 60, 0.12, 30), rule: "grid" },
-  // 🧸 抓娃娃机：薄荷蓝玻璃柜，淡淡铺着小熊小兔，粉色只点在标题、胶带和落款上
-  { id: "claw", name: "娃娃机信笺", e: "🧸", pick: 19, use: "这次一定抓到", css: "linear-gradient(160deg,#e3f7f4,#9fe0d8)",
-    out1: "#d8f3ef", out2: "#9fe0d8", p1: "#effbf9", p2: "#d3f1ec",
-    line: "rgba(40,150,140,0.24)", margin: "rgba(40,150,140,0.42)",
-    header: "#e0528f", date: "rgba(30,120,112,0.85)", text: "#1f4f4a", foot: "rgba(224,82,143,0.85)",
-    stamp: "🧸", stampBg: "#effbf9", stampBd: "rgba(224,82,143,0.75)", wm: "🐰", wmA: 0.09,
-    tapeA: "rgba(255,170,205,0.65)", tapeB: "rgba(255,255,255,0.85)",
-    stripes: ["#e0528f", "#effbf9", "#3fb6aa", "#effbf9"],
-    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(159,224,216,0.3)", footE: "🧸",
+  // 🧸 抓娃娃机：杏橘珊瑚色的玻璃柜（街头娃娃机那种橘红奶白），淡淡铺着小熊小兔；
+  // 颜色特意往珊瑚粉偏一点，和焦糖香草（奶黄）、肉桂卷（烤棕）、红白机（奶白配正红）都拉开
+  { id: "claw", name: "娃娃机信笺", e: "🧸", pick: 19, use: "这次一定抓到", css: "linear-gradient(160deg,#ffe6da,#ff9e80)",
+    out1: "#ffe0d2", out2: "#ff9e80", p1: "#fff3ec", p2: "#ffdccc",
+    line: "rgba(235,105,70,0.24)", margin: "rgba(235,105,70,0.45)",
+    header: "#e0573a", date: "rgba(200,85,55,0.88)", text: "#5a2a1e", foot: "rgba(224,87,58,0.88)",
+    stamp: "🧸", stampBg: "#fff3ec", stampBd: "rgba(235,105,70,0.8)", wm: "🐰", wmA: 0.09,
+    tapeA: "rgba(255,140,105,0.6)", tapeB: "rgba(255,250,240,0.9)",
+    stripes: ["#eb6946", "#fff3ec", "#ffc4a8", "#fff3ec"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(255,180,150,0.3)", footE: "🧸",
     pat: nanaPat("🧸", "🐰", 60, 0.13), rule: "dot" }
 ];
 var nanaShareNote = function (note, theme, done) {
