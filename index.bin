@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-328";
+var NANA_VER = "v2026.8.2-329";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8614,7 +8614,7 @@ var nanaFetchT = function (url, opts, ms) {
   });
 };
 var nanaFetchWhole = function (ver) {
-  return nanaFetchT("app.html?fresh=" + Date.now(), { cache: "no-store" }, 150000).then(function (r) {
+  return nanaFetchT("app.html?fresh=" + Date.now(), { cache: "no-store" }, 60000).then(function (r) {
     if (!r || !r.ok) { var e0 = new Error("网络没通" + (r ? "（" + r.status + "）" : "")); e0.chunks = 1; throw e0; }
     return r.text();
   }, function () { var e1 = new Error("网络没通"); e1.chunks = 1; throw e1; }).then(function (t) {
@@ -8654,17 +8654,27 @@ var nanaFetchParts = function (ver, onProgress) {
         })["catch"](function (e) { if (tries > 1) return getPart(i, tries - 1); throw e; });
       });
     };
-    var loop = function (i) {
-      return getPart(i, 3).then(function (b) {
-        if (b && b.full) return b.full;
-        parts.push(b);
+    // 先拿第 0 段（顺便知道总长），剩下的三段三段一起下，比一段一段排队快两三倍
+    var loop = function () {
+      return getPart(0, 3).then(function (b0) {
+        if (b0 && b0.full) return b0.full;
         if (!total) throw new Error("服务器没说总长");
-        if ((i + 1) * SZ >= total) return null;
-        if (onProgress) onProgress(Math.round((i + 1) * SZ * 100 / total));
-        return loop(i + 1);
+        var n = Math.ceil(total / SZ), got = new Array(n), done = 1, next = 1;
+        got[0] = b0;
+        var worker = function () {
+          if (next >= n) return Promise.resolve();
+          var i = next++;
+          return getPart(i, 3).then(function (b) {
+            if (b && b.full) throw new Error("服务器中途不认分段了");
+            got[i] = b; done++;
+            if (onProgress) onProgress(Math.round(done * 100 / n));
+            return worker();
+          });
+        };
+        return Promise.all([worker(), worker(), worker()]).then(function () { parts = got; return null; });
       });
     };
-    return loop(0).then(function (full) {
+    return loop().then(function (full) {
       var u, i, n = 0, o = 0;
       if (full) u = new Uint8Array(full);
       else {
@@ -8718,9 +8728,12 @@ var nanaFetchParts = function (ver, onProgress) {
       if (done === t && !force) { nanaUpdSet("ok", "已经换成 " + t + " 了，关掉小屋重开一次就是新的", t); return; }   // 同一版本只自动重载一次，防止打转
       nanaUpdSet("downloading", "有新版本 " + t + "，正在下载…", t);
       var prog = function (p) { nanaUpdSet("downloading", "正在下载新版本 " + t + " · " + p + "%（关掉再开也接着下）", t); };
-      return (typeof TextDecoder === "undefined" ? Promise.reject(new Error("这台机不支持分段")) : nanaFetchParts(t, prog))["catch"](function (e1) {
-        nanaUpdSet("downloading", "分段没下完（" + ((e1 && e1.message) || "") + "），试试整页…", t);
-        return nanaFetchWhole(t);
+      // 先整页拿：app.html 走服务器压缩，只有 0.8MB 左右，一趟就回来；
+      // 整页断在半路（跨境链路常见）再分段下 index.bin —— 那份不压缩（2.6MB），但断了能接着下
+      return nanaFetchWhole(t)["catch"](function (e1) {
+        if (typeof TextDecoder === "undefined") throw e1;
+        nanaUpdSet("downloading", "整页没下完（" + ((e1 && e1.message) || "") + "），换成分段下…", t);
+        return nanaFetchParts(t, prog);
       }).then(function (html) { return install(html, t); })["catch"](function (e) {
         fails++;
         nextTry = Date.now() + Math.min(20 * 60000, 60000 * Math.pow(2, fails - 1));   // 1、2、4、8、16、20 分钟
