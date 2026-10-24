@@ -6785,7 +6785,7 @@ function RhythmStarsGame(_refRS) {
   var start = function start() {
     g.current = { notes: [], t: 0, sc: 0, cb: 0 };
     statusRef.current = "playing"; setStatus("playing"); setScore(0); setCombo(0); setTimeLeft(DUR); setJudge(null);
-    try { var a = new Audio("la_la_land_13 - Justin Hurwitz - Epilogue.mp3"); a.volume = 0.85; a.play().catch(function () {}); audioRef.current = a; } catch (e) {}
+    try { var a = new Audio("epilogue.mp3"); a.volume = 0.85; a.play().catch(function () {}); audioRef.current = a; } catch (e) {}
   };
   var finish = function finish() {
     statusRef.current = "over"; setStatus("over"); stopAudio();
@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-329";
+var NANA_VER = "v2026.8.2-330";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26517,13 +26517,13 @@ function NanaMixtapeCard(_refNM) {
     };
   }, [idx]);
   useEffect(function () { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
-  // 预取下一首：当前歌开播 1.5s 后悄悄预下载下一首，warm 浏览器缓存 → 切歌更快、缓冲更短
+  // 预取下一首：当前歌真的在放、放了 1.5s 之后才悄悄预下载下一首（没在放就不下，省流量、不跟更新抢网）
   useEffect(function () {
     var nxt = tracks[idx + 1];
-    if (!nxt || !nxt.src) return;
+    if (!playing || !nxt || !nxt.src) return;
     var id = setTimeout(function () { try { fetch(nxt.src).then(function (r) { return r && r.arrayBuffer(); })["catch"](function () {}); } catch (_) {} }, 1500);
     return function () { clearTimeout(id); };
-  }, [idx]);
+  }, [idx, playing]);
   useEffect(function () {
     var a = audioRef.current; if (!a) return;
     setError(false); setProgress(0); setDuration(0); retried.current = false;
@@ -26591,7 +26591,7 @@ function NanaMixtapeCard(_refNM) {
   };
   return h(React.Fragment, null,
     h("style", null, "@keyframes nanaSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"),
-    h("audio", { ref: audioRef, src: cur.src, preload: "auto", loop: repeatOne }),
+    h("audio", { ref: audioRef, src: cur.src, preload: "metadata", loop: repeatOne }),
     showGN && h(GoodNightEgg, { onClose: function () { setShowGN(false); } }),
     room && (miniOpen
       ? h("div", { style: { position: "fixed", left: 12, right: 12, bottom: "calc(76px + env(safe-area-inset-bottom,0px))", zIndex: 45, display: "flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg," + mood.accent2 + "," + mood.accent + ")", borderRadius: 14, padding: "8px 8px 8px 13px", boxShadow: "0 8px 22px rgba(0,0,0,0.32)", border: "1px solid rgba(255,255,255,0.18)" } },
