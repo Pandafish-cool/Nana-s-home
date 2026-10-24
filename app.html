@@ -9143,7 +9143,37 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,233,74,0.7)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#f2cf00", "#fffde6", "#fff06a", "#fffde6"],
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,240,106,0.3)", footE: "🍋",
-    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" }
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
+  // 🍊 橘子汽水：浅橘底 + 白色斜条纹，落款一瓣橘子（和柠檬一个系列）
+  { id: "orange", name: "橘子汽水信笺", e: "🍊", pick: 19, use: "冒泡的橘子汽水", css: "linear-gradient(160deg,#fff1e0,#ffc27a)",
+    out1: "#ffe2bf", out2: "#ffb260", p1: "#fff6ea", p2: "#ffe0bc",
+    line: "rgba(230,130,30,0.28)", margin: "rgba(230,130,30,0.48)",
+    header: "#c8640a", date: "rgba(180,95,15,0.88)", text: "#5a3008", foot: "rgba(200,100,10,0.88)",
+    stamp: "🍊", stampBg: "#fff6ea", stampBd: "rgba(230,130,30,0.8)", wm: "🫧", wmA: 0.1,
+    tapeA: "rgba(255,178,96,0.7)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#f08a1c", "#fff6ea", "#ffc27a", "#fff6ea"],
+    wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,194,122,0.3)", footE: "🍊",
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
+  // 🍑 水蜜桃：浅珊瑚桃色 + 白色斜条纹，落款一颗桃
+  { id: "peachy", name: "水蜜桃信笺", e: "🍑", pick: 20, use: "甜甜软软的一天", css: "linear-gradient(160deg,#ffece4,#ffab90)",
+    out1: "#ffdcd0", out2: "#ff9e80", p1: "#fff4ef", p2: "#ffdccf",
+    line: "rgba(235,110,80,0.26)", margin: "rgba(235,110,80,0.46)",
+    header: "#d9583a", date: "rgba(195,85,60,0.88)", text: "#5a2618", foot: "rgba(217,88,58,0.88)",
+    stamp: "🍑", stampBg: "#fff4ef", stampBd: "rgba(235,110,80,0.8)", wm: "🌸", wmA: 0.08,
+    tapeA: "rgba(255,158,128,0.65)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#eb6e50", "#fff4ef", "#ffb8a0", "#fff4ef"],
+    wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,171,144,0.3)", footE: "🍑",
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
+  // 🍉 西瓜：浅西瓜红底 + 撒几颗小黑籽，底边一条绿瓜皮，落款一片西瓜
+  { id: "melon", name: "西瓜信笺", e: "🍉", pick: 21, use: "夏天的第一口西瓜", css: "linear-gradient(160deg,#ffe6e6,#ff8f8f)",
+    out1: "#ffd6d6", out2: "#5cb85c", p1: "#fff3f2", p2: "#ffd9d7",
+    line: "rgba(220,70,70,0.24)", margin: "rgba(220,70,70,0.42)",
+    header: "#d23c3c", date: "rgba(180,55,55,0.88)", text: "#5a1e1e", foot: "rgba(60,140,60,0.9)",
+    stamp: "🍉", stampBg: "#fff3f2", stampBd: "rgba(80,160,80,0.85)", wm: "🍉", wmA: 0.07,
+    tapeA: "rgba(110,190,100,0.6)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#3f9e45", "#fff3f2", "#ff8f8f", "#fff3f2"],
+    wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,143,143,0.25)", footE: "🍉",
+    pat: "linear-gradient(0deg, #5cb85c 0 7px, #b9e3a6 7px 11px, transparent 11px) 0 100% / 100% 11px no-repeat, " + nanaDust("#3a2a2a", 120, 0.35, 9), rule: "none" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
