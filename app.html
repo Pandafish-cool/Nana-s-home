@@ -29326,22 +29326,30 @@ function OfficerBadgeEgg(_refOB) {
     h("div", { style: { position: "relative", zIndex: 2, color: "rgba(255,240,210,0.9)", fontSize: "0.95rem", textAlign: "center", marginTop: 10 } }, "地球就靠你了，出发 👮🌍"),
     h("div", { style: { position: "relative", zIndex: 2, color: "rgba(255,240,210,0.5)", fontSize: "0.72rem", marginTop: 16 } }, "（点一下出发）"));
 }
+// 开屏：小鲨鱼猫（6 秒，静音自动播；点一下跳过；播完/卡住都会自己退场）
 function PhotoOpeningEgg(_refPO) {
   var onClose = _refPO.onClose;
   var h = React.createElement;
   var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  var doneRef = useRef(false);
+  var finish = function () {
+    if (doneRef.current) return; doneRef.current = true;
+    setGone(true); setTimeout(function () { onClose(); }, 700);
+  };
   useEffect(function () {
-    var t1 = setTimeout(function () { setGone(true); }, 5400);
-    var t2 = setTimeout(function () { onClose(); }, 6400);
-    return function () { clearTimeout(t1); clearTimeout(t2); };
+    var t = setTimeout(finish, 9000);
+    return function () { clearTimeout(t); };
   }, []);
-  return h("div", { onClick: onClose, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 10000, background: "radial-gradient(circle at 50% 36%,#fff7f3,#efe1db)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 1s ease", overflow: "hidden", fontFamily: "'Nunito', system-ui", padding: "0 24px" } },
-    h("div", { style: { background: "#fff", padding: 8, borderRadius: 18, boxShadow: "0 16px 38px rgba(120,80,70,0.28)", animation: "bounceIn 0.8s ease" } },
-      h("img", { src: "opening-look.jpg?v=2", alt: "", style: { display: "block", width: 290, maxWidth: "70vw", borderRadius: 12 } })),
-    h("div", { style: { textAlign: "center", marginTop: 24, animation: "fadeSlideUp 1s ease" } },
-      h("div", { style: { color: "#5a4340", fontWeight: 800, fontSize: "clamp(1.5rem,6.5vw,2rem)", letterSpacing: "1px" } }, "就这样看着你"),
-      h("div", { style: { color: "#8a6a64", fontWeight: 700, fontSize: "clamp(1.2rem,5.2vw,1.6rem)", marginTop: 6 } }, "看着你 👀💕"),
-      h("div", { style: { color: "rgba(120,90,84,0.55)", fontSize: "0.72rem", marginTop: 18 } }, "（点一下进门）")));
+  var vidRef = function (el) {
+    if (!el || el._nanaInit) return; el._nanaInit = 1;
+    el.muted = true; el.defaultMuted = true; el.setAttribute("muted", ""); el.setAttribute("playsinline", ""); el.setAttribute("webkit-playsinline", "");
+    try { var p = el.play(); if (p && p.catch) p.catch(function () {}); } catch (_) {}
+  };
+  return h("div", { onClick: finish, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 10000, background: "#9cc3e8 url(opening-cat.jpg) center/cover no-repeat", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.7s ease", overflow: "hidden" } },
+    h("video", { ref: vidRef, src: "opening-cat.mp4", poster: "opening-cat.jpg", autoPlay: true, muted: true, playsInline: true, preload: "auto", onEnded: finish, onError: function () { setTimeout(finish, 2500); },
+      style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", display: "block", pointerEvents: "none" } }),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", background: "linear-gradient(0deg,rgba(0,0,0,0.35),transparent)", pointerEvents: "none" } }),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(26px + env(safe-area-inset-bottom))", textAlign: "center", color: "rgba(255,255,255,0.8)", fontSize: "0.72rem", fontFamily: "'Nunito', system-ui", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.4)" } }, "（点一下进门）"));
 }
 function NanasHome() {
   var _useState321 = useState(true),
