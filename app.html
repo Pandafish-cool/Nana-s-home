@@ -8715,43 +8715,43 @@ var nanaFetchWhole = function (ver) {
   });
 };
 // 🛰 备用下载：github.io 从国内连常常断，同一份页面在 jsDelivr（公共 CDN）上也有一份。
-// 每次上线都会打一个和版本号同名的 git 标签，按标签取的文件永远不会变，也不会拿到旧缓存。
-// 三个节点一起下，谁先下完、而且验过合格就用谁，其余的掐掉。
+// 每次上线后，线上会多一个 cdn.txt，写着「版本号 + 那次提交的编号」；按提交编号取的文件永远不会变，也不会拿到旧缓存。
+// cdn.txt 先问 github.io（就几十个字节），问不到再问 jsDelivr；然后三个节点一起下，谁先下完、验过合格就用谁。
 var NANA_CDN_HOSTS = ["gcore.jsdelivr.net", "fastly.jsdelivr.net", "cdn.jsdelivr.net"];
 var NANA_CDN_REPO = "gh/Pandafish-cool/Nana-s-home";
-var nanaFetchCdn = function (ver) {
+var nanaRaceCdn = function (path, ms, take) {
   return new Promise(function (resolve, reject) {
     var left = NANA_CDN_HOSTS.length, won = false, why = "";
-    var acs = [];
     NANA_CDN_HOSTS.forEach(function (host) {
-      var opts = { cache: "no-store" };
-      nanaFetchT("https://" + host + "/" + NANA_CDN_REPO + "@" + encodeURIComponent(ver) + "/app.html", opts, 60000).then(function (r) {
-        acs.push(opts.signal);
-        if (!r || !r.ok) throw new Error("备用地址没有这一版" + (r ? "（" + r.status + "）" : ""));
+      nanaFetchT("https://" + host + "/" + NANA_CDN_REPO + path, { cache: "no-store" }, ms).then(function (r) {
+        if (!r || !r.ok) throw new Error("备用地址没有" + (r ? "（" + r.status + "）" : ""));
         return r.text();
-      }).then(function (t) {
-        var bad = nanaHtmlCheck(t, ver);
-        if (bad) throw new Error(bad);
-        if (!won) { won = true; resolve(t); }
-      })["catch"](function (e) {
+      }).then(take).then(function (v) { if (!won) { won = true; resolve(v); } })["catch"](function (e) {
         why = (e && e.message) || why;
-        if (--left === 0 && !won) reject(new Error("备用地址也没下成" + (why ? "（" + why + "）" : "")));
+        if (--left === 0 && !won) reject(new Error(why || "备用地址没下成"));
       });
     });
+  });
+};
+var nanaFetchCdn = function (ver) {
+  var sha = function (t) {
+    var m = String(t || "").trim().match(/^(v[\w.\-]+)\s+([0-9a-f]{7,40})$/);
+    if (!m || m[1] !== ver) throw new Error("备用地址还没换到 " + ver);
+    return m[2];
+  };
+  return nanaFetchT("cdn.txt?t=" + Date.now(), { cache: "no-store" }, 15000).then(function (r) {
+    if (!r || !r.ok) throw new Error("x"); return r.text();
+  }).then(sha)["catch"](function () {
+    return nanaRaceCdn("@main/cdn.txt", 20000, sha);
+  }).then(function (id) {
+    return nanaRaceCdn("@" + id + "/app.html", 60000, function (t) { var bad = nanaHtmlCheck(t, ver); if (bad) throw new Error(bad); return t; });
   });
 };
 // 线上版本号：先问 github.io，问不到再问 jsDelivr 上 main 分支那份（可能晚几个小时，但总比没有强）
 var nanaFetchVer = function () {
   var pick = function (r) { return r && r.ok ? r.text().then(function (t) { t = String(t || "").trim(); if (!t || t.length > 40 || !/^v\d/.test(t)) throw new Error("bad"); return t; }) : Promise.reject(new Error("bad")); };
   return nanaFetchT("version.txt?t=" + Date.now(), { cache: "no-store" }, 20000).then(pick)["catch"](function () {
-    return new Promise(function (resolve, reject) {
-      var left = NANA_CDN_HOSTS.length, won = false;
-      NANA_CDN_HOSTS.forEach(function (host) {
-        nanaFetchT("https://" + host + "/" + NANA_CDN_REPO + "@main/version.txt", { cache: "no-store" }, 20000).then(pick).then(function (t) {
-          if (!won) { won = true; resolve(t); }
-        })["catch"](function () { if (--left === 0 && !won) reject(new Error("没拿到")); });
-      });
-    });
+    return nanaRaceCdn("@main/version.txt", 20000, function (t) { return pick({ ok: true, text: function () { return Promise.resolve(t); } }); });
   });
 };
 // 版本号比大小：只比最后那串数字（v2026.8.2-336 → 336）。线上的比手上的旧（备用地址缓存还没刷新）就当没有新版
