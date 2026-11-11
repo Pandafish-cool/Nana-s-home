@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-337";
+var NANA_VER = "v2026.8.2-338";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9066,7 +9066,7 @@ var nanaPat = function (a, b, size, op) {
   return "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
 };
 var NANA_LETTER_THEMES = [
-  { id: "air", name: "航空信笺", e: "💌", pick: 1, use: "随便说点什么", css: "linear-gradient(160deg,#eff6fb,#aad9fd)",
+  { id: "air", name: "航空信笺", e: "💌", pick: 17, use: "随便说点什么", css: "linear-gradient(160deg,#eff6fb,#aad9fd)",
     out1: "#d6ecfc", out2: "#8cc8f7", p1: "#eff6fb", p2: "#aad9fd",
     line: "rgba(44,106,160,0.32)", margin: "rgba(44,106,160,0.5)",
     header: "#1e5a8a", date: "rgba(30,90,138,0.88)", text: "#1a4569", foot: "rgba(30,90,138,0.85)",
@@ -9075,7 +9075,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
     wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
-  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 12, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
+  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 22, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
     out1: "#b6a9c8", out2: "#9078ac", p1: "#3f396e", p2: "#302b58",
     line: "rgba(121,112,194,0.3)", margin: "rgba(121,112,194,0.45)",
     header: "#b4afdf", date: "rgba(180,175,223,0.85)", text: "#e2e0f0", foot: "rgba(180,175,223,0.8)",
@@ -9085,7 +9085,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(144,120,172,0.18)", wash2: "rgba(182,169,200,0.15)", footE: "🌠" , rule: "dot" },
   // 炉火信笺换成了肉桂卷 —— 深烤棕，横线是波浪（像淋上去的糖霜）。
   // 以前用炉火写的信存的是 th:"hearth"，靠下面 themeById 里的映射落到这张，内容不会丢。
-  { id: "cinn", name: "肉桂卷信笺", e: "🍪", pick: 13, use: "刚出炉的肉桂卷味", css: "linear-gradient(160deg,#f8e3ca,#dfb48a)",
+  { id: "cinn", name: "肉桂卷信笺", e: "🍪", pick: 12, use: "刚出炉的肉桂卷味", css: "linear-gradient(160deg,#f8e3ca,#dfb48a)",
     out1: "#f3d9bb", out2: "#d9a97e", p1: "#f8e3ca", p2: "#dfb48a",
     line: "rgba(150,85,35,0.34)", margin: "rgba(150,85,35,0.55)",
     header: "#82440f", date: "rgba(130,68,15,0.9)", text: "#4a2710", foot: "rgba(130,68,15,0.85)",
@@ -9093,7 +9093,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(217,169,126,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#96552a", "#f8e3ca", "#d9a97e", "#f8e3ca"],
     wash1: "rgba(230,185,135,0.3)", wash2: "rgba(248,227,202,0.28)", footE: "🍯" , pat: nanaDust("#7a3d0c", 96, 0.17, 34) , rule: "none" },
-  { id: "moon", name: "月光信笺", e: "🌙", pick: 10, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
+  { id: "moon", name: "月光信笺", e: "🌙", pick: 20, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
     out1: "#f0e6e8", out2: "#e6cff2", p1: "#e2cae8", p2: "#d7ace2",
     line: "rgba(167,88,187,0.3)", margin: "rgba(167,88,187,0.45)",
     header: "#763088", date: "rgba(118,48,136,0.85)", text: "#54255f", foot: "rgba(118,48,136,0.8)",
@@ -9101,7 +9101,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(230,207,242,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#a758bb", "#d7ace2", "#e6cff2", "#d7ace2"],
     wash1: "rgba(230,207,242,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "✨" , pat: nanaPat("🐇", "☁️", 60, 0.28) , rule: "none" },
-  { id: "star", name: "星空信笺", e: "✨", pick: 11, use: "看星星的时候", css: "linear-gradient(160deg,#e6cff2,#d7ace2)",
+  { id: "star", name: "星空信笺", e: "✨", pick: 21, use: "看星星的时候", css: "linear-gradient(160deg,#e6cff2,#d7ace2)",
     out1: "#f0e6e8", out2: "#d7ace2", p1: "#f4ecf8", p2: "#e6cff2",
     line: "rgba(153,88,187,0.3)", margin: "rgba(153,88,187,0.45)",
     header: "#6a3088", date: "rgba(106,48,136,0.85)", text: "#4b255f", foot: "rgba(106,48,136,0.8)",
@@ -9111,7 +9111,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(215,172,226,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "🌠" , rule: "dot" },
   // 薄荷信笺换成了雪碧 —— 接手它「轻松的一天」这一格。
   // 以前用薄荷写的信存的是 th:"mint"，靠 themeById 里的映射落到这张。
-  { id: "soda", name: "雪碧信笺", e: "🥤", pick: 5, use: "轻松的一天", css: "linear-gradient(160deg,#f2fcdf,#d2f09b)",
+  { id: "soda", name: "雪碧信笺", e: "🥤", pick: 13, use: "轻松的一天", css: "linear-gradient(160deg,#f2fcdf,#d2f09b)",
     out1: "#e7f8c8", out2: "#c2e884", p1: "#f2fcdf", p2: "#d2f09b",
     line: "rgba(120,175,60,0.32)", margin: "rgba(120,175,60,0.5)",
     header: "#46801c", date: "rgba(70,128,28,0.88)", text: "#2e5a16", foot: "rgba(70,128,28,0.85)",
@@ -9119,7 +9119,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(194,232,132,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#78af3c", "#f2fcdf", "#c2e884", "#f2fcdf"],
     wash1: "rgba(210,240,155,0.3)", wash2: "rgba(242,252,223,0.28)", footE: "🫧" , pat: nanaPat("🫧", "🍋", 54, 0.09) , rule: "dot" },
-  { id: "brit", name: "英伦信笺", e: "🌹", pick: 2, use: "想你的时候", css: "linear-gradient(160deg,#e8bcc3,#b7c9d3)",
+  { id: "brit", name: "英伦信笺", e: "🌹", pick: 4, use: "想你的时候", css: "linear-gradient(160deg,#e8bcc3,#b7c9d3)",
     out1: "#f0e6e8", out2: "#b7c9d3", p1: "#efd9dc", p2: "#e8bcc3",
     line: "rgba(187,88,104,0.3)", margin: "rgba(187,88,104,0.45)",
     header: "#88303e", date: "rgba(136,48,62,0.85)", text: "#5f252e", foot: "rgba(136,48,62,0.8)",
@@ -9145,7 +9145,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#b98a5a", "#fdf9f2", "#7a5a3a", "#fdf9f2"],
     wash1: "rgba(215,180,135,0.3)", wash2: "rgba(240,220,190,0.3)", footE: "🥐" , rule: "dot" },
 
-  { id: "cara", name: "焦糖香草信笺", e: "🍦", pick: 14, use: "想吃点甜的", css: "linear-gradient(160deg,#fff3d6,#f0c47f)",
+  { id: "cara", name: "焦糖香草信笺", e: "🍦", pick: 11, use: "想吃点甜的", css: "linear-gradient(160deg,#fff3d6,#f0c47f)",
     out1: "#fbe6bb", out2: "#f0c47f", p1: "#fff3d6", p2: "#f5d296",
     line: "rgba(198,140,66,0.32)", margin: "rgba(198,140,66,0.5)",
     header: "#9a5e1c", date: "rgba(154,94,28,0.88)", text: "#6a4318", foot: "rgba(154,94,28,0.85)",
@@ -9154,7 +9154,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#c68c42", "#fff3d6", "#e8b871", "#fff3d6"],
     wash1: "rgba(255,214,150,0.3)", wash2: "rgba(255,240,205,0.28)", footE: "🍨" , pat: nanaPat("🍦", "🍮", 56, 0.08) , rule: "line" },
 
-  { id: "cat", name: "好好信笺", e: "🐈", pick: 3, use: "家里的事", css: "linear-gradient(160deg,#ffe9e1,#d5d8dc)",
+  { id: "cat", name: "好好信笺", e: "🐈", pick: 2, use: "家里的事", css: "linear-gradient(160deg,#ffe9e1,#d5d8dc)",
     out1: "#f0e6e8", out2: "#d5d8dc", p1: "#fef4f1", p2: "#ffe9e1",
     line: "rgba(187,115,88,0.3)", margin: "rgba(187,115,88,0.45)",
     header: "#884730", date: "rgba(136,71,48,0.85)", text: "#5f3525", foot: "rgba(136,71,48,0.8)",
@@ -9163,7 +9163,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#bb7358", "#ffe9e1", "#d5d8dc", "#ffe9e1"],
     wash1: "rgba(255,183,160,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "🐈" , pat: nanaPat("🐾", "🐟", 56, 0.09) , rule: "line" },
 
-  { id: "sea", name: "海盐信笺", e: "🌊", pick: 6, use: "清爽的一天", css: "linear-gradient(160deg,#b1eded,#63bad9)",
+  { id: "sea", name: "海盐信笺", e: "🌊", pick: 16, use: "清爽的一天", css: "linear-gradient(160deg,#b1eded,#63bad9)",
     out1: "#f9f4ea", out2: "#63bad9", p1: "#d1f0f0", p2: "#b1eded",
     line: "rgba(88,187,187,0.3)", margin: "rgba(88,187,187,0.45)",
     header: "#2d8080", date: "rgba(45,128,128,0.85)", text: "#255f5f", foot: "rgba(45,128,128,0.8)",
@@ -9171,7 +9171,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(202,235,237,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#58bbbb", "#b1eded", "#63bad9", "#b1eded"],
     wash1: "rgba(202,235,237,0.18)", wash2: "rgba(249,244,234,0.15)", footE: "⛵" , pat: nanaPat("🐚", "⛵", 58, 0.08) , rule: "dot" },
-  { id: "call", name: "呼叫信笺", e: "📟", pick: 16, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
+  { id: "call", name: "呼叫信笺", e: "📟", pick: 8, use: "约个时间", css: "linear-gradient(160deg,#ffd24a,#b6d4e2)",
     out1: "#e8f0f2", out2: "#95a9d2", p1: "#d2e2ea", p2: "#b6d4e2",
     line: "rgba(88,156,187,0.3)", margin: "rgba(88,156,187,0.45)",
     header: "#306c88", date: "rgba(48,108,136,0.85)", text: "#254d5f", foot: "rgba(48,108,136,0.8)",
@@ -9204,7 +9204,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(250,160,120,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#ef9068", "#fff6ec", "#b880c8", "#fff6ec"],
     wash1: "rgba(255,180,140,0.32)", wash2: "rgba(220,160,200,0.28)", footE: "🌆" , rule: "none" },
-  { id: "mist", name: "雾绿信笺", e: "🌫️", pick: 8, use: "安静的一天", css: "linear-gradient(160deg,#cfe4dd,#8d6c63)",
+  { id: "mist", name: "雾绿信笺", e: "🌫️", pick: 15, use: "安静的一天", css: "linear-gradient(160deg,#cfe4dd,#8d6c63)",
     out1: "#fcd3d5", out2: "#8d6c63", p1: "#e7f0ed", p2: "#cfe4dd",
     line: "rgba(100,175,150,0.3)", margin: "rgba(100,175,150,0.45)",
     header: "#378168", date: "rgba(55,129,104,0.85)", text: "#295b4b", foot: "rgba(55,129,104,0.8)",
@@ -9212,7 +9212,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(249,244,234,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#64af96", "#cfe4dd", "#8d6c63", "#cfe4dd"],
     wash1: "rgba(249,244,234,0.18)", wash2: "rgba(252,211,213,0.15)", footE: "🍃" , pat: nanaPat("☁️", "☂️", 54, 0.13) , rule: "none" },
-  { id: "sage", name: "苔绿信笺", e: "🍃", pick: 9, use: "有点累的一天", css: "linear-gradient(160deg,#cbe1b7,#799b84)",
+  { id: "sage", name: "苔绿信笺", e: "🍃", pick: 14, use: "有点累的一天", css: "linear-gradient(160deg,#cbe1b7,#799b84)",
     out1: "#f9f4ea", out2: "#799b84", p1: "#dde9d3", p2: "#cbe1b7",
     line: "rgba(135,187,88,0.3)", margin: "rgba(135,187,88,0.45)",
     header: "#50792a", date: "rgba(80,121,42,0.85)", text: "#415f25", foot: "rgba(80,121,42,0.8)",
@@ -9221,7 +9221,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#87bb58", "#cbe1b7", "#799b84", "#cbe1b7"],
     wash1: "rgba(202,222,195,0.18)", wash2: "rgba(249,244,234,0.15)", footE: "🌱" , pat: nanaPat("🌱", "🍃", 56, 0.1) , rule: "dot" },
 
-  { id: "dog", name: "狗狗信笺", e: "🐕", pick: 4, use: "想说点傻话", css: "linear-gradient(160deg,#fed0d6,#ff82a2)",
+  { id: "dog", name: "狗狗信笺", e: "🐕", pick: 5, use: "想说点傻话", css: "linear-gradient(160deg,#fed0d6,#ff82a2)",
     out1: "#e8bcc3", out2: "#ff82a2", p1: "#fdf1f3", p2: "#fed0d6",
     line: "rgba(187,88,101,0.3)", margin: "rgba(187,88,101,0.45)",
     header: "#88303b", date: "rgba(136,48,59,0.85)", text: "#5f252d", foot: "rgba(136,48,59,0.8)",
@@ -9240,7 +9240,7 @@ var NANA_LETTER_THEMES = [
     pat: nanaPat("🐾", "🐟", 56, 0.1) , rule: "grid" },
   // 紫蓝：比上一版普鲁士蓝浅一档（纸面 L77 → 82），色相往紫挪到 H234，字色退到紫藏青。
   // 浅一档的纯蓝全跟航空 / 呼叫撞，往紫挪反而自然躲开了它们。
-  { id: "tube", name: "地铁信笺", e: "🚇", pick: 7, use: "今天去了哪儿", css: "linear-gradient(160deg,#e3e5fb,#aab1f5)",
+  { id: "tube", name: "地铁信笺", e: "🚇", pick: 19, use: "今天去了哪儿", css: "linear-gradient(160deg,#e3e5fb,#aab1f5)",
     out1: "#d3d7f6", out2: "#8f98ea", p1: "#e3e5fb", p2: "#aab1f5",
     line: "rgba(58,75,150,0.32)", margin: "rgba(58,75,150,0.5)",
     header: "#3a4b96", date: "rgba(58,75,150,0.88)", text: "#2d3b7a", foot: "rgba(58,75,150,0.85)",
@@ -9256,7 +9256,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(215,90,85,0.5)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#b52222", "#fffaf8", "#e8c860", "#fffaf8"],
     wash1: "rgba(240,160,150,0.28)", wash2: "rgba(230,205,195,0.28)", footE: "📮" , pat: nanaPat("☎️", "📮", 58, 0.07) , rule: "dot" },
-  { id: "tea", name: "下午茶信笺", e: "🫖", pick: 15, use: "三点钟歇一会儿", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
+  { id: "tea", name: "下午茶信笺", e: "🫖", pick: 1, use: "三点钟歇一会儿", css: "linear-gradient(160deg,#fffdf7,#f3e6ee)",
     out1: "#f5eef0", out2: "#eee2e8", p1: "#fffdfa", p2: "#f8eff3",
     line: "rgba(190,155,175,0.32)", margin: "rgba(175,130,155,0.5)",
     header: "#8a5570", date: "rgba(160,120,140,0.9)", text: "#5e4450", foot: "rgba(160,120,140,0.85)",
@@ -9273,7 +9273,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#c33a28", "#fffbf9", "#2b3a52", "#fffbf9"],
     wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" , pat: nanaPat("🚌", "🚏", 58, 0.07) , rule: "line" },
   // 🕹️ 电玩城信笺：深紫蓝的街机屏幕底 + 霓虹粉标题 + 霓虹青方格线 + 一层 CRT 扫描线，纸上淡淡铺着 👾🕹️，落款是一枚游戏币
-  { id: "arcade", dark: 1, name: "电玩城信笺", e: "🕹️", pick: 17, use: "一起去电玩城吧", css: "linear-gradient(160deg,#2a1a5e,#ff5fd2)",
+  { id: "arcade", dark: 1, name: "电玩城信笺", e: "🕹️", pick: 23, use: "一起去电玩城吧", css: "linear-gradient(160deg,#2a1a5e,#ff5fd2)",
     out1: "#5ff3ff", out2: "#ff5fd2", p1: "#22184f", p2: "#140f33",
     line: "rgba(95,243,255,0.2)", margin: "rgba(255,95,210,0.5)",
     header: "#ff6fd8", date: "rgba(95,243,255,0.92)", text: "#eef7ff", foot: "rgba(255,214,90,0.92)",
@@ -9283,7 +9283,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,95,210,0.2)", wash2: "rgba(95,243,255,0.16)", footE: "🪙",
     pat: "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px), " + nanaPat("👾", "🕹️", 58, 0.2), rule: "grid" },
   // 🍋 晴天柠檬：明亮柠檬黄 + 白色宽条纹，落款一片柠檬（比呼叫信笺的橙黄更亮更冷）
-  { id: "lemon", name: "晴天柠檬信笺", e: "🍋", pick: 18, use: "天气好得冒泡", css: "linear-gradient(160deg,#fffbd0,#fff06a)",
+  { id: "lemon", name: "晴天柠檬信笺", e: "🍋", pick: 7, use: "天气好得冒泡", css: "linear-gradient(160deg,#fffbd0,#fff06a)",
     out1: "#fff6a8", out2: "#ffe94a", p1: "#fffde6", p2: "#fff6a8",
     line: "rgba(200,170,0,0.3)", margin: "rgba(200,170,0,0.5)",
     header: "#9a7c00", date: "rgba(140,115,0,0.88)", text: "#4d4200", foot: "rgba(154,124,0,0.88)",
@@ -9293,7 +9293,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,240,106,0.3)", footE: "🍋",
     pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
   // 🍊 橘子汽水：浅橘底 + 白色斜条纹，落款一瓣橘子（和柠檬一个系列）
-  { id: "orange", name: "橘子汽水信笺", e: "🍊", pick: 19, use: "冒泡的橘子汽水", css: "linear-gradient(160deg,#fff1e0,#ffc27a)",
+  { id: "orange", name: "橘子汽水信笺", e: "🍊", pick: 10, use: "冒泡的橘子汽水", css: "linear-gradient(160deg,#fff1e0,#ffc27a)",
     out1: "#ffe2bf", out2: "#ffb260", p1: "#fff6ea", p2: "#ffe0bc",
     line: "rgba(230,130,30,0.28)", margin: "rgba(230,130,30,0.48)",
     header: "#c8640a", date: "rgba(180,95,15,0.88)", text: "#5a3008", foot: "rgba(200,100,10,0.88)",
@@ -9303,7 +9303,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,194,122,0.3)", footE: "🍊",
     pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
   // 🍑 水蜜桃：浅珊瑚桃色 + 白色斜条纹，落款一颗桃
-  { id: "peachy", name: "水蜜桃信笺", e: "🍑", pick: 20, use: "甜甜软软的一天", css: "linear-gradient(160deg,#ffece4,#ffab90)",
+  { id: "peachy", name: "水蜜桃信笺", e: "🍑", pick: 3, use: "甜甜软软的一天", css: "linear-gradient(160deg,#ffece4,#ffab90)",
     out1: "#ffdcd0", out2: "#ff9e80", p1: "#fff4ef", p2: "#ffdccf",
     line: "rgba(235,110,80,0.26)", margin: "rgba(235,110,80,0.46)",
     header: "#d9583a", date: "rgba(195,85,60,0.88)", text: "#5a2618", foot: "rgba(217,88,58,0.88)",
@@ -9313,7 +9313,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,171,144,0.3)", footE: "🍑",
     pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
   // 🍉 西瓜：浅西瓜红底 + 撒几颗小黑籽，底边一条绿瓜皮，落款一片西瓜
-  { id: "melon", name: "西瓜信笺", e: "🍉", pick: 21, use: "夏天的第一口西瓜", css: "linear-gradient(160deg,#ffe6e6,#ff8f8f)",
+  { id: "melon", name: "西瓜信笺", e: "🍉", pick: 6, use: "夏天的第一口西瓜", css: "linear-gradient(160deg,#ffe6e6,#ff8f8f)",
     out1: "#ffd6d6", out2: "#5cb85c", p1: "#fff3f2", p2: "#ffd9d7",
     line: "rgba(220,70,70,0.24)", margin: "rgba(220,70,70,0.42)",
     header: "#d23c3c", date: "rgba(180,55,55,0.88)", text: "#5a1e1e", foot: "rgba(60,140,60,0.9)",
@@ -9323,7 +9323,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,143,143,0.25)", footE: "🍉",
     pat: "linear-gradient(0deg, #5cb85c 0 7px, #b9e3a6 7px 11px, transparent 11px) 0 100% / 100% 11px no-repeat, " + nanaDust("#3a2a2a", 120, 0.35, 9), rule: "none" },
   // 🌼 芥末格纹：复古芥末黄 + 白色格子布，像野餐垫
-  { id: "mustard", name: "野餐格纹信笺", e: "🌼", pick: 28, use: "出去野餐吧", css: "linear-gradient(160deg,#fbecc0,#e3b53c)",
+  { id: "mustard", name: "野餐格纹信笺", e: "🌼", pick: 9, use: "出去野餐吧", css: "linear-gradient(160deg,#fbecc0,#e3b53c)",
     out1: "#f3d98a", out2: "#d9a82a", p1: "#fdf6e0", p2: "#f5e3a8",
     line: "rgba(170,120,10,0.24)", margin: "rgba(170,120,10,0.44)",
     header: "#8f6400", date: "rgba(120,85,0,0.88)", text: "#3f2e05", foot: "rgba(143,100,0,0.9)",
@@ -9333,7 +9333,7 @@ var NANA_LETTER_THEMES = [
     wash1: "rgba(255,255,255,0.45)", wash2: "rgba(227,181,60,0.25)", footE: "🌼",
     pat: "linear-gradient(90deg, rgba(255,255,255,0.32) 50%, transparent 50%) 0 0 / 28px 28px, linear-gradient(0deg, rgba(255,255,255,0.32) 50%, transparent 50%) 0 0 / 28px 28px", rule: "none" },
   // 🧀 猫捉老鼠 · 灰蓝猫毛：灰蓝底 + 奶酪黄小爪印，胶带是一条奶酪黄
-  { id: "tomcat", name: "猫捉老鼠信笺", e: "🐈‍⬛", pick: 25, use: "今天又在闹什么", css: "linear-gradient(160deg,#eef2f8,#a9b8cd)",
+  { id: "tomcat", name: "猫捉老鼠信笺", e: "🐈‍⬛", pick: 18, use: "今天又在闹什么", css: "linear-gradient(160deg,#eef2f8,#a9b8cd)",
     out1: "#d5deea", out2: "#8fa1ba", p1: "#f6f8fb", p2: "#dfe6ef",
     line: "rgba(90,110,140,0.24)", margin: "rgba(90,110,140,0.44)",
     header: "#4f6584", date: "rgba(70,90,120,0.88)", text: "#2c3646", foot: "rgba(79,101,132,0.9)",
