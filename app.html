@@ -8178,13 +8178,37 @@ var nanaAuthorById = function (id) {
 // 信号再好也会碰上，马上重发一般就通了。所以这类失败自动再试两次（0.7 秒、1.8 秒后）。
 // 寄信（POST 带 id）重试之前先问一句「这封到了没有」：第一下其实送到了、只是回执丢了，就直接算寄成功，不会寄出两封。
 var nanaNetErr = function (err) { return !!err && (err.name === "TypeError" || /Load failed|Failed to fetch|NetworkError|network connection was lost|Network request failed/i.test(String(err.message || err))); };
+// 📶 收信网络状态：连续几次取信（GET）都因为网络失败 = 网堵了。堵的时候不等 20 秒一轮，
+// 3、6、10、15、20 秒地再去取，一通马上把新信拉下来（安安静静地重试，界面上不挂提示）。
+var NANA_NET = { bad: 0, okAt: 0, failAt: 0 }, NANA_NET_TIMER = null;
+var nanaNetEmit = function () { try { window.dispatchEvent(new CustomEvent("nana-net", { detail: { bad: NANA_NET.bad, okAt: NANA_NET.okAt } })); } catch (_) {} };
+var nanaNetMark = function (ok) {
+  if (ok) { var was = NANA_NET.bad; NANA_NET.bad = 0; NANA_NET.okAt = Date.now(); if (NANA_NET_TIMER) { clearTimeout(NANA_NET_TIMER); NANA_NET_TIMER = null; } if (was) nanaNetEmit(); return; }
+  NANA_NET.bad++; NANA_NET.failAt = Date.now(); nanaNetEmit();
+  if (NANA_NET_TIMER) return;
+  var wait = [3000, 6000, 10000, 15000][NANA_NET.bad - 1] || 20000;
+  NANA_NET_TIMER = setTimeout(function () {
+    NANA_NET_TIMER = null;
+    if (!NANA_NET.bad) return;
+    if (document.hidden) return;                 // 后台不折腾，切回来会自己取
+    try { nanaSharedFetch(true); } catch (_) {}
+  }, wait);
+};
+// 手点「再试一次」：立刻取，不等退避
+var nanaNetRetryNow = function () { if (NANA_NET_TIMER) { clearTimeout(NANA_NET_TIMER); NANA_NET_TIMER = null; } try { nanaSharedFetch(true); } catch (_) {} };
 var nanaSyncReq = function (method, path, body, cb, attempt) {
   attempt = attempt || 0;
+  // 只给取信记账（寄信有待寄箱管）；只在最后一次结果出来时记，中途自动重试不算
+  if (method === "GET" && /^shared_notes/.test(String(path)) && !cb._nanaNet) {
+    var cb0 = cb;
+    cb = function (err, data) { nanaNetMark(!err || !/连不上|超时|HTTP 5|HTTP 0/.test(String(err && err.message))); cb0(err, data); };
+    cb._nanaNet = 1;
+  }
   try {
     var headers = { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "application/json" };
     if (method === "POST") headers["Prefer"] = "return=minimal";
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 12000) : null;
+    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, attempt ? 20000 : 12000) : null;
     var fin = false;
     var done = function (err, data) { if (fin) return; fin = true; if (timer) { clearTimeout(timer); timer = null; } cb(err, data); };
     var retry = function () {
@@ -8291,7 +8315,8 @@ var nanaSharedPeek = function () {
 try {
   setInterval(nanaSharedPeek, NANA_SHARED_PEEK);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(nanaSharedPeek, 400); });
-  window.addEventListener("online", function () { setTimeout(nanaSharedPeek, 600); });
+  window.addEventListener("online", function () { setTimeout(function () { if (NANA_NET.bad) nanaNetRetryNow(); else nanaSharedPeek(); }, 600); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && NANA_NET.bad) setTimeout(nanaNetRetryNow, 300); });
 } catch (_) {}
 // 后台全量对账：一页页全捞（老信、被删的信都以服务器为准），成了才替换手上那份；不占取新信那条路
 var NANA_RECON_BUSY = 0;
