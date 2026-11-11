@@ -9252,7 +9252,37 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(110,190,100,0.6)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#3f9e45", "#fff3f2", "#ff8f8f", "#fff3f2"],
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,143,143,0.25)", footE: "🍉",
-    pat: "linear-gradient(0deg, #5cb85c 0 7px, #b9e3a6 7px 11px, transparent 11px) 0 100% / 100% 11px no-repeat, " + nanaDust("#3a2a2a", 120, 0.35, 9), rule: "none" }
+    pat: "linear-gradient(0deg, #5cb85c 0 7px, #b9e3a6 7px 11px, transparent 11px) 0 100% / 100% 11px no-repeat, " + nanaDust("#3a2a2a", 120, 0.35, 9), rule: "none" },
+  // 🌻 向日葵：暖金黄，比柠檬更暖更深一点，纸上很淡地开几朵向日葵
+  { id: "sunflower", name: "向日葵信笺", e: "🌻", pick: 22, use: "今天也朝着太阳", css: "linear-gradient(160deg,#fff4cc,#ffc93c)",
+    out1: "#ffe7a0", out2: "#ffbe2e", p1: "#fffaea", p2: "#ffefbf",
+    line: "rgba(205,140,0,0.28)", margin: "rgba(205,140,0,0.48)",
+    header: "#b07400", date: "rgba(150,100,0,0.88)", text: "#4a3205", foot: "rgba(176,116,0,0.9)",
+    stamp: "🌻", stampBg: "#fffaea", stampBd: "rgba(205,140,0,0.8)", wm: "🌻", wmA: 0.08,
+    tapeA: "rgba(255,190,46,0.65)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#e0a000", "#fffaea", "#ffc93c", "#fffaea"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(255,201,60,0.28)", footE: "🌻",
+    pat: nanaPat("🌻", "🌼", 96, 0.1), rule: "line" },
+  // 🐥 小黄鸡：奶油黄 + 白色小圆点，点点格，邮戳边是小鸡嘴的橘色
+  { id: "chick", name: "小黄鸡信笺", e: "🐥", pick: 23, use: "叽叽喳喳说点什么", css: "linear-gradient(160deg,#fffbe6,#ffe38a)",
+    out1: "#fff1b8", out2: "#ffd95e", p1: "#fffdf2", p2: "#fff3c4",
+    line: "rgba(215,165,20,0.32)", margin: "rgba(240,140,60,0.5)",
+    header: "#c98a00", date: "rgba(160,115,10,0.88)", text: "#4d3d10", foot: "rgba(232,128,48,0.9)",
+    stamp: "🐥", stampBg: "#fffdf2", stampBd: "rgba(240,140,60,0.8)", wm: "🐣", wmA: 0.08,
+    tapeA: "rgba(255,170,90,0.55)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#f08c3c", "#fffdf2", "#ffd95e", "#fffdf2"],
+    wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,227,138,0.3)", footE: "🐥",
+    pat: "radial-gradient(circle, rgba(255,255,255,0.85) 0 3px, transparent 3.6px) 0 0 / 24px 24px, radial-gradient(circle, rgba(255,255,255,0.85) 0 3px, transparent 3.6px) 12px 12px / 24px 24px", rule: "dot" },
+  // 🍯 蜂蜜：琥珀蜂蜜色 + 很淡的蜂巢格，不画线
+  { id: "honey", name: "蜂蜜信笺", e: "🍯", pick: 24, use: "甜到心里", css: "linear-gradient(160deg,#fff1d0,#f5b947)",
+    out1: "#ffe0a0", out2: "#eea52a", p1: "#fff8e8", p2: "#ffe7b5",
+    line: "rgba(190,120,10,0.26)", margin: "rgba(190,120,10,0.46)",
+    header: "#a8650a", date: "rgba(140,85,5,0.88)", text: "#4a2c05", foot: "rgba(168,101,10,0.9)",
+    stamp: "🍯", stampBg: "#fff8e8", stampBd: "rgba(190,120,10,0.8)", wm: "🐝", wmA: 0.08,
+    tapeA: "rgba(238,165,42,0.6)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#c97f10", "#fff8e8", "#f5b947", "#fff8e8"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(245,185,71,0.28)", footE: "🍯",
+    pat: "url(\"data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='42' height='72'><path d='M21 48L0 36L0 12L21 0L42 12L42 36L21 48L21 72' fill='none' stroke='#c98a1a' stroke-opacity='0.16' stroke-width='1.3'/></svg>") + "\")", rule: "none" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
