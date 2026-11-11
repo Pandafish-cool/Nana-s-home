@@ -9282,7 +9282,17 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(238,165,42,0.6)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#c97f10", "#fff8e8", "#f5b947", "#fff8e8"],
     wash1: "rgba(255,255,255,0.45)", wash2: "rgba(245,185,71,0.28)", footE: "🍯",
-    pat: "url(\"data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='42' height='72'><path d='M21 48L0 36L0 12L21 0L42 12L42 36L21 48L21 72' fill='none' stroke='#c98a1a' stroke-opacity='0.16' stroke-width='1.3'/></svg>") + "\")", rule: "none" }
+    pat: "url(\"data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='42' height='72'><path d='M21 48L0 36L0 12L21 0L42 12L42 36L21 48L21 72' fill='none' stroke='#c98a1a' stroke-opacity='0.16' stroke-width='1.3'/></svg>") + "\")", rule: "none" },
+  // 🧀 猫捉老鼠：奶酪黄 + 奶酪上的小洞洞，邮戳是奶酪，水印一只小老鼠，落款小爪印
+  { id: "cheese", name: "猫捉老鼠信笺", e: "🧀", pick: 25, use: "今天又在闹什么", css: "linear-gradient(160deg,#fff3b8,#ffcf4a)",
+    out1: "#ffe68a", out2: "#ffc233", p1: "#fffbe2", p2: "#fff0a8",
+    line: "rgba(200,140,0,0.28)", margin: "rgba(200,140,0,0.48)",
+    header: "#b37800", date: "rgba(150,100,0,0.88)", text: "#4a3405", foot: "rgba(150,100,60,0.9)",
+    stamp: "🧀", stampBg: "#fffbe2", stampBd: "rgba(200,140,0,0.8)", wm: "🐭", wmA: 0.09,
+    tapeA: "rgba(150,170,200,0.55)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#8a9bb5", "#fffbe2", "#ffcf4a", "#fffbe2"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(255,207,74,0.28)", footE: "🐾",
+    pat: "url(\"data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='22' cy='26' r='9' fill='#e0a400' fill-opacity='0.16'/><circle cx='24.25' cy='28.25' r='6.75' fill='#fff8d8' fill-opacity='0.35'/><circle cx='78' cy='14' r='5' fill='#e0a400' fill-opacity='0.16'/><circle cx='79.25' cy='15.25' r='3.75' fill='#fff8d8' fill-opacity='0.35'/><circle cx='112' cy='40' r='11' fill='#e0a400' fill-opacity='0.16'/><circle cx='114.75' cy='42.75' r='8.25' fill='#fff8d8' fill-opacity='0.35'/><circle cx='50' cy='70' r='6' fill='#e0a400' fill-opacity='0.16'/><circle cx='51.5' cy='71.5' r='4.5' fill='#fff8d8' fill-opacity='0.35'/><circle cx='92' cy='92' r='13' fill='#e0a400' fill-opacity='0.16'/><circle cx='95.25' cy='95.25' r='9.75' fill='#fff8d8' fill-opacity='0.35'/><circle cx='20' cy='112' r='7' fill='#e0a400' fill-opacity='0.16'/><circle cx='21.75' cy='113.75' r='5.25' fill='#fff8d8' fill-opacity='0.35'/><circle cx='130' cy='124' r='4' fill='#e0a400' fill-opacity='0.16'/><circle cx='131' cy='125' r='3' fill='#fff8d8' fill-opacity='0.35'/><circle cx='62' cy='128' r='5' fill='#e0a400' fill-opacity='0.16'/><circle cx='63.25' cy='129.25' r='3.75' fill='#fff8d8' fill-opacity='0.35'/></svg>") + "\")", rule: "line" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
