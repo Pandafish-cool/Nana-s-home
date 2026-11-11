@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-336";
+var NANA_VER = "v2026.8.2-337";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -8178,13 +8178,37 @@ var nanaAuthorById = function (id) {
 // 信号再好也会碰上，马上重发一般就通了。所以这类失败自动再试两次（0.7 秒、1.8 秒后）。
 // 寄信（POST 带 id）重试之前先问一句「这封到了没有」：第一下其实送到了、只是回执丢了，就直接算寄成功，不会寄出两封。
 var nanaNetErr = function (err) { return !!err && (err.name === "TypeError" || /Load failed|Failed to fetch|NetworkError|network connection was lost|Network request failed/i.test(String(err.message || err))); };
+// 📶 收信网络状态：连续几次取信（GET）都因为网络失败 = 网堵了。堵的时候不等 20 秒一轮，
+// 3、6、10、15、20 秒地再去取，一通马上把新信拉下来（安安静静地重试，界面上不挂提示）。
+var NANA_NET = { bad: 0, okAt: 0, failAt: 0 }, NANA_NET_TIMER = null;
+var nanaNetEmit = function () { try { window.dispatchEvent(new CustomEvent("nana-net", { detail: { bad: NANA_NET.bad, okAt: NANA_NET.okAt } })); } catch (_) {} };
+var nanaNetMark = function (ok) {
+  if (ok) { var was = NANA_NET.bad; NANA_NET.bad = 0; NANA_NET.okAt = Date.now(); if (NANA_NET_TIMER) { clearTimeout(NANA_NET_TIMER); NANA_NET_TIMER = null; } if (was) nanaNetEmit(); return; }
+  NANA_NET.bad++; NANA_NET.failAt = Date.now(); nanaNetEmit();
+  if (NANA_NET_TIMER) return;
+  var wait = [3000, 6000, 10000, 15000][NANA_NET.bad - 1] || 20000;
+  NANA_NET_TIMER = setTimeout(function () {
+    NANA_NET_TIMER = null;
+    if (!NANA_NET.bad) return;
+    if (document.hidden) return;                 // 后台不折腾，切回来会自己取
+    try { nanaSharedFetch(true); } catch (_) {}
+  }, wait);
+};
+// 手点「再试一次」：立刻取，不等退避
+var nanaNetRetryNow = function () { if (NANA_NET_TIMER) { clearTimeout(NANA_NET_TIMER); NANA_NET_TIMER = null; } try { nanaSharedFetch(true); } catch (_) {} };
 var nanaSyncReq = function (method, path, body, cb, attempt) {
   attempt = attempt || 0;
+  // 只给取信记账（寄信有待寄箱管）；只在最后一次结果出来时记，中途自动重试不算
+  if (method === "GET" && /^shared_notes/.test(String(path)) && !cb._nanaNet) {
+    var cb0 = cb;
+    cb = function (err, data) { nanaNetMark(!err || !/连不上|超时|HTTP 5|HTTP 0/.test(String(err && err.message))); cb0(err, data); };
+    cb._nanaNet = 1;
+  }
   try {
     var headers = { "apikey": NANA_SYNC.key, "Authorization": "Bearer " + NANA_SYNC.key, "Content-Type": "application/json" };
     if (method === "POST") headers["Prefer"] = "return=minimal";
     var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, 12000) : null;
+    var timer = ctrl ? setTimeout(function () { try { ctrl.abort(); } catch (_) {} }, attempt ? 20000 : 12000) : null;
     var fin = false;
     var done = function (err, data) { if (fin) return; fin = true; if (timer) { clearTimeout(timer); timer = null; } cb(err, data); };
     var retry = function () {
@@ -8291,7 +8315,8 @@ var nanaSharedPeek = function () {
 try {
   setInterval(nanaSharedPeek, NANA_SHARED_PEEK);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(nanaSharedPeek, 400); });
-  window.addEventListener("online", function () { setTimeout(nanaSharedPeek, 600); });
+  window.addEventListener("online", function () { setTimeout(function () { if (NANA_NET.bad) nanaNetRetryNow(); else nanaSharedPeek(); }, 600); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && NANA_NET.bad) setTimeout(nanaNetRetryNow, 300); });
 } catch (_) {}
 // 后台全量对账：一页页全捞（老信、被删的信都以服务器为准），成了才替换手上那份；不占取新信那条路
 var NANA_RECON_BUSY = 0;
@@ -8689,6 +8714,48 @@ var nanaFetchWhole = function (ver) {
     return t;
   });
 };
+// 🛰 备用下载：github.io 从国内连常常断，同一份页面在 jsDelivr（公共 CDN）上也有一份。
+// 每次上线后，线上会多一个 cdn.txt，写着「版本号 + 那次提交的编号」；按提交编号取的文件永远不会变，也不会拿到旧缓存。
+// cdn.txt 先问 github.io（就几十个字节），问不到再问 jsDelivr；然后三个节点一起下，谁先下完、验过合格就用谁。
+var NANA_CDN_HOSTS = ["gcore.jsdelivr.net", "fastly.jsdelivr.net", "cdn.jsdelivr.net"];
+var NANA_CDN_REPO = "gh/Pandafish-cool/Nana-s-home";
+var nanaRaceCdn = function (path, ms, take) {
+  return new Promise(function (resolve, reject) {
+    var left = NANA_CDN_HOSTS.length, won = false, why = "";
+    NANA_CDN_HOSTS.forEach(function (host) {
+      nanaFetchT("https://" + host + "/" + NANA_CDN_REPO + path, { cache: "no-store" }, ms).then(function (r) {
+        if (!r || !r.ok) throw new Error("备用地址没有" + (r ? "（" + r.status + "）" : ""));
+        return r.text();
+      }).then(take).then(function (v) { if (!won) { won = true; resolve(v); } })["catch"](function (e) {
+        why = (e && e.message) || why;
+        if (--left === 0 && !won) reject(new Error(why || "备用地址没下成"));
+      });
+    });
+  });
+};
+var nanaFetchCdn = function (ver) {
+  var sha = function (t) {
+    var m = String(t || "").trim().match(/^(v[\w.\-]+)\s+([0-9a-f]{7,40})$/);
+    if (!m || m[1] !== ver) throw new Error("备用地址还没换到 " + ver);
+    return m[2];
+  };
+  return nanaFetchT("cdn.txt?t=" + Date.now(), { cache: "no-store" }, 15000).then(function (r) {
+    if (!r || !r.ok) throw new Error("x"); return r.text();
+  }).then(sha)["catch"](function () {
+    return nanaRaceCdn("@main/cdn.txt", 20000, sha);
+  }).then(function (id) {
+    return nanaRaceCdn("@" + id + "/app.html", 60000, function (t) { var bad = nanaHtmlCheck(t, ver); if (bad) throw new Error(bad); return t; });
+  });
+};
+// 线上版本号：先问 github.io，问不到再问 jsDelivr 上 main 分支那份（可能晚几个小时，但总比没有强）
+var nanaFetchVer = function () {
+  var pick = function (r) { return r && r.ok ? r.text().then(function (t) { t = String(t || "").trim(); if (!t || t.length > 40 || !/^v\d/.test(t)) throw new Error("bad"); return t; }) : Promise.reject(new Error("bad")); };
+  return nanaFetchT("version.txt?t=" + Date.now(), { cache: "no-store" }, 20000).then(pick)["catch"](function () {
+    return nanaRaceCdn("@main/version.txt", 20000, function (t) { return pick({ ok: true, text: function () { return Promise.resolve(t); } }); });
+  });
+};
+// 版本号比大小：只比最后那串数字（v2026.8.2-336 → 336）。线上的比手上的旧（备用地址缓存还没刷新）就当没有新版
+var nanaVerNum = function (v) { var m = String(v || "").match(/-(\d+)\s*$/); return m ? +m[1] : 0; };
 // 分段下、而且下到哪算哪：线上另放一份一模一样的 index.bin（不压缩，好按字节切），
 // 每次拿 256KB，拿到一段就存进 Cache Storage。小屋开一下就关也没关系，下次打开接着下没下完的段。
 // 服务器不认 Range（回 200）就当整页收下。
@@ -8783,12 +8850,10 @@ var nanaFetchParts = function (ver, onProgress) {
     if (!force && now < nextTry) return;                // 上次没下成，按退避等一等
     last = now; busy = 1; busyAt = now;
     nanaUpdSet("checking", "正在问线上版本…");
-    nanaFetchT("version.txt?t=" + Date.now(), { cache: "no-store" }, 20000).then(function (r) {
-      return r && r.ok ? r.text() : null;
-    }).then(function (t) {
+    nanaFetchVer()["catch"](function () { return null; }).then(function (t) {
       t = t ? String(t).trim() : "";
       if (!t || t.length > 40) { nanaUpdSet("err", "线上版本没拿到，网可能不太好"); return; }
-      if (t === NANA_VER) { fails = 0; nanaUpdSet("ok", "已是最新", t); return; }
+      if (t === NANA_VER || (nanaVerNum(t) && nanaVerNum(t) < nanaVerNum(NANA_VER))) { fails = 0; nanaUpdSet("ok", "已是最新", t === NANA_VER ? t : NANA_VER); return; }
       var done = "";
       try { done = sessionStorage.getItem("nana-upd") || ""; } catch (_) {}
       if (done === t && !force) { nanaUpdSet("ok", "已经换成 " + t + " 了，关掉小屋重开一次就是新的", t); return; }   // 同一版本只自动重载一次，防止打转
@@ -8797,9 +8862,13 @@ var nanaFetchParts = function (ver, onProgress) {
       // 先整页拿：app.html 走服务器压缩，只有 0.8MB 左右，一趟就回来；
       // 整页断在半路（跨境链路常见）再分段下 index.bin —— 那份不压缩（2.6MB），但断了能接着下
       return nanaFetchWhole(t)["catch"](function (e1) {
-        if (typeof TextDecoder === "undefined") throw e1;
-        nanaUpdSet("downloading", "整页没下完（" + ((e1 && e1.message) || "") + "），换成分段下…", t);
-        return nanaFetchParts(t, prog);
+        if (e1 && /还没换到/.test(e1.message || "")) throw e1;
+        nanaUpdSet("downloading", "整页没下完（" + ((e1 && e1.message) || "") + "），换备用地址下…", t);
+        return nanaFetchCdn(t)["catch"](function (e2) {
+          if (typeof TextDecoder === "undefined") throw e2;
+          nanaUpdSet("downloading", "备用地址也没下成，换成分段下…", t);
+          return nanaFetchParts(t, prog);
+        });
       }).then(function (html) { return install(html, t); })["catch"](function (e) {
         fails++;
         nextTry = Date.now() + Math.min(20 * 60000, 60000 * Math.pow(2, fails - 1));   // 1、2、4、8、16、20 分钟
