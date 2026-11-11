@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-334";
+var NANA_VER = "v2026.8.2-335";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9222,7 +9222,17 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,233,74,0.7)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#f2cf00", "#fffde6", "#fff06a", "#fffde6"],
     wash1: "rgba(255,255,255,0.5)", wash2: "rgba(255,240,106,0.3)", footE: "🍋",
-    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" }
+    pat: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 14px, transparent 14px 30px)", rule: "line" },
+  // 🧀 猫捉老鼠 · 灰蓝猫毛：灰蓝底 + 奶酪黄小爪印，胶带是一条奶酪黄
+  { id: "tomcat", name: "猫捉老鼠信笺", e: "🐈‍⬛", pick: 19, use: "今天又在闹什么", css: "linear-gradient(160deg,#eef2f8,#a9b8cd)",
+    out1: "#d5deea", out2: "#8fa1ba", p1: "#f6f8fb", p2: "#dfe6ef",
+    line: "rgba(90,110,140,0.24)", margin: "rgba(90,110,140,0.44)",
+    header: "#4f6584", date: "rgba(70,90,120,0.88)", text: "#2c3646", foot: "rgba(79,101,132,0.9)",
+    stamp: "🧀", stampBg: "#fff8dc", stampBd: "rgba(230,180,40,0.85)", wm: "🐭", wmA: 0.09,
+    tapeA: "rgba(255,210,80,0.7)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#6f84a3", "#f6f8fb", "#ffd250", "#f6f8fb"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(169,184,205,0.28)", footE: "🐾",
+    pat: nanaPat("🐾", "🧀", 96, 0.1), rule: "line" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
