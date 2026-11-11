@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-335";
+var NANA_VER = "v2026.8.2-336";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9232,7 +9232,17 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,210,80,0.7)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#6f84a3", "#f6f8fb", "#ffd250", "#f6f8fb"],
     wash1: "rgba(255,255,255,0.45)", wash2: "rgba(169,184,205,0.28)", footE: "🐾",
-    pat: nanaPat("🐾", "🧀", 96, 0.1), rule: "line" }
+    pat: nanaPat("🐾", "🧀", 96, 0.1), rule: "line" },
+  // 🌼 芥末格纹：复古芥末黄 + 白色格子布，像野餐垫
+  { id: "mustard", name: "野餐格纹信笺", e: "🌼", pick: 20, use: "出去野餐吧", css: "linear-gradient(160deg,#fbecc0,#e3b53c)",
+    out1: "#f3d98a", out2: "#d9a82a", p1: "#fdf6e0", p2: "#f5e3a8",
+    line: "rgba(170,120,10,0.24)", margin: "rgba(170,120,10,0.44)",
+    header: "#8f6400", date: "rgba(120,85,0,0.88)", text: "#3f2e05", foot: "rgba(143,100,0,0.9)",
+    stamp: "🌼", stampBg: "#fdf6e0", stampBd: "rgba(170,120,10,0.8)", wm: "🧺", wmA: 0.08,
+    tapeA: "rgba(255,255,255,0.75)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#b8860b","#fdf6e0","#e3b53c","#fdf6e0"],
+    wash1: "rgba(255,255,255,0.45)", wash2: "rgba(227,181,60,0.25)", footE: "🌼",
+    pat: "linear-gradient(90deg, rgba(255,255,255,0.32) 50%, transparent 50%) 0 0 / 28px 28px, linear-gradient(0deg, rgba(255,255,255,0.32) 50%, transparent 50%) 0 0 / 28px 28px", rule: "none" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
