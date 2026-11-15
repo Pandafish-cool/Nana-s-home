@@ -9075,16 +9075,17 @@ var NANA_LETTER_THEMES = [
     stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
     wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
-  // 🌌 星夜：改成星空渐变 —— 最上面是深夜的靛蓝，中间紫，最下面透出一点天边的粉紫；撒大小不一的星星，不画格子
-  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 30, use: "夜深了", css: "linear-gradient(160deg,#1f2456,#8a6fc0)",
-    out1: "#2a2f6a", out2: "#9b7fd0", p1: "#232a62", p2: "#7e68b8",
+  // 🌌 星夜：深夜的藏蓝，上深下略浅（不走梦幻的粉紫）；纸上是一颗颗四角星光，带一圈淡淡的光晕，再撒细碎的小星点
+  // 🌌 星夜：深夜的藏蓝，上深下略浅（不走梦幻的粉紫）；纸上是一颗颗四角星光，带一圈淡淡的光晕，再撒细碎的小星点
+  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 30, use: "夜深了", css: "linear-gradient(160deg,#141a44,#3a3f86)",
+    out1: "#1b2152", out2: "#454a96", p1: "#161c48", p2: "#343a7c",
     line: "rgba(0,0,0,0)", margin: "rgba(0,0,0,0)",
-    header: "#cfc8ff", date: "rgba(205,198,250,0.88)", text: "#f1eeff", foot: "rgba(215,205,255,0.85)",
-    stamp: "🌙", stampBg: "#cfc4f2", stampBd: "rgba(170,155,235,0.8)", wm: "✦", wmA: 0.16,
-    tapeA: "rgba(170,150,235,0.55)", tapeB: "rgba(255,255,255,0.4)",
-    stripes: ["#8f84e0", "#232a62", "#c3a4ea", "#232a62"],
-    wash1: "rgba(120,140,255,0.14)", wash2: "rgba(255,190,230,0.14)", footE: "🌠",
-    pat: nanaDust("#ffffff", 130, 0.95, 26) + ", " + nanaDust("#ffe9a8", 210, 0.9, 7) + ", linear-gradient(180deg, #1f2456 0%, #3b2f7e 42%, #6a53ad 76%, #a983cf 100%)", rule: "none" },
+    header: "#c9cdf8", date: "rgba(200,205,248,0.88)", text: "#eef0ff", foot: "rgba(210,214,250,0.85)",
+    stamp: "🌙", stampBg: "#c6caf0", stampBd: "rgba(150,160,235,0.8)", wm: "✦", wmA: 0.16,
+    tapeA: "rgba(140,150,230,0.55)", tapeB: "rgba(255,255,255,0.4)",
+    stripes: ["#7f88e0", "#161c48", "#ffe9a8", "#161c48"],
+    wash1: "rgba(120,140,255,0.12)", wash2: "rgba(150,160,255,0.1)", footE: "🌠",
+    pat: "url(\"data:image/svg+xml," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='250' height='230'><circle cx='30' cy='34' r='9' fill='#ffffff' opacity='0.091'/><path d='M30 28 Q31.32 32.68 36 34 Q31.32 35.32 30 40 Q28.68 35.32 24 34 Q28.68 32.68 30 28 Z' fill='#ffffff' opacity='0.7'/><circle cx='196' cy='22' r='6' fill='#fff3c4' opacity='0.0845'/><path d='M196 18 Q196.88 21.12 200 22 Q196.88 22.88 196 26 Q195.12 22.88 192 22 Q195.12 21.12 196 18 Z' fill='#fff3c4' opacity='0.65'/><circle cx='128' cy='112' r='10.5' fill='#fff3c4' opacity='0.091'/><path d='M128 105 Q129.54 110.46 135 112 Q129.54 113.54 128 119 Q126.46 113.54 121 112 Q126.46 110.46 128 105 Z' fill='#fff3c4' opacity='0.7'/><circle cx='226' cy='150' r='6.75' fill='#ffffff' opacity='0.078'/><path d='M226 145.5 Q226.99 149.01 230.5 150 Q226.99 150.99 226 154.5 Q225.01 150.99 221.5 150 Q225.01 149.01 226 145.5 Z' fill='#ffffff' opacity='0.6'/><circle cx='62' cy='190' r='7.5' fill='#ffffff' opacity='0.078'/><path d='M62 185 Q63.1 188.9 67 190 Q63.1 191.1 62 195 Q60.9 191.1 57 190 Q60.9 188.9 62 185 Z' fill='#ffffff' opacity='0.6'/><circle cx='160' cy='206' r='4.800000000000001' fill='#fff3c4' opacity='0.07150000000000001'/><path d='M160 202.8 Q160.704 205.296 163.2 206 Q160.704 206.704 160 209.2 Q159.296 206.704 156.8 206 Q159.296 205.296 160 202.8 Z' fill='#fff3c4' opacity='0.55'/></svg>") + "\")" + ", " + nanaDust("#ffffff", 130, 0.6, 14), rule: "none" },
   // 炉火信笺换成了肉桂卷 —— 深烤棕，横线是波浪（像淋上去的糖霜）。
   // 以前用炉火写的信存的是 th:"hearth"，靠下面 themeById 里的映射落到这张，内容不会丢。
   { id: "cinn", name: "肉桂卷信笺", e: "🍪", pick: 16, use: "刚出炉的肉桂卷味", css: "linear-gradient(160deg,#f8e3ca,#dfb48a)",
