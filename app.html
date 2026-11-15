@@ -9075,7 +9075,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
     wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
-  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 29, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
+  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 30, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
     out1: "#b6a9c8", out2: "#9078ac", p1: "#3f396e", p2: "#302b58",
     line: "rgba(121,112,194,0.3)", margin: "rgba(121,112,194,0.45)",
     header: "#b4afdf", date: "rgba(180,175,223,0.85)", text: "#e2e0f0", foot: "rgba(180,175,223,0.8)",
@@ -9093,7 +9093,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(217,169,126,0.55)", tapeB: "rgba(255,255,255,0.8)",
     stripes: ["#96552a", "#f8e3ca", "#d9a97e", "#f8e3ca"],
     wash1: "rgba(230,185,135,0.3)", wash2: "rgba(248,227,202,0.28)", footE: "🍯" , pat: nanaDust("#7a3d0c", 96, 0.17, 34) , rule: "none" },
-  { id: "moon", name: "月光信笺", e: "🌙", pick: 27, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
+  { id: "moon", name: "月光信笺", e: "🌙", pick: 28, use: "月亮很亮的晚上", css: "linear-gradient(160deg,#d7ace2,#e6cff2)",
     out1: "#f0e6e8", out2: "#e6cff2", p1: "#e2cae8", p2: "#d7ace2",
     line: "rgba(167,88,187,0.3)", margin: "rgba(167,88,187,0.45)",
     header: "#763088", date: "rgba(118,48,136,0.85)", text: "#54255f", foot: "rgba(118,48,136,0.8)",
@@ -9101,7 +9101,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(230,207,242,0.5)", tapeB: "rgba(255,255,255,0.78)",
     stripes: ["#a758bb", "#d7ace2", "#e6cff2", "#d7ace2"],
     wash1: "rgba(230,207,242,0.18)", wash2: "rgba(240,230,232,0.15)", footE: "✨" , pat: nanaPat("🐇", "☁️", 60, 0.28) , rule: "none" },
-  { id: "star", name: "星空信笺", e: "✨", pick: 28, use: "看星星的时候", css: "linear-gradient(160deg,#e6cff2,#d7ace2)",
+  { id: "star", name: "星空信笺", e: "✨", pick: 29, use: "看星星的时候", css: "linear-gradient(160deg,#e6cff2,#d7ace2)",
     out1: "#f0e6e8", out2: "#d7ace2", p1: "#f4ecf8", p2: "#e6cff2",
     line: "rgba(153,88,187,0.3)", margin: "rgba(153,88,187,0.45)",
     header: "#6a3088", date: "rgba(106,48,136,0.85)", text: "#4b255f", foot: "rgba(106,48,136,0.8)",
@@ -9273,7 +9273,7 @@ var NANA_LETTER_THEMES = [
     stripes: ["#c33a28", "#fffbf9", "#2b3a52", "#fffbf9"],
     wash1: "rgba(255,175,155,0.28)", wash2: "rgba(240,215,205,0.28)", footE: "🚌" , pat: nanaPat("🚌", "🚏", 58, 0.07) , rule: "line" },
   // 🕹️ 电玩城信笺：深紫蓝的街机屏幕底 + 霓虹粉标题 + 霓虹青方格线 + 一层 CRT 扫描线，纸上淡淡铺着 👾🕹️，落款是一枚游戏币
-  { id: "arcade", dark: 1, name: "电玩城信笺", e: "🕹️", pick: 30, use: "一起去电玩城吧", css: "linear-gradient(160deg,#2a1a5e,#ff5fd2)",
+  { id: "arcade", dark: 1, name: "电玩城信笺", e: "🕹️", pick: 31, use: "一起去电玩城吧", css: "linear-gradient(160deg,#2a1a5e,#ff5fd2)",
     out1: "#5ff3ff", out2: "#ff5fd2", p1: "#22184f", p2: "#140f33",
     line: "rgba(95,243,255,0.2)", margin: "rgba(255,95,210,0.5)",
     header: "#ff6fd8", date: "rgba(95,243,255,0.92)", text: "#eef7ff", foot: "rgba(255,214,90,0.92)",
@@ -9411,7 +9411,17 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(255,170,200,0.55)", tapeB: "rgba(255,255,255,0.9)",
     stripes: ["#f79ab8","#ffffff","#ffdf78","#ffffff"],
     wash1: "rgba(255,255,255,0.4)", wash2: "rgba(255,255,255,0.25)", footE: "🍓",
-    pat: nanaPat("🍓", "🌼", 110, 0.1), rule: "none" }
+    pat: nanaPat("🍓", "🌼", 110, 0.1), rule: "none" },
+  // 🌇 傍晚：上面是天快黑时的淡紫，中间粉，最下面是落日的橘色；撒几颗刚出来的小星星
+  { id: "sunset", name: "傍晚信笺", e: "🌇", pick: 27, use: "太阳下山的时候", css: "linear-gradient(160deg,#cdbdf7,#ffc9a0)",
+    out1: "#b9a6f2", out2: "#ffb682", p1: "#d3c4f8", p2: "#ffd2a8",
+    line: "rgba(0,0,0,0)", margin: "rgba(0,0,0,0)",
+    header: "#8a62c4", date: "rgba(125,90,185,0.9)", text: "#7a55b0", foot: "rgba(215,120,70,0.92)",
+    stamp: "🌇", stampBg: "rgba(255,255,255,0.7)", stampBd: "rgba(240,150,110,0.8)", wm: "🌙", wmA: 0.09,
+    tapeA: "rgba(255,180,140,0.6)", tapeB: "rgba(255,255,255,0.9)",
+    stripes: ["#a78af0","#ffffff","#ffae7a","#ffffff"],
+    wash1: "rgba(255,255,255,0.3)", wash2: "rgba(255,255,255,0.2)", footE: "🌇",
+    pat: nanaDust("#ffffff", 120, 0.95, 14) + ", linear-gradient(180deg, #d3c4f8 0%, #f6bfd6 52%, #ffd2a8 100%)", rule: "none" }
 ];
 var nanaShareNote = function (note, theme, done) {
   var t = theme || NANA_LETTER_THEMES[0];
