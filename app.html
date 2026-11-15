@@ -9075,14 +9075,16 @@ var NANA_LETTER_THEMES = [
     stripes: ["#2c6aa0", "#eff6fb", "#8cc8f7", "#eff6fb"],
     wash1: "rgba(170,217,253,0.22)", wash2: "rgba(239,246,251,0.18)", footE: "✉️" , rule: "line" },
 
-  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 30, use: "夜深了", css: "linear-gradient(160deg,#302b58,#9078ac)",
-    out1: "#b6a9c8", out2: "#9078ac", p1: "#3f396e", p2: "#302b58",
-    line: "rgba(121,112,194,0.3)", margin: "rgba(121,112,194,0.45)",
-    header: "#b4afdf", date: "rgba(180,175,223,0.85)", text: "#e2e0f0", foot: "rgba(180,175,223,0.8)",
-    stamp: "🌙", stampBg: "#b6a9c8", stampBd: "rgba(121,112,194,0.7)", wm: "✦", wmA: 0.16,
-    tapeA: "rgba(144,120,172,0.5)", tapeB: "rgba(255,255,255,0.4)",
-    stripes: ["#7970c2", "#302b58", "#9078ac", "#302b58"],
-    wash1: "rgba(144,120,172,0.18)", wash2: "rgba(182,169,200,0.15)", footE: "🌠" , rule: "dot" },
+  // 🌌 星夜：改成星空渐变 —— 最上面是深夜的靛蓝，中间紫，最下面透出一点天边的粉紫；撒大小不一的星星，不画格子
+  { id: "night", dark: 1, name: "星夜信笺", e: "🌌", pick: 30, use: "夜深了", css: "linear-gradient(160deg,#1f2456,#8a6fc0)",
+    out1: "#2a2f6a", out2: "#9b7fd0", p1: "#232a62", p2: "#7e68b8",
+    line: "rgba(0,0,0,0)", margin: "rgba(0,0,0,0)",
+    header: "#cfc8ff", date: "rgba(205,198,250,0.88)", text: "#f1eeff", foot: "rgba(215,205,255,0.85)",
+    stamp: "🌙", stampBg: "#cfc4f2", stampBd: "rgba(170,155,235,0.8)", wm: "✦", wmA: 0.16,
+    tapeA: "rgba(170,150,235,0.55)", tapeB: "rgba(255,255,255,0.4)",
+    stripes: ["#8f84e0", "#232a62", "#c3a4ea", "#232a62"],
+    wash1: "rgba(120,140,255,0.14)", wash2: "rgba(255,190,230,0.14)", footE: "🌠",
+    pat: nanaDust("#ffffff", 130, 0.95, 26) + ", " + nanaDust("#ffe9a8", 210, 0.9, 7) + ", linear-gradient(180deg, #1f2456 0%, #3b2f7e 42%, #6a53ad 76%, #a983cf 100%)", rule: "none" },
   // 炉火信笺换成了肉桂卷 —— 深烤棕，横线是波浪（像淋上去的糖霜）。
   // 以前用炉火写的信存的是 th:"hearth"，靠下面 themeById 里的映射落到这张，内容不会丢。
   { id: "cinn", name: "肉桂卷信笺", e: "🍪", pick: 16, use: "刚出炉的肉桂卷味", css: "linear-gradient(160deg,#f8e3ca,#dfb48a)",
