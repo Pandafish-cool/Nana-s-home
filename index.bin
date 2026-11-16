@@ -8161,7 +8161,7 @@ function NanaLightbox(_refLB) {
 }
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
-var NANA_VER = "v2026.8.2-350";
+var NANA_VER = "v2026.8.2-351";
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -9124,7 +9124,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(180,222,130,0.55)", tapeB: "rgba(255,255,255,0.85)",
     stripes: ["#86bb50", "#ffffff", "#a6c894", "#ffffff"],
     wash1: "rgba(255,255,255,0.4)", wash2: "rgba(255,255,255,0.22)", footE: "🌱",
-    pat: nanaPat("🫧", "🍃", 100, 0.1), rule: "none" },
+    pat: nanaPat("🫧", "🍃", 100, 0.1) + ", linear-gradient(90deg, rgba(255,255,255,0.34) 50%, transparent 50%) 0 0 / 28px 28px, linear-gradient(0deg, rgba(255,255,255,0.34) 50%, transparent 50%) 0 0 / 28px 28px", rule: "none" },
   { id: "brit", name: "英伦信笺", e: "🌹", pick: 4, use: "想你的时候", css: "linear-gradient(160deg,#e8bcc3,#b7c9d3)",
     out1: "#f0e6e8", out2: "#b7c9d3", p1: "#efd9dc", p2: "#e8bcc3",
     line: "rgba(187,88,104,0.3)", margin: "rgba(187,88,104,0.45)",
@@ -9226,7 +9226,7 @@ var NANA_LETTER_THEMES = [
     tapeA: "rgba(180,222,130,0.55)", tapeB: "rgba(255,255,255,0.85)",
     stripes: ["#86bb50", "#ffffff", "#a6c894", "#ffffff"],
     wash1: "rgba(255,255,255,0.4)", wash2: "rgba(255,255,255,0.22)", footE: "🌱",
-    pat: nanaPat("🫧", "🍃", 100, 0.1), rule: "none" },
+    pat: nanaPat("🫧", "🍃", 100, 0.1) + ", linear-gradient(90deg, rgba(255,255,255,0.34) 50%, transparent 50%) 0 0 / 28px 28px, linear-gradient(0deg, rgba(255,255,255,0.34) 50%, transparent 50%) 0 0 / 28px 28px", rule: "none" },
 
   { id: "dog", name: "狗狗信笺", e: "🐕", pick: 5, use: "想说点傻话", css: "linear-gradient(160deg,#fed0d6,#ff82a2)",
     out1: "#e8bcc3", out2: "#ff82a2", p1: "#fdf1f3", p2: "#fed0d6",
