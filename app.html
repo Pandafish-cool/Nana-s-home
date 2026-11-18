@@ -28142,7 +28142,7 @@ function BakerFacade(_refBF) {
   } catch (_) {} return nanaWxWall(wx); })();
   var wallFill = { butter: "url(#bfWButter)", honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
   var wallPainted = NK_WALL === "butter" || NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
-  if (SUN) { wallFill = "url(#bfWSun)"; wallPainted = true; }
+  if (SUN) { wallFill = "url(#bfWVilla)"; wallPainted = false; }
   // 门牌样式（预览用 ?plaque= 切换：圆牌 blue 英国蓝 / wine 酒红 / cream 奶油白 / mustard 芥末黄 / green 墨绿；street 伦敦搪瓷路牌）
   var PLQ = (function () { var k = "street"; try { var q = (location.search || "").match(/[?&]plaque=(\w+)/); if (q) k = q[1]; } catch (_) {}
     return { blue: { bg: "#1f4f8f", ring: "#f7f3ea", t1: "#ffffff", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#7d9fc8" },
@@ -28190,39 +28190,47 @@ function BakerFacade(_refBF) {
       h("linearGradient", { id: "bfWSage", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdac9" }), h("stop", { offset: "100%", stopColor: "#bccbb5" })),
       h("linearGradient", { id: "bfWBlue", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d3dee5" }), h("stop", { offset: "100%", stopColor: "#c0cfd9" })),
       h("linearGradient", { id: "bfWPink", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f2dcd5" }), h("stop", { offset: "100%", stopColor: "#e8cac2" })),
-      h("linearGradient", { id: "bfWMint", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d2f6ee" }), h("stop", { offset: "100%", stopColor: "#b4ecdf" })),
+      h("linearGradient", { id: "bfWMint", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f4ede2" }), h("stop", { offset: "100%", stopColor: "#e7dccb" })),
+      h("linearGradient", { id: "bfWVilla", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffffff" }), h("stop", { offset: "100%", stopColor: "#f3efe9" })),
+      h("pattern", { id: "bfSlat", width: 6, height: 10, patternUnits: "userSpaceOnUse" }, h("rect", { width: 6, height: 10, fill: "#b98a5e" }), h("rect", { x: 4.6, y: 0, width: 1.4, height: 10, fill: "#8f6540" }), h("rect", { x: 0, y: 0, width: 1, height: 10, fill: "#caa07a" })),
       h("linearGradient", { id: "bfWSun", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffc4d6" }), h("stop", { offset: "100%", stopColor: "#ff9ebd" })),
       h("linearGradient", { id: "bfSunDisc", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#fff2a8" }), h("stop", { offset: "55%", stopColor: "#ffb36b" }), h("stop", { offset: "100%", stopColor: "#ff5fa2" })),
       h("linearGradient", { id: "bfIvory", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6f1e7" }), h("stop", { offset: "100%", stopColor: "#ebe4d6" })),
       h("pattern", { id: "bfRust2", width: 60, height: 30, patternUnits: "userSpaceOnUse" }, h("rect", { x: 0, y: 29, width: 60, height: 1, fill: "rgba(0,0,0,0.05)" })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
-    // 🌴 日落皮肤的背景：一轮横条纹的落日 + 两棵棕榈剪影，画在楼后面
+    // 🌴 日落皮肤的背景：一轮横条纹的落日、左边一棵棕榈剪影、右边山坡顶上一座三个圆顶的天文台，都画在楼后面
     SUN ? h("g", { style: { pointerEvents: "none" } },
-      h("circle", { cx: 180, cy: 62, r: 96, fill: "#ffb36b", opacity: 0.18 }),
-      h("circle", { cx: 180, cy: 62, r: 76, fill: "url(#bfSunDisc)" }),
-      [70, 84, 97, 109, 120, 130].map(function (yy, i) { return h("rect", { key: "ss" + i, x: 100, y: yy, width: 160, height: 2.2 + i * 0.9, fill: isNight ? "#4a1a70" : "#c9458f", opacity: 0.85 }); }),
-      h("g", { transform: "translate(12 216) scale(1 1)", style: { transformOrigin: "0 0" } }, h("path", { d: "M0 0 C2 -50 -6 -110 8 -168", fill: "none", stroke: "#2a0f4a", strokeWidth: 5, strokeLinecap: "round" }), ["M8 -168 C-12 -186 -36 -184 -52 -166 C-34 -174 -14 -172 8 -168 Z","M8 -168 C-6 -196 -30 -206 -50 -198 C-30 -196 -10 -186 8 -168 Z","M8 -168 C10 -198 28 -214 48 -212 C30 -204 16 -190 8 -168 Z","M8 -168 C28 -188 54 -188 68 -172 C50 -178 30 -176 8 -168 Z","M8 -168 C30 -170 50 -158 58 -140 C44 -152 26 -160 8 -168 Z","M8 -168 C-10 -166 -30 -152 -36 -134 C-24 -148 -8 -158 8 -168 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#2a0f4a" }); })),
-      h("g", { transform: "translate(350 216) scale(-0.86 0.86)", style: { transformOrigin: "0 0" } }, h("path", { d: "M0 0 C2 -50 -6 -110 8 -168", fill: "none", stroke: "#2a0f4a", strokeWidth: 5, strokeLinecap: "round" }), ["M8 -168 C-12 -186 -36 -184 -52 -166 C-34 -174 -14 -172 8 -168 Z","M8 -168 C-6 -196 -30 -206 -50 -198 C-30 -196 -10 -186 8 -168 Z","M8 -168 C10 -198 28 -214 48 -212 C30 -204 16 -190 8 -168 Z","M8 -168 C28 -188 54 -188 68 -172 C50 -178 30 -176 8 -168 Z","M8 -168 C30 -170 50 -158 58 -140 C44 -152 26 -160 8 -168 Z","M8 -168 C-10 -166 -30 -152 -36 -134 C-24 -148 -8 -158 8 -168 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#2a0f4a" }); }))) : null,
+      h("circle", { cx: 150, cy: 62, r: 92, fill: "#ffb36b", opacity: 0.18 }),
+      h("circle", { cx: 150, cy: 62, r: 72, fill: "url(#bfSunDisc)" }),
+      [70, 84, 97, 109, 120, 130].map(function (yy, i) { return h("rect", { key: "ss" + i, x: 74, y: yy, width: 152, height: 2.2 + i * 0.9, fill: isNight ? "#4a1a70" : "#c9458f", opacity: 0.85 }); }),
+      // 山坡
+      h("path", { d: "M196 96 C214 72 236 48 262 41 L340 41 C352 44 362 56 372 68 L372 96 Z", fill: isNight ? "#1f0b40" : "#3a1560" }),
+      h("path", { d: "M228 96 C240 78 252 62 268 54 M300 96 C306 80 318 68 336 60", fill: "none", stroke: isNight ? "#34186a" : "#5a2590", strokeWidth: 1.4 }),
+      // 天文台：白色长楼 + 中间一个大圆顶、两头各一个小圆顶（整体放大 1.4 倍）
+      h("g", { transform: "translate(302 42) scale(1.4) translate(-302 -28)" },
+      h("rect", { x: 266, y: 18.5, width: 72, height: 9, fill: "#fff6ee" }), h("rect", { x: 264, y: 26, width: 76, height: 2, fill: "#e6d8cc" }),
+      h("rect", { x: 292, y: 13, width: 20, height: 6, fill: "#fff6ee" }),
+      h("path", { d: "M291 13.5 A11 11 0 0 1 313 13.5 Z", fill: "#3f5f78" }), h("path", { d: "M301.2 2.8 L302.8 2.8 L302.8 13.5 L301.2 13.5 Z", fill: "#2f4a60" }),
+      h("path", { d: "M267 18.8 A6 6 0 0 1 279 18.8 Z", fill: "#3f5f78" }), h("path", { d: "M325 18.8 A6 6 0 0 1 337 18.8 Z", fill: "#3f5f78" }),
+      [271, 278, 285, 319, 326, 333].map(function (xx, i) { return h("rect", { key: "ow" + i, x: xx, y: 21, width: 2.2, height: 4, rx: 1.1, fill: lit ? "#ffe9a8" : "#c9d6e2" }); }),
+      h("rect", { x: 299.6, y: 21, width: 4.8, height: 5.5, rx: 2.4, fill: lit ? "#ffe9a8" : "#b9c8d6" })),
+      h("g", { transform: "translate(12 216) scale(1 1)", style: { transformOrigin: "0 0" } }, h("path", { d: "M0 0 C2 -50 -6 -110 8 -168", fill: "none", stroke: "#2a0f4a", strokeWidth: 5, strokeLinecap: "round" }), ["M8 -168 C-12 -186 -36 -184 -52 -166 C-34 -174 -14 -172 8 -168 Z","M8 -168 C-6 -196 -30 -206 -50 -198 C-30 -196 -10 -186 8 -168 Z","M8 -168 C10 -198 28 -214 48 -212 C30 -204 16 -190 8 -168 Z","M8 -168 C28 -188 54 -188 68 -172 C50 -178 30 -176 8 -168 Z","M8 -168 C30 -170 50 -158 58 -140 C44 -152 26 -160 8 -168 Z","M8 -168 C-10 -166 -30 -152 -36 -134 C-24 -148 -8 -158 8 -168 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#2a0f4a" }); }))) : null,
     // 烟囱 + 烟囱管帽 + 烟
     SUN ? null : [44, 294].map(function (cx, i) { return h("g", { key: "ch" + i },
       h("rect", { x: cx, y: 26, width: 24, height: 50, fill: wallFill }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
       [cx + 3.5, cx + 13.5].map(function (px, j) { return h("g", { key: "pt" + j }, h("path", { d: "M" + px + " 22 l0.8 -8 h5.4 l0.8 8 Z", fill: "#b5653f" }), h("rect", { x: px - 0.3, y: 12.4, width: 7.6, height: 2, rx: 0.6, fill: "#a2552f" })); })); }),
     SUN ? null : [0, 1, 2].map(function (i) { return h("text", { key: "sm" + i, x: 311, y: 14, textAnchor: "middle", fontSize: 8, fill: "#f0a0b0", opacity: 0.8, style: { transformOrigin: "311px 10px", animation: "bkSmoke 3.6s linear " + (i * 1.2) + "s infinite" } }, "♥"); }),
-    h("text", { x: 56, y: 10, textAnchor: "middle", fontSize: 11 }, "🕊️"),
+    SUN ? null : h("text", { x: 56, y: 10, textAnchor: "middle", fontSize: 11 }, "🕊️"),
     // 屋顶：石板坡 + 老虎窗（?roof=flat 时换成平顶女儿墙 + 三角山花，方便对比）
     SUN ? h("g", null,
-      // 中间的阶梯塔（霓虹招牌立在上面）
-      h("rect", { x: 120, y: 38, width: 120, height: 16, rx: 2, fill: "#fff6f2" }), h("rect", { x: 120, y: 38, width: 120, height: 2.6, fill: "#57dccf" }),
-      h("rect", { x: 104, y: 46, width: 152, height: 8, rx: 1.5, fill: "#ffd0dd" }), h("rect", { x: 104, y: 46, width: 152, height: 1.6, fill: "#ffffff" }),
-      // 平屋顶女儿墙：白色，一条青色压顶，三道横向的速度线，两头是圆角
-      h("rect", { x: 26, y: 54, width: 308, height: 20, rx: 9, fill: "#fff6f2" }),
-      h("rect", { x: 22, y: 50.5, width: 316, height: 4, rx: 2, fill: "#57dccf" }),
-      [59.5, 63.5, 67.5].map(function (yy, i) { return h("g", { key: "sl" + i }, h("rect", { x: 36, y: yy, width: 96, height: 1.5, rx: 0.75, fill: i === 1 ? "#ff8fb4" : "#57dccf" }), h("rect", { x: 228, y: yy, width: 96, height: 1.5, rx: 0.75, fill: i === 1 ? "#ff8fb4" : "#57dccf" })); }),
-      // 正中一扇圆舷窗
-      h("circle", { cx: 180, cy: 63.5, r: 8.2, fill: "#ffffff", stroke: "#57dccf", strokeWidth: 1.4 }),
-      h("circle", { cx: 180, cy: 63.5, r: 5.8, fill: lit && !dimAll ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)") }),
-      h("line", { x1: 174.2, y1: 63.5, x2: 185.8, y2: 63.5, stroke: "#ffffff", strokeWidth: 0.9 }), h("line", { x1: 180, y1: 57.7, x2: 180, y2: 69.3, stroke: "#ffffff", strokeWidth: 0.9 })
+      // 顶层的玻璃小屋：落地玻璃 + 细窗框，上面一片薄薄的出挑屋顶板
+      h("rect", { x: 122, y: 46, width: 116, height: 30, fill: lit && !dimAll ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)") }),
+      [122, 151, 180, 209, 238].map(function (xx, i) { return h("rect", { key: "pm" + i, x: xx - 0.8, y: 46, width: 1.6, height: 30, fill: "#2b2f3a" }); }),
+      h("rect", { x: 102, y: 40.5, width: 156, height: 5.5, rx: 1, fill: "#ffffff" }), h("rect", { x: 102, y: 45.2, width: 156, height: 1.4, fill: "#2b2f3a" }),
+      // 主屋顶：一整片白色屋顶板，两头伸出墙外，底下一道深色收边
+      h("rect", { x: 12, y: 70, width: 336, height: 6, rx: 1, fill: "#ffffff" }), h("rect", { x: 12, y: 75.2, width: 336, height: 1.6, fill: "#2b2f3a" })
+    ) : NK_FLAT ? h("g", null,
     ) : NK_FLAT ? h("g", null,
     h("rect", { x: 40, y: 44, width: 280, height: 12, fill: "#3a4048" }),
     h("rect", { x: 26, y: 54, width: 308, height: 20, fill: "url(#bfIvory)" }),
@@ -28247,13 +28255,13 @@ function BakerFacade(_refBF) {
       h("text", { x: 180, y: 26, textAnchor: "middle", fontSize: 18, fontStyle: "italic", fontWeight: "bold", fill: "#ffd3ec", fontFamily: "'Caveat','Brush Script MT',cursive", style: { filter: "drop-shadow(0 0 2px #ff5fc8) drop-shadow(0 0 6px #ff3fb0)" } }, "Nana's"),
       h("path", { d: "M222 12 l1.6 3.4 3.6 0.4 -2.7 2.4 0.8 3.6 -3.3 -1.9 -3.3 1.9 0.8 -3.6 -2.7 -2.4 3.6 -0.4 Z", fill: "#fff2a8", transform: "translate(-2 0) scale(0.75)", style: { transformOrigin: "222px 16px", filter: "drop-shadow(0 0 3px #ffd84a)" } })) : null,
     // 檐口：奶白石带 + 齿饰
-    h("rect", { x: 24, y: 74, width: 312, height: 10, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 80.5, width: 312, height: 1.8, fill: "#57dccf" }) : null,
+    h("rect", { x: 24, y: 74, width: 312, height: 10, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 82.2, width: 312, height: 1.8, fill: "#c9a27a" }) : null,
     h("rect", { x: 24, y: 84, width: 312, height: 3, fill: "rgba(0,0,0,0.28)" }),
     // 上层：砖墙 + 两扇高窗 + 花箱
     h("rect", { x: 30, y: 91, width: 300, height: 122, fill: wallFill }), wallPainted ? h("rect", { x: 30, y: 91, width: 300, height: 122, fill: "url(#bfRust2)" }) : null,
-    h("rect", { x: 30, y: 91, width: 7, height: 122, fill: SUN ? "#57dccf" : "#efe8da" }), h("rect", { x: 323, y: 91, width: 7, height: 122, fill: SUN ? "#57dccf" : "#efe8da" }),
-    // 日落皮肤：墙上两组横向的速度线（窗下一组、墙脚一组）
-    SUN ? h("g", null, [194.5, 198, 201.5].map(function (yy, i) { return h("g", { key: "ws" + i }, h("rect", { x: 37, y: yy, width: 24, height: 1.4, fill: i === 1 ? "#ffffff" : "#57dccf" }), h("rect", { x: 131, y: yy, width: 98, height: 1.4, fill: i === 1 ? "#ffffff" : "#57dccf" }), h("rect", { x: 299, y: yy, width: 24, height: 1.4, fill: i === 1 ? "#ffffff" : "#57dccf" })); })) : null,
+    h("rect", { x: 30, y: 91, width: 7, height: 122, fill: SUN ? "#f6f3ee" : "#efe8da" }), h("rect", { x: 323, y: 91, width: 7, height: 122, fill: SUN ? "#f6f3ee" : "#efe8da" }),
+    // 日落皮肤：两扇窗之间是一整面竖条木格栅
+    SUN ? h("g", null, h("rect", { x: 133, y: 91, width: 94, height: 122, fill: "url(#bfSlat)" }), h("rect", { x: 133, y: 91, width: 94, height: 122, fill: "none", stroke: "#8f6540", strokeWidth: 0.8 })) : null,
     win(68, 112, 56, 78, lit && !dimAll, "u0", h("g", null,
       lit && !dimAll ? h("circle", { cx: 96, cy: 160, r: 14, fill: "#ffe7b0", opacity: 0.45 }) : null,
       h("path", { d: "M90 163 L102 163 L99.5 155 L92.5 155 Z", fill: lit && !dimAll ? "#fff1cf" : "#efe4cf", stroke: "#c9a45a", strokeWidth: 0.5 }),
@@ -28263,10 +28271,11 @@ function BakerFacade(_refBF) {
       h("path", { d: "M259.2 160.6 l0.6 -3.6 l2 2.4 Z" }), h("path", { d: "M264.8 160.6 l-0.6 -3.6 l-2 2.4 Z" }),
       h("path", { d: "M265.5 175.5 q5 -0.5 4 -6", fill: "none", stroke: "#1d1e24", strokeWidth: 1.4, strokeLinecap: "round" }))),
     flowers(68, 200, 56), flowers(236, 200, 56),
+    SUN ? h("g", { style: { pointerEvents: "none" } }, h("rect", { x: 30, y: 197, width: 300, height: 16, fill: "rgba(190,230,245,0.28)" }), h("rect", { x: 30, y: 196.2, width: 300, height: 1.4, fill: "#dfe6ea" }), [30, 80, 130, 180, 230, 280, 329].map(function (xx, i) { return h("rect", { key: "gr" + i, x: xx, y: 196.2, width: 1, height: 16.8, fill: "rgba(255,255,255,0.75)" }); })) : null,
     // 窗楣：每扇窗上一个小三角山花
     SUN ? [68, 236].map(function (x) { return h("g", { key: "eb" + x },
       // 窗楣换成一道平的「眉毛」遮阳板
-      h("rect", { x: x - 11, y: 102.4, width: 78, height: 5, rx: 2.5, fill: "#fff6f2" }), h("rect", { x: x - 11, y: 106.2, width: 78, height: 1.6, rx: 0.8, fill: "#57dccf" }), h("rect", { x: x - 8, y: 108, width: 72, height: 1, fill: "rgba(0,0,0,0.12)" })); }) :
+      h("rect", { x: x - 11, y: 102.4, width: 78, height: 5, rx: 2.5, fill: "#fff6f2" }), h("rect", { x: x - 11, y: 106.2, width: 78, height: 1.6, rx: 0.8, fill: "#2b2f3a" }), h("rect", { x: x - 8, y: 108, width: 72, height: 1, fill: "rgba(0,0,0,0.12)" })); }) :
     [68, 236].map(function (x) { return h("g", { key: "pd" + x },
       h("polygon", { points: (x - 9) + ",106 " + (x + 28) + ",95 " + (x + 65) + ",106", fill: "#f4efe5", stroke: "#d8cdb6", strokeWidth: 0.8 }),
       h("rect", { x: x - 10, y: 105.6, width: 76, height: 2.6, fill: "#efe8da" }), h("rect", { x: x - 10, y: 108.2, width: 76, height: 0.8, fill: "rgba(0,0,0,0.12)" })); }),
@@ -28309,7 +28318,7 @@ function BakerFacade(_refBF) {
       h("rect", { x: 163, y: 159, width: 34, height: 8.4, rx: 1.6, fill: "url(#bfBrass)", stroke: "#8a6a2a", strokeWidth: 0.4 }),
       h("text", { x: 180, y: 164.7, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#3a2a10", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
     // 楼层线
-    h("rect", { x: 24, y: 213, width: 312, height: 8, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 216.2, width: 312, height: 1.8, fill: "#ff8fb4" }) : null, h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
+    h("rect", { x: 24, y: 213, width: 312, height: 8, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 219.2, width: 312, height: 1.8, fill: "#2b2f3a" }) : null, h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: SUN ? "url(#bfWMint)" : "url(#bfStucco)" }),
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfRust)" }),
