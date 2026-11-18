@@ -8162,6 +8162,12 @@ function NanaLightbox(_refLB) {
 
 // ── 💕 我们的小本本（Supabase 共享存储，双人互看）──────────────
 var NANA_VER = "v2026.8.2-351";
+// 🌴 小屋皮肤：baker = 贝克街 221B（原来的样子）；sunset = 日落海滨霓虹（原创的配色和图案）。存在本机，「更多」里能切。
+// 预览：网址加 ?skin=sunset / ?skin=baker
+var NANA_SKIN = function () {
+  try { var q = (location.search || "").match(/[?&]skin=(\w+)/); if (q) return q[1] === "sunset" ? "sunset" : "baker"; return localStorage.getItem("nana-skin") === "sunset" ? "sunset" : "baker"; } catch (_) { return "baker"; }
+};
+var nanaSkinSet = function (v) { try { localStorage.setItem("nana-skin", v === "sunset" ? "sunset" : "baker"); } catch (_) {} try { window.dispatchEvent(new Event("nana-skin")); } catch (_) {} };
 var NANA_SYNC = {
   url: "https://vwmipebmpicsjcccqcxs.supabase.co",
   key: "sb_publishable_vJHQBa2qc12NvnoRRwaa8g_h4pI75Wl"
@@ -26036,6 +26042,9 @@ function BottomNav(_ref135) {
   })), /*#__PURE__*/React.createElement("div", {
     style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.45)", margin: "10px 0 6px", fontWeight: 700 }
   }, "\uD83C\uDFE1 \u5C0F\u5C4B\u7248\u672C " + NANA_VER + (function () { try { return " · 返航" + (localStorage.getItem("nana-voyage-seen") === "2" ? "已看" : "未看") + " · home=" + (localStorage.getItem("nana-home") || "自动") + " · " + (localStorage.getItem("nana-author") || "?"); } catch (_) { return ""; } })()),
+  /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", margin: "0 0 8px" } },
+    /*#__PURE__*/React.createElement("button", { "data-k": "skinswitch", onClick: function () { nanaSkinSet(NANA_SKIN() === "sunset" ? "baker" : "sunset"); try { window.dispatchEvent(new Event("nana-upd")); } catch (_) {} }, style: { border: "1px solid rgba(150,120,110,0.35)", background: "rgba(255,255,255,0.8)", color: "#8a6a64", borderRadius: 999, padding: "5px 14px", fontFamily: "inherit", fontSize: "0.66rem", fontWeight: 800, cursor: "pointer" } },
+      NANA_SKIN() === "sunset" ? "🏠 换回贝克街 221B" : "🌴 换成日落海滨")),
   /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", fontSize: "0.56rem", color: "rgba(150,120,110,0.6)", margin: "0 0 8px", fontWeight: 700, lineHeight: 1.6, padding: "0 16px" } },
     nanaUpdLine(), " ",
     /*#__PURE__*/React.createElement("button", { onClick: function () { try { window.nanaCheckUpdate(); } catch (_) {} }, style: { border: "1px solid rgba(150,120,110,0.35)", background: "rgba(255,255,255,0.7)", color: "#8a6a64", borderRadius: 999, padding: "3px 10px", fontFamily: "inherit", fontSize: "0.56rem", fontWeight: 800, cursor: "pointer", marginLeft: 4, verticalAlign: "middle" } },
@@ -27778,6 +27787,9 @@ function nanaWxWall(o) {
 }
 function BakerFacade(_refBF) {
   var _wx = useState(nanaWxCached); var wx = _wx[0], setWx = _wx[1];
+  var _skn = useState(NANA_SKIN); var skin = _skn[0], setSkin = _skn[1];
+  useEffect(function () { var on = function () { setSkin(NANA_SKIN()); }; window.addEventListener("nana-skin", on); return function () { window.removeEventListener("nana-skin", on); }; }, []);
+  var SUN = skin === "sunset";
   var _so = useState(false); var scrollOpen = _so[0], setScrollOpen = _so[1];
   useEffect(function () { var alive = true; nanaWxFetch(function (o) { if (alive && o) setWx(o); }); return function () { alive = false; }; }, []);
   var _bo = useState(function () { try { return localStorage.getItem("nana-bar-open") === mbNight(); } catch (_) { return false; } }); var barOpen = _bo[0], setBarOpen = _bo[1];
@@ -27889,6 +27901,8 @@ function BakerFacade(_refBF) {
   var lit = isNight || isDusk;
   var sky = isNight ? ["#0b1020", "#1a2238", "#39405a"] : isDusk ? ["#3a2a48", "#8a4a3a", "#d9a070"] : isDawn ? ["#3a3a58", "#9a8aa0", "#e0c0a0"] : ["#f6dccb", "#e2edf2", "#eef3f5"];
   var skyText = isNight || isDusk || isDawn ? BK_CREAM : "#4a3f44";
+  // 日落皮肤：天一直是晚霞——上面紫，中间玫红，贴着地平线是橘；夜里整体压深
+  if (SUN) { sky = isNight ? ["#170a36", "#4a1a70", "#b23a86"] : ["#3a1c78", "#c9458f", "#ffb07a"]; skyText = BK_CREAM; }
   var justHome = (function () { try { return ldBackHome() && now < new Date("2026-10-03T00:00:00+08:00"); } catch (_) { return false; } })();
   // 下面那句每次打开、每次切回小屋都换一句
   var _fs = useState(function () { return Math.random(); }); var funSeed = _fs[0], setFunSeed = _fs[1];
@@ -28128,6 +28142,7 @@ function BakerFacade(_refBF) {
   } catch (_) {} return nanaWxWall(wx); })();
   var wallFill = { butter: "url(#bfWButter)", honey: "url(#bfBrick)", rose: "url(#bfWRose)", red: "url(#bfWRed)", ivory: "url(#bfIvory)", sage: "url(#bfWSage)", blue: "url(#bfWBlue)", pink: "url(#bfWPink)" }[NK_WALL] || "url(#bfBrick)";
   var wallPainted = NK_WALL === "butter" || NK_WALL === "ivory" || NK_WALL === "sage" || NK_WALL === "blue" || NK_WALL === "pink";
+  if (SUN) { wallFill = "url(#bfWSun)"; wallPainted = true; }
   // 门牌样式（预览用 ?plaque= 切换：圆牌 blue 英国蓝 / wine 酒红 / cream 奶油白 / mustard 芥末黄 / green 墨绿；street 伦敦搪瓷路牌）
   var PLQ = (function () { var k = "street"; try { var q = (location.search || "").match(/[?&]plaque=(\w+)/); if (q) k = q[1]; } catch (_) {}
     return { blue: { bg: "#1f4f8f", ring: "#f7f3ea", t1: "#ffffff", t2: "#f7f3ea", t3: "rgba(247,243,234,0.8)", z: "#7d9fc8" },
@@ -28175,10 +28190,19 @@ function BakerFacade(_refBF) {
       h("linearGradient", { id: "bfWSage", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#cfdac9" }), h("stop", { offset: "100%", stopColor: "#bccbb5" })),
       h("linearGradient", { id: "bfWBlue", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#d3dee5" }), h("stop", { offset: "100%", stopColor: "#c0cfd9" })),
       h("linearGradient", { id: "bfWPink", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f2dcd5" }), h("stop", { offset: "100%", stopColor: "#e8cac2" })),
+      h("linearGradient", { id: "bfWSun", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffc4d6" }), h("stop", { offset: "100%", stopColor: "#ff9ebd" })),
+      h("linearGradient", { id: "bfSunDisc", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#fff2a8" }), h("stop", { offset: "55%", stopColor: "#ffb36b" }), h("stop", { offset: "100%", stopColor: "#ff5fa2" })),
       h("linearGradient", { id: "bfIvory", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#f6f1e7" }), h("stop", { offset: "100%", stopColor: "#ebe4d6" })),
       h("pattern", { id: "bfRust2", width: 60, height: 30, patternUnits: "userSpaceOnUse" }, h("rect", { x: 0, y: 29, width: 60, height: 1, fill: "rgba(0,0,0,0.05)" })),
       h("pattern", { id: "bfRust", width: 40, height: 14, patternUnits: "userSpaceOnUse" },
         h("rect", { width: 40, height: 14, fill: "none" }), h("rect", { x: 0, y: 12.5, width: 40, height: 1.5, fill: "rgba(0,0,0,0.13)" }), h("rect", { x: 0, y: 11, width: 40, height: 1.5, fill: "rgba(255,255,255,0.35)" }))),
+    // 🌴 日落皮肤的背景：一轮横条纹的落日 + 两棵棕榈剪影，画在楼后面
+    SUN ? h("g", { style: { pointerEvents: "none" } },
+      h("circle", { cx: 180, cy: 62, r: 96, fill: "#ffb36b", opacity: 0.18 }),
+      h("circle", { cx: 180, cy: 62, r: 76, fill: "url(#bfSunDisc)" }),
+      [70, 84, 97, 109, 120, 130].map(function (yy, i) { return h("rect", { key: "ss" + i, x: 100, y: yy, width: 160, height: 2.2 + i * 0.9, fill: isNight ? "#4a1a70" : "#c9458f", opacity: 0.85 }); }),
+      h("g", { transform: "translate(12 216) scale(1 1)", style: { transformOrigin: "0 0" } }, h("path", { d: "M0 0 C2 -50 -6 -110 8 -168", fill: "none", stroke: "#2a0f4a", strokeWidth: 5, strokeLinecap: "round" }), ["M8 -168 C-12 -186 -36 -184 -52 -166 C-34 -174 -14 -172 8 -168 Z","M8 -168 C-6 -196 -30 -206 -50 -198 C-30 -196 -10 -186 8 -168 Z","M8 -168 C10 -198 28 -214 48 -212 C30 -204 16 -190 8 -168 Z","M8 -168 C28 -188 54 -188 68 -172 C50 -178 30 -176 8 -168 Z","M8 -168 C30 -170 50 -158 58 -140 C44 -152 26 -160 8 -168 Z","M8 -168 C-10 -166 -30 -152 -36 -134 C-24 -148 -8 -158 8 -168 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#2a0f4a" }); })),
+      h("g", { transform: "translate(350 216) scale(-0.86 0.86)", style: { transformOrigin: "0 0" } }, h("path", { d: "M0 0 C2 -50 -6 -110 8 -168", fill: "none", stroke: "#2a0f4a", strokeWidth: 5, strokeLinecap: "round" }), ["M8 -168 C-12 -186 -36 -184 -52 -166 C-34 -174 -14 -172 8 -168 Z","M8 -168 C-6 -196 -30 -206 -50 -198 C-30 -196 -10 -186 8 -168 Z","M8 -168 C10 -198 28 -214 48 -212 C30 -204 16 -190 8 -168 Z","M8 -168 C28 -188 54 -188 68 -172 C50 -178 30 -176 8 -168 Z","M8 -168 C30 -170 50 -158 58 -140 C44 -152 26 -160 8 -168 Z","M8 -168 C-10 -166 -30 -152 -36 -134 C-24 -148 -8 -158 8 -168 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#2a0f4a" }); }))) : null,
     // 烟囱 + 烟囱管帽 + 烟
     [44, 294].map(function (cx, i) { return h("g", { key: "ch" + i },
       h("rect", { x: cx, y: 26, width: 24, height: 50, fill: wallFill }), h("rect", { x: cx - 2.5, y: 22, width: 29, height: 3.4, fill: "#ece6da" }), h("rect", { x: cx - 1.5, y: 25.4, width: 27, height: 2.2, fill: "#d8d0c0" }),
@@ -28203,6 +28227,12 @@ function BakerFacade(_refBF) {
       h("rect", { x: 152, y: 44, width: 56, height: 32, fill: "#f4efe5" }),
       h("polygon", { points: "144,46 180,28 216,46", fill: "#3b434c" }), h("polygon", { points: "147,46 180,30.5 213,46", fill: "none", stroke: "#f4efe5", strokeWidth: 1.2 }),
       win(166, 50, 28, 22, lit && !dimAll, "attic", null, true)),
+    // 🌴 日落皮肤：屋顶上立一块霓虹招牌（粉色手写体 + 青色边框，会轻轻闪）
+    SUN ? h("g", { style: { pointerEvents: "none", animation: "bfNeon 4.2s ease-in-out infinite" } },
+      h("line", { x1: 150, y1: 32, x2: 150, y2: 41, stroke: "#3a2a4a", strokeWidth: 1.4 }), h("line", { x1: 210, y1: 32, x2: 210, y2: 41, stroke: "#3a2a4a", strokeWidth: 1.4 }),
+      h("rect", { x: 128, y: 6, width: 104, height: 27, rx: 7, fill: "rgba(30,10,50,0.72)", stroke: "#5ff3ff", strokeWidth: 1.5, style: { filter: "drop-shadow(0 0 3px #5ff3ff) drop-shadow(0 0 7px rgba(95,243,255,0.7))" } }),
+      h("text", { x: 180, y: 26, textAnchor: "middle", fontSize: 18, fontStyle: "italic", fontWeight: "bold", fill: "#ffd3ec", fontFamily: "'Caveat','Brush Script MT',cursive", style: { filter: "drop-shadow(0 0 2px #ff5fc8) drop-shadow(0 0 6px #ff3fb0)" } }, "Nana's"),
+      h("path", { d: "M222 12 l1.6 3.4 3.6 0.4 -2.7 2.4 0.8 3.6 -3.3 -1.9 -3.3 1.9 0.8 -3.6 -2.7 -2.4 3.6 -0.4 Z", fill: "#fff2a8", transform: "translate(-2 0) scale(0.75)", style: { transformOrigin: "222px 16px", filter: "drop-shadow(0 0 3px #ffd84a)" } })) : null,
     // 檐口：奶白石带 + 齿饰
     h("rect", { x: 24, y: 74, width: 312, height: 10, fill: "#e9e2d2" }),
     h("rect", { x: 24, y: 84, width: 312, height: 3, fill: "rgba(0,0,0,0.28)" }),
@@ -28599,6 +28629,7 @@ function BakerFacade(_refBF) {
       "@keyframes bfPadPost{0%,80%{transform:translate(0,0) scale(1);opacity:1}90%{transform:translate(-4px,4px) scale(.85);opacity:1}96%{transform:translate(-6px,8px) scale(.3);opacity:0}100%{transform:translate(-6px,8px) scale(.3);opacity:0}}" +
       "@keyframes bfPadHeart{0%,84%{transform:translateY(0);opacity:0}88%{opacity:1}100%{transform:translateY(-8px);opacity:0}}" +
       "@keyframes bfLed{0%,100%{opacity:.4}50%{opacity:1}}" +
+      "@keyframes bfNeon{0%,100%{opacity:1}46%{opacity:1}48%{opacity:.55}50%{opacity:1}52%{opacity:.7}54%{opacity:1}}" +
       "@keyframes bfPadHide{to{opacity:0}}@keyframes bfPadShow{to{opacity:1}}" +
       "@keyframes bfLeg{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(18deg)}}" +
       "@keyframes bfMunch{0%,55%,100%{transform:rotate(0)}68%,80%{transform:rotate(-62deg)}}" +
@@ -28623,7 +28654,7 @@ function BakerFacade(_refBF) {
     // 问候
     h("div", { style: { position: "relative", zIndex: 1, padding: "calc(22px + env(safe-area-inset-top,0px)) 18px 0" } },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
-        h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, "221B BAKER STREET"),
+        h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, SUN ? "SUNSET BAY · NANA'S" : "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, h(RewardsWallet, null))),
       topCard,
       h("div", { style: { height: 4 } })),
@@ -29513,7 +29544,7 @@ function OfficerBadgeEgg(_refOB) {
     h("div", { style: { position: "relative", zIndex: 2, color: "rgba(255,240,210,0.5)", fontSize: "0.72rem", marginTop: 16 } }, "（点一下出发）"));
 }
 // 开屏：小鲨鱼猫（6 秒，静音自动播；点一下跳过；播完/卡住都会自己退场）
-function PhotoOpeningEgg(_refPO) {
+function CatOpening(_refPO) {
   var onClose = _refPO.onClose;
   var h = React.createElement;
   var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
@@ -29536,6 +29567,41 @@ function PhotoOpeningEgg(_refPO) {
       style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "cover", display: "block", pointerEvents: "none" } }),
     h("div", { style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "22%", background: "linear-gradient(0deg,rgba(0,0,0,0.35),transparent)", pointerEvents: "none" } }),
     h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(26px + env(safe-area-inset-bottom))", textAlign: "center", color: "rgba(255,255,255,0.8)", fontSize: "0.72rem", fontFamily: "'Nunito', system-ui", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.4)" } }, "（点一下进门）"));
+}
+// 🌴 日落皮肤的开屏：晚霞里升起一轮条纹落日，两边棕榈树轻轻摇，霓虹招牌一下一下亮起来。约 4.5 秒；点一下跳过。
+// 图案、配色、字都是自己画的，不用别人的标志和人物。
+function SunsetOpening(_refSO2) {
+  var onClose = _refSO2.onClose;
+  var h = React.createElement;
+  var _g = useState(false); var gone = _g[0]; var setGone = _g[1];
+  var doneRef = useRef(false);
+  var finish = function () { if (doneRef.current) return; doneRef.current = true; setGone(true); setTimeout(function () { onClose(); }, 700); };
+  useEffect(function () { var t = setTimeout(finish, 4600); return function () { clearTimeout(t); }; }, []);
+  return h("div", { onClick: finish, style: { position: "fixed", left: 0, top: 0, right: 0, bottom: 0, zIndex: 10000, background: "linear-gradient(180deg,#2a1466 0%,#7a2a8f 34%,#e0508a 62%,#ffb07a 100%)", cursor: "pointer", opacity: gone ? 0 : 1, transition: "opacity 0.7s ease", overflow: "hidden" } },
+    h("style", null, "@keyframes soRise{from{transform:translateY(150px)}to{transform:translateY(0)}}@keyframes soSway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.8deg)}}@keyframes soNeon{0%{opacity:0}8%{opacity:.9}12%{opacity:.2}18%{opacity:1}24%{opacity:.5}30%,100%{opacity:1}}@keyframes soFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes soWave{0%,100%{transform:translateX(0)}50%{transform:translateX(-14px)}}@keyframes soTw{0%,100%{opacity:.25}50%{opacity:.9}}"),
+    h("svg", { viewBox: "0 0 400 800", preserveAspectRatio: "xMidYMid slice", style: { position: "absolute", left: 0, top: 0, width: "100%", height: "100%", display: "block" } },
+      h("defs", null,
+        h("linearGradient", { id: "soSun", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#fff3a6" }), h("stop", { offset: "50%", stopColor: "#ffae66" }), h("stop", { offset: "100%", stopColor: "#ff4f9e" })),
+        h("linearGradient", { id: "soSea", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#c8427f" }), h("stop", { offset: "100%", stopColor: "#3a1560" })),
+        h("clipPath", { id: "soClip" }, h("rect", { x: 0, y: 0, width: 400, height: 560 }))),
+      [[40, 60], [96, 120], [150, 40], [230, 90], [300, 50], [356, 130], [200, 150], [70, 190]].map(function (p, i) { return h("circle", { key: "st" + i, cx: p[0], cy: p[1], r: 1.3, fill: "#fff", style: { animation: "soTw " + (2 + i % 3) + "s ease-in-out " + (i * 0.3) + "s infinite" } }); }),
+      h("g", { clipPath: "url(#soClip)" }, h("g", { style: { animation: "soRise 2.2s cubic-bezier(.2,.8,.2,1) both" } },
+        h("circle", { cx: 200, cy: 440, r: 170, fill: "#ffb36b", opacity: 0.2 }),
+        h("circle", { cx: 200, cy: 440, r: 132, fill: "url(#soSun)" }),
+        [452, 474, 494, 512, 528, 542].map(function (y, i) { return h("rect", { key: "sb" + i, x: 60, y: y, width: 280, height: 4 + i * 1.7, fill: "#d24a8c" }); }))),
+      h("rect", { x: 0, y: 560, width: 400, height: 240, fill: "url(#soSea)" }),
+      [578, 600, 626, 656, 690, 728].map(function (y, i) { return h("rect", { key: "wv" + i, x: 120 - i * 16, y: y, width: 160 + i * 32, height: 2.4 + i * 0.5, rx: 1.5, fill: "#ffd1a0", opacity: 0.55 - i * 0.06, style: { animation: "soWave " + (3 + i * 0.4) + "s ease-in-out " + (i * 0.2) + "s infinite" } }); }),
+      h("g", { transform: "translate(46 640) scale(1 1)" }, h("g", { style: { transformOrigin: "0px 0px", animation: "soSway 5s ease-in-out 0s infinite" } }, h("path", { d: "M0 0 C6 -90 -14 -200 16 -300", fill: "none", stroke: "#1d0a38", strokeWidth: 9, strokeLinecap: "round" }), ["M16 -300 C-20 -332 -64 -328 -92 -296 C-60 -310 -24 -306 16 -300 Z","M16 -300 C-10 -350 -52 -368 -88 -354 C-52 -350 -16 -332 16 -300 Z","M16 -300 C20 -354 52 -382 88 -378 C56 -364 30 -340 16 -300 Z","M16 -300 C52 -336 98 -336 124 -308 C92 -318 56 -314 16 -300 Z","M16 -300 C56 -304 92 -282 106 -250 C80 -272 48 -286 16 -300 Z","M16 -300 C-16 -296 -52 -272 -62 -240 C-42 -264 -12 -282 16 -300 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#1d0a38" }); }))),
+      h("g", { transform: "translate(366 640) scale(-0.84 0.84)" }, h("g", { style: { transformOrigin: "0px 0px", animation: "soSway 5s ease-in-out 0.8s infinite" } }, h("path", { d: "M0 0 C6 -90 -14 -200 16 -300", fill: "none", stroke: "#1d0a38", strokeWidth: 9, strokeLinecap: "round" }), ["M16 -300 C-20 -332 -64 -328 -92 -296 C-60 -310 -24 -306 16 -300 Z","M16 -300 C-10 -350 -52 -368 -88 -354 C-52 -350 -16 -332 16 -300 Z","M16 -300 C20 -354 52 -382 88 -378 C56 -364 30 -340 16 -300 Z","M16 -300 C52 -336 98 -336 124 -308 C92 -318 56 -314 16 -300 Z","M16 -300 C56 -304 92 -282 106 -250 C80 -272 48 -286 16 -300 Z","M16 -300 C-16 -296 -52 -272 -62 -240 C-42 -264 -12 -282 16 -300 Z"].map(function (d, i) { return h("path", { key: i, d: d, fill: "#1d0a38" }); })))),
+    h("div", { style: { position: "absolute", left: 0, right: 0, top: "17%", textAlign: "center", pointerEvents: "none" } },
+      h("div", { style: { display: "inline-block", padding: "10px 26px 12px", borderRadius: 18, border: "2.5px solid #6ff4ff", background: "rgba(28,8,54,0.55)", boxShadow: "0 0 10px #5ff3ff, 0 0 26px rgba(95,243,255,0.55), inset 0 0 12px rgba(95,243,255,0.35)", animation: "soNeon 1.6s ease-out 0.5s both" } },
+        h("div", { style: { fontFamily: "'Caveat','Brush Script MT',cursive", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(2.6rem,13vw,3.6rem)", lineHeight: 1, color: "#ffe1f3", textShadow: "0 0 6px #ff5fc8, 0 0 16px #ff3fb0, 0 0 34px rgba(255,63,176,0.7)" } }, "Nana's Home"),
+        h("div", { style: { marginTop: 6, fontFamily: "Georgia,serif", fontSize: "0.7rem", letterSpacing: 5, fontWeight: 700, color: "#bdfbff", textShadow: "0 0 6px #5ff3ff" } }, "SUNSET BAY"))),
+    h("div", { style: { position: "absolute", left: 0, right: 0, bottom: "calc(26px + env(safe-area-inset-bottom))", textAlign: "center", color: "rgba(255,255,255,0.85)", fontSize: "0.72rem", fontFamily: "'Nunito', system-ui", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.4)", animation: "soFade 0.8s ease 1.6s both" } }, "（点一下进门）"));
+}
+// 开屏跟着皮肤走：日落海滨用上面那段，贝克街还是小鲨鱼猫
+function PhotoOpeningEgg(_refPO3) {
+  return React.createElement(NANA_SKIN() === "sunset" ? SunsetOpening : CatOpening, _refPO3);
 }
 function NanasHome() {
   var _useState321 = useState(true),
