@@ -28230,10 +28230,10 @@ function BakerFacade(_refBF) {
     SUN ? h("g", null,
       // 顶层的玻璃小屋：落地玻璃 + 细窗框，上面一片薄薄的出挑屋顶板
       h("rect", { x: 122, y: 46, width: 116, height: 30, fill: lit && !dimAll ? "url(#bfWarm)" : (isNight ? "url(#bfNight)" : "url(#bfDay)") }),
-      [122, 151, 180, 209, 238].map(function (xx, i) { return h("rect", { key: "pm" + i, x: xx - 0.8, y: 46, width: 1.6, height: 30, fill: "#2b2f3a" }); }),
-      h("rect", { x: 102, y: 40.5, width: 156, height: 5.5, rx: 1, fill: "#ffffff" }), h("rect", { x: 102, y: 45.2, width: 156, height: 1.4, fill: "#2b2f3a" }),
+      [122, 151, 180, 209, 238].map(function (xx, i) { return h("rect", { key: "pm" + i, x: xx - 0.8, y: 46, width: 1.6, height: 30, fill: "#ffffff" }); }),
+      h("rect", { x: 102, y: 40.5, width: 156, height: 5.5, rx: 1, fill: "#ffffff" }), h("rect", { x: 102, y: 45.2, width: 156, height: 1.4, fill: "#d8b784" }),
       // 主屋顶：一整片白色屋顶板，两头伸出墙外，底下一道深色收边
-      h("rect", { x: 0, y: 70, width: 350, height: 6, rx: 1, fill: "#ffffff" }), h("rect", { x: 0, y: 75.2, width: 350, height: 1.6, fill: "#2b2f3a" })
+      h("rect", { x: 0, y: 70, width: 350, height: 6, rx: 1, fill: "#ffffff" }), h("rect", { x: 0, y: 75.2, width: 350, height: 1.6, fill: "#d8b784" })
     ) : NK_FLAT ? h("g", null,
     ) : NK_FLAT ? h("g", null,
     h("rect", { x: 40, y: 44, width: 280, height: 12, fill: "#3a4048" }),
@@ -28279,10 +28279,16 @@ function BakerFacade(_refBF) {
     // 窗楣：每扇窗上一个小三角山花
     SUN ? [68, 236].map(function (x) { return h("g", { key: "eb" + x },
       // 窗楣换成一道平的「眉毛」遮阳板
-      h("rect", { x: x - 11, y: 102.4, width: 78, height: 5, rx: 2.5, fill: "#fff6f2" }), h("rect", { x: x - 11, y: 106.2, width: 78, height: 1.6, rx: 0.8, fill: "#2b2f3a" }), h("rect", { x: x - 8, y: 108, width: 72, height: 1, fill: "rgba(0,0,0,0.12)" })); }) :
+      h("rect", { x: x - 11, y: 102.4, width: 78, height: 5, rx: 2.5, fill: "#fff6f2" }), h("rect", { x: x - 11, y: 106.2, width: 78, height: 1.6, rx: 0.8, fill: "#d8b784" }), h("rect", { x: x - 8, y: 108, width: 72, height: 1, fill: "rgba(0,0,0,0.12)" })); }) :
     [68, 236].map(function (x) { return h("g", { key: "pd" + x },
       h("polygon", { points: (x - 9) + ",106 " + (x + 28) + ",95 " + (x + 65) + ",106", fill: "#f4efe5", stroke: "#d8cdb6", strokeWidth: 0.8 }),
       h("rect", { x: x - 10, y: 105.6, width: 76, height: 2.6, fill: "#efe8da" }), h("rect", { x: x - 10, y: 108.2, width: 76, height: 0.8, fill: "rgba(0,0,0,0.12)" })); }),
+    // 日落皮肤：屋顶两角垂下来的三角梅，屋檐下一串暖色小灯泡
+    SUN ? h("g", { style: { pointerEvents: "none" } },
+      h("path", { d: "M34 92 Q107 101 180 92 Q253 101 326 92", fill: "none", stroke: "#b9a58c", strokeWidth: 0.6 }),
+      [46, 62, 78, 94, 110, 126, 142, 158, 202, 218, 234, 250, 266, 282, 298, 314].map(function (x, i) { var t = x < 180 ? (x - 34) / 146 : (x - 180) / 146; var y = 92 + 4.5 * 4 * t * (1 - t) + 1.6; return h("circle", { key: "sl" + i, cx: x, cy: y, r: 1.7, fill: lit ? "#ffe9a8" : "#fff4d2", style: lit && !dimAll ? { filter: "drop-shadow(0 0 2.5px #ffd36b)" } : null }); }),
+      h("ellipse", { key: "lf0", cx: 13, cy: 74, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(20 13 74)" }), h("ellipse", { key: "lf1", cx: 27, cy: 75, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-15 27 75)" }), h("ellipse", { key: "lf2", cx: 5, cy: 83, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(40 5 83)" }), h("ellipse", { key: "lf3", cx: 16, cy: 84, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-30 16 84)" }), h("ellipse", { key: "lf4", cx: 6, cy: 92, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(25 6 92)" }), h("ellipse", { key: "lf5", cx: 5, cy: 101, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-20 5 101)" }), h("ellipse", { key: "lf6", cx: 5, cy: 112, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(30 5 112)" }), h("circle", { key: "bg0", cx: 4, cy: 72, r: 4.2, fill: "#ff5fa8" }), h("circle", { key: "bg1", cx: 10, cy: 69, r: 3.8, fill: "#ff86c0" }), h("circle", { key: "bg2", cx: 17, cy: 71, r: 4, fill: "#e83e94" }), h("circle", { key: "bg3", cx: 24, cy: 69, r: 3.4, fill: "#ffa6d2" }), h("circle", { key: "bg4", cx: 31, cy: 72, r: 3.6, fill: "#ff5fa8" }), h("circle", { key: "bg5", cx: 2, cy: 79, r: 3.8, fill: "#ff86c0" }), h("circle", { key: "bg6", cx: 8, cy: 78, r: 4.4, fill: "#e83e94" }), h("circle", { key: "bg7", cx: 14, cy: 80, r: 3.6, fill: "#ffa6d2" }), h("circle", { key: "bg8", cx: 20, cy: 77, r: 3.2, fill: "#ff5fa8" }), h("circle", { key: "bg9", cx: 1, cy: 87, r: 3.6, fill: "#ff86c0" }), h("circle", { key: "bg10", cx: 7, cy: 88, r: 4, fill: "#e83e94" }), h("circle", { key: "bg11", cx: 12, cy: 86, r: 3, fill: "#ffa6d2" }), h("circle", { key: "bg12", cx: 3, cy: 96, r: 3.4, fill: "#ff5fa8" }), h("circle", { key: "bg13", cx: 9, cy: 97, r: 3.2, fill: "#ff86c0" }), h("circle", { key: "bg14", cx: 2, cy: 105, r: 3, fill: "#e83e94" }), h("circle", { key: "bg15", cx: 7, cy: 108, r: 2.8, fill: "#ffa6d2" }), h("circle", { key: "bg16", cx: 4, cy: 116, r: 2.6, fill: "#ff5fa8" }), h("circle", { key: "bg17", cx: 2, cy: 124, r: 2.2, fill: "#ff86c0" }),
+      h("ellipse", { key: "lf0", cx: 337, cy: 74, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-20 337 74)" }), h("ellipse", { key: "lf1", cx: 345, cy: 83, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-40 345 83)" }), h("ellipse", { key: "lf2", cx: 339, cy: 85, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(30 339 85)" }), h("ellipse", { key: "lf3", cx: 344, cy: 92, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(-25 344 92)" }), h("ellipse", { key: "lf4", cx: 345, cy: 101, rx: 3.2, ry: 1.6, fill: "#5f9a58", transform: "rotate(20 345 101)" }), h("circle", { key: "bg0", cx: 346, cy: 72, r: 4.2, fill: "#ff5fa8" }), h("circle", { key: "bg1", cx: 340, cy: 69, r: 3.8, fill: "#ff86c0" }), h("circle", { key: "bg2", cx: 333, cy: 71, r: 4, fill: "#e83e94" }), h("circle", { key: "bg3", cx: 326, cy: 69, r: 3.4, fill: "#ffa6d2" }), h("circle", { key: "bg4", cx: 348, cy: 79, r: 3.8, fill: "#ff5fa8" }), h("circle", { key: "bg5", cx: 342, cy: 78, r: 4.2, fill: "#ff86c0" }), h("circle", { key: "bg6", cx: 336, cy: 80, r: 3.4, fill: "#e83e94" }), h("circle", { key: "bg7", cx: 349, cy: 87, r: 3.6, fill: "#ffa6d2" }), h("circle", { key: "bg8", cx: 343, cy: 88, r: 3.8, fill: "#ff5fa8" }), h("circle", { key: "bg9", cx: 347, cy: 96, r: 3.2, fill: "#ff86c0" }), h("circle", { key: "bg10", cx: 342, cy: 98, r: 2.8, fill: "#e83e94" }), h("circle", { key: "bg11", cx: 346, cy: 105, r: 2.6, fill: "#ffa6d2" })) : null,
     // 「伦敦限定居民」恶搞蓝牌：帕丁顿时不时从牌子后面探头，牌子边上飘着打盹的 z；下面挂一块黄铜小牌「Nana 的伦敦 →」
     h("g", { onClick: goLondon, style: { cursor: "pointer" } },
       h("g", { style: { animation: (PLQ.street ? "bfPeekSide" : "bfPeek") + " 7s ease-in-out infinite" } },
@@ -28322,7 +28328,7 @@ function BakerFacade(_refBF) {
       h("rect", { x: 163, y: 159, width: 34, height: 8.4, rx: 1.6, fill: "url(#bfBrass)", stroke: "#8a6a2a", strokeWidth: 0.4 }),
       h("text", { x: 180, y: 164.7, textAnchor: "middle", fontSize: 4.4, fontWeight: "bold", fill: "#3a2a10", fontFamily: "'PingFang SC',sans-serif" }, LD_BOOK + " →")),
     // 楼层线
-    h("rect", { x: 24, y: 213, width: 312, height: 8, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 219.2, width: 312, height: 1.8, fill: "#2b2f3a" }) : null, h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
+    h("rect", { x: 24, y: 213, width: 312, height: 8, fill: SUN ? "#fff6f2" : "#e9e2d2" }), SUN ? h("rect", { x: 24, y: 219.2, width: 312, height: 1.8, fill: "#d8b784" }) : null, h("rect", { x: 24, y: 221, width: 312, height: 2.5, fill: "rgba(0,0,0,0.28)" }),
     // 底层：灰白抹灰墙，一道道水平线
     h("rect", { x: 30, y: 223, width: 300, height: 118, fill: SUN ? "url(#bfWMint)" : "url(#bfStucco)" }),
     SUN ? null : h("rect", { x: 30, y: 223, width: 300, height: 118, fill: "url(#bfRust)" }),
@@ -28330,7 +28336,7 @@ function BakerFacade(_refBF) {
     SUN ? h("g", { style: { pointerEvents: "none" } },
       h("rect", { x: 6, y: 87, width: 24, height: 126, fill: "url(#bfWVilla)" }), h("rect", { x: 6, y: 87, width: 1.6, height: 126, fill: "#e3ddd3" }),
       h("rect", { x: 6, y: 197, width: 24, height: 16, fill: "rgba(190,230,245,0.28)" }), h("rect", { x: 6, y: 196.2, width: 24, height: 1.4, fill: "#dfe6ea" }),
-      h("rect", { x: 4, y: 213, width: 22, height: 8, fill: "#fff6f2" }), h("rect", { x: 4, y: 219.2, width: 22, height: 1.8, fill: "#2b2f3a" }), h("rect", { x: 6, y: 221, width: 24, height: 3, fill: "rgba(0,0,0,0.22)" })) : null,
+      h("rect", { x: 4, y: 213, width: 22, height: 8, fill: "#fff6f2" }), h("rect", { x: 4, y: 219.2, width: 22, height: 1.8, fill: "#d8b784" }), h("rect", { x: 6, y: 221, width: 24, height: 3, fill: "rgba(0,0,0,0.22)" })) : null,
     h("rect", { x: 30, y: 91, width: 300, height: 250, fill: "none", stroke: "#d8cdb6", strokeWidth: 2 }),
     // 左边墙角一枝攀援玫瑰
     h("g", null,
@@ -28357,13 +28363,13 @@ function BakerFacade(_refBF) {
           h("radialGradient", { id: "nkFGlow" }, h("stop", { offset: "0%", stopColor: "#fff4d6", stopOpacity: 0.95 }), h("stop", { offset: "100%", stopColor: "#ffe2a8", stopOpacity: 0 })),
           h("clipPath", { id: "nkFClip" }, h("rect", { x: 40, y: 248, width: 100, height: 56 }))),
         // 条纹遮阳篷 + 店招
-        SUN ? h("g", null, h("rect", { x: 28, y: 226, width: 124, height: 4.6, rx: 0.8, fill: "#ffffff" }), h("rect", { x: 28, y: 230, width: 124, height: 1.4, fill: "#2b2f3a" }), h("rect", { x: 32, y: 231.4, width: 116, height: 2.4, fill: "rgba(0,0,0,0.14)" })) : h("rect", { x: 32, y: 225, width: 116, height: 4, rx: 1, fill: "#14171c" }),
+        SUN ? h("g", null, h("rect", { x: 28, y: 226, width: 124, height: 4.6, rx: 0.8, fill: "#ffffff" }), h("rect", { x: 28, y: 230, width: 124, height: 1.4, fill: "#d8b784" }), h("rect", { x: 32, y: 231.4, width: 116, height: 2.4, fill: "rgba(0,0,0,0.14)" })) : h("rect", { x: 32, y: 225, width: 116, height: 4, rx: 1, fill: "#14171c" }),
         SUN ? null : Array.apply(null, Array(8)).map(function (_, i) { var t0 = 40 + i * 100 / 8, t1 = t0 + 100 / 8, b0 = 33 + i * 114 / 8, b1 = b0 + 114 / 8; return h("polygon", { key: "aw" + i, points: t0 + ",229 " + t1 + ",229 " + b1 + ",241 " + b0 + ",241", fill: i % 2 ? "#f4ecdc" : "#23443a" }); }),
         SUN ? null : Array.apply(null, Array(8)).map(function (_, i) { var b0 = 33 + i * 114 / 8, r = 114 / 16; return h("path", { key: "as" + i, d: "M" + b0 + " 241 a" + r + " " + (r * 0.6) + " 0 0 0 " + (2 * r) + " 0 Z", fill: i % 2 ? "#f4ecdc" : "#23443a" }); }),
         h("rect", { x: 63, y: SUN ? 233.4 : 230.5, width: 54, height: 8.5, rx: SUN ? 2.4 : 1.6, fill: SUN ? "#1f1430" : "#f6efe2", stroke: SUN ? "#5ff3ff" : "#c9a45a", strokeWidth: 0.6, style: SUN ? { filter: "drop-shadow(0 0 2px rgba(95,243,255,0.8))" } : null }),
         h("text", { x: 90, y: SUN ? 239.7 : 236.8, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: SUN ? "#ffd3ec" : "#23443a", fontFamily: "Georgia,serif", letterSpacing: 0.6, style: SUN ? { filter: "drop-shadow(0 0 1.5px #ff5fc8)" } : null }, "NANA'S NOOK"),
         // 深橄榄绿木窗框
-        h("rect", { x: 35, y: 243.5, width: 110, height: 65.5, rx: 1.5, fill: SUN ? "#23262e" : "#23443a" }),
+        h("rect", { x: 35, y: 243.5, width: 110, height: 65.5, rx: 1.5, fill: SUN ? "#f6f0e6" : "#23443a" }),
         h("g", { clipPath: "url(#nkFClip)" },
           // 鸭蛋青墙 + 白色护墙线
           h("rect", { x: 40, y: 248, width: 100, height: 56, fill: "url(#nkFWall)" }),
@@ -28430,17 +28436,17 @@ function BakerFacade(_refBF) {
     })(),
     // 门套：柱 + 楣 + 扇形气窗 + 灯
     // 日落皮肤：门套换成一片出挑的白色平雨棚 + 细黑门框
-    SUN ? h("g", null, h("rect", { x: 168, y: 238, width: 104, height: 5, rx: 0.8, fill: "#ffffff" }), h("rect", { x: 168, y: 242.4, width: 104, height: 1.4, fill: "#2b2f3a" }), h("rect", { x: 172, y: 243.8, width: 96, height: 2.6, fill: "rgba(0,0,0,0.14)" }), h("rect", { x: 184, y: 246, width: 72, height: 95, fill: "#23262e" })) : h("g", null,
+    SUN ? h("g", null, h("rect", { x: 168, y: 238, width: 104, height: 5, rx: 0.8, fill: "#ffffff" }), h("rect", { x: 168, y: 242.4, width: 104, height: 1.4, fill: "#d8b784" }), h("rect", { x: 172, y: 243.8, width: 96, height: 2.6, fill: "rgba(0,0,0,0.14)" }), h("rect", { x: 184, y: 246, width: 72, height: 95, fill: "#f6f0e6" })) : h("g", null,
     h("rect", { x: 170, y: 234, width: 100, height: 12, fill: "#e9e2d2" }), h("rect", { x: 166, y: 230, width: 108, height: 5, fill: "#f2ece0" }), h("rect", { x: 170, y: 246, width: 100, height: 2.5, fill: "rgba(0,0,0,0.25)" }),
     h("rect", { x: 176, y: 248, width: 12, height: 93, fill: "#e9e2d2" }), h("rect", { x: 252, y: 248, width: 12, height: 93, fill: "#e9e2d2" }),
     h("rect", { x: 174, y: 248, width: 16, height: 6, fill: "#ddd5c3" }), h("rect", { x: 250, y: 248, width: 16, height: 6, fill: "#ddd5c3" })),
-    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: "#121418" }),
+    h("rect", { x: 188, y: 248, width: 64, height: 93, fill: SUN ? "#b98a5e" : "#121418" }),
     // 日落皮肤：扇形气窗换成一整块长方形的玻璃亮子
     SUN ? h("rect", { x: 191, y: 251, width: 58, height: 29, fill: dimAll ? "#2a2f3a" : (lit || glowDoor) ? "url(#bfWarm)" : "#b8c6d2", style: glowDoor ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.95))" } : null }) : h("g", null,
     h("path", { d: "M191 282 a29 29 0 0 1 58 0 Z", fill: dimAll ? "#2a2f3a" : (lit || glowDoor) ? "url(#bfWarm)" : "#b8c6d2", style: glowDoor ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.95))" } : null }),
     h("path", { d: "M199 282 a21 21 0 0 1 42 0", fill: "none", stroke: "#f2ece0", strokeWidth: 1.4 }),
     [-2, -1, 0, 1, 2].map(function (i) { return h("line", { key: "fan" + i, x1: 220, y1: 282, x2: 220 + Math.sin(i * 0.5) * 29, y2: 282 - Math.cos(i * 0.5) * 29, stroke: "#f2ece0", strokeWidth: 1.6 }); })),
-    h("rect", { x: 188, y: 282, width: 64, height: 3, fill: SUN ? "#23262e" : "#e9e2d2" }),
+    h("rect", { x: 188, y: 282, width: 64, height: 3, fill: SUN ? "#f6f0e6" : "#e9e2d2" }),
     // 门：黑漆门，六块门板、门环、信箱口、门把（221B 写在门口邮筒上）
     h("g", { onClick: goIn, style: { cursor: "pointer" } },
       h("g", { style: { transformOrigin: "191px 313px", transform: doorOpen ? "scaleX(0.1)" : "scaleX(1)", transition: "transform 0.55s cubic-bezier(.4,0,.2,1)" } },
@@ -28455,7 +28461,7 @@ function BakerFacade(_refBF) {
         h("circle", { cx: 243, cy: 314, r: 1.9, fill: "url(#bfBrass)" })),
       doorOpen ? h("rect", { x: 191, y: 285, width: 58, height: 56, fill: "url(#bfWarm)", opacity: 0.85 }) : null),
     // 门边挂灯（日落皮肤：换成一道细长的壁灯）
-    SUN ? h("g", null, h("rect", { x: 267.6, y: 250, width: 4.8, height: 26, rx: 1, fill: "#23262e" }), h("rect", { x: 269, y: 252, width: 2, height: 22, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#e9eef2", style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null })) : h("g", null,
+    SUN ? h("g", null, h("rect", { x: 267.6, y: 250, width: 4.8, height: 26, rx: 1, fill: "#f6f0e6" }), h("rect", { x: 269, y: 252, width: 2, height: 22, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#e9eef2", style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 4px rgba(255,220,140,0.9))" } : null })) : h("g", null,
       h("rect", { x: 262, y: 234, width: 10, height: 2, fill: "#141821" }), h("rect", { x: 270, y: 234, width: 1.6, height: 8, fill: "#141821" }),
       h("polygon", { points: "266,242 276,242 278,246 264,246", fill: "#141821" }),
       h("rect", { x: 265, y: 246, width: 12, height: 14, rx: 1, fill: dimAll ? "#3a3f4a" : (lit || glowDoor) ? BK_WARM : "#cfd9e2", stroke: "#141821", strokeWidth: 1.2, style: (lit || glowDoor) && !dimAll ? { filter: "drop-shadow(0 0 7px rgba(255,220,140,0.95))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
@@ -28492,10 +28498,10 @@ function BakerFacade(_refBF) {
     [172, 262].map(function (px, i) { return h("g", { key: "pot" + i },
       h("rect", { x: px + 6.4, y: 318, width: 1.2, height: 13, fill: "#6b4a34" }),
       h("circle", { cx: px + 7, cy: 316, r: 7.2, fill: "#4f6e48" }), h("circle", { cx: px + 5, cy: 313.6, r: 3.6, fill: "#5f8256" }), h("circle", { cx: px + 9.4, cy: 318.4, r: 2.6, fill: "#46633f" }),
-      h("rect", { x: px + 1, y: 330, width: 12, height: 12, fill: "#1f2328" }), h("rect", { x: px, y: 328.5, width: 14, height: 2.5, fill: "#2c3238" }), h("rect", { x: px + 1, y: 340, width: 12, height: 2, fill: "#16191d" })); }),
+      h("rect", { x: px + 1, y: 330, width: 12, height: 12, fill: SUN ? "#ffffff" : "#1f2328" }), h("rect", { x: px, y: 328.5, width: 14, height: 2.5, fill: SUN ? "#f3ede3" : "#2c3238" }), h("rect", { x: px + 1, y: 340, width: 12, height: 2, fill: SUN ? "#e2d9cb" : "#16191d" })); }),
     // 栏杆：黑铁、金尖
-    [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 5; x < seg[1]; x += 13) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
-      return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: "#0a0c10" }), out); }),
+    [[30, 168], [270, 330]].map(function (seg, gi) { var out = []; for (var x = seg[0] + 5; x < seg[1]; x += 13) { out.push(h("rect", { key: "p" + x, x: x, y: 322, width: 1.5, height: 30, fill: SUN ? "#fbf7f0" : "#0a0c10" })); out.push(h("circle", { key: "q" + x, cx: x + 0.75, cy: 321, r: 1.4, fill: "url(#bfBrass)" })); }
+      return h("g", { key: "rail" + gi }, h("rect", { x: seg[0], y: 327, width: seg[1] - seg[0], height: 1.8, fill: SUN ? "#fbf7f0" : "#0a0c10" }), h("rect", { x: seg[0], y: 346, width: seg[1] - seg[0], height: 1.8, fill: SUN ? "#fbf7f0" : "#0a0c10" }), out); }),
     // ✉️ 门口人行道上的红色邮筒（英国老式圆柱邮筒，小小一只，挂一块 221B 黄铜牌）：有新信就从投信口露出一截信尾，轻轻晃
     h("g", { "data-k": "postbox", onClick: nanaGo221B, style: { cursor: "pointer" } },
       h("ellipse", { cx: 159, cy: 360.5, rx: 13, ry: 2.1, fill: "rgba(0,0,0,0.3)" }),
@@ -28651,9 +28657,9 @@ function BakerFacade(_refBF) {
       h("text", { x: 325, y: 362, textAnchor: "middle", fontSize: 4.6, fontWeight: "bold", fill: "#8a5a52", fontFamily: "'PingFang SC',sans-serif" }, "⚓ 上一站"),
       h("text", { x: 325, y: 368.5, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#2b3446", fontFamily: "'PingFang SC',sans-serif" }, "伦敦港口 →")),
     // 煤气灯：细杆、横臂、尖顶灯罩
-    h("rect", { x: 17, y: 262, width: 3, height: 92, fill: "#0a0c10" }), h("rect", { x: 11, y: 296, width: 15, height: 1.6, fill: "#0a0c10" }),
-    h("polygon", { points: "12,252 26,252 19,244", fill: "#0a0c10" }),
-    h("rect", { x: 12.5, y: 252, width: 13, height: 12, rx: 1, fill: dimAll ? "#3a3f4a" : lit ? BK_WARM : "#cfd9e2", stroke: "#0a0c10", strokeWidth: 1, style: lit && !dimAll ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.9))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
+    h("rect", { x: 17, y: 262, width: 3, height: 92, fill: SUN ? "#f4efe6" : "#0a0c10" }), h("rect", { x: 11, y: 296, width: 15, height: 1.6, fill: SUN ? "#f4efe6" : "#0a0c10" }),
+    h("polygon", { points: "12,252 26,252 19,244", fill: SUN ? "#d8b784" : "#0a0c10" }),
+    h("rect", { x: 12.5, y: 252, width: 13, height: 12, rx: 1, fill: dimAll ? "#3a3f4a" : lit ? BK_WARM : "#cfd9e2", stroke: SUN ? "#d8b784" : "#0a0c10", strokeWidth: 1, style: lit && !dimAll ? { filter: "drop-shadow(0 0 8px rgba(255,220,140,0.9))", animation: "bkLamp 1.8s ease-in-out infinite" } : null }),
     h("circle", { cx: 19, cy: 242, r: 1.5, fill: "url(#bfBrass)" }),
     h("g", holdProps(PG.bad),
       h("rect", { x: 4, y: 236, width: 30, height: 120, fill: "rgba(0,0,0,0.01)" }),
