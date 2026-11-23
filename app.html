@@ -28586,7 +28586,6 @@ function BakerFacade(_refBF) {
       h("path", { d: "M398 4 a16 16 0 1 0 14 24 a12 12 0 1 1 -14 -24Z", fill: "#fff1b8", opacity: 0.95, style: { filter: "drop-shadow(0 0 8px rgba(255,240,180,0.9))" } }),
       barOpen && !SUN && h("ellipse", { cx: 376, cy: 200, rx: 72, ry: 176, fill: "url(#hpHaloP)", style: { animation: "hpHue 6s ease-in-out infinite" } }),
       barOpen && SUN ? h("g", { style: { transformOrigin: "376px 353px", animation: barJust ? "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" : "none" } },
-        (function () { var k = "a"; try { var q = (location.search || "").match(/[?&]sbar=([ab])/); if (q) k = q[1]; } catch (_) {} return k; })() === "b" ?
 h("g", null,
   h("ellipse", { cx: 376, cy: 230, rx: 46, ry: 110, fill: "#ff8fd0", opacity: 0.12, style: { filter: "blur(9px)" } }),
   h("rect", { x: 342, y: 92, width: 66, height: 261, rx: 12, fill: "#fff6f2" }), h("rect", { x: 342, y: 300, width: 66, height: 53, fill: "#fff6f2" }),
@@ -28612,46 +28611,7 @@ h("g", null,
   [340, 410].map(function (x, i) { return h("g", { key: "pp" + i }, h("path", { d: "M" + (x - 4) + " 353 l1 -9 h6 l1 9 Z", fill: "#ffffff", stroke: "#e2dccf", strokeWidth: 0.5 }), [[-9, -14], [-3, -19], [4, -18], [9, -12]].map(function (p, k) { return h("path", { key: k, d: "M" + x + " 344 Q" + (x + p[0] * 0.3) + " " + (344 + p[1] * 0.8) + " " + (x + p[0]) + " " + (344 + p[1]) + " Q" + (x + p[0] * 0.8) + " " + (344 + p[1] * 0.4) + " " + x + " 344 Z", fill: k % 2 ? "#3c9a68" : "#2f8a5e" }); })); }),
   // 门口的小牌子
   h("rect", { x: 349, y: 258, width: 52, height: 11, rx: 5.5, fill: "rgba(40,14,66,0.85)", stroke: "#5ff3ff", strokeWidth: 0.8, style: { filter: "drop-shadow(0 0 2px rgba(95,243,255,0.8))" } }),
-  h("text", { x: 375, y: 265.8, textAnchor: "middle", fontSize: 5.8, fontWeight: "bold", fill: "#ffd3ec", fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: 0.4, style: { filter: "drop-shadow(0 0 1.5px #ff5fc8)" } }, "日落小酒吧")) :
-h("g", null,
-  h("ellipse", { cx: 376, cy: 270, rx: 46, ry: 70, fill: "#ffc86b", opacity: 0.16, style: { filter: "blur(8px)" } }),
-  // 后面的椰子树
-  h("path", { d: "M352 353 C356 300 344 240 350 150", fill: "none", stroke: "#8a6a48", strokeWidth: 5, strokeLinecap: "round" }),
-  ["M350 150 C334 136 314 138 304 152 C318 144 334 146 350 150 Z", "M350 150 C340 128 320 118 304 124 C320 126 338 136 350 150 Z", "M350 150 C352 126 368 112 386 114 C370 120 358 132 350 150 Z", "M350 150 C368 134 390 136 400 150 C386 144 368 144 350 150 Z", "M350 150 C366 150 382 160 388 176 C376 164 362 156 350 150 Z", "M350 150 C336 152 322 164 318 180 C328 166 340 158 350 150 Z"].map(function (d, i) { return h("path", { key: "pf" + i, d: d, fill: i % 2 ? "#2f8a5e" : "#3c9a68" }); }),
-  h("circle", { cx: 347, cy: 154, r: 3, fill: "#7a5636" }), h("circle", { cx: 353, cy: 156, r: 3, fill: "#6b4a2e" }),
-  // 亮着灯的酒架
-  h("rect", { x: 344, y: 236, width: 62, height: 62, fill: "url(#bfWarm)" }),
-  h("rect", { x: 346, y: 254, width: 58, height: 1.6, fill: "#b8863c" }), h("rect", { x: 346, y: 274, width: 58, height: 1.6, fill: "#b8863c" }),
-  [[349, 12, "#ff6fa8"], [354.5, 9, "#5fd0c4"], [360, 13, "#c9a0ff"], [365.5, 10, "#ff9a4a"], [371, 12, "#7fd97a"], [376.5, 8, "#ff6fa8"], [382, 13, "#5fb0ff"], [387.5, 10, "#ffd36b"], [393, 12, "#c9a0ff"], [398.5, 9, "#5fd0c4"]].map(function (t, i) { return h("g", { key: "bo" + i }, h("rect", { x: t[0], y: 254 - t[1], width: 3.6, height: t[1], rx: 1, fill: t[2] }), h("rect", { x: t[0] + 1.1, y: 254 - t[1] - 2.4, width: 1.4, height: 2.6, fill: t[2] })); }),
-  [[350, 10, "#ffd36b"], [356, 12, "#ff6fa8"], [362, 9, "#7fd97a"], [384, 11, "#5fd0c4"], [390, 13, "#ff9a4a"], [396, 9, "#c9a0ff"]].map(function (t, i) { return h("rect", { key: "bp" + i, x: t[0], y: 274 - t[1], width: 3.8, height: t[1], rx: 1, fill: t[2] }); }),
-  // 酒架上一只发光的小霓虹：鸡尾酒杯
-  h("path", { d: "M368 260 L382 260 L375 269 Z M375 269 V273.4 M371.4 273.6 H378.6", fill: "none", stroke: "#ff5fc8", strokeWidth: 1.3, strokeLinejoin: "round", strokeLinecap: "round", style: { filter: "drop-shadow(0 0 2px #ff5fc8)", animation: "bfNeon 3.6s ease-in-out infinite" } }),
-  // 竹柱
-  [340, 406].map(function (x, i) { return h("g", { key: "bm" + i }, h("rect", { x: x, y: 226, width: 5, height: 127, rx: 2, fill: "#d9ad5e" }), h("rect", { x: x, y: 226, width: 1.6, height: 127, fill: "#ecc986" }), [248, 272, 296, 320, 342].map(function (y, k) { return h("rect", { key: k, x: x - 0.4, y: y, width: 5.8, height: 1.2, rx: 0.6, fill: "#a87e3a" }); })); }),
-  // 茅草顶：三层草帘，越往下越宽
-  h("path", { d: "M352 190 L375 166 L398 190 Z", fill: "#c9983f" }),
-  [[346, 404, 190, "#d9ad5e"], [338, 412, 204, "#cfa050"], [330, 420, 218, "#c39240"]].map(function (r, i) { var n = Math.round((r[1] - r[0]) / 6), d = "M" + r[0] + " " + r[2]; for (var k = 0; k < n; k++) d += " l3 " + (10 + (k % 2) * 2) + " l3 " + (-(10 + (k % 2) * 2)); return h("g", { key: "th" + i }, h("path", { d: "M" + (r[0] + 6) + " " + (r[2] - 14) + " L" + (r[1] - 6) + " " + (r[2] - 14) + " L" + r[1] + " " + r[2] + " L" + r[0] + " " + r[2] + " Z", fill: r[3] }), h("path", { d: d + " Z", fill: r[3] }), h("path", { d: "M" + (r[0] + 4) + " " + (r[2] - 6) + " H" + (r[1] - 4), stroke: "rgba(120,80,20,0.25)", strokeWidth: 0.8 })); }),
-  h("circle", { cx: 375, cy: 166, r: 3, fill: "#a87e3a" }),
-  // 屋檐下一串彩色小灯
-  h("path", { d: "M342 236 Q358 246 375 238 Q392 246 408 236", fill: "none", stroke: "#8a6a48", strokeWidth: 0.6 }),
-  [[347, 239.4, "#ff6fa8"], [354, 242, "#ffd36b"], [361, 242.6, "#5fd0c4"], [368, 240.6, "#c9a0ff"], [382, 240.6, "#ff9a4a"], [389, 242.6, "#7fd97a"], [396, 242, "#ff6fa8"], [403, 239.4, "#ffd36b"]].map(function (t, i) { return h("circle", { key: "sb" + i, cx: t[0], cy: t[1] + 1.4, r: 1.9, fill: t[2], style: { filter: "drop-shadow(0 0 2.5px " + t[2] + ")", animation: "bfLed " + (1.6 + (i % 3) * 0.5) + "s ease-in-out " + (i * 0.2) + "s infinite" } }); }),
-  // 挂着的小木牌
-  h("g", { style: { transformOrigin: "375px 222px", animation: "bfSwing 3.4s ease-in-out infinite" } },
-    h("path", { d: "M360 220 V225 M390 220 V225", stroke: "#8a6a48", strokeWidth: 0.8 }),
-    h("rect", { x: 352, y: 224.6, width: 46, height: 11, rx: 2, fill: "#8a5a34", stroke: "#e6c07a", strokeWidth: 0.8 }),
-    h("text", { x: 375, y: 232.6, textAnchor: "middle", fontSize: 6, fontWeight: "bold", fill: "#ffe7ad", fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: 0.4 }, "日落小酒吧")),
-  // 竹吧台
-  h("rect", { x: 336, y: 297, width: 78, height: 6, rx: 2, fill: "#e6c07a" }), h("rect", { x: 336, y: 301.6, width: 78, height: 1.4, fill: "#b8863c" }),
-  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (k) { return h("rect", { key: "bs" + k, x: 339 + k * 6, y: 303, width: 6, height: 50, fill: k % 2 ? "#d9ad5e" : "#cfa050" }); }),
-  // 吧台上的两杯
-  h("path", { d: "M352 289 h7 l-3.5 5 Z M355.5 294 V297", fill: "#ff8fc0", stroke: "#ff8fc0", strokeWidth: 0.8 }), h("circle", { cx: 359.4, cy: 288.4, r: 1.3, fill: "#b8ff7a" }),
-  h("rect", { x: 391, y: 289, width: 5, height: 8, rx: 1, fill: "#7fe0f0" }), h("path", { d: "M394.6 289 l2.6 -5", stroke: "#ff6fa8", strokeWidth: 0.9, strokeLinecap: "round" }),
-  // 三只高脚凳
-  [352, 375, 398].map(function (sx, i) { return h("g", { key: "st" + i }, h("rect", { x: sx - 5.4, y: 322, width: 10.8, height: 3.6, rx: 1.8, fill: ["#ff8fb4", "#5fd0c4", "#ffd36b"][i] }), h("path", { d: "M" + sx + " 325.6 V352 M" + (sx - 4.4) + " 352.4 H" + (sx + 4.4) + " M" + (sx - 3.4) + " 340 H" + (sx + 3.4), stroke: "#f6efe2", strokeWidth: 1.4, strokeLinecap: "round" })); }),
-  // 两支火把
-  [333, 418].map(function (x, i) { return h("g", { key: "tk" + i }, h("rect", { x: x - 0.9, y: 282, width: 1.8, height: 71, fill: "#a87e3a" }), h("path", { d: "M" + (x - 3) + " 282 h6 l-1 -6 h-4 Z", fill: "#8a5a34" }), h("path", { d: "M" + x + " 264 q-4.4 6 0 12 q4.4 -6 0 -12 Z", fill: "#ffb347", style: { filter: "drop-shadow(0 0 5px rgba(255,170,60,1))", transformOrigin: x + "px 276px", animation: "bkLamp " + (1.3 + i * 0.4) + "s ease-in-out infinite" } }), h("path", { d: "M" + x + " 269 q-2 3 0 6 q2 -3 0 -6 Z", fill: "#fff0a8" })); }),
-  // 靠在柱子上的冲浪板
-  h("g", { transform: "rotate(9 414 320)" }, h("ellipse", { cx: 414, cy: 318, rx: 5.4, ry: 30, fill: "#ff8fb4" }), h("rect", { x: 413.2, y: 290, width: 1.6, height: 56, fill: "#ffffff" }), h("path", { d: "M409 306 q5 3 10 0", fill: "none", stroke: "#ffe27a", strokeWidth: 2 })))) : barOpen && h("g", { style: { transformOrigin: "376px 353px", animation: barJust ? "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" : "none" } },
+  h("text", { x: 375, y: 265.8, textAnchor: "middle", fontSize: 5.8, fontWeight: "bold", fill: "#ffd3ec", fontFamily: "Georgia,'PingFang SC',serif", letterSpacing: 0.4, style: { filter: "drop-shadow(0 0 1.5px #ff5fc8)" } }, "日落小酒吧"))) : barOpen && h("g", { style: { transformOrigin: "376px 353px", animation: barJust ? "hpAppear 2.6s cubic-bezier(.2,.8,.3,1) both" : "none" } },
       h("defs", null,
         h("radialGradient", { id: "hpHaloP" }, h("stop", { offset: "0%", stopColor: "rgba(190,140,255,0.42)" }), h("stop", { offset: "60%", stopColor: "rgba(120,220,200,0.14)" }), h("stop", { offset: "100%", stopColor: "rgba(120,220,200,0)" })),
         h("linearGradient", { id: "hpGlow", x1: "0", y1: "0", x2: "0", y2: "1" }, h("stop", { offset: "0%", stopColor: "#ffe7a8" }), h("stop", { offset: "100%", stopColor: "#f0a040" })),
