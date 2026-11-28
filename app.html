@@ -25878,6 +25878,8 @@ function BottomNav(_ref135) {
     _useState316 = _slicedToArray(_useState315, 2),
     drawerOpen = _useState316[0],
     setDrawerOpen = _useState316[1];
+  var _navW = useState(function () { return window.innerWidth || 0; }), navW = _navW[0], setNavW = _navW[1];
+  useEffect(function () { var on = function () { setNavW(window.innerWidth || 0); }; window.addEventListener("resize", on); return function () { window.removeEventListener("resize", on); }; }, []);
   var _navSk = useState(NANA_SKIN), navSkin = _navSk[0], setNavSkin = _navSk[1];
   useEffect(function () { var on = function () { setNavSkin(NANA_SKIN()); }; window.addEventListener("nana-skin", on); return function () { window.removeEventListener("nana-skin", on); }; }, []);
   var _updT = useState(0), setUpdTick = _updT[1];
@@ -26057,7 +26059,7 @@ function BottomNav(_ref135) {
       left: "50%",
       transform: "translateX(-50%)",
       width: "100%",
-      maxWidth: 600,
+      maxWidth: navW > 600 ? "none" : 600,
       background: navSkin === "sunset" ? "linear-gradient(180deg, rgba(255,236,242,0.94), rgba(255,218,214,0.94))" : "rgba(255,248,247,0.90)",
       backdropFilter: "blur(20px)",
       borderTop: navSkin === "sunset" ? "1.5px solid rgba(255,130,185,0.6)" : "1px solid rgba(213,194,196,0.4)",
@@ -27792,6 +27794,12 @@ function BakerFacade(_refBF) {
   var _skn = useState(NANA_SKIN); var skin = _skn[0], setSkin = _skn[1];
   useEffect(function () { var on = function () { setSkin(NANA_SKIN()); }; window.addEventListener("nana-skin", on); return function () { window.removeEventListener("nana-skin", on); }; }, []);
   var SUN = skin === "sunset";
+  // 宽屏：门面冲出 600 的限制铺满整个屏幕；房子居中——竖着拿最宽 640，横着拿按屏幕高度缩到一屏能看全
+  var _vp = useState(function () { return [window.innerWidth || 0, window.innerHeight || 0]; }); var vp = _vp[0], setVp = _vp[1];
+  useEffect(function () { var on = function () { setVp([window.innerWidth || 0, window.innerHeight || 0]); }; window.addEventListener("resize", on); window.addEventListener("orientationchange", on); return function () { window.removeEventListener("resize", on); window.removeEventListener("orientationchange", on); }; }, []);
+  var WIDE = vp[0] > 600;
+  var HOUSE_W = !WIDE ? null : Math.round(vp[0] > vp[1] ? Math.min(640, Math.max(420, (vp[1] - 36) * 346 / 420)) : Math.min(640, vp[0]));
+  var midCol = function (st) { if (!WIDE) return st; st.maxWidth = HOUSE_W; st.marginLeft = "auto"; st.marginRight = "auto"; st.boxSizing = "border-box"; return st; };
   var _so = useState(false); var scrollOpen = _so[0], setScrollOpen = _so[1];
   useEffect(function () { var alive = true; nanaWxFetch(function (o) { if (alive && o) setWx(o); }); return function () { alive = false; }; }, []);
   var _bo = useState(function () { try { return localStorage.getItem("nana-bar-open") === mbNight(); } catch (_) { return false; } }); var barOpen = _bo[0], setBarOpen = _bo[1];
@@ -28237,7 +28245,7 @@ function BakerFacade(_refBF) {
       h("circle", { cx: 150, cy: 62, r: 72, fill: "url(#bfSunDisc)" }),
       [70, 84, 97, 109, 120, 130].map(function (yy, i) { return h("rect", { key: "ss" + i, x: 74, y: yy, width: 152, height: 2.2 + i * 0.9, fill: isNight ? "#4a1a70" : "#c9458f", opacity: 0.85 }); }),
       // 山坡
-      h("path", { d: "M196 96 C214 72 236 48 262 41 L340 41 C352 44 362 56 372 68 L372 96 Z", fill: isNight ? "#1f0b40" : "#3a1560" }),
+      h("path", { d: "M196 96 C214 72 236 48 262 41 L340 41 C356 44 384 72 430 96 Z", fill: isNight ? "#1f0b40" : "#3a1560" }),
       h("path", { d: "M228 96 C240 78 252 62 268 54 M300 96 C306 80 318 68 336 60", fill: "none", stroke: isNight ? "#34186a" : "#5a2590", strokeWidth: 1.4 }),
       // 天文台：白色长楼 + 中间一个大圆顶、两头各一个小圆顶（整体放大 1.4 倍）
       h("g", { transform: "translate(302 42) scale(1.4) translate(-302 -28)" },
@@ -28548,7 +28556,7 @@ function BakerFacade(_refBF) {
     // 门铃
     h("circle", { cx: 258, cy: 300, r: 3.2, fill: "url(#bfBrass)", stroke: "#6e5218", strokeWidth: 0.8, onClick: doKnock, style: { cursor: "pointer" } }),
     // 日落皮肤：门前铺一条浅色石材的地面（原来这里透出的是天空的颜色）
-    SUN ? h("g", null, h("rect", { x: 0, y: 341, width: barOn ? 430 : 360, height: 12.5, fill: "#ece4d6" }), h("rect", { x: 0, y: 341, width: barOn ? 430 : 360, height: 1, fill: "#d9cdb9" })) : null,
+    SUN ? h("g", null, h("rect", { x: -700, y: 341, width: (barOn ? 430 : 360) + 1400, height: 12.5, fill: "#ece4d6" }), h("rect", { x: -700, y: 341, width: (barOn ? 430 : 360) + 1400, height: 1, fill: "#d9cdb9" })) : null,
     // 台阶 + 花盆 + 刮泥器
     h("rect", { x: 184, y: 341, width: 72, height: 6, fill: "#ddd5c3" }), h("rect", { x: 178, y: 347, width: 84, height: 6, fill: "#cfc7b5" }),
     h("g", holdProps(PG.home),
@@ -28679,7 +28687,7 @@ h("g", null,
           return h("rect", { key: "hpbr" + i, x: x, y: y, width: 30, height: 22, rx: SUN ? 3 : 1.5, fill: SUN ? ((r + c) % 2 ? "#ffb3cd" : "#9fe6dc") : "#8a4a3a", stroke: SUN ? "#ffffff" : "#5a2e22", strokeWidth: 1.4, style: { transformOrigin: (x + 15) + "px " + (y + 11) + "px", animation: "hpBrick" + (c ? "R" : "L") + " 1.6s cubic-bezier(.5,0,.8,.4) " + (0.15 + r * 0.06) + "s both" } }); }),
         ["#ffd98a", "#c9a0ff", "#8ff5d0", "#ff9fd0", "#fff3c4", "#c9a0ff", "#8ff5d0", "#ffd98a"].map(function (c, i) { return h("circle", { key: "hpz" + i, cx: 374, cy: 220, r: 3, fill: c, style: { filter: "drop-shadow(0 0 4px " + c + ")", transformOrigin: "374px 220px", animation: "hpBurst 1.8s ease-out " + (0.2 + i * 0.08) + "s both", "--a": (i * 45) + "deg" } }); })) : null) : null,
     // 人行道 + 路
-    h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 22, fill: "#4d535f" }), h("rect", { x: 0, y: 353, width: barOn ? 430 : 360, height: 3, fill: "#5f6572" }),
+    h("rect", { x: -700, y: 353, width: (barOn ? 430 : 360) + 1400, height: 22, fill: "#4d535f" }), h("rect", { x: -700, y: 353, width: (barOn ? 430 : 360) + 1400, height: 3, fill: "#5f6572" }),
     // 送完信等着的帕丁顿（画在栏杆、邮筒、人行道后面，才不会被挡住）
     newLetter && PADV !== "fly" ? h("g", { style: { pointerEvents: "none", opacity: 0, animation: "bfPadShow .35s ease-out 4.3s forwards" } }, PADV === "sit" ? padSit() : padHat()) : null,
     // 日落皮肤：门口路边停一辆粉色小跑车（低矮的楔形车身，晚上亮车灯和一圈青色底灯）
@@ -28693,17 +28701,17 @@ h("g", null,
       h("rect", { x: 275, y: 363.4, width: 3, height: 1.8, rx: 0.9, fill: "#ff3d5a", style: lit ? { filter: "drop-shadow(0 0 2px #ff3d5a)" } : null }),
       [211, 263].map(function (cx, i) { return h("g", { key: "cw" + i }, h("circle", { cx: cx, cy: 369.6, r: 5.2, fill: "#1d1f26" }), h("circle", { cx: cx, cy: 369.6, r: 2.6, fill: "#d9dee4" }), h("circle", { cx: cx, cy: 369.6, r: 0.9, fill: "#1d1f26" })); })) : null,
     // 楼前一条运河：整条都是水，人行道下面一圈木头码头边
-    h("rect", { x: 0, y: 375, width: barOn ? 430 : 360, height: 45, fill: SUN ? "url(#bfPool)" : "url(#bfWater)" }),
-    h("rect", { x: 0, y: 380, width: barOn ? 430 : 360, height: 40, fill: "url(#bfWaves)" }),
-    h("rect", { x: 0, y: 375, width: barOn ? 430 : 360, height: 5, fill: SUN ? "#fbf7f0" : "#8a6a48" }), h("rect", { x: 0, y: 380, width: barOn ? 430 : 360, height: 2, fill: SUN ? "#19a3bd" : "rgba(0,0,0,0.3)" }),
+    h("rect", { x: -700, y: 375, width: (barOn ? 430 : 360) + 1400, height: 45, fill: SUN ? "url(#bfPool)" : "url(#bfWater)" }),
+    h("rect", { x: -700, y: 380, width: (barOn ? 430 : 360) + 1400, height: 40, fill: "url(#bfWaves)" }),
+    h("rect", { x: -700, y: 375, width: (barOn ? 430 : 360) + 1400, height: 5, fill: SUN ? "#fbf7f0" : "#8a6a48" }), h("rect", { x: -700, y: 380, width: (barOn ? 430 : 360) + 1400, height: 2, fill: SUN ? "#19a3bd" : "rgba(0,0,0,0.3)" }),
     // 日落皮肤：水是泳池——白色池沿、一排小瓷砖、池边扶梯、水上漂一只粉色泳圈
     SUN ? h("g", { style: { pointerEvents: "none" } },
-      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(function (i) { return h("rect", { key: "tl" + i, x: i * 20 + 1, y: 382.4, width: 18, height: 2.2, fill: "rgba(255,255,255,0.35)" }); }),
+      Array.apply(null, Array(92)).map(function (_, k) { var i = k - 35; return h("rect", { key: "tl" + i, x: i * 20 + 1, y: 382.4, width: 18, height: 2.2, fill: "rgba(255,255,255,0.35)" }); }),
       h("path", { d: "M120 372 q0 -5 4 -5 M132 372 q0 -5 4 -5", fill: "none", stroke: "#dfe6ea", strokeWidth: 1.4, strokeLinecap: "round" }), h("path", { d: "M120 372 V390 M132 372 V390 M120 380 H132 M120 386 H132", fill: "none", stroke: "#dfe6ea", strokeWidth: 1.4, strokeLinecap: "round" }),
       h("g", { style: { transformOrigin: "70px 402px", animation: "bfBoat 4.6s ease-in-out infinite" } },
         h("ellipse", { cx: 70, cy: 402, rx: 13, ry: 5.2, fill: "#ff8fc4" }), h("ellipse", { cx: 70, cy: 401.2, rx: 6, ry: 2.2, fill: "#3fc4d8" }),
         [-9, -3, 3, 9].map(function (dx, i) { return h("rect", { key: "rg" + i, x: 70 + dx - 1, y: 397.2 + Math.abs(dx) * 0.12, width: 2, height: 2.4, rx: 1, fill: "#ffffff", opacity: 0.85 }); }))) : null,
-    SUN ? null : [30, 110, 190, 270, 350].map(function (x, i) { return h("rect", { key: "pl" + i, x: x, y: 372, width: 4, height: 12, rx: 1, fill: "#5a4230" }); }),
+    SUN ? null : [-610, -530, -450, -370, -290, -210, -130, -50, 30, 110, 190, 270, 350, 430, 510, 590, 670, 750, 830, 910, 990].map(function (x, i) { return h("rect", { key: "pl" + i, x: x, y: 372, width: 4, height: 12, rx: 1, fill: "#5a4230" }); }),
     // 饭点到了：一辆外卖车开到门口，点它就去选这顿吃什么（这顿贴过冰箱就开走）
     fzTruck ? h("g", { onClick: function (e) { if (e && e.stopPropagation) e.stopPropagation(); try { window.__fzPick = 1; } catch (_) {} nanaSheet("meal"); }, title: "饭车", style: { cursor: "pointer", animation: "bfTruckIn 1.8s cubic-bezier(.2,.8,.3,1) both" } },
       h("g", { style: { transformOrigin: "74px 366px", animation: "bfTruckIdle 1.4s ease-in-out 1.8s infinite" } },
@@ -28760,7 +28768,7 @@ h("g", null,
       h("text", { x: 23, y: 305, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 23 306)" }, "今天"),
       h("text", { x: 23, y: 311.6, textAnchor: "middle", fontSize: 5.4, fontWeight: "bold", fill: "#8a3a3a", fontFamily: "'PingFang SC',sans-serif", transform: "rotate(-4 23 306)" }, "有点长 🌧️")));
   var pill = function (t) { return h("div", { style: { background: "rgba(0,0,0,0.25)", border: "1px solid rgba(217,180,95,0.45)", color: BK_CREAM, borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 800 } }, t); };
-  return h("div", { style: { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden" } },
+  return h("div", { style: WIDE ? { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden", width: "100vw", marginLeft: "calc(50% - 50vw)" } : { position: "relative", background: "linear-gradient(180deg," + sky.join(",") + ")", overflow: "hidden" } },
     h("style", null,
       "@keyframes bkKnock{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}" +
       "@keyframes bkRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
@@ -28808,14 +28816,14 @@ h("g", null,
     }) : null,
     isNight ? h("div", { style: { position: "absolute", right: 26, top: 22, width: 30, height: 30, borderRadius: "50%", background: "#f3e9b8", boxShadow: "0 0 24px rgba(243,233,184,0.6)" } }) : null,
     // 问候
-    h("div", { style: { position: "relative", zIndex: 1, padding: "calc(22px + env(safe-area-inset-top,0px)) 18px 0" } },
+    h("div", { style: midCol({ position: "relative", zIndex: 1, padding: "calc(22px + env(safe-area-inset-top,0px)) 18px 0" }) },
       h("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } },
         h("div", { style: { color: BK_GOLD, fontSize: "0.58rem", fontWeight: 800, letterSpacing: 3, fontFamily: "Georgia,serif" } }, SUN ? "SUNSET BAY · NANA'S" : "221B BAKER STREET"),
         h("div", { style: { display: "flex", gap: 6, alignItems: "center" } }, h(RewardsWallet, null))),
       topCard,
       h("div", { style: { height: 4 } })),
     // 楼
-    h("div", { style: { position: "relative", marginTop: 2, padding: "0 2px" } },
+    h("div", { style: midCol({ position: "relative", marginTop: 2, padding: "0 2px" }) },
       building,
       // 松手之后窗里飘出来的那句、寄没寄到，都浮在楼上；「今天有点长」的两格贴在路面上
       (pgSay || pgMsg) ? h("div", { style: { position: "absolute", left: "10%", right: "10%", top: "47%", textAlign: "center", zIndex: 4, pointerEvents: "none" } },
@@ -28832,7 +28840,7 @@ h("g", null,
       h("div", { style: { position: "absolute", left: "58%", top: "82%", fontSize: 21, lineHeight: 1, animation: "bkCat 18s linear infinite", zIndex: 2 } }, "🐈"),
       h("div", { style: { position: "absolute", left: "-10%", right: "-10%", bottom: 0, height: 40, background: "rgba(255,255,255," + (isNight ? 0.1 : 0.35) + ")", filter: "blur(10px)", animation: "bkFog 8s ease-in-out infinite alternate", pointerEvents: "none" } })),
     // 门口的案卷：今天的线索，进屋去找
-    h("div", { style: { padding: "0 16px 14px", position: "relative", zIndex: 1 } },
+    h("div", { style: midCol({ padding: "0 16px 14px", position: "relative", zIndex: 1 }) },
       h("div", { onClick: goIn, style: { background: "linear-gradient(180deg,#fbf3df,#f1e4c4)", border: "1px solid #d7c9a3", borderRadius: 6, padding: "10px 12px 10px 16px", position: "relative", boxShadow: "0 6px 16px rgba(0,0,0,0.25)", fontFamily: "Georgia,'PingFang SC',serif", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 } },
         h("div", { style: { position: "absolute", left: 0, top: 8, bottom: 8, width: 4, background: "#c0392b", borderRadius: "0 3px 3px 0" } }),
         h("div", { style: { flex: 1, minWidth: 0 } },
